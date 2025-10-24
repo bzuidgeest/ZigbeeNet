@@ -1,0 +1,20 @@
+using YamlDotNet.Serialization;
+
+namespace ZigBeeNet.Ember.CodeGenerator2.Models
+{
+    /// <summary>
+    /// Represents a field within a typedef definition
+    /// </summary>
+    public class TypedefField
+    {
+        [YamlMember(Alias = "type")]
+        public string? Type { get; set; }
+
+        [YamlMember(Alias = "name")]
+        public string? Name { get; set; }
+
+        [YamlMember(Alias = "description")]
+        public string? Description { get; set; }
+    }
+}
+

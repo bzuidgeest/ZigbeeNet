@@ -1198,7 +1198,7 @@ namespace ZigBeeNet.Hardware.Ember
             if (version.GetProtocolVersion() != EzspFrame.GetEzspVersion()) 
             {
                 // The device supports a different version that we current have set
-                if (!EzspFrame.SetEzspVersion(version.GetProtocolVersion())) 
+                if (!EzspFrame.SetEzspVersion(version.GetProtocolVersion()))
                 {
                     _logger.LogError("EZSP Dongle: NCP requires unsupported version of EZSP (required = V{RequiredVersion}, supported = V{SupportedVersion})",
                             version.GetProtocolVersion(), EzspFrame.GetEzspVersion());

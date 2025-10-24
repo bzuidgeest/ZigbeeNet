@@ -7,4 +7,28 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Generated\Common\TypeAliases.cs" />
+    <Compile Remove="Generated\GreenPowerFrames\TypeAliases.cs" />
+    <Compile Remove="Generated\UtilitiesFrames\TypeAliases.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Generated\Common\TypeAliases.cs" />
+    <None Include="Generated\GreenPowerFrames\TypeAliases.cs" />
+    <None Include="Generated\UtilitiesFrames\TypeAliases.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\sisdk\2025.6.2\ezsp.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

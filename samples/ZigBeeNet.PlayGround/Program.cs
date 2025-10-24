@@ -75,11 +75,11 @@ namespace ZigBeeNet.PlayGround
             _logger=_factory.CreateLogger<Program>();
             
             bool showHelp = false;
-            ZigBeeDongle zigBeeDongle = ZigBeeDongle.TiCc2531;
-            string port = "";
+            ZigBeeDongle zigBeeDongle = ZigBeeDongle.Ember;
+            string port = "COM5";
             int baudrate = 115200;
             string flow = "";
-            FlowControl flowControl = FlowControl.FLOWCONTROL_OUT_NONE;
+            FlowControl flowControl = FlowControl.FLOWCONTROL_OUT_XONOFF;
             bool resetNetwork = false;
             string store = "json";
             string database = "devices";

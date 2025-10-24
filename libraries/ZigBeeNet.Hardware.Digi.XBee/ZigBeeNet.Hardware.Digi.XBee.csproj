@@ -14,6 +14,9 @@
     <Description>This package can be used in combination with the ZigBeeNet package and is the dongle implementation for a Digi XBee hardware dongle</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ZigBeeNet\ZigBeeNet.csproj" />
   </ItemGroup>
 </Project>

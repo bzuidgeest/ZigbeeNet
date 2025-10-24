@@ -40,7 +40,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
         /**
          * The maximum supported version of EZSP
          */
-        private const int EZSP_MAX_VERSION = 7;
+        private const int EZSP_MAX_VERSION = 14;//7;
 
         /**
          * The current version of EZSP being used

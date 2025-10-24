@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{7FF7F314-871A-4B42-ABCB-9D2FB5D14188}"
 EndProject
@@ -49,6 +49,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.DataStore.MongoDb", "libraries\ZigBeeNet.DataStore.MongoDb\ZigBeeNet.DataStore.MongoDb.csproj", "{8B2D0796-6399-4EAB-8815-4F1D0EDEFDAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.DataStore.Json", "libraries\ZigBeeNet.DataStore.Json\ZigBeeNet.DataStore.Json.csproj", "{823FDC82-431B-4C40-825D-30C9D0F09F64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Hardware.Sonoff.Ember.Test", "test\ZigBeeNet.Hardware.Sonoff.Ember.Test\ZigBeeNet.Hardware.Sonoff.Ember.Test.csproj", "{8A491892-6F3B-4284-A4A3-0E30F29EF36F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Ember.CodeGenerator2", "AutoCode\ZigBeeNet.Ember.CodeGenerator2\ZigBeeNet.Ember.CodeGenerator2.csproj", "{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +120,14 @@ Global
 		{823FDC82-431B-4C40-825D-30C9D0F09F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{823FDC82-431B-4C40-825D-30C9D0F09F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{823FDC82-431B-4C40-825D-30C9D0F09F64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A491892-6F3B-4284-A4A3-0E30F29EF36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A491892-6F3B-4284-A4A3-0E30F29EF36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A491892-6F3B-4284-A4A3-0E30F29EF36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A491892-6F3B-4284-A4A3-0E30F29EF36F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,6 +148,8 @@ Global
 		{88264B38-F01F-4143-86F8-F7C4778AE5B1} = {695B6CC9-6267-41E3-A086-3C6B9A180A34}
 		{8B2D0796-6399-4EAB-8815-4F1D0EDEFDAB} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
 		{823FDC82-431B-4C40-825D-30C9D0F09F64} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
+		{8A491892-6F3B-4284-A4A3-0E30F29EF36F} = {603D29D9-83CE-4B81-BD59-A77F529E4494}
+		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8} = {695B6CC9-6267-41E3-A086-3C6B9A180A34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {080E7EAE-7559-464B-9A8F-F5218D35AB8A}

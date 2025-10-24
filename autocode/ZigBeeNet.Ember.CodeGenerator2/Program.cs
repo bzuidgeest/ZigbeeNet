@@ -1,405 +1,345 @@
-﻿using System;
+﻿/*
+PSEUDOCODE / PLAN (detailed):
+1. Use Generic Host to add dependency injection and default logging.
+2. Configure console logging with a simple format and Information level as default.
+3. Register a background worker that will run the existing processing logic.
+   - Create a BackgroundService-derived class `Worker` that runs on start.
+   - Inject ILogger and IServiceProvider into `Worker`.
+4. Move the existing folder scanning & processing logic into a service class `VersionProcessor`.
+   - `VersionProcessor` will be resolved via DI (ActivatorUtilities) inside the worker.
+   - Keep semantics: log warnings if no resources or missing ezsp.yaml, log info for found versions.
+5. Main builds and runs the host; the Worker runs the processing then exits.
+6. Preserve exception handling and make logs informative.
+7. Keep everything in this single file for minimal change and easy integration.
+
+Behavior:
+- On application start, host and default logging are configured.
+- `Worker` executes `VersionProcessor.ProcessAsync`.
+- Processing logs are emitted via ILogger.
+- Application exits after work completes (BackgroundService finishes).
+*/
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+using ZigBeeNet.Ember.CodeGenerator2.Models;
 
 namespace ZigBeeNet.Ember.CodeGenerator2
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
+        {
+            using IHost host = Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddSimpleConsole(options =>
+                    {
+                        options.SingleLine = true;
+                        options.TimestampFormat = "HH:mm:ss ";
+                    });
+                    logging.SetMinimumLevel(LogLevel.Information);
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddHostedService<Worker>();
+                    services.AddTransient<VersionProcessor>();
+                })
+                .Build();
+
+            await host.RunAsync();
+        }
+    }
+
+    internal class Worker : BackgroundService
+    {
+        private readonly ILogger<Worker> _logger;
+        private readonly IServiceProvider _provider;
+
+        public Worker(ILogger<Worker> logger, IServiceProvider provider)
+        {
+            _logger = logger;
+            _provider = provider;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            try
+            {
+                _logger.LogInformation("Worker starting processing...");
+                // Resolve the processor from DI and run it
+                var processor = ActivatorUtilities.CreateInstance<VersionProcessor>(_provider);
+                await processor.ProcessAsync(stoppingToken);
+                _logger.LogInformation("Worker finished processing.");
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("Processing cancelled.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception during processing.");
+            }
+            // Let host shut down after work completes
+        }
+    }
+
+    internal class VersionProcessor
+    {
+        private readonly ILogger<VersionProcessor> _logger;
+
+        public VersionProcessor(ILogger<VersionProcessor> logger)
+        {
+            _logger = logger;
+        }
+
+        public Task ProcessAsync(CancellationToken cancellationToken)
         {
             try
             {
                 // Find all version folders in Resources directory
                 // Look for Resources relative to the project directory
                 string projectDir = Directory.GetCurrentDirectory();
-                string resourcesPath = Path.Combine(projectDir, "Resources");
-
-                // If not found, try going up directories to find the project root
-                int attempts = 0;
-                while (!Directory.Exists(resourcesPath) && attempts < 5)
-                {
-                    var parentDir = Directory.GetParent(projectDir);
-                    if (parentDir == null) break;
-                    projectDir = parentDir.FullName;
-                    resourcesPath = Path.Combine(projectDir, "autocode", "ZigBeeNet.Ember.CodeGenerator2", "Resources");
-                    attempts++;
-                }
+                string resourcesPath = Path.Combine(projectDir, "Resources", "sisdk");
 
                 if (!Directory.Exists(resourcesPath))
                 {
-                    Console.WriteLine($"Resources directory not found at: {resourcesPath}");
-                    return;
+                    _logger.LogWarning("Resources path not found: {path}", resourcesPath);
+                    return Task.CompletedTask;
                 }
 
-                var versionDirs = Directory.GetDirectories(resourcesPath)
-                    .Where(d => Path.GetFileName(d).StartsWith("V") && int.TryParse(Path.GetFileName(d).Substring(1), out _))
-                    .OrderBy(d => int.Parse(Path.GetFileName(d).Substring(1)))
-                    .ToList();
+                var versionDirs = Directory.GetDirectories(resourcesPath).ToList();
 
                 if (versionDirs.Count == 0)
                 {
-                    Console.WriteLine("No version folders (V13, V14, etc.) found in Resources directory");
-                    return;
+                    _logger.LogWarning("No version folders found in Resources directory");
+                    return Task.CompletedTask;
                 }
 
-                Console.WriteLine($"Found {versionDirs.Count} version folder(s)");
+                _logger.LogInformation("Found {count} version folder(s)", versionDirs.Count);
 
                 foreach (var versionDir in versionDirs)
                 {
-                    string versionName = Path.GetFileName(versionDir);
-                    string enumFilePath = Path.Combine(versionDir, "ezsp-enum.h");
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    if (!File.Exists(enumFilePath))
+                    string versionName = Path.GetFileName(versionDir);
+                    string definitionPath = Path.Combine(versionDir, "ezsp.yaml");
+
+                    if (!File.Exists(definitionPath))
                     {
-                        Console.WriteLine($"Warning: {enumFilePath} not found, skipping {versionName}");
+                        _logger.LogWarning("{path} not found, skipping {version}", definitionPath, versionName);
                         continue;
                     }
 
-                    Console.WriteLine($"\nProcessing {versionName}...");
-                    ProcessVersion(versionDir, enumFilePath, versionName);
+                    _logger.LogInformation("KDProcessing version {version} at {path}", versionName, definitionPath);
+                    ProcessVersion(versionDir, definitionPath, versionName);
                 }
 
-                Console.WriteLine("\nCode generation completed successfully!");
+                _logger.LogInformation("Code generation processing completed successfully!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                _logger.LogError(ex, "Error while processing versions.");
             }
+
+            return Task.CompletedTask;
         }
 
-        static void ProcessVersion(string versionDir, string enumFilePath, string versionName)
+        public void ProcessVersion(string versionDir, string definitionPath, string versionName)
         {
-            // Parse the enum file
-            var enums = ParseEnumFile(enumFilePath);
-
-            // Create output directory
-            string outputDir = Path.Combine(versionDir, "Generated");
-            Directory.CreateDirectory(outputDir);
-
-            // Generate C# files for each enum
-            foreach (var enumData in enums)
+            try
             {
-                string csFileName = $"{enumData.TypeName}.cs";
-                string csFilePath = Path.Combine(outputDir, csFileName);
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .WithTypeConverter(new TypedefDefinitionConverter())
+                    .Build();
 
-                string csCode = GenerateCSharpEnum(enumData);
-                File.WriteAllText(csFilePath, csCode);
-
-                Console.WriteLine($"  Generated: {csFileName} ({enumData.Values.Count} values)");
-            }
-
-            // Parse protocol file if it exists
-            string protocolFilePath = Path.Combine(versionDir, "ezsp-protocol.h");
-            if (File.Exists(protocolFilePath))
-            {
-                var protocolConstants = ParseProtocolFile(protocolFilePath);
-
-                if (protocolConstants.Count > 0)
+                using (TextReader definitionFileReader = new StreamReader(definitionPath))
                 {
-                    string csFileName = "EzspProtocol.cs";
-                    string csFilePath = Path.Combine(outputDir, csFileName);
-                    string csCode = GenerateCSharpProtocol(protocolConstants);
-                    File.WriteAllText(csFilePath, csCode);
-                    Console.WriteLine($"  Generated: {csFileName} ({protocolConstants.Count} constants)");
-                }
-            }
-        }
+                    var sections = deserializer.Deserialize<List<EzspSection>>(definitionFileReader);
 
-        static List<EnumData> ParseEnumFile(string filePath)
-        {
-            var enums = new List<EnumData>();
-            string content = File.ReadAllText(filePath);
-
-            // Pattern to match typedef followed by enum
-            // This pattern looks for: typedef TYPE NAME; ... enum { ... };
-            // Allow flexible whitespace between typedef and enum
-            string pattern = @"typedef\s+(\w+)\s+(\w+);\s*\n\s*\n\s*enum\s*\{";
-
-            var matches = Regex.Matches(content, pattern, RegexOptions.Multiline);
-
-            foreach (Match match in matches)
-            {
-                string baseType = match.Groups[1].Value;
-                string typeName = match.Groups[2].Value;
-
-                // Find the enum content starting from the opening brace
-                int enumStart = match.Index + match.Length - 1; // Position of '{'
-                int braceCount = 1;
-                int pos = enumStart + 1;
-
-                while (pos < content.Length && braceCount > 0)
-                {
-                    if (content[pos] == '{')
-                        braceCount++;
-                    else if (content[pos] == '}')
-                        braceCount--;
-                    pos++;
-                }
-
-                if (braceCount == 0)
-                {
-                    string enumContent = content.Substring(enumStart + 1, pos - enumStart - 2);
-                    var values = ParseEnumValues(enumContent);
-
-                    if (values.Count > 0)
+                    if (sections == null || sections.Count == 0)
                     {
-                        var enumData = new EnumData
-                        {
-                            TypeName = typeName,
-                            BaseType = baseType,
-                            Values = values
-                        };
+                        _logger.LogWarning("No sections found in {file}", definitionPath);
+                        return;
+                    }
 
-                        enums.Add(enumData);
+                    _logger.LogInformation("Successfully deserialized {count} section(s) from {version}", sections.Count, versionName);
+
+                    foreach (var section in sections)
+                    {
+                        _logger.LogInformation("  Section: {section}", section.Section);
+
+                        if (section.Typedefs != null && section.Typedefs.Count > 0)
+                        {
+                            var simpleTypedefs = new List<Typedef>();
+                            var simpleCount = 0;
+                            var complexCount = 0;
+
+                            foreach (var typedef in section.Typedefs)
+                            {
+                                if (typedef.Definition is SimpleTypedefDefinition simple)
+                                {
+                                    simpleCount++;
+                                    simpleTypedefs.Add(typedef);
+                                    _logger.LogInformation("      - {name} (simple): {type}", typedef.Name, simple.Type);
+                                }
+                                else if (typedef.Definition is ComplexTypedefDefinition complex)
+                                {
+                                    complexCount++;
+                                    _logger.LogInformation("      - {name} (complex): {fieldCount} fields", typedef.Name, complex.Fields.Count);
+                                    ProcessComplexTypeDefinition(section.Section, typedef);
+                                }
+                            }
+
+                            // Process all simple typedefs for this section at once
+                            if (simpleTypedefs.Count > 0)
+                            {
+                                ProcessSimpleTypeDefinitions(section.Section, simpleTypedefs);
+                            }
+
+                            _logger.LogInformation("    Found {count} typedef(s) - {simple} simple, {complex} complex",
+                                section.Typedefs.Count, simpleCount, complexCount);
+                        }
+
+                        if (section.Enums != null && section.Enums.Count > 0)
+                        {
+                            _logger.LogInformation("    Found {count} enum(s)", section.Enums.Count);
+                            foreach (var enumDef in section.Enums)
+                            {
+                                _logger.LogInformation("      - {name} ({type}): {itemCount} items", enumDef.Name, enumDef.Type, enumDef.Items?.Count ?? 0);
+                            }
+                        }
+
+                        if (section.Frames != null && section.Frames.Count > 0)
+                        {
+                            _logger.LogInformation("    Found {count} frame(s)", section.Frames.Count);
+                            foreach (var frame in section.Frames)
+                            {
+                                _logger.LogInformation("      - {name} ({value}): {cmdArgs} cmd args, {respArgs} resp args",
+                                    frame.CommandName, frame.Value,
+                                    frame.CommandArguments?.Count ?? 0,
+                                    frame.ResponseArguments?.Count ?? 0);
+                            }
+                        }
                     }
                 }
             }
-
-            return enums;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing version {version}", versionName);
+            }
         }
 
-        static List<EnumValue> ParseEnumValues(string enumContent)
+        private void ProcessSimpleTypeDefinitions(string sectionName, List<Typedef> typedefs)
         {
-            var values = new List<EnumValue>();
-
-            // Use regex to find all enum values
-            // Pattern: optional comments, then NAME = VALUE
-            string pattern = @"(?://[^\n]*\n\s*)*(\w+)\s*=\s*([^,\n}]+)";
-
-            var matches = Regex.Matches(enumContent, pattern);
-
-            foreach (Match match in matches)
+            try
             {
-                string name = match.Groups[1].Value.Trim();
-                string value = match.Groups[2].Value.Trim();
-
-                // Extract preceding comments
-                int matchStart = match.Index;
-                string precedingText = enumContent.Substring(Math.Max(0, matchStart - 300), Math.Min(300, matchStart));
-
-                var commentMatches = Regex.Matches(precedingText, @"//\s*([^\n]+)");
-                string comment = "";
-                if (commentMatches.Count > 0)
+                if (typedefs == null || typedefs.Count == 0)
                 {
-                    // Get the last comment line
-                    comment = commentMatches[commentMatches.Count - 1].Groups[1].Value.Trim();
+                    return;
                 }
 
-                values.Add(new EnumValue
-                {
-                    Name = name,
-                    Value = value,
-                    Comment = comment
-                });
-            }
+                // Create output directory for this section
+                string projectDir = Directory.GetCurrentDirectory();
+                string outputDir = Path.Combine(projectDir, "Generated", SanitizeSectionName(sectionName));
+                Directory.CreateDirectory(outputDir);
 
-            return values;
+                // Create a file for type aliases
+                string fileName = "TypeAliases.cs";
+                string filePath = Path.Combine(outputDir, fileName);
+
+                // Generate the complete file with all typedefs
+                var content = GenerateTypeAliasFile(sectionName, typedefs);
+                File.WriteAllText(filePath, content);
+                _logger.LogDebug("Created type alias file with {count} aliases: {path}", typedefs.Count, filePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing simple typedefs for section {section}", sectionName);
+            }
         }
 
-        static string GenerateCSharpEnum(EnumData enumData)
+        private static string GenerateTypeAliasFile(string sectionName, List<Typedef> typedefs)
         {
             var sb = new System.Text.StringBuilder();
 
-            sb.AppendLine("// Auto-generated file. Do not edit manually.");
-            sb.AppendLine();
-            sb.AppendLine("namespace ZigBeeNet.Ember.Enums");
-            sb.AppendLine("{");
-            sb.AppendLine($"    /// <summary>");
-            sb.AppendLine($"    /// {enumData.TypeName} enumeration");
-            sb.AppendLine($"    /// </summary>");
-            sb.AppendLine($"    public enum {enumData.TypeName}");
-            sb.AppendLine("    {");
+            // No namespace declaration - global using directives must be at file level
 
-            for (int i = 0; i < enumData.Values.Count; i++)
+            foreach (var typedef in typedefs)
             {
-                var value = enumData.Values[i];
-
-                if (!string.IsNullOrWhiteSpace(value.Comment))
+                if (typedef.Definition is SimpleTypedefDefinition simple)
                 {
-                    sb.AppendLine($"        /// <summary>");
-                    sb.AppendLine($"        /// {value.Comment}");
-                    sb.AppendLine($"        /// </summary>");
-                }
+                    if (!string.IsNullOrEmpty(typedef.Description))
+                    {
+                        sb.AppendLine($"/// <summary>");
+                        sb.AppendLine($"/// {typedef.Description}");
+                        sb.AppendLine($"/// </summary>");
+                    }
 
-                sb.Append($"        {value.Name} = {value.Value}");
-
-                if (i < enumData.Values.Count - 1)
-                {
-                    sb.AppendLine(",");
-                }
-                else
-                {
+                    // Check if this is an array type
+                    int bracketIndex = simple.Type.IndexOf('[');
+                    if (bracketIndex >= 0)
+                    {
+                        // Array type - cannot use in alias, skip it
+                        sb.AppendLine($"/// <remarks>Original C type: {simple.Type} (array types cannot be used in type aliases)</remarks>");
+                        sb.AppendLine($"// Skipped: {typedef.Name}");
+                    }
+                    else
+                    {
+                        // Simple scalar type - use global using alias
+                        string csharpType = MapBaseCType(simple.Type);
+                        sb.AppendLine($"/// <remarks>Original C type: {simple.Type}</remarks>");
+                        sb.AppendLine($"global using {typedef.Name} = {csharpType};");
+                    }
                     sb.AppendLine();
                 }
             }
 
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-
             return sb.ToString();
         }
 
-        static List<ProtocolConstant> ParseProtocolFile(string filePath)
+        /// <summary>
+        /// Maps base C types to C# types.
+        /// </summary>
+        private static string MapBaseCType(string cType)
         {
-            var constants = new List<ProtocolConstant>();
-            string content = File.ReadAllText(filePath);
-
-            // Pattern to match #define statements
-            // Matches: #define NAME VALUE
-            // where VALUE can be a hex number, decimal, expression, or string
-            string pattern = @"#define\s+(\w+)\s+(.+?)(?=\n|$)";
-
-            var matches = Regex.Matches(content, pattern, RegexOptions.Multiline);
-
-            foreach (Match match in matches)
+            return cType.Trim() switch
             {
-                string name = match.Groups[1].Value.Trim();
-                string value = match.Groups[2].Value.Trim();
-
-                // Remove inline comments from the value
-                int commentIdx = value.IndexOf("//");
-                if (commentIdx >= 0)
-                {
-                    value = value.Substring(0, commentIdx).Trim();
-                }
-
-                // Skip if value is empty or if it's a macro with parameters
-                if (string.IsNullOrWhiteSpace(value) || value.Contains('('))
-                    continue;
-
-                // Skip preprocessor directives (like #ifdef, #ifndef, etc.)
-                if (value.StartsWith('#'))
-                    continue;
-
-                // Skip if value contains backslash (line continuation)
-                if (value.Contains('\\'))
-                    continue;
-
-                // Extract preceding comment
-                int matchStart = match.Index;
-                string precedingText = content.Substring(Math.Max(0, matchStart - 300), Math.Min(300, matchStart));
-
-                var commentMatches = Regex.Matches(precedingText, @"//\s*([^\n]+)");
-                string comment = "";
-                if (commentMatches.Count > 0)
-                {
-                    comment = commentMatches[commentMatches.Count - 1].Groups[1].Value.Trim();
-                }
-
-                constants.Add(new ProtocolConstant
-                {
-                    Name = name,
-                    Value = value,
-                    Comment = comment
-                });
-            }
-
-            return constants;
+                "uint8_t" => "byte",
+                "int8_t" => "sbyte",
+                "uint16_t" => "ushort",
+                "int16_t" => "short",
+                "uint32_t" => "uint",
+                "int32_t" => "int",
+                "uint64_t" => "ulong",
+                "int64_t" => "long",
+                "bool" => "bool",
+                _ => cType // Return original if no mapping found
+            };
         }
 
-        static string GenerateCSharpProtocol(List<ProtocolConstant> constants)
+        private static string SanitizeSectionName(string sectionName)
         {
-            var sb = new System.Text.StringBuilder();
-
-            sb.AppendLine("// Auto-generated file. Do not edit manually.");
-            sb.AppendLine();
-            sb.AppendLine("namespace ZigBeeNet.Ember.Protocol");
-            sb.AppendLine("{");
-            sb.AppendLine("    /// <summary>");
-            sb.AppendLine("    /// EZSP Protocol constants and definitions");
-            sb.AppendLine("    /// </summary>");
-            sb.AppendLine("    public static class EzspProtocol");
-            sb.AppendLine("    {");
-
-            foreach (var constant in constants)
-            {
-                if (!string.IsNullOrWhiteSpace(constant.Comment))
-                {
-                    sb.AppendLine($"        /// <summary>");
-                    sb.AppendLine($"        /// {constant.Comment}");
-                    sb.AppendLine($"        /// </summary>");
-                }
-
-                // Determine the type based on the value
-                string type = DetermineConstantType(constant.Value);
-                sb.AppendLine($"        public const {type} {constant.Name} = {constant.Value};");
-            }
-
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-
-            return sb.ToString();
+            // Remove spaces and special characters, convert to PascalCase
+            return System.Text.RegularExpressions.Regex.Replace(sectionName, @"[^a-zA-Z0-9]", "");
         }
 
-        static string DetermineConstantType(string value)
+        private void ProcessComplexTypeDefinition(string sectionName, Typedef typedef)
         {
-            // Remove whitespace
-            value = value.Trim();
-
-            // Check for hex values
-            if (value.StartsWith("0x") || value.StartsWith("0X"))
-            {
-                // Try to determine if it's a byte, ushort, or uint
-                try
-                {
-                    long hexValue = Convert.ToInt64(value, 16);
-                    if (hexValue <= byte.MaxValue)
-                        return "byte";
-                    else if (hexValue <= ushort.MaxValue)
-                        return "ushort";
-                    else
-                        return "uint";
-                }
-                catch
-                {
-                    return "uint";
-                }
-            }
-
-            // Check for decimal numbers
-            if (int.TryParse(value, out int intVal))
-            {
-                if (intVal >= 0 && intVal <= byte.MaxValue)
-                    return "byte";
-                else if (intVal >= 0 && intVal <= ushort.MaxValue)
-                    return "ushort";
-                else
-                    return "int";
-            }
-
-            // Check for expressions (contain operators)
-            if (value.Contains("+") || value.Contains("-") || value.Contains("*") || value.Contains("/") || value.Contains("|") || value.Contains("<<"))
-            {
-                return "int";
-            }
-
-            // Default to int for unknown types
-            return "int";
+            // TODO: Implement complex typedef processing
+            _ = sectionName;
+            _ = typedef;
         }
-    }
-
-    class EnumData
-    {
-        public string TypeName { get; set; } = string.Empty;
-        public string BaseType { get; set; } = string.Empty;
-        public List<EnumValue> Values { get; set; } = new List<EnumValue>();
-    }
-
-    class EnumValue
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Value { get; set; } = string.Empty;
-        public string Comment { get; set; } = string.Empty;
-    }
-
-    class ProtocolConstant
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Value { get; set; } = string.Empty;
-        public string Comment { get; set; } = string.Empty;
     }
 }
