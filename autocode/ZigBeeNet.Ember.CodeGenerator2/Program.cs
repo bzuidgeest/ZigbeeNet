@@ -65,11 +65,13 @@ namespace ZigBeeNet.Ember.CodeGenerator2
     {
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _provider;
+        private readonly IHostApplicationLifetime _lifetime;
 
-        public Worker(ILogger<Worker> logger, IServiceProvider provider)
+        public Worker(ILogger<Worker> logger, IServiceProvider provider, IHostApplicationLifetime lifetime)
         {
             _logger = logger;
             _provider = provider;
+            _lifetime = lifetime;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -90,7 +92,11 @@ namespace ZigBeeNet.Ember.CodeGenerator2
             {
                 _logger.LogError(ex, "Unhandled exception during processing.");
             }
-            // Let host shut down after work completes
+            finally
+            {
+                // Signal the host to stop after work completes
+                _lifetime.StopApplication();
+            }
         }
     }
 
@@ -252,7 +258,7 @@ namespace ZigBeeNet.Ember.CodeGenerator2
 
                 // Create output directory for this section
                 string projectDir = Directory.GetCurrentDirectory();
-                string outputDir = Path.Combine(projectDir, "Generated", SanitizeSectionName(sectionName));
+                string outputDir = Path.Combine(projectDir, "bin", "Debug", "net9.0", "Generated", SanitizeSectionName(sectionName));
                 Directory.CreateDirectory(outputDir);
 
                 // Create a file for type aliases
@@ -278,7 +284,7 @@ namespace ZigBeeNet.Ember.CodeGenerator2
 
             foreach (var typedef in typedefs)
             {
-                if (typedef.Definition is SimpleTypedefDefinition simple)
+                if (typedef.Definition is SimpleTypedefDefinition simpleTypedefDefinition)
                 {
                     if (!string.IsNullOrEmpty(typedef.Description))
                     {
@@ -288,23 +294,121 @@ namespace ZigBeeNet.Ember.CodeGenerator2
                     }
 
                     // Check if this is an array type
-                    int bracketIndex = simple.Type.IndexOf('[');
+                    int bracketIndex = simpleTypedefDefinition.Type.IndexOf('[');
                     if (bracketIndex >= 0)
                     {
-                        // Array type - cannot use in alias, skip it
-                        sb.AppendLine($"/// <remarks>Original C type: {simple.Type} (array types cannot be used in type aliases)</remarks>");
-                        sb.AppendLine($"// Skipped: {typedef.Name}");
+                        if (typedef.Name.Contains("string"))
+                        {
+                            // (array types cannot be used in type aliases, see if they work as string....)");
+                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
+                            sb.AppendLine($"global using {typedef.Name} = string;");
+                        }
+                        else
+                        {
+                            // Array type - cannot use in alias, skip it
+                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type} (array types cannot be used in type aliases)</remarks>");
+                            sb.AppendLine($"// Skipped: {typedef.Name}");
+                        }
                     }
                     else
                     {
                         // Simple scalar type - use global using alias
-                        string csharpType = MapBaseCType(simple.Type);
-                        sb.AppendLine($"/// <remarks>Original C type: {simple.Type}</remarks>");
+                        string csharpType = MapBaseCType(simpleTypedefDefinition.Type);
+                        sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
                         sb.AppendLine($"global using {typedef.Name} = {csharpType};");
                     }
                     sb.AppendLine();
                 }
             }
+
+            return sb.ToString();
+        }
+
+        private static string GenerateComplexTypeDefinition(Typedef typedef, ComplexTypedefDefinition complex)
+        {
+            var sb = new System.Text.StringBuilder();
+
+            // Add XML documentation
+            if (!string.IsNullOrEmpty(typedef.Description))
+            {
+                sb.AppendLine("/// <summary>");
+                sb.AppendLine($"/// {typedef.Description}");
+                sb.AppendLine("/// </summary>");
+            }
+
+            // Generate struct definition
+            sb.AppendLine($"public struct {typedef.Name}");
+            sb.AppendLine("{");
+
+            // Add fields
+            foreach (var field in complex.Fields)
+            {
+                if (!string.IsNullOrEmpty(field.Description))
+                {
+                    sb.AppendLine("    /// <summary>");
+                    sb.AppendLine($"    /// {field.Description}");
+                    sb.AppendLine("    /// </summary>");
+                }
+
+                // Check if the field name contains array notation (e.g., fieldName[SIZE])
+                int nameBracketIndex = field.Name?.IndexOf('[') ?? -1;
+                if (nameBracketIndex >= 0)
+                {
+                    // Extract field name and array size from name
+                    string fieldName = field.Name![..nameBracketIndex];
+                    string arrayPart = field.Name[nameBracketIndex..];
+                    string arraySize = arrayPart.Trim('[', ']');
+                    string csharpBaseType = MapBaseCType(field.Type);
+
+                    // Check if array size is numeric (compile-time constant)
+                    if (int.TryParse(arraySize, out _))
+                    {
+                        // Use fixed keyword for fixed-size arrays with numeric constants
+                        sb.AppendLine($"    public fixed {csharpBaseType} {fieldName}[{arraySize}];");
+                    }
+                    else
+                    {
+                        // Array size is a symbolic constant - use a comment and skip
+                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
+                        sb.AppendLine($"    // public fixed {csharpBaseType} {fieldName}[{arraySize}];");
+                    }
+                }
+                // Check if the type contains array notation (e.g., uint8_t[8])
+                else if (field.Type?.IndexOf('[') >= 0)
+                {
+                    int typeBracketIndex = field.Type.IndexOf('[');
+                    // Extract base type and array size
+                    string baseType = field.Type[..typeBracketIndex];
+                    string arrayPart = field.Type[typeBracketIndex..];
+                    string csharpBaseType = MapBaseCType(baseType);
+
+                    // Extract array size from [N] format
+                    string arraySize = arrayPart.Trim('[', ']');
+
+                    // Check if array size is numeric (compile-time constant)
+                    if (int.TryParse(arraySize, out _))
+                    {
+                        // Use fixed keyword for fixed-size arrays with numeric constants
+                        sb.AppendLine($"    public fixed {csharpBaseType} {field.Name}[{arraySize}];");
+                    }
+                    else
+                    {
+                        // Array size is a symbolic constant - use a comment and skip
+                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
+                        sb.AppendLine($"    // public fixed {csharpBaseType} {field.Name}[{arraySize}];");
+                    }
+                }
+                else
+                {
+                    // Simple scalar type
+                    string csharpType = MapBaseCType(field.Type);
+                    sb.AppendLine($"    public {csharpType} {field.Name};");
+                }
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("}");
+            sb.AppendLine();
 
             return sb.ToString();
         }
@@ -337,9 +441,39 @@ namespace ZigBeeNet.Ember.CodeGenerator2
 
         private void ProcessComplexTypeDefinition(string sectionName, Typedef typedef)
         {
-            // TODO: Implement complex typedef processing
-            _ = sectionName;
-            _ = typedef;
+            try
+            {
+                if (typedef?.Definition is not ComplexTypedefDefinition complex)
+                {
+                    return;
+                }
+
+                // Create output directory for this section
+                string projectDir = Directory.GetCurrentDirectory();
+                string sanitizedSectionName = SanitizeSectionName(sectionName);
+                string outputDir = Path.Combine(projectDir, "bin", "Debug", "net9.0", "Generated", sanitizedSectionName);
+                Directory.CreateDirectory(outputDir);
+
+                // Create a separate file for each struct
+                string fileName = $"{typedef.Name}.cs";
+                string filePath = Path.Combine(outputDir, fileName);
+
+                // Generate the struct definition
+                var content = GenerateComplexTypeDefinition(typedef, complex);
+
+                // Create file with namespace wrapper using section name
+                var fileContent = new System.Text.StringBuilder();
+                fileContent.AppendLine($"namespace ZigBeeNet.Ember.Generated.{sanitizedSectionName};");
+                fileContent.AppendLine();
+                fileContent.Append(content);
+                File.WriteAllText(filePath, fileContent.ToString());
+
+                _logger.LogDebug("Created complex type definition: {path}", filePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing complex typedef {name} for section {section}", typedef?.Name, sectionName);
+            }
         }
     }
 }
