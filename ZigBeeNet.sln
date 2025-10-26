@@ -52,7 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.DataStore.Json", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Hardware.Sonoff.Ember.Test", "test\ZigBeeNet.Hardware.Sonoff.Ember.Test\ZigBeeNet.Hardware.Sonoff.Ember.Test.csproj", "{8A491892-6F3B-4284-A4A3-0E30F29EF36F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Ember.CodeGenerator2", "AutoCode\ZigBeeNet.Ember.CodeGenerator2\ZigBeeNet.Ember.CodeGenerator2.csproj", "{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Ember.CodeGeneratorV8Plus", "AutoCode\ZigBeeNet.Ember.CodeGeneratorV8Plus\ZigBeeNet.Ember.CodeGeneratorV8Plus.csproj", "{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
