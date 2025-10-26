@@ -1,6 +1,6 @@
 using YamlDotNet.Serialization;
 
-namespace ZigBeeNet.Ember.CodeGenerator2.Models
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
 {
     /// <summary>
     /// Represents an item within an enum

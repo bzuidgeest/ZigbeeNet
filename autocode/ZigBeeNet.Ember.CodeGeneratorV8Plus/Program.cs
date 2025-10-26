@@ -1,27 +1,8 @@
-﻿/*
-PSEUDOCODE / PLAN (detailed):
-1. Use Generic Host to add dependency injection and default logging.
-2. Configure console logging with a simple format and Information level as default.
-3. Register a background worker that will run the existing processing logic.
-   - Create a BackgroundService-derived class `Worker` that runs on start.
-   - Inject ILogger and IServiceProvider into `Worker`.
-4. Move the existing folder scanning & processing logic into a service class `VersionProcessor`.
-   - `VersionProcessor` will be resolved via DI (ActivatorUtilities) inside the worker.
-   - Keep semantics: log warnings if no resources or missing ezsp.yaml, log info for found versions.
-5. Main builds and runs the host; the Worker runs the processing then exits.
-6. Preserve exception handling and make logs informative.
-7. Keep everything in this single file for minimal change and easy integration.
-
-Behavior:
-- On application start, host and default logging are configured.
-- `Worker` executes `VersionProcessor.ProcessAsync`.
-- Processing logs are emitted via ILogger.
-- Application exits after work completes (BackgroundService finishes).
-*/
-
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,9 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using ZigBeeNet.Ember.CodeGenerator2.Models;
 
-namespace ZigBeeNet.Ember.CodeGenerator2
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator
 {
     internal class Program
     {
@@ -52,8 +32,19 @@ namespace ZigBeeNet.Ember.CodeGenerator2
                 })
                 .ConfigureServices((context, services) =>
                 {
+                    // Load configuration from appsettings.json
+                    var configuration = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                        .Build();
+
+                    // Register ApplicationSettings
+                    services.Configure<ApplicationSettings>(configuration);
+                    services.AddSingleton(sp => sp.GetRequiredService<IOptions<ApplicationSettings>>().Value);
+
                     services.AddHostedService<Worker>();
-                    services.AddTransient<VersionProcessor>();
+                    services.AddTransient<EZSPDefinitionsProcessor>();
+                    services.AddTransient<EZSPYAMLDefinitionParser>();
                 })
                 .Build();
 
@@ -80,7 +71,7 @@ namespace ZigBeeNet.Ember.CodeGenerator2
             {
                 _logger.LogInformation("Worker starting processing...");
                 // Resolve the processor from DI and run it
-                var processor = ActivatorUtilities.CreateInstance<VersionProcessor>(_provider);
+                var processor = ActivatorUtilities.CreateInstance<EZSPDefinitionsProcessor>(_provider);
                 await processor.ProcessAsync(stoppingToken);
                 _logger.LogInformation("Worker finished processing.");
             }
@@ -100,13 +91,15 @@ namespace ZigBeeNet.Ember.CodeGenerator2
         }
     }
 
-    internal class VersionProcessor
+    internal class EZSPDefinitionsProcessor
     {
-        private readonly ILogger<VersionProcessor> _logger;
+        private readonly ILogger<EZSPDefinitionsProcessor> _logger;
+        private readonly EZSPYAMLDefinitionParser _eZSPYAMLDefinitionParser;
 
-        public VersionProcessor(ILogger<VersionProcessor> logger)
+        public EZSPDefinitionsProcessor(ILogger<EZSPDefinitionsProcessor> logger, EZSPYAMLDefinitionParser eZSPYAMLDefinitionParser)
         {
             _logger = logger;
+            _eZSPYAMLDefinitionParser = eZSPYAMLDefinitionParser;
         }
 
         public Task ProcessAsync(CancellationToken cancellationToken)
@@ -147,8 +140,9 @@ namespace ZigBeeNet.Ember.CodeGenerator2
                         continue;
                     }
 
-                    _logger.LogInformation("KDProcessing version {version} at {path}", versionName, definitionPath);
-                    ProcessVersion(versionDir, definitionPath, versionName);
+                    _logger.LogInformation("Processing version {version} at {path}", versionName, definitionPath);
+
+                    _eZSPYAMLDefinitionParser.Process(versionDir, definitionPath, versionName);
                 }
 
                 _logger.LogInformation("Code generation processing completed successfully!");
@@ -161,319 +155,6 @@ namespace ZigBeeNet.Ember.CodeGenerator2
             return Task.CompletedTask;
         }
 
-        public void ProcessVersion(string versionDir, string definitionPath, string versionName)
-        {
-            try
-            {
-                var deserializer = new DeserializerBuilder()
-                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                    .WithTypeConverter(new TypedefDefinitionConverter())
-                    .Build();
-
-                using (TextReader definitionFileReader = new StreamReader(definitionPath))
-                {
-                    var sections = deserializer.Deserialize<List<EzspSection>>(definitionFileReader);
-
-                    if (sections == null || sections.Count == 0)
-                    {
-                        _logger.LogWarning("No sections found in {file}", definitionPath);
-                        return;
-                    }
-
-                    _logger.LogInformation("Successfully deserialized {count} section(s) from {version}", sections.Count, versionName);
-
-                    foreach (var section in sections)
-                    {
-                        _logger.LogInformation("  Section: {section}", section.Section);
-
-                        if (section.Typedefs != null && section.Typedefs.Count > 0)
-                        {
-                            var simpleTypedefs = new List<Typedef>();
-                            var simpleCount = 0;
-                            var complexCount = 0;
-
-                            foreach (var typedef in section.Typedefs)
-                            {
-                                if (typedef.Definition is SimpleTypedefDefinition simple)
-                                {
-                                    simpleCount++;
-                                    simpleTypedefs.Add(typedef);
-                                    _logger.LogInformation("      - {name} (simple): {type}", typedef.Name, simple.Type);
-                                }
-                                else if (typedef.Definition is ComplexTypedefDefinition complex)
-                                {
-                                    complexCount++;
-                                    _logger.LogInformation("      - {name} (complex): {fieldCount} fields", typedef.Name, complex.Fields.Count);
-                                    ProcessComplexTypeDefinition(section.Section, typedef);
-                                }
-                            }
-
-                            // Process all simple typedefs for this section at once
-                            if (simpleTypedefs.Count > 0)
-                            {
-                                ProcessSimpleTypeDefinitions(section.Section, simpleTypedefs);
-                            }
-
-                            _logger.LogInformation("    Found {count} typedef(s) - {simple} simple, {complex} complex",
-                                section.Typedefs.Count, simpleCount, complexCount);
-                        }
-
-                        if (section.Enums != null && section.Enums.Count > 0)
-                        {
-                            _logger.LogInformation("    Found {count} enum(s)", section.Enums.Count);
-                            foreach (var enumDef in section.Enums)
-                            {
-                                _logger.LogInformation("      - {name} ({type}): {itemCount} items", enumDef.Name, enumDef.Type, enumDef.Items?.Count ?? 0);
-                            }
-                        }
-
-                        if (section.Frames != null && section.Frames.Count > 0)
-                        {
-                            _logger.LogInformation("    Found {count} frame(s)", section.Frames.Count);
-                            foreach (var frame in section.Frames)
-                            {
-                                _logger.LogInformation("      - {name} ({value}): {cmdArgs} cmd args, {respArgs} resp args",
-                                    frame.CommandName, frame.Value,
-                                    frame.CommandArguments?.Count ?? 0,
-                                    frame.ResponseArguments?.Count ?? 0);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing version {version}", versionName);
-            }
-        }
-
-        private void ProcessSimpleTypeDefinitions(string sectionName, List<Typedef> typedefs)
-        {
-            try
-            {
-                if (typedefs == null || typedefs.Count == 0)
-                {
-                    return;
-                }
-
-                // Create output directory for this section
-                string projectDir = Directory.GetCurrentDirectory();
-                string outputDir = Path.Combine(projectDir, "bin", "Debug", "net9.0", "Generated", SanitizeSectionName(sectionName));
-                Directory.CreateDirectory(outputDir);
-
-                // Create a file for type aliases
-                string fileName = "TypeAliases.cs";
-                string filePath = Path.Combine(outputDir, fileName);
-
-                // Generate the complete file with all typedefs
-                var content = GenerateTypeAliasFile(sectionName, typedefs);
-                File.WriteAllText(filePath, content);
-                _logger.LogDebug("Created type alias file with {count} aliases: {path}", typedefs.Count, filePath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing simple typedefs for section {section}", sectionName);
-            }
-        }
-
-        private static string GenerateTypeAliasFile(string sectionName, List<Typedef> typedefs)
-        {
-            var sb = new System.Text.StringBuilder();
-
-            // No namespace declaration - global using directives must be at file level
-
-            foreach (var typedef in typedefs)
-            {
-                if (typedef.Definition is SimpleTypedefDefinition simpleTypedefDefinition)
-                {
-                    if (!string.IsNullOrEmpty(typedef.Description))
-                    {
-                        sb.AppendLine($"/// <summary>");
-                        sb.AppendLine($"/// {typedef.Description}");
-                        sb.AppendLine($"/// </summary>");
-                    }
-
-                    // Check if this is an array type
-                    int bracketIndex = simpleTypedefDefinition.Type.IndexOf('[');
-                    if (bracketIndex >= 0)
-                    {
-                        if (typedef.Name.Contains("string"))
-                        {
-                            // (array types cannot be used in type aliases, see if they work as string....)");
-                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
-                            sb.AppendLine($"global using {typedef.Name} = string;");
-                        }
-                        else
-                        {
-                            // Array type - cannot use in alias, skip it
-                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type} (array types cannot be used in type aliases)</remarks>");
-                            sb.AppendLine($"// Skipped: {typedef.Name}");
-                        }
-                    }
-                    else
-                    {
-                        // Simple scalar type - use global using alias
-                        string csharpType = MapBaseCType(simpleTypedefDefinition.Type);
-                        sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
-                        sb.AppendLine($"global using {typedef.Name} = {csharpType};");
-                    }
-                    sb.AppendLine();
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        private static string GenerateComplexTypeDefinition(Typedef typedef, ComplexTypedefDefinition complex)
-        {
-            var sb = new System.Text.StringBuilder();
-
-            // Add XML documentation
-            if (!string.IsNullOrEmpty(typedef.Description))
-            {
-                sb.AppendLine("/// <summary>");
-                sb.AppendLine($"/// {typedef.Description}");
-                sb.AppendLine("/// </summary>");
-            }
-
-            // Generate struct definition
-            sb.AppendLine($"public struct {typedef.Name}");
-            sb.AppendLine("{");
-
-            // Add fields
-            foreach (var field in complex.Fields)
-            {
-                if (!string.IsNullOrEmpty(field.Description))
-                {
-                    sb.AppendLine("    /// <summary>");
-                    sb.AppendLine($"    /// {field.Description}");
-                    sb.AppendLine("    /// </summary>");
-                }
-
-                // Check if the field name contains array notation (e.g., fieldName[SIZE])
-                int nameBracketIndex = field.Name?.IndexOf('[') ?? -1;
-                if (nameBracketIndex >= 0)
-                {
-                    // Extract field name and array size from name
-                    string fieldName = field.Name![..nameBracketIndex];
-                    string arrayPart = field.Name[nameBracketIndex..];
-                    string arraySize = arrayPart.Trim('[', ']');
-                    string csharpBaseType = MapBaseCType(field.Type);
-
-                    // Check if array size is numeric (compile-time constant)
-                    if (int.TryParse(arraySize, out _))
-                    {
-                        // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType} {fieldName}[{arraySize}];");
-                    }
-                    else
-                    {
-                        // Array size is a symbolic constant - use a comment and skip
-                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType} {fieldName}[{arraySize}];");
-                    }
-                }
-                // Check if the type contains array notation (e.g., uint8_t[8])
-                else if (field.Type?.IndexOf('[') >= 0)
-                {
-                    int typeBracketIndex = field.Type.IndexOf('[');
-                    // Extract base type and array size
-                    string baseType = field.Type[..typeBracketIndex];
-                    string arrayPart = field.Type[typeBracketIndex..];
-                    string csharpBaseType = MapBaseCType(baseType);
-
-                    // Extract array size from [N] format
-                    string arraySize = arrayPart.Trim('[', ']');
-
-                    // Check if array size is numeric (compile-time constant)
-                    if (int.TryParse(arraySize, out _))
-                    {
-                        // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType} {field.Name}[{arraySize}];");
-                    }
-                    else
-                    {
-                        // Array size is a symbolic constant - use a comment and skip
-                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType} {field.Name}[{arraySize}];");
-                    }
-                }
-                else
-                {
-                    // Simple scalar type
-                    string csharpType = MapBaseCType(field.Type);
-                    sb.AppendLine($"    public {csharpType} {field.Name};");
-                }
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("}");
-            sb.AppendLine();
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Maps base C types to C# types.
-        /// </summary>
-        private static string MapBaseCType(string cType)
-        {
-            return cType.Trim() switch
-            {
-                "uint8_t" => "byte",
-                "int8_t" => "sbyte",
-                "uint16_t" => "ushort",
-                "int16_t" => "short",
-                "uint32_t" => "uint",
-                "int32_t" => "int",
-                "uint64_t" => "ulong",
-                "int64_t" => "long",
-                "bool" => "bool",
-                _ => cType // Return original if no mapping found
-            };
-        }
-
-        private static string SanitizeSectionName(string sectionName)
-        {
-            // Remove spaces and special characters, convert to PascalCase
-            return System.Text.RegularExpressions.Regex.Replace(sectionName, @"[^a-zA-Z0-9]", "");
-        }
-
-        private void ProcessComplexTypeDefinition(string sectionName, Typedef typedef)
-        {
-            try
-            {
-                if (typedef?.Definition is not ComplexTypedefDefinition complex)
-                {
-                    return;
-                }
-
-                // Create output directory for this section
-                string projectDir = Directory.GetCurrentDirectory();
-                string sanitizedSectionName = SanitizeSectionName(sectionName);
-                string outputDir = Path.Combine(projectDir, "bin", "Debug", "net9.0", "Generated", sanitizedSectionName);
-                Directory.CreateDirectory(outputDir);
-
-                // Create a separate file for each struct
-                string fileName = $"{typedef.Name}.cs";
-                string filePath = Path.Combine(outputDir, fileName);
-
-                // Generate the struct definition
-                var content = GenerateComplexTypeDefinition(typedef, complex);
-
-                // Create file with namespace wrapper using section name
-                var fileContent = new System.Text.StringBuilder();
-                fileContent.AppendLine($"namespace ZigBeeNet.Ember.Generated.{sanitizedSectionName};");
-                fileContent.AppendLine();
-                fileContent.Append(content);
-                File.WriteAllText(filePath, fileContent.ToString());
-
-                _logger.LogDebug("Created complex type definition: {path}", filePath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing complex typedef {name} for section {section}", typedef?.Name, sectionName);
-            }
-        }
+        
     }
 }

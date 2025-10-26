@@ -4,7 +4,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace ZigBeeNet.Ember.CodeGenerator2.Models
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
 {
     /// <summary>
     /// Custom YAML converter for TypedefDefinition that intelligently deserializes

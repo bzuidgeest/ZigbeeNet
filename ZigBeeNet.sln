@@ -52,7 +52,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.DataStore.Json", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Hardware.Sonoff.Ember.Test", "test\ZigBeeNet.Hardware.Sonoff.Ember.Test\ZigBeeNet.Hardware.Sonoff.Ember.Test.csproj", "{8A491892-6F3B-4284-A4A3-0E30F29EF36F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.Ember.CodeGeneratorV8Plus", "AutoCode\ZigBeeNet.Ember.CodeGeneratorV8Plus\ZigBeeNet.Ember.CodeGeneratorV8Plus.csproj", "{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigBeeNet.EmberV8Plus.CodeGenerator", "AutoCode\ZigBeeNet.Ember.CodeGeneratorV8Plus\ZigBeeNet.EmberV8Plus.CodeGenerator.csproj", "{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZigbeeNet.Hardware.EmberV8Plus", "libraries\ZigbeeNet.Hardware.EmberV8Plus\ZigbeeNet.Hardware.EmberV8Plus.csproj", "{754A5D2F-3FD9-8979-7010-8A5D108C38B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +130,10 @@ Global
 		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +156,7 @@ Global
 		{823FDC82-431B-4C40-825D-30C9D0F09F64} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
 		{8A491892-6F3B-4284-A4A3-0E30F29EF36F} = {603D29D9-83CE-4B81-BD59-A77F529E4494}
 		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8} = {695B6CC9-6267-41E3-A086-3C6B9A180A34}
+		{754A5D2F-3FD9-8979-7010-8A5D108C38B0} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {080E7EAE-7559-464B-9A8F-F5218D35AB8A}

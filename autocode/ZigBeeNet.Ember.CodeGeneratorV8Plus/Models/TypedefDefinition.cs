@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ZigBeeNet.Ember.CodeGenerator2.Models
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
 {
     /// <summary>
     /// Represents a typedef definition that can be either a simple string or a complex structure
