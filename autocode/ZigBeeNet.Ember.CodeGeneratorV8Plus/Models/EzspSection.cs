@@ -21,7 +21,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
         public List<EnumDefinition> Enums { get; set; } = new();
 
         [YamlMember(Alias = "frames")]
-        public List<Frame>? Frames { get; set; }
+        public List<FrameDefinition>? Frames { get; set; }
     }
 }
 

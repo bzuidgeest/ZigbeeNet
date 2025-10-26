@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 using ZigBeeNet.Hardware.Ember.Internal.Serializer;
 
 namespace ZigBeeNet.Hardware.Ember.Ezsp
@@ -8,7 +9,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     /// The EmberZNet Serial Protocol (EZSP) is the protocol used by a host application processor to interact with the
     /// EmberZNet PRO stack running on a Network CoProcessor(NCP).
     ///
-    /// Reference: UG100: EZSP Reference Guide
+    /// Reference: UG600: EZSP Reference Guide
     /// 
     /// An EZSP Frame is made up as follows -:
     /// 
@@ -19,7 +20,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///  - Frame ID : 1 byte
     ///  - Parameters : variable length
     /// 
-    /// The Frame Control byte is as follows -:
+    /// The Frame Control low byte is as follows -:
     /// 
     ///   bit 7 : 1 for Response
     ///   bit 6 : networkIndex[1]
@@ -49,13 +50,9 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
             deserializer = new EzspDeserializer(inputBuffer);
 
             _sequenceNumber = deserializer.DeserializeUInt8();
-            _frameControl = deserializer.DeserializeUInt8();
-            _frameId = deserializer.DeserializeUInt8();
-            if (_frameId == EZSP_LEGACY_FRAME_ID)
-            {
-                deserializer.DeserializeUInt8();
-                _frameId = deserializer.DeserializeUInt8();
-            }
+            _frameControl = deserializer.DeserializeUInt16();
+            _frameId = deserializer.DeserializeUInt16();
+            
             _isResponse = (_frameControl & EZSP_FC_RESPONSE) != 0;
             _callbackPending = (_frameControl & EZSP_FC_CB_PENDING) != 0;
         }
@@ -68,6 +65,26 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
         public bool IsCallbackPending()
         {
             return _callbackPending;
+        }
+
+        public CallbackType CallbackType()
+        {
+            return (CallbackType)((_frameControl & 0x18) >> 3);
+        }
+
+        public bool IsTruncated()
+        {
+            return (_frameControl & 0x2) == 0x2;
+        }
+
+        public bool HasOverflowed()
+        {
+            return (_frameControl & 0x1) == 0x1;
+        }
+
+        public int NetworkIndex()
+        {
+            return (_frameControl & 0x60) >> 5;
         }
     }
 

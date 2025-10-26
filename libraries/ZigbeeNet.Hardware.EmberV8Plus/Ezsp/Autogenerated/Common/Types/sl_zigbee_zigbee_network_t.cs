@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.Common.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 /// <summary>
 /// The parameters of a ZigBee network.

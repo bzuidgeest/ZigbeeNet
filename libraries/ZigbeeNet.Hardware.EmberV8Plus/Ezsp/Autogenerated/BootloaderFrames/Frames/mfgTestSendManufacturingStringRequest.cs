@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.BootloaderFrames.Command;
+
+/// <summary>
+/// A function used during manufacturing configuration on the Golden Node to set the DUT&apos;s 16-byte configuration string. This function executes only during manufacturing configuration mode and will return an error otherwise. If successful, the DUT will acknowledge the new string within 150 milliseconds.
+/// Frame value: 0x014B
+/// </summary>
+public class mfgTestSendManufacturingString : EzspFrameRequest
+{
+    /// <summary>
+    /// The 16-byte manufacturing string.
+    /// </summary>
+    public sl_zigbee_manufacturing_string_t newString { get; set; }
+
+}

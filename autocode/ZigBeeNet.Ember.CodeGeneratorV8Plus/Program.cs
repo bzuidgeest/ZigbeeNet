@@ -12,6 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Parser;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator
 {
@@ -57,12 +59,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _provider;
         private readonly IHostApplicationLifetime _lifetime;
+        private readonly ApplicationSettings _applicationSettings;
 
-        public Worker(ILogger<Worker> logger, IServiceProvider provider, IHostApplicationLifetime lifetime)
+        public Worker(ILogger<Worker> logger, IServiceProvider provider, IHostApplicationLifetime lifetime, ApplicationSettings applicationSettings)
         {
             _logger = logger;
             _provider = provider;
             _lifetime = lifetime;
+            _applicationSettings = applicationSettings;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -95,11 +99,13 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
     {
         private readonly ILogger<EZSPDefinitionsProcessor> _logger;
         private readonly EZSPYAMLDefinitionParser _eZSPYAMLDefinitionParser;
+        private readonly ApplicationSettings _applicationSettings;
 
-        public EZSPDefinitionsProcessor(ILogger<EZSPDefinitionsProcessor> logger, EZSPYAMLDefinitionParser eZSPYAMLDefinitionParser)
+        public EZSPDefinitionsProcessor(ILogger<EZSPDefinitionsProcessor> logger, EZSPYAMLDefinitionParser eZSPYAMLDefinitionParser, ApplicationSettings applicationSettings)
         {
             _logger = logger;
             _eZSPYAMLDefinitionParser = eZSPYAMLDefinitionParser;
+            _applicationSettings = applicationSettings;
         }
 
         public Task ProcessAsync(CancellationToken cancellationToken)
@@ -142,6 +148,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
 
                     _logger.LogInformation("Processing version {version} at {path}", versionName, definitionPath);
 
+                    // Clear output directory before processing each version
+                    new DirectoryInfo(_applicationSettings.OutputDirectory).ClearAsync();
                     _eZSPYAMLDefinitionParser.Process(versionDir, definitionPath, versionName);
                 }
 

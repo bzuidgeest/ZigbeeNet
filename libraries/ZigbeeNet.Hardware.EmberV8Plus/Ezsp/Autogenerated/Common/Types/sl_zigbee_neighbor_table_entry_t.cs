@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.Common.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 /// <summary>
 /// A neighbor table entry stores information about the reliability of RF links to and from neighboring nodes.

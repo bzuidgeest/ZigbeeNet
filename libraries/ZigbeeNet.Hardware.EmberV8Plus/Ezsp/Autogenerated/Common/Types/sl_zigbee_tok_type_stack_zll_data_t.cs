@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.Common.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 /// <summary>
 /// Public API for ZLL stack data token.

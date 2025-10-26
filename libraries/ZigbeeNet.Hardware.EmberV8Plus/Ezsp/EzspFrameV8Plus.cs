@@ -1,14 +1,17 @@
 using System;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 
 namespace ZigBeeNet.Hardware.Ember.Ezsp
 {
     /// <summary>
     /// The EmberZNet Serial Protocol (EZSP) is the protocol used by a host application processor to interact with the
     /// EmberZNet PRO stack running on a Network CoProcessor(NCP).
+    /// 
+    /// Version command uses the oldest frame format so every version of EZSP can understand it.
     ///
-    /// Reference: UG100: EZSP Reference Guide
+    /// Reference: UG600: EZSP Reference Guide
     ///
     /// An EZSP V4 Frame is made up as follows -:
     /// 
@@ -18,7 +21,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///  - Parameters : variable length
     /// 
     /// 
-    /// An EZSP V5+ Frame is made up as follows -:
+    /// An EZSP V5-V7 Frame is made up as follows -:
     /// 
     ///  - Sequence : 1 byte sequence number
     ///  - Frame Control: 1 byte
@@ -27,6 +30,23 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///  - Frame ID : 1 byte
     ///  - Parameters : variable length
     /// 
+    /// An EZSP V8+ Frame is made up as follows -:
+    /// 
+    ///  - Sequence : 1 byte sequence number
+    ///  - Frame Control: 2 byte
+    ///  - Frame ID : 2 byte
+    ///  - Parameters : variable length
+    /// 
+    /// The Frame Control high byte is as follows -:
+    /// 
+    ///   bit 7 : securityEnabled
+    ///   bit 6 : paddingEnabled
+    ///   bit 5 : 0 (Reserved)
+    ///   bit 4 : 0 (Reserved)
+    ///   bit 3 : 0 (Reserved)
+    ///   bit 2 : 0 (Reserved)
+    ///   bit 1 : frameFormatVersion[1]
+    ///   bit 0 : frameFormatVersion[0]
     /// </summary>
     public abstract partial class EzspFrame 
     {
@@ -35,22 +55,17 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
         /**
          * The minimum supported version of EZSP
          */
-        private const int EZSP_MIN_VERSION = 4;
+        private const int EZSP_MIN_VERSION = 8;
 
         /**
          * The maximum supported version of EZSP
          */
-        private const int EZSP_MAX_VERSION = 7;
+        private const int EZSP_MAX_VERSION = 14;
 
         /**
          * The current version of EZSP being used
          */
         protected static int ezspVersion = EZSP_MIN_VERSION;
-
-        /**
-         * Legacy frame ID for EZSP 5+
-         */
-        protected const int EZSP_LEGACY_FRAME_ID = 0xFF;
 
         /**
          * EZSP Frame Control Request flag
@@ -106,6 +121,12 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
         {
             return _frameId;
         }
+
+        public bool IsSecurityEnabled => (_frameControl & 0x8000) != 0;
+
+        public bool IsPaddingEnabled => (_frameControl & 0x4000) != 0;
+
+        public FrameFormatVersion FrameFormatVersion => (FrameFormatVersion)(_frameControl & 0x0003);
 
         /**
          * Creates and {@link EzspFrameResponse} from the incoming data.

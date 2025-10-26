@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.GreenPowerFrames.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPowerFrames.Types;
 
 /// <summary>
 /// GP parameters list.

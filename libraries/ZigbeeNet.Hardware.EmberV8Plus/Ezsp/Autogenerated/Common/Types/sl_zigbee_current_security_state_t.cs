@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.Common.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 /// <summary>
 /// The security options and information currently used by the stack.

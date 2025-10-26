@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.TokenInterfaceFrames.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterfaceFrames.Types;
 
 /// <summary>
 /// Information of a token in the token table.

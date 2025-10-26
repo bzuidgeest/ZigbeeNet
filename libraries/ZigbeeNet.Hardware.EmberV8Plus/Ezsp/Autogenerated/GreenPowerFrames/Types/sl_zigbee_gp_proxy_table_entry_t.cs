@@ -1,4 +1,4 @@
-namespace ZigBeeNet.EmberV8Plus.GreenPowerFrames.Types;
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPowerFrames.Types;
 
 /// <summary>
 /// The internal representation of a proxy table entry.

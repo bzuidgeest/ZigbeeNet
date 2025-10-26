@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.MessagingFrames.Structure;
+
+/// <summary>
+/// A callback invoked by the EmberZNet stack when an id conflict is discovered, that is, two different nodes in the network were found to be using the same short id. The stack automatically removes the conflicting short id from its internal tables (address, binding, route, neighbor, and child tables). The application should discontinue any other use of the id.
+/// Frame value: 0x007C
+/// </summary>
+public class idConflictHandlerResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// The short id for which a conflict was detected
+    /// </summary>
+    public sl_802154_short_addr_t id { get; set; }
+
+}

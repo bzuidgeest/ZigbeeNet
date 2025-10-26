@@ -1,0 +1,1 @@
+// Skipping generating enums with reserved keywords as names

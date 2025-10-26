@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 using ZigBeeNet.Hardware.Ember.Internal.Serializer;
 
 namespace ZigBeeNet.Hardware.Ember.Ezsp
@@ -27,10 +28,23 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///  - Frame ID : 1 byte
     ///  - Parameters : variable length
     /// 
+    /// The Frame Control low byte is as follows -:
+    /// 
+    ///   bit 7 : 0 for Command
+    ///   bit 6 : networkIndex[1]
+    ///   bit 5 : networkIndex[0]
+    ///   bit 4 : 0 (Reserved)
+    ///   bit 3 : 0 (Reserved)
+    ///   bit 2 : 0 (Reserved)
+    ///   bit 1 : sleepMode[1]
+    ///   bit 0 : sleepMode[0]
     /// </summary>
     public abstract class EzspFrameRequest : EzspFrame
     {
         private static int sequence = 0;
+        
+        public int NetworkIndex { get; set; } = 0;
+        public SleepMode SleepMode { get; set; } = SleepMode.Idle;
 
         /**
          * Constructor used to create an outgoing frame
@@ -45,17 +59,12 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
             // Output sequence number
             serializer.SerializeUInt8(_sequenceNumber);
 
-            // Output Frame Control Byte
-            serializer.SerializeUInt8(EZSP_FC_REQUEST);
-
-            if (ezspVersion > 4) 
-            {
-                serializer.SerializeUInt8(EZSP_LEGACY_FRAME_ID);
-                serializer.SerializeUInt8(0x00);
-            }
+            // Output Frame Control Bytes
+            // fix replace 0 with high byte properly.
+            serializer.SerializeUInt16(((0) << 8) | (EZSP_FC_REQUEST | ((NetworkIndex & 0x3) << 5) | (int)SleepMode));
 
             // Output Frame ID
-            serializer.SerializeUInt8(_frameId);
+            serializer.SerializeUInt16(_frameId);
         }
 
         public virtual int[] Serialize() 
@@ -65,5 +74,9 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
 
             return serializer.GetPayload();
         }
+
+         
+
+
     }
 }

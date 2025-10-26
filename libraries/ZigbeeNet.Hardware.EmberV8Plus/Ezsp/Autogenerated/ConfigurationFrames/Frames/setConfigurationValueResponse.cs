@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ConfigurationFrames.Structure;
+
+/// <summary>
+/// Writes a configuration value to the NCP. Configuration values can be modified by the Host after the NCP has reset. Once the status of the stack changes to SL_STATUS_NETWORK_UP, configuration values can no longer be modified and this command will respond with SL_ZIGBEE_EZSP_ERROR_INVALID_CALL.
+/// Frame value: 0x0053
+/// </summary>
+public class setConfigurationValueResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// SL_STATUS_OK if the configuration value was changed, SL_STATUS_ZIGBEE_EZSP_ERROR if there was an error. Retrievable EZSP errors can be SL_ZIGBEE_EZSP_ERROR_OUT_OF_MEMORY if the new value exceeded the available memory, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the new value was out of bounds, SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;configId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if configuration values can no longer be modified.
+    /// </summary>
+    public sl_status_t status { get; set; }
+
+}

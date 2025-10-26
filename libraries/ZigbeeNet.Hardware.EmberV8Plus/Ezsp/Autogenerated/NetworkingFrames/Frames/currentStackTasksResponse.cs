@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.NetworkingFrames.Structure;
+
+/// <summary>
+/// Return a bitmask indicating the stack&apos;s current tasks. The mask ::SL_ZIGBEE_HIGH_PRIORITY_TASKS defines which tasks are high priority.  Devices should not sleep if any high priority tasks are active. Active tasks that are not high priority are waiting for messages to arrive from other devices.  If there are active tasks, but no high priority ones, the device may sleep but should periodically wake up and call ::emberPollForData() in order to receive messages.  Parents will hold messages for ::SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT milliseconds before discarding them.
+/// Frame value: 0x0145
+/// </summary>
+public class currentStackTasksResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// A bitmask of the stack&apos;s active tasks.
+    /// </summary>
+    public ushort activeTasks { get; set; }
+
+}

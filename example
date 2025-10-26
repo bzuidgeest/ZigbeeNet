@@ -1,0 +1,9 @@
+// Preserve folder metadata (timestamps, attributes, etc.)
+var directoryPath = @"C:\path\to\folder";
+var dirInfo = new DirectoryInfo(directoryPath);
+
+foreach (var file in dirInfo.GetFiles())
+    file.Delete();
+
+foreach (var dir in dirInfo.GetDirectories())
+    dir.Delete(true);  // true = recursive

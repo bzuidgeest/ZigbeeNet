@@ -1,0 +1,11 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPowerFrames.Command;
+
+/// <summary>
+/// A callback invoked by the ZigBee GP stack when a GPDF is received.
+/// Frame value: 0x00C5
+/// </summary>
+public class gpepIncomingMessageHandler : EzspFrameRequest
+{
+}

@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.BindingFrames.Structure;
+
+/// <summary>
+/// Returns the node ID for the binding&apos;s destination, if the ID is known. If a message is sent using the binding and the destination&apos;s ID is not known, the stack will discover the ID by broadcasting a ZDO address request. The application can avoid the need for this discovery by using &lt;i&gt;setBindingRemoteNodeId&lt;/i&gt; when it knows the correct ID via some other means. The destination&apos;s node ID is forgotten when the binding is changed, when the local node reboots or, much more rarely, when the destination node changes its ID in response to an ID conflict.
+/// Frame value: 0x002F
+/// </summary>
+public class getBindingRemoteNodeIdResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// The short ID of the destination node or SL_ZIGBEE_NULL_NODE_ID if no destination is known.
+    /// </summary>
+    public sl_802154_short_addr_t nodeId { get; set; }
+
+}

@@ -1,0 +1,26 @@
+using ZigBeeNet.Hardware.Ember.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKEFrames.Command;
+
+/// <summary>
+/// Calculates the SMAC verification keys for both the initiator and responder roles of CBKE using the passed parameters and the stored public/private key pair previously generated with ezspGenerateKeysRetrieveCert(). It also stores the unverified link key data in temporary storage on the NCP until the key establishment is complete.
+/// Frame value: 0x009F
+/// </summary>
+public class calculateSmacs : EzspFrameRequest
+{
+    /// <summary>
+    /// The role of this device in the Key Establishment protocol.
+    /// </summary>
+    public bool amInitiator { get; set; }
+
+    /// <summary>
+    /// The key establishment partner&apos;s implicit certificate.
+    /// </summary>
+    public sl_zigbee_certificate_data_t partnerCertificate { get; set; }
+
+    /// <summary>
+    /// The key establishment partner&apos;s ephemeral public key
+    /// </summary>
+    public sl_zigbee_public_key_data_t partnerEphemeralPublicKey { get; set; }
+
+}
