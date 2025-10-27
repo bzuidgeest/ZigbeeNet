@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Either marks an event as inactive or specifies the units for the event execution time.
 /// </summary>
 public enum ZigbeeEventUnits : byte
 {

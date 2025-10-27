@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Command;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
-using ZigBeeNet.Hardware.Ember.Internal.Serializer;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Command;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Transport;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
 
-namespace ZigBeeNet.Hardware.Ember.Internal
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
     /// <summary>
     /// This class provides utility functions to establish an Ember ZigBee network

@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Network scan types.
 /// </summary>
 public enum ZigbeeEzspNetworkScanType : byte
 {

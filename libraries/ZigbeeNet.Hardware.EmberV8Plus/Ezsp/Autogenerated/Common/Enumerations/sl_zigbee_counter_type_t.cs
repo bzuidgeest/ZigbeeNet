@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Defines the events reported to the application by the &lt;i&gt;readAndClearCounters&lt;/i&gt; command.
 /// </summary>
 public enum ZigbeeCounterType : byte
 {

@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
-namespace ZigBeeNet.Hardware.Ember.Transaction
+namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 {
     /// <summary>
     /// Interface for EZSP protocol transaction.

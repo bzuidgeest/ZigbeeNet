@@ -2,7 +2,7 @@ using System;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Ash
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 {
     /// <summary>
     /// ASH Frame Handling: Asynchronous Serial Host (ASH) protocol. The ASH protocol

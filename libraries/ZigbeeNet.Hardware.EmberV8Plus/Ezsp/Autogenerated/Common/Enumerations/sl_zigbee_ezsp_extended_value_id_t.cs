@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Identifies a value based on specified characteristics. Each set of characteristics is unique to that value and is specified during the call to get the extended value.
 /// </summary>
 public enum ZigbeeEzspExtendedValueId : byte
 {

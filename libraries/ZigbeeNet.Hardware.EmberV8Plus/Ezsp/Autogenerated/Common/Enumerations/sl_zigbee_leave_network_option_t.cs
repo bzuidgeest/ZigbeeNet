@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Use in case zigbee leave network with options
 /// </summary>
 public enum ZigbeeLeaveNetworkOption : byte
 {

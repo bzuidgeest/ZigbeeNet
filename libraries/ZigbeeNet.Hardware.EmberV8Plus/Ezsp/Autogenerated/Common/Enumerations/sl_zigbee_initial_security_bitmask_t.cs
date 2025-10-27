@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// This is the Initial Security Bitmask that controls the use of various security features.
 /// </summary>
 public enum ZigbeeInitialSecurityBitmask : ushort
 {

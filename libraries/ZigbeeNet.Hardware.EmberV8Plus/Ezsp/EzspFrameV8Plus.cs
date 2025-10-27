@@ -2,8 +2,9 @@ using System;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
 
-namespace ZigBeeNet.Hardware.Ember.Ezsp
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
     /// <summary>
     /// The EmberZNet Serial Protocol (EZSP) is the protocol used by a host application processor to interact with the
@@ -48,9 +49,9 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///   bit 1 : frameFormatVersion[1]
     ///   bit 0 : frameFormatVersion[0]
     /// </summary>
-    public abstract partial class EzspFrame 
+    public abstract partial class EzspFrameV8Plus
     {
-        static private readonly ILogger _logger = LogManager.GetLog<EzspFrame>();
+        static private readonly ILogger _logger = LogManager.GetLog<EzspFrameV8Plus>();
 
         /**
          * The minimum supported version of EZSP
@@ -87,7 +88,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          *
          * @param sequenceNumber
          */
-        public void SetSequenceNumber(int sequenceNumber) 
+        public void SetSequenceNumber(int sequenceNumber)
         {
             this._sequenceNumber = sequenceNumber;
         }
@@ -97,7 +98,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          *
          * @return sequence number
          */
-        public int GetSequenceNumber() 
+        public int GetSequenceNumber()
         {
             return _sequenceNumber;
         }
@@ -107,7 +108,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          *
          * @return true if this is a response
          */
-        public bool IsResponse() 
+        public bool IsResponse()
         {
             return _isResponse;
         }
@@ -117,7 +118,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          *
          * @return the Ember frame Id
          */
-        public int GetFrameId() 
+        public int GetFrameId()
         {
             return _frameId;
         }
@@ -134,37 +135,30 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          * @param data the int[] containing the EZSP data from which to generate the frame
          * @return the {@link EzspFrameResponse} or null if the response can't be created.
          */
-        public static EzspFrameResponse CreateHandler(int[] data) 
+        public static EzspFrameResponse CreateHandler(int[] data)
         {
             Type ezspClass = null;
             EzspFrameResponse ezspFrame = null;
 
-            try 
+            try
             {
-                if (data[2] != 0xFF) 
-                {
-                    ezspClass = _ezspHandlerDict[data[2]];
-                } 
-                else 
-                {
-                    ezspClass = _ezspHandlerDict[data[4]];
-                }
-            } 
-            catch (Exception e) 
+                ezspClass = _ezspHandlerDict[data[3] + (data[4] << 8)];
+            }
+            catch (Exception e)
             {
                 _logger.LogDebug(e, "Error detecting the EZSP frame type");
             }
 
-            if (ezspClass == null) 
+            if (ezspClass == null)
             {
                 return null;
             }
 
-            try 
+            try
             {
-                ezspFrame = (EzspFrameResponse) Activator.CreateInstance(ezspClass, new object[] { data });
-            } 
-            catch (Exception e) 
+                ezspFrame = (EzspFrameResponse)Activator.CreateInstance(ezspClass, new object[] { data });
+            }
+            catch (Exception e)
             {
                 _logger.LogDebug(e, "Error creating instance of EzspFrame");
             }
@@ -178,11 +172,11 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          * @param ezspVersion the EZSP protocol version
          * @return true if the version is supported
          */
-        public static bool SetEzspVersion(int ezspVersion) 
+        public static bool SetEzspVersion(int ezspVersion)
         {
-            if (ezspVersion <= EZSP_MAX_VERSION && ezspVersion >= EZSP_MIN_VERSION) 
+            if (ezspVersion <= EZSP_MAX_VERSION && ezspVersion >= EZSP_MIN_VERSION)
             {
-                EzspFrame.ezspVersion = ezspVersion;
+                EzspFrameV8Plus.ezspVersion = ezspVersion;
                 return true;
             }
 
@@ -194,9 +188,9 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
          *
          * @return the current version of EZSP
          */
-        public static int GetEzspVersion() 
+        public static int GetEzspVersion()
         {
-            return EzspFrame.ezspVersion;
+            return EzspFrameV8Plus.ezspVersion;
         }
     }
 }

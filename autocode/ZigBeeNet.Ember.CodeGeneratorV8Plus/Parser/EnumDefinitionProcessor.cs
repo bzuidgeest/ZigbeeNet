@@ -53,7 +53,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 if (!string.IsNullOrWhiteSpace(enumDef.Description))
                 {
                     sb.AppendLine("/// <summary>");
-                    sb.AppendLine($"/// {enumDef.Description.XmlEscape}");
+                    sb.AppendLine($"/// {enumDef.Description.XmlEscape()}");
                     sb.AppendLine("/// </summary>");
                 }
 

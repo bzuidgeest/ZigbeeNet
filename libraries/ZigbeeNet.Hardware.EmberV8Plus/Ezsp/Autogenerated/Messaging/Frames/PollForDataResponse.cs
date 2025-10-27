@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
+
+/// <summary>
+/// Periodically request any pending data from our parent. Setting &lt;i&gt;interval&lt;/i&gt; to 0 or &lt;i&gt;units&lt;/i&gt; to SL_ZIGBEE_EVENT_INACTIVE will generate a single poll.
+/// Frame value: 0x0042
+/// </summary>
+public class PollForDataResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// The result of sending the first poll.
+    /// </summary>
+    public sl_status_t status { get; set; }
+
+}

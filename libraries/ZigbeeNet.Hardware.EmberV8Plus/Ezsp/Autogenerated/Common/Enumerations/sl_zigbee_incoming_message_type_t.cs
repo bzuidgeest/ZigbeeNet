@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Incoming message types.
 /// </summary>
 public enum ZigbeeIncomingMessageType : byte
 {

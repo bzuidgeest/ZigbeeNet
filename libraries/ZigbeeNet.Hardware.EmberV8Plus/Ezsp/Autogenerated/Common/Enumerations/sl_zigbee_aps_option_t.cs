@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Options to use when sending a message.
 /// </summary>
 public enum ZigbeeApsOption : ushort
 {

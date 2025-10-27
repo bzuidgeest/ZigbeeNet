@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Ash
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 {
 
     /// <summary>

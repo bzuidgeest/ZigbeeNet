@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// A ZCL status. See relevant header files for enumeration and possible values.
 /// </summary>
 public enum ZigbeeAfStatus : byte
 {

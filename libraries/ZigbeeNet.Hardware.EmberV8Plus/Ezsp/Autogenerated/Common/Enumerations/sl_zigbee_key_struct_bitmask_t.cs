@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Describes the presence of valid data within the sl_zigbee_key_struct_t structure.
 /// </summary>
 public enum ZigbeeKeyStructBitmask : ushort
 {

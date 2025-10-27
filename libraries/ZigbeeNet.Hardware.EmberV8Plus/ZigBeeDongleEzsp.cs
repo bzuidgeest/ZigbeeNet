@@ -4,12 +4,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Command;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
-using ZigBeeNet.Hardware.Ember.Internal;
-using ZigBeeNet.Hardware.Ember.Internal.Ash;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Transport;
 using ZigBeeNet.ZDO.Field;
@@ -751,7 +749,7 @@ namespace ZigBeeNet.Hardware.Ember
             }
         }
 
-        public void HandlePacket(EzspFrame response) 
+        public void HandlePacket(EzspFrameV8Plus response) 
         {
             if (response.GetFrameId() != POLL_FRAME_ID) {
                 _logger.LogDebug("RX EZSP: {Response}", response);
@@ -1195,17 +1193,17 @@ namespace ZigBeeNet.Hardware.Ember
                 return false;
             }
 
-            if (version.GetProtocolVersion() != EzspFrame.GetEzspVersion()) 
+            if (version.GetProtocolVersion() != EzspFrameV8Plus.GetEzspVersion()) 
             {
                 // The device supports a different version that we current have set
-                if (!EzspFrame.SetEzspVersion(version.GetProtocolVersion()))
+                if (!EzspFrameV8Plus.SetEzspVersion(version.GetProtocolVersion()))
                 {
                     _logger.LogError("EZSP Dongle: NCP requires unsupported version of EZSP (required = V{RequiredVersion}, supported = V{SupportedVersion})",
-                            version.GetProtocolVersion(), EzspFrame.GetEzspVersion());
+                            version.GetProtocolVersion(), EzspFrameV8Plus.GetEzspVersion());
                     return false;
                 }
 
-                version = ncp.GetVersion(EzspFrame.GetEzspVersion());
+                version = ncp.GetVersion(EzspFrameV8Plus.GetEzspVersion());
                 _logger.LogDebug(version.ToString());
             }
 

@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Decision made by the trust center when a node attempts to join.
 /// </summary>
 public enum ZigbeeJoinDecision : byte
 {

@@ -12,7 +12,7 @@ namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
         public static string SectionName(string sectionName)
         {
             // Remove spaces and special characters, convert to PascalCase
-            return System.Text.RegularExpressions.Regex.Replace(sectionName, @"[^a-zA-Z0-9]", "");
+            return System.Text.RegularExpressions.Regex.Replace(sectionName, @"[^a-zA-Z0-9]", "").Replace("Frames", "");
         }
 
         public static string EnumerationName(string enumerationName)
@@ -68,6 +68,22 @@ namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
                 .Replace(">", "&gt;")
                 .Replace("\"", "&quot;")
                 .Replace("'", "&apos;");
+        }
+
+        public static string AddXmlCommentPrefixAfterLineBreak(this string text, int tabCount = 0)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
+
+            // Create the indentation string
+            string indentation = new string('\t', tabCount);
+
+            // Match any line ending (Windows \r\n or Unix \n)
+            return System.Text.RegularExpressions.Regex.Replace(
+                text,
+                @"\r?\n",
+                "\r\n" + indentation + "/// "
+            );
         }
     }
 }

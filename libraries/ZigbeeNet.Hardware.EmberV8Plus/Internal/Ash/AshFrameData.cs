@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using ZigBeeNet.Hardware.Ember.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Ash
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 {
 
     /// <summary>

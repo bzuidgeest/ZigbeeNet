@@ -1,0 +1,36 @@
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
+
+/// <summary>
+/// Encrypt/decrypt a message in-place using APS.
+/// Frame value: 0x0129
+/// </summary>
+public class ApsCryptMessageRequest : EzspFrameRequest
+{
+    /// <summary>
+    /// Encrypt (true) or decrypt (false) the message.
+    /// </summary>
+    public bool encrypt { get; set; }
+
+    /// <summary>
+    /// Length of the array containing message, needs to be long enough to include the auxiliary header and MIC.
+    /// </summary>
+    public byte length_combined_arg { get; set; }
+
+    /// <summary>
+    /// The message to be en/de-crypted.
+    /// </summary>
+    public uint8_t[length_combined_arg] message { get; set; }
+
+    /// <summary>
+    /// Index just past the APS frame.
+    /// </summary>
+    public byte apsHeaderEndIndex { get; set; }
+
+    /// <summary>
+    /// IEEE address of the device this message is associated with.
+    /// </summary>
+    public sl_802154_long_addr_t remoteEui64 { get; set; }
+
+}

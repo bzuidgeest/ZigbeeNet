@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 
-namespace ZigBeeNet.Hardware.Ember.Internal
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
     /// <summary>
     /// This class provides utility functions to configure, and read the configuration from the Ember stack.

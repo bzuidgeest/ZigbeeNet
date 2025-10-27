@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Frames;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structures;
-using ZigBeeNet.Hardware.Ember.Internal;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 
-namespace ZigBeeNet.Hardware.Ember
+namespace ZigBeeNet.Hardware.EmberV8Plus
 {
     /// <summary>
     /// This class provides utility methods for accessing the Ember NCP.
@@ -60,8 +58,8 @@ namespace ZigBeeNet.Hardware.Ember
          */
         public EzspVersionResponse GetVersion(int desiredVersion)
         {
-            EzspVersionRequest request = new EzspVersionRequest();
-            request.SetDesiredProtocolVersion(EzspFrame.GetEzspVersion());
+            VersionRequest request = new EzspVersionRequest();
+            request.SetDesiredProtocolVersion(EzspFrameV8Plus.GetEzspVersion());
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EzspVersionResponse)));
             EzspVersionResponse response = (EzspVersionResponse)transaction.GetResponse();
             if (response == null)
@@ -84,7 +82,7 @@ namespace ZigBeeNet.Hardware.Ember
          */
         public EmberStatus NetworkInit()
         {
-            EzspNetworkInitRequest request = new EzspNetworkInitRequest();
+            NetworkInitRequest request = new EzspNetworkInitRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EzspNetworkInitResponse)));
             EzspNetworkInitResponse response = (EzspNetworkInitResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());

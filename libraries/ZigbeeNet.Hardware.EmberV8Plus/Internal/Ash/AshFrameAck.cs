@@ -1,6 +1,6 @@
 using System;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Ash
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 {
 
     /// <summary>

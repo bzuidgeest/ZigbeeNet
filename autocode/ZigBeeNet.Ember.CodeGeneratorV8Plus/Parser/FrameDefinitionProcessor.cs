@@ -36,19 +36,19 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 var sb = new StringBuilder();
 
-                sb.AppendLine("using ZigBeeNet.Hardware.Ember.Ezsp;");
+                sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
                 sb.AppendLine();
 
                 // Generate namespace
                 string sanitizedSectionName = Sanitize.SectionName(section);
-                sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Command;");
+                sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Frames;");
                 sb.AppendLine();
 
                 // Generate XML documentation with frame value
                 if (!string.IsNullOrWhiteSpace(frameDefinition.Description))
                 {
                     sb.AppendLine("/// <summary>");
-                    sb.AppendLine($"/// {frameDefinition.Description.XmlEscape()}");
+                    sb.AppendLine($"/// {frameDefinition.Description.XmlEscape().AddXmlCommentPrefixAfterLineBreak(1)}");
                     if (!string.IsNullOrWhiteSpace(frameDefinition.Value))
                     {
                         sb.AppendLine($"/// Frame value: {frameDefinition.Value}");
@@ -57,7 +57,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 }
 
                 // Generate class declaration inheriting from EzspFrameRequest
-                sb.AppendLine($"public class {frameDefinition.CommandName} : EzspFrameRequest");
+                string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..] + "Request";
+                sb.AppendLine($"public class {className} : EzspFrameRequest");
                 sb.AppendLine("{");
 
                 // Generate properties for command arguments
@@ -68,7 +69,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         if (!string.IsNullOrWhiteSpace(arg.Description))
                         {
                             sb.AppendLine("    /// <summary>");
-                            sb.AppendLine($"    /// {arg.Description.XmlEscape()}");
+                            sb.AppendLine($"    /// {arg.Description.XmlEscape().AddXmlCommentPrefixAfterLineBreak(1)}");
                             sb.AppendLine("    /// </summary>");
                         }
 
@@ -81,7 +82,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 sb.AppendLine("}");
 
                 logger.LogDebug("Generated request class {commandName} with {argCount} arguments",
-                    frameDefinition.CommandName, frameDefinition.CommandArguments?.Count ?? 0);
+                    className, frameDefinition.CommandArguments?.Count ?? 0);
 
                 return sb.ToString();
             }
@@ -118,19 +119,19 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 var sb = new StringBuilder();
 
-                sb.AppendLine("using ZigBeeNet.Hardware.Ember.Ezsp;");
+                sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
                 sb.AppendLine();
 
                 // Generate namespace
                 string sanitizedSectionName = Sanitize.SectionName(section);
-                sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Structure;");
+                sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Frames;");
                 sb.AppendLine();
 
                 // Generate XML documentation with frame value
                 if (!string.IsNullOrWhiteSpace(frameDefinition.Description))
                 {
                     sb.AppendLine("/// <summary>");
-                    sb.AppendLine($"/// {frameDefinition.Description.XmlEscape()}");
+                    sb.AppendLine($"/// {frameDefinition.Description.XmlEscape().AddXmlCommentPrefixAfterLineBreak(1)}");
                     if (!string.IsNullOrWhiteSpace(frameDefinition.Value))
                     {
                         sb.AppendLine($"/// Frame value: {frameDefinition.Value}");
@@ -138,8 +139,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     sb.AppendLine("/// </summary>");
                 }
 
+                string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..] + "Response";
                 // Generate class declaration inheriting from EzspFrameResponse
-                sb.AppendLine($"public class {frameDefinition.CommandName}Response : EzspFrameResponse");
+                sb.AppendLine($"public class {className} : EzspFrameResponse");
                 sb.AppendLine("{");
 
                 // Generate properties for response arguments
@@ -150,7 +152,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         if (!string.IsNullOrWhiteSpace(arg.Description))
                         {
                             sb.AppendLine("    /// <summary>");
-                            sb.AppendLine($"    /// {arg.Description.XmlEscape()}");
+                            sb.AppendLine($"    /// {arg.Description.XmlEscape().AddXmlCommentPrefixAfterLineBreak(1)}");
                             sb.AppendLine("    /// </summary>");
                         }
 
@@ -162,8 +164,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 sb.AppendLine("}");
 
-                logger.LogDebug("Generated response class {commandName}Response with {argCount} arguments",
-                    frameDefinition.CommandName, frameDefinition.ResponseArguments?.Count ?? 0);
+                logger.LogDebug("Generated response class {commandName} with {argCount} arguments",
+                    className, frameDefinition.ResponseArguments?.Count ?? 0);
 
                 return sb.ToString();
             }

@@ -149,7 +149,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                     _logger.LogInformation("Processing version {version} at {path}", versionName, definitionPath);
 
                     // Clear output directory before processing each version
-                    new DirectoryInfo(_applicationSettings.OutputDirectory).ClearAsync();
+                    //new DirectoryInfo(_applicationSettings.OutputDirectory).ClearAsync();
                     _eZSPYAMLDefinitionParser.Process(versionDir, definitionPath, versionName);
                 }
 

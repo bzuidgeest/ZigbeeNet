@@ -1,0 +1,16 @@
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
+
+/// <summary>
+/// This function will start a scan.
+/// Frame value: 0x001A
+/// </summary>
+public class StartScanResponse : EzspFrameResponse
+{
+    /// <summary>
+    /// SL_STATUS_OK signals that the scan successfully started. Possible error responses and their meanings: SL_STATUS_MAC_SCANNING, we are already scanning; SL_STATUS_BAD_SCAN_DURATION, we have set a duration value that is not 0..14 inclusive; SL_STATUS_MAC_INCORRECT_SCAN_TYPE, we have requested an undefined scanning type; SL_STATUS_INVALID_CHANNEL_MASK, our channel mask did not specify any valid channels.
+    /// </summary>
+    public sl_status_t status { get; set; }
+
+}

@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Identifies a configuration value.
 /// </summary>
 public enum ZigbeeEzspConfigId : byte
 {

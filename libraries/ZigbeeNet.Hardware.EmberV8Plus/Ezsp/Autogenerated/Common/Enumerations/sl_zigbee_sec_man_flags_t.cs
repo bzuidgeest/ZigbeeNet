@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Flags for key operations.
 /// </summary>
 public enum ZigbeeSecManFlags : byte
 {

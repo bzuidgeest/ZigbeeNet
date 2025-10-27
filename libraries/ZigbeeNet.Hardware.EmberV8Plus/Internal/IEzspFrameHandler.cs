@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 
-namespace ZigBeeNet.Hardware.Ember.Internal
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
     /// <summary>
     /// Interface to exchange asynchronous packets and link state changes from the low level protocol handlers
@@ -19,7 +19,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal
          *
          * @param response incoming {@link EzspFrame} response frame
          */
-        void HandlePacket(EzspFrame response);
+        void HandlePacket(EzspFrameV8Plus response);
 
         /**
          * Called when the ASH link state changes

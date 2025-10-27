@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Network configuration for the desired radio interface for multi phy network.
 /// </summary>
 public enum ZigbeeMultiPhyNwkConfig : byte
 {

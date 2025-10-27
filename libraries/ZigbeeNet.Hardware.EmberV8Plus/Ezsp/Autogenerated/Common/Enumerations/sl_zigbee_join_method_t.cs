@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// The type of method used for joining.
 /// </summary>
 public enum ZigbeeJoinMethod : byte
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
 
-namespace ZigBeeNet.Hardware.Ember.Transaction
+namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 {
     /// <summary>
     /// Multiple EZSP transaction response handling. This matches a {@link EzspFrameRequest} which returns with multiple

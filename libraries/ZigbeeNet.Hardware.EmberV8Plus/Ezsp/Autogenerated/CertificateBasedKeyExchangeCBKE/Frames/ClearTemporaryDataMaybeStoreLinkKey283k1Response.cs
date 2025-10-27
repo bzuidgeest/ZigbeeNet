@@ -1,0 +1,13 @@
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
+
+/// <summary>
+/// Clears the temporary data associated with CBKE and the key establishment, most notably the ephemeral public/private key pair. If storeLinKey is true it moves the unverified link key stored in temporary storage into the link key table. Otherwise it discards the key.
+/// Frame value: 0x00EE
+/// </summary>
+public class ClearTemporaryDataMaybeStoreLinkKey283k1Response : EzspFrameResponse
+{
+    public sl_status_t status { get; set; }
+
+}

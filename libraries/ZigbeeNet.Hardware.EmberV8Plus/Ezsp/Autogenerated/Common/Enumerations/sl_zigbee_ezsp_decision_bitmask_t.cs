@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// This is the policy decision bitmask that controls the trust center decision strategies. The bitmask is modified and extracted from the sl_zigbee_ezsp_decision_id_t for supporting bitmask operations.
 /// </summary>
 public enum ZigbeeEzspDecisionBitmask : ushort
 {

@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Bitmask options for sli_zigbee_stack_network_init()
 /// </summary>
 public enum ZigbeeNetworkInitBitmask : ushort
 {

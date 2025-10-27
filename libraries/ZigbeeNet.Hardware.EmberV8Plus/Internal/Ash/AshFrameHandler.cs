@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Ezsp.Command;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Command;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Ash
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 {
     /// <summary>
     /// Frame parser for the Silicon Labs Asynchronous Serial Host (ASH) protocol.
@@ -181,7 +181,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal.Ash
                                     responseFrame = new AshFrameAck(_ackNum);
 
                                     // Get the EZSP frame
-                                    EzspFrameResponse response = EzspFrame.CreateHandler(dataPacket.GetDataBuffer());
+                                    EzspFrameResponse response = EzspFrameV8Plus.CreateHandler(dataPacket.GetDataBuffer());
                                     _logger.LogTrace("ASH RX EZSP: {Response}", response);
                                     if (response == null) 
                                     {
@@ -315,7 +315,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal.Ash
             return null;
         }
 
-        private void HandleIncomingFrame(EzspFrame ezspFrame) 
+        private void HandleIncomingFrame(EzspFrameV8Plus ezspFrame) 
         {
             if (_stateConnected && ezspFrame != null) 
             {
@@ -751,7 +751,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal.Ash
                 _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
 
-            public async Task<EzspFrame> Wait()
+            public async Task<EzspFrameV8Plus> Wait()
             {
                 // Register a listener
                 _frameHandler.AddTransactionListener(this);
@@ -794,7 +794,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal.Ash
             }
         }
 
-        public Task<EzspFrame> SendEzspRequestAsync(IEzspTransaction ezspTransaction) 
+        public Task<EzspFrameV8Plus> SendEzspRequestAsync(IEzspTransaction ezspTransaction) 
         {
             if (_parserCancellationToken.IsCancellationRequested) 
             {

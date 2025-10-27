@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Describes the type of ZigBee security key.
 /// </summary>
 public enum ZigbeeKeyType : byte
 {

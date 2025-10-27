@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Values for SL_ZIGBEE_EZSP_CONFIG_TX_POWER_MODE.
 /// </summary>
 public enum Emberconfigtxpowermode : ushort
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
-using ZigBeeNet.Hardware.Ember.Internal.Serializer;
+using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
 
-namespace ZigBeeNet.Hardware.Ember.Ezsp
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
     /// <summary>
     /// The EmberZNet Serial Protocol (EZSP) is the protocol used by a host application processor to interact with the
@@ -39,7 +39,7 @@ namespace ZigBeeNet.Hardware.Ember.Ezsp
     ///   bit 1 : sleepMode[1]
     ///   bit 0 : sleepMode[0]
     /// </summary>
-    public abstract class EzspFrameRequest : EzspFrame
+    public abstract class EzspFrameRequest : EzspFrameV8Plus
     {
         private static int sequence = 0;
         

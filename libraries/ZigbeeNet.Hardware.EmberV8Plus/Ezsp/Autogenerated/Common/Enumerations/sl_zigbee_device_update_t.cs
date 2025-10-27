@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// The status of the device update.
 /// </summary>
 public enum ZigbeeDeviceUpdate : byte
 {

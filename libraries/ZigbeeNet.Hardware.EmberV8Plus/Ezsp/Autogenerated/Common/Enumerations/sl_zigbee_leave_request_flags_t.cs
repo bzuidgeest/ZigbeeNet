@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Flags for NWK leave request command.
 /// </summary>
 public enum ZigbeeLeaveRequestFlags : byte
 {

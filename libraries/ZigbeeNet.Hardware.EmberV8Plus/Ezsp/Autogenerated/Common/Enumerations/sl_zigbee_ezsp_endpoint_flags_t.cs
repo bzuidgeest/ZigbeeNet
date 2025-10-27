@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Flags associated with the endpoint data configured on the NCP.
 /// </summary>
 public enum ZigbeeEzspEndpointFlags : ushort
 {

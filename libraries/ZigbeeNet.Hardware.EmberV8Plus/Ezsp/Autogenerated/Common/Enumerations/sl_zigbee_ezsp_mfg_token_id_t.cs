@@ -1,7 +1,7 @@
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 /// <summary>
-/// System.Func`1[System.String]
+/// Manufacturing token IDs used by sl_zigbee_ezsp_get_mfg_token().
 /// </summary>
 public enum ZigbeeEzspMfgTokenId : byte
 {

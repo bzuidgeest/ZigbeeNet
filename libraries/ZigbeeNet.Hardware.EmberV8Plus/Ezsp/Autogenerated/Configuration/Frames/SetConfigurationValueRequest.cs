@@ -1,0 +1,21 @@
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
+
+/// <summary>
+/// Writes a configuration value to the NCP. Configuration values can be modified by the Host after the NCP has reset. Once the status of the stack changes to SL_STATUS_NETWORK_UP, configuration values can no longer be modified and this command will respond with SL_ZIGBEE_EZSP_ERROR_INVALID_CALL.
+/// Frame value: 0x0053
+/// </summary>
+public class SetConfigurationValueRequest : EzspFrameRequest
+{
+    /// <summary>
+    /// Identifies which configuration value to change.
+    /// </summary>
+    public sl_zigbee_ezsp_config_id_t configId { get; set; }
+
+    /// <summary>
+    /// The new configuration value.
+    /// </summary>
+    public ushort value { get; set; }
+
+}

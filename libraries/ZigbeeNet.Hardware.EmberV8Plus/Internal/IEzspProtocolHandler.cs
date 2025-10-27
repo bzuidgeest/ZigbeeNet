@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZigBeeNet.Hardware.Ember.Ezsp;
-using ZigBeeNet.Hardware.Ember.Transaction;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 
-namespace ZigBeeNet.Hardware.Ember.Internal
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
     /// <summary>
     /// Interface for the EZSP protocol handler. The protocol handler manages the low level data transfer of EZSP frames.
@@ -60,7 +60,7 @@ namespace ZigBeeNet.Hardware.Ember.Internal
          * @param ezspTransaction Request {@link EzspTransaction}
          * @return response {@link Future} {@link EzspFrame}
          */
-        Task<EzspFrame> SendEzspRequestAsync(IEzspTransaction ezspTransaction);
+        Task<EzspFrameV8Plus> SendEzspRequestAsync(IEzspTransaction ezspTransaction);
 
         /**
          * Sends an EZSP request to the NCP and waits for the response. The response is correlated with the request and the

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using ZigBeeNet.Hardware.Ember.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
 
-namespace ZigBeeNet.Hardware.Ember.Internal.Serializer
+namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer
 {
     /// <summary>
     /// The EmberZNet Serial Protocol Data Representation
