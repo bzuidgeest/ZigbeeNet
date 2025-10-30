@@ -32,7 +32,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     ///   bit 0 : overflow
     /// 
     /// </summary>
-    public abstract class EzspFrameResponse : EzspFrameV8Plus
+    public abstract partial class EzspFrameResponseV8Plus : EzspFrameV8Plus
     {
         protected EzspDeserializer deserializer;
 
@@ -45,7 +45,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          *
          * @param inputBuffer the input array to deserialize
          */
-        protected EzspFrameResponse(int[] inputBuffer)
+        protected EzspFrameResponseV8Plus(int[] inputBuffer)
         {
             deserializer = new EzspDeserializer(inputBuffer);
 
@@ -86,6 +86,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             return (_frameControl & 0x60) >> 5;
         }
+
     }
 
 }

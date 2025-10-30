@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class GpClearProxyTableRequest : EzspFrameRequest
 {
-}

@@ -23,4 +23,3 @@ public class GetEndpointClusterRequest : EzspFrameRequest
     /// </summary>
     public byte listIndex { get; set; }
 
-}

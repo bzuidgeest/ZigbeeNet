@@ -13,4 +13,3 @@ public class GetConfigurationValueRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_ezsp_config_id_t configId { get; set; }
 
-}

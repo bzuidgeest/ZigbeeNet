@@ -13,4 +13,3 @@ public class MfgTestSendCommandRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[1] command { get; set; }
 
-}

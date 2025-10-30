@@ -13,4 +13,3 @@ public class GetValueRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_ezsp_value_id_t valueId { get; set; }
 
-}

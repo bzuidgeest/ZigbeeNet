@@ -58,4 +58,3 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequest
     /// </summary>
     public byte forwardingRadius { get; set; }
 
-}

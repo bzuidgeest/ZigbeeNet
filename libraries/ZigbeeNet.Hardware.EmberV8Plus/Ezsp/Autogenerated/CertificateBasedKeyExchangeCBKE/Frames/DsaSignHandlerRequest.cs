@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class DsaSignHandlerRequest : EzspFrameRequest
 {
-}

@@ -80,7 +80,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
         /**
          * The queue of {@link EzspFrameRequest} frames waiting to be sent
          */
-        private ConcurrentQueue<EzspFrameRequest> _sendQueue = new ConcurrentQueue<EzspFrameRequest>();
+        private ConcurrentQueue<EzspFrameRequestV8Plus> _sendQueue = new ConcurrentQueue<EzspFrameRequestV8Plus>();
 
         /**
          * The queue of {@link AshFrameData} frames that we have sent. These are kept in case a resend is required.
@@ -181,7 +181,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
                                     responseFrame = new AshFrameAck(_ackNum);
 
                                     // Get the EZSP frame
-                                    EzspFrameResponse response = EzspFrameV8Plus.CreateHandler(dataPacket.GetDataBuffer());
+                                    EzspFrameResponseV8Plus response = EzspFrameV8Plus.CreateHandler(dataPacket.GetDataBuffer());
                                     _logger.LogTrace("ASH RX EZSP: {Response}", response);
                                     if (response == null) 
                                     {
@@ -378,7 +378,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             ClearTransactionQueue();
 
             _sentQueue = new ConcurrentQueue<AshFrameData>();
-            _sendQueue = new ConcurrentQueue<EzspFrameRequest>();
+            _sendQueue = new ConcurrentQueue<EzspFrameRequestV8Plus>();
 
             _frameHandler.HandleLinkStateChange(false);
 
@@ -411,7 +411,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
                 return false;
             }
 
-            EzspFrameRequest nextFrame = null;
+            EzspFrameRequestV8Plus nextFrame = null;
             if (!_sendQueue.TryDequeue(out nextFrame) || nextFrame == null) {
                 // Nothing to send
                 return false;
@@ -491,7 +491,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             }
         }
 
-        public void QueueFrame(EzspFrameRequest request) 
+        public void QueueFrame(EzspFrameRequestV8Plus request) 
         {
             if (_parserCancellationToken.IsCancellationRequested) 
             {
@@ -515,7 +515,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             _stateConnected = false;
 
             _sentQueue = new ConcurrentQueue<AshFrameData>();
-            _sendQueue = new ConcurrentQueue<EzspFrameRequest>(); ;
+            _sendQueue = new ConcurrentQueue<EzspFrameRequestV8Plus>(); ;
 
             Reconnect();
         }
@@ -675,7 +675,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 
         interface AshListener
         {
-            bool TransactionEvent(EzspFrameResponse ezspResponse);
+            bool TransactionEvent(EzspFrameResponseV8Plus ezspResponse);
 
             void TransactionComplete();
         }
@@ -700,7 +700,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
          * @param response the response data received
          * @return true if the response was processed
          */
-        private bool NotifyTransactionComplete(EzspFrameResponse response) 
+        private bool NotifyTransactionComplete(EzspFrameResponseV8Plus response) 
         {
             bool processed = false;
 
@@ -767,7 +767,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
                 return _ezspTransaction.GetResponse();
             }
 
-            public bool TransactionEvent(EzspFrameResponse ezspResponse)
+            public bool TransactionEvent(EzspFrameResponseV8Plus ezspResponse)
             {
                 if (ezspResponse.GetSequenceNumber() == _ezspTransaction.GetRequest().GetSequenceNumber()
                         && ezspResponse is EzspInvalidCommandResponse) 
@@ -831,7 +831,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
         private class EventWaiter :  AshListener 
         {
             private bool _complete = false;
-            private EzspFrameResponse _receivedEvent = null;
+            private EzspFrameResponseV8Plus _receivedEvent = null;
             private Type _eventClass;
             private AshFrameHandler _frameHandler;
             private TaskCompletionSource<bool> _tcs;
@@ -845,7 +845,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
                 _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
 
-            public async Task<EzspFrameResponse> Wait()
+            public async Task<EzspFrameResponseV8Plus> Wait()
             {
                 // Register a listener
                 _frameHandler.AddTransactionListener(this);
@@ -859,7 +859,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
                 return _receivedEvent;
             }
 
-            public bool TransactionEvent(EzspFrameResponse ezspResponse)
+            public bool TransactionEvent(EzspFrameResponseV8Plus ezspResponse)
             {
                 // Check if this response completes our transaction
                 if (ezspResponse.GetType() != _eventClass)
@@ -885,7 +885,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
          * @param eventClass Request {@link EzspFrameResponse} to wait for
          * @return response {@link Future} {@link EzspFrameResponse}
          */
-        public Task<EzspFrameResponse> EventWaitAsync(Type eventClass) 
+        public Task<EzspFrameResponseV8Plus> EventWaitAsync(Type eventClass) 
         {
             return new EventWaiter(eventClass, this).Wait();
         }
@@ -897,11 +897,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
          * @param timeout the time in milliseconds to wait for the response
          * @return the {@link EzspFrameResponse} once received, or null on exception
          */
-        public EzspFrameResponse EventWait(Type eventClass, int timeout) 
+        public EzspFrameResponseV8Plus EventWait(Type eventClass, int timeout) 
         {
             try
             {
-                Task<EzspFrameResponse> eventWaitTask = EventWaitAsync(eventClass);
+                Task<EzspFrameResponseV8Plus> eventWaitTask = EventWaitAsync(eventClass);
 
                 bool taskResult = eventWaitTask.Wait(timeout);
 

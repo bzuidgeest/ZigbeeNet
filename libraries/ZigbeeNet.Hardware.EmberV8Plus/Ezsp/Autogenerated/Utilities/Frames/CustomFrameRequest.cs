@@ -18,4 +18,3 @@ public class CustomFrameRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[payloadLength] payload { get; set; }
 
-}

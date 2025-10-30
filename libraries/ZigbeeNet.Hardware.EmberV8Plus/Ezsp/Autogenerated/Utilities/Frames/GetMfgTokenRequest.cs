@@ -13,4 +13,3 @@ public class GetMfgTokenRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_ezsp_mfg_token_id_t tokenId { get; set; }
 
-}

@@ -18,4 +18,3 @@ public class SetChildDataRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_child_data_t childData { get; set; }
 
-}

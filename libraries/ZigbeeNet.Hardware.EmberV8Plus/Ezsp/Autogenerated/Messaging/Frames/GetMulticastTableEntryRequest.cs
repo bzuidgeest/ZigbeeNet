@@ -13,4 +13,3 @@ public class GetMulticastTableEntryRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

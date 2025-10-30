@@ -13,4 +13,3 @@ public class ClearTemporaryDataMaybeStoreLinkKey283k1Request : EzspFrameRequest
     /// </summary>
     public bool storeLinkKey { get; set; }
 
-}

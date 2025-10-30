@@ -18,4 +18,3 @@ public class GpSinkTableSetEntryRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_gp_sink_table_entry_t entry { get; set; }
 
-}

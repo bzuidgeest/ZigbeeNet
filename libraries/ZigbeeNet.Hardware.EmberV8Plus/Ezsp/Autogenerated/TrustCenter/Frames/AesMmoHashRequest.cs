@@ -28,4 +28,3 @@ public class AesMmoHashRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[length] data { get; set; }
 
-}

@@ -13,4 +13,3 @@ public class SetLogicalAndRadioChannelRequest : EzspFrameRequest
     /// </summary>
     public byte radioChannel { get; set; }
 
-}

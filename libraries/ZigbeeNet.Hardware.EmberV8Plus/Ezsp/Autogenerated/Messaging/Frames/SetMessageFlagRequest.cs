@@ -13,4 +13,3 @@ public class SetMessageFlagRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_short_addr_t childId { get; set; }
 
-}

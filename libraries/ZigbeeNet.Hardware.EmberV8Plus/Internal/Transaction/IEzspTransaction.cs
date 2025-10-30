@@ -19,14 +19,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
          * @param response the response {@link EzspFrameResponse}
          * @return true if response matches the request
          */
-        bool IsMatch(EzspFrameResponse response);
+        bool IsMatch(EzspFrameResponseV8Plus response);
 
         /**
          * Gets the {@link EzspFrameRequest} associated with this transaction
          *
          * @return the {@link EzspFrameRequest}
          */
-        EzspFrameRequest GetRequest();
+        EzspFrameRequestV8Plus GetRequest();
 
         /**
          * Gets the {@link EzspFrameResponse} for the transaction. If multiple responses are returned, this will return the
@@ -34,7 +34,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
          *
          * @return {@link EzspFrameResponse} to complete the transaction or null if no response received
          */
-        EzspFrameResponse GetResponse();
+        EzspFrameResponseV8Plus GetResponse();
 
         /**
          * Gets a {@link List} of the {@link EzspFrameResponse}s received for the transaction. This is used for transactions
@@ -42,7 +42,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
          *
          * @return {@link EzspFrameResponse} to complete the transaction or null if no response received
          */
-        List<EzspFrameResponse> GetResponses();
+        List<EzspFrameResponseV8Plus> GetResponses();
 
         /**
          * Get the {@link EmberStatus} of the transaction. If multiple responses are returned, this will return the last

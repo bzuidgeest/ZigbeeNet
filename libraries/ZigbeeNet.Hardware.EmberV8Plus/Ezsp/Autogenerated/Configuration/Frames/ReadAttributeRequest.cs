@@ -33,4 +33,3 @@ public class ReadAttributeRequest : EzspFrameRequest
     /// </summary>
     public ushort manufacturerCode { get; set; }
 
-}

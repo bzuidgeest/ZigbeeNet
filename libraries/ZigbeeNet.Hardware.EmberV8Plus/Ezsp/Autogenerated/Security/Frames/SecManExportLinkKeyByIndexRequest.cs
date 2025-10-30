@@ -13,4 +13,3 @@ public class SecManExportLinkKeyByIndexRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

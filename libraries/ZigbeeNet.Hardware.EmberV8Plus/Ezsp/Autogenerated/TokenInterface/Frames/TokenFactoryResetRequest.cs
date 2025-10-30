@@ -18,4 +18,3 @@ public class TokenFactoryResetRequest : EzspFrameRequest
     /// </summary>
     public bool excludeBootCounter { get; set; }
 
-}

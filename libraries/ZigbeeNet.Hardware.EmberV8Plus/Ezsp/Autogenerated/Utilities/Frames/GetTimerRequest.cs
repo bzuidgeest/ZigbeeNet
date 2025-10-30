@@ -13,4 +13,3 @@ public class GetTimerRequest : EzspFrameRequest
     /// </summary>
     public byte timerId { get; set; }
 
-}

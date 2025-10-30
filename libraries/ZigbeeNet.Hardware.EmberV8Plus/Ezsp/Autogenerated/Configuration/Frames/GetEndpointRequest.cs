@@ -13,4 +13,3 @@ public class GetEndpointRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

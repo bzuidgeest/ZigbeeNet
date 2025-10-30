@@ -13,4 +13,3 @@ public class SetRadioIeee802154CcaModeRequest : EzspFrameRequest
     /// </summary>
     public byte ccaMode { get; set; }
 
-}

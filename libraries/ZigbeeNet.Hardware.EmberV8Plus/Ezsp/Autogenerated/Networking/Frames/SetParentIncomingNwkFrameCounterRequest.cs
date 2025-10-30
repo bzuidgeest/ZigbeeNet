@@ -6,4 +6,3 @@ public class SetParentIncomingNwkFrameCounterRequest : EzspFrameRequest
 {
     public uint value { get; set; }
 
-}

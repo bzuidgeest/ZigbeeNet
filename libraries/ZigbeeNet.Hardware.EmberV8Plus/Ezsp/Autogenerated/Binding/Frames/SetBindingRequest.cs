@@ -18,4 +18,3 @@ public class SetBindingRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_binding_table_entry_t value { get; set; }
 
-}

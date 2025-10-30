@@ -13,4 +13,3 @@ public class AddressTableEntryIsActiveRequest : EzspFrameRequest
     /// </summary>
     public byte addressTableIndex { get; set; }
 
-}

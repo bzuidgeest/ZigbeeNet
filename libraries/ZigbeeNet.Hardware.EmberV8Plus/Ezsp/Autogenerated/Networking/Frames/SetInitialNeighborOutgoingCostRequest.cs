@@ -13,4 +13,3 @@ public class SetInitialNeighborOutgoingCostRequest : EzspFrameRequest
     /// </summary>
     public byte cost { get; set; }
 
-}

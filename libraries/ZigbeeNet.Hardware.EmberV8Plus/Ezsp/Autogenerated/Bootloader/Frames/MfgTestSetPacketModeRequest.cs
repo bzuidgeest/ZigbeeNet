@@ -13,4 +13,3 @@ public class MfgTestSetPacketModeRequest : EzspFrameRequest
     /// </summary>
     public bool beginConfiguration { get; set; }
 
-}

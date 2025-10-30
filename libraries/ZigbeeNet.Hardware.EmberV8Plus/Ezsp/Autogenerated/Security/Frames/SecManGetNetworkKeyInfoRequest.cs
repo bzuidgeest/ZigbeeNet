@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class SecManGetNetworkKeyInfoRequest : EzspFrameRequest
 {
-}

@@ -18,4 +18,3 @@ public class MfglibInternalSendPacketRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[packetLength] packetContents { get; set; }
 
-}

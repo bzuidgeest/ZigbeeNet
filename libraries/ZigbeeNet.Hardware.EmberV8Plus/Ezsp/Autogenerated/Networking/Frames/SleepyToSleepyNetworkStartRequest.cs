@@ -18,4 +18,3 @@ public class SleepyToSleepyNetworkStartRequest : EzspFrameRequest
     /// </summary>
     public bool initiator { get; set; }
 
-}

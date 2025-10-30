@@ -18,4 +18,3 @@ public class SetBindingRemoteNodeIdRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_short_addr_t nodeId { get; set; }
 
-}

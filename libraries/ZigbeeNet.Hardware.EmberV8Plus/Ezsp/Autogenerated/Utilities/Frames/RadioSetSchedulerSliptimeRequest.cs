@@ -13,4 +13,3 @@ public class RadioSetSchedulerSliptimeRequest : EzspFrameRequest
     /// </summary>
     public uint slipTime { get; set; }
 
-}

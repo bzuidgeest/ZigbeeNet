@@ -13,4 +13,3 @@ public class GetPolicyRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_ezsp_policy_id_t policyId { get; set; }
 
-}

@@ -23,4 +23,3 @@ public class CalculateSmacs283k1Request : EzspFrameRequest
     /// </summary>
     public sl_zigbee_public_key_283k1_data_t partnerEphemeralPublicKey { get; set; }
 
-}

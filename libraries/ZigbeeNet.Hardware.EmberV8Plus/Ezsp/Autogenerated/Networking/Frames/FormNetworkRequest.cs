@@ -13,4 +13,3 @@ public class FormNetworkRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_network_parameters_t parameters { get; set; }
 
-}

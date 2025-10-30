@@ -13,4 +13,3 @@ public class SetDutyCycleLimitsInStackRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_duty_cycle_limits_t limits { get; set; }
 
-}

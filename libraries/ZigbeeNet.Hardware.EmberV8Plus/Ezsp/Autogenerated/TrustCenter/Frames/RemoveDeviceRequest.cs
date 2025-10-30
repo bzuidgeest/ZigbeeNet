@@ -23,4 +23,3 @@ public class RemoveDeviceRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t targetLong { get; set; }
 
-}

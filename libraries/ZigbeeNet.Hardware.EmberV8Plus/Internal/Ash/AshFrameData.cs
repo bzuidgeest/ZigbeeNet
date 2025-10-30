@@ -15,7 +15,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
          *
          * @param ezspRequestFrame the {@link EzspFrameRequest} to send
          */
-        public AshFrameData(EzspFrameRequest ezspRequestFrame) 
+        public AshFrameData(EzspFrameRequestV8Plus ezspRequestFrame) 
         {
             _frameType = FrameType.DATA;
             _dataBuffer = ezspRequestFrame.Serialize();

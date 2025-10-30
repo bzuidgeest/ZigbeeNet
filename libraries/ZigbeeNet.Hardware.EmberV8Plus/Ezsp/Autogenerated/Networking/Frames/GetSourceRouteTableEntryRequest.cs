@@ -15,4 +15,3 @@ public class GetSourceRouteTableEntryRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

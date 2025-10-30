@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// </summary>
 public class RemoteSetBindingHandlerRequest : EzspFrameRequest
 {
-}

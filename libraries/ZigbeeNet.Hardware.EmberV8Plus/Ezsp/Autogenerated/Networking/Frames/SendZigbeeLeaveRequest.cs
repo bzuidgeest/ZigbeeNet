@@ -18,4 +18,3 @@ public class SendZigbeeLeaveRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_leave_request_flags_t flags { get; set; }
 
-}

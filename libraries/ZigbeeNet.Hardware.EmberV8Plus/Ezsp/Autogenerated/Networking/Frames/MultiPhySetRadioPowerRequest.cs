@@ -18,4 +18,3 @@ public class MultiPhySetRadioPowerRequest : EzspFrameRequest
     /// </summary>
     public sbyte power { get; set; }
 
-}

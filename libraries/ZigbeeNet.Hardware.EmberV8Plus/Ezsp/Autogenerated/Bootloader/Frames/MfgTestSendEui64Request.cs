@@ -13,4 +13,3 @@ public class MfgTestSendEui64Request : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t newId { get; set; }
 
-}

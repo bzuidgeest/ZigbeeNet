@@ -13,4 +13,3 @@ public class GetBindingRemoteNodeIdRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

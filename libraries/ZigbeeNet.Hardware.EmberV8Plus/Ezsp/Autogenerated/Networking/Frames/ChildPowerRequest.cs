@@ -13,4 +13,3 @@ public class ChildPowerRequest : EzspFrameRequest
     /// </summary>
     public byte childIndex { get; set; }
 
-}

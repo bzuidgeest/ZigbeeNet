@@ -13,4 +13,3 @@ public class ZllSetDataTokenRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_tok_type_stack_zll_data_t data { get; set; }
 
-}

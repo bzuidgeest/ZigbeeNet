@@ -135,10 +135,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param data the int[] containing the EZSP data from which to generate the frame
          * @return the {@link EzspFrameResponse} or null if the response can't be created.
          */
-        public static EzspFrameResponse CreateHandler(int[] data)
+        public static EzspFrameResponseV8Plus CreateHandler(int[] data)
         {
             Type ezspClass = null;
-            EzspFrameResponse ezspFrame = null;
+            EzspFrameResponseV8Plus ezspFrame = null;
 
             try
             {
@@ -156,7 +156,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 
             try
             {
-                ezspFrame = (EzspFrameResponse)Activator.CreateInstance(ezspClass, new object[] { data });
+                ezspFrame = (EzspFrameResponseV8Plus)Activator.CreateInstance(ezspClass, new object[] { data });
             }
             catch (Exception e)
             {

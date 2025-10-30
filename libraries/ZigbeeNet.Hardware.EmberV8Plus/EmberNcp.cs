@@ -8,6 +8,9 @@ using ZigBeeNet.Security;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 
 namespace ZigBeeNet.Hardware.EmberV8Plus
@@ -27,7 +30,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
         /**
          * The status value from the last request
          */
-        private EmberStatus _lastStatus;
+        private ZigbeeEzspStatus _lastStatus;
 
         /**
          * Create the NCP instance
@@ -44,7 +47,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
          *
          * @return {@link EmberStatus}
          */
-        public EmberStatus GetLastStatus()
+        public ZigbeeEzspStatus GetLastStatus()
         {
             return _lastStatus;
         }
@@ -56,19 +59,19 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
          * @param desiredVersion the requested version we support
          * @return the {@link EzspVersionResponse}
          */
-        public EzspVersionResponse GetVersion(int desiredVersion)
+        public VersionResponse GetVersion(int desiredVersion)
         {
-            VersionRequest request = new EzspVersionRequest();
+            VersionRequest request = new VersionRequest();
             request.SetDesiredProtocolVersion(EzspFrameV8Plus.GetEzspVersion());
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EzspVersionResponse)));
-            EzspVersionResponse response = (EzspVersionResponse)transaction.GetResponse();
+            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(VersionResponse)));
+            VersionResponse response = (VersionResponse)transaction.GetResponse();
             if (response == null)
             {
                 _logger.LogDebug("No response from ezspVersion command");
                 return null;
             }
             _logger.LogDebug(response.ToString());
-            _lastStatus = EmberStatus.UNKNOWN;
+            _lastStatus = ZigbeeEzspStatus.UNKNOWN;// EmberStatus.UNKNOWN;
 
             return response;
         }
@@ -82,9 +85,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
          */
         public EmberStatus NetworkInit()
         {
-            NetworkInitRequest request = new EzspNetworkInitRequest();
+            NetworkInitRequest request = new NetworkInitRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EzspNetworkInitResponse)));
-            EzspNetworkInitResponse response = (EzspNetworkInitResponse)transaction.GetResponse();
+            NetworkInitResponse response = (NetworkInitResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
 
             return response.GetStatus();
@@ -664,7 +667,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
             }
 
             Dictionary<ExtendedPanId, EzspNetworkFoundHandler> networksFound = new Dictionary<ExtendedPanId, EzspNetworkFoundHandler>();
-            foreach (EzspFrameResponse response in transaction.GetResponses()) 
+            foreach (EzspFrameResponseV8Plus response in transaction.GetResponses()) 
             {
                 if (response is EzspNetworkFoundHandler) 
                 {
@@ -699,7 +702,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus
             _logger.LogDebug(scanCompleteResponse.ToString());
 
             List<EzspEnergyScanResultHandler> channels = new List<EzspEnergyScanResultHandler>();
-            foreach (EzspFrameResponse network in transaction.GetResponses()) 
+            foreach (EzspFrameResponseV8Plus network in transaction.GetResponses()) 
             {
                 if (network is EzspEnergyScanResultHandler)
                     channels.Add((EzspEnergyScanResultHandler) network);

@@ -13,4 +13,3 @@ public class SecManCheckKeyContextRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_sec_man_context_t context { get; set; }
 
-}

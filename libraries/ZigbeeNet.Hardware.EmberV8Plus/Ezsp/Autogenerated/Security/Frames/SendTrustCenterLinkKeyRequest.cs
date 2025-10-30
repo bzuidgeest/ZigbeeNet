@@ -18,4 +18,3 @@ public class SendTrustCenterLinkKeyRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t destinationEui64 { get; set; }
 
-}

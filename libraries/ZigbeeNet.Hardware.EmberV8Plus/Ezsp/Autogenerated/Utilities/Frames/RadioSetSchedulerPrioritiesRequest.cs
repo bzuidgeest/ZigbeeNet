@@ -13,4 +13,3 @@ public class RadioSetSchedulerPrioritiesRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_radio_priorities_t priorities { get; set; }
 
-}

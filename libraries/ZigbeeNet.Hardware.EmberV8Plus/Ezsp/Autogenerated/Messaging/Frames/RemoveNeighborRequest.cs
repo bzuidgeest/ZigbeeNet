@@ -18,4 +18,3 @@ public class RemoveNeighborRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t longId { get; set; }
 
-}

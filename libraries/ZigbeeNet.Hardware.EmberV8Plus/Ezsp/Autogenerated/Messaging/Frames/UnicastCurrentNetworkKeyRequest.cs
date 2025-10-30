@@ -23,4 +23,3 @@ public class UnicastCurrentNetworkKeyRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_short_addr_t parentShortId { get; set; }
 
-}

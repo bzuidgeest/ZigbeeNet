@@ -13,4 +13,3 @@ public class MfglibInternalSetChannelRequest : EzspFrameRequest
     /// </summary>
     public byte channel { get; set; }
 
-}

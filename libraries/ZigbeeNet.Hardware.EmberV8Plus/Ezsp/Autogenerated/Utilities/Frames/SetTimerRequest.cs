@@ -28,4 +28,3 @@ public class SetTimerRequest : EzspFrameRequest
     /// </summary>
     public bool repeat { get; set; }
 
-}

@@ -28,4 +28,3 @@ public class JoinNetworkDirectlyRequest : EzspFrameRequest
     /// </summary>
     public bool clearBeaconsAfterNetworkUp { get; set; }
 
-}

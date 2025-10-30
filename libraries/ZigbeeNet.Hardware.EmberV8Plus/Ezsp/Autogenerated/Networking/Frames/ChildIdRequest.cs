@@ -13,4 +13,3 @@ public class ChildIdRequest : EzspFrameRequest
     /// </summary>
     public byte childIndex { get; set; }
 
-}

@@ -13,4 +13,3 @@ public class DeleteBindingRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

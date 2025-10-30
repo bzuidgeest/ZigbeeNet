@@ -13,4 +13,3 @@ public class GetStoredBeaconRequest : EzspFrameRequest
     /// </summary>
     public byte beacon_number { get; set; }
 
-}

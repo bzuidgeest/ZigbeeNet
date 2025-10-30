@@ -13,4 +13,3 @@ public class SetMacPollFailureWaitTimeRequest : EzspFrameRequest
     /// </summary>
     public uint waitBeforeRetryIntervalMs { get; set; }
 
-}

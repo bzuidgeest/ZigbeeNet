@@ -13,4 +13,3 @@ public class GetCurrentDutyCycleRequest : EzspFrameRequest
     /// </summary>
     public byte maxDevices { get; set; }
 
-}

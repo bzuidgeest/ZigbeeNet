@@ -28,4 +28,3 @@ public class ReplaceAddressTableEntryRequest : EzspFrameRequest
     /// </summary>
     public bool newExtendedTimeout { get; set; }
 
-}

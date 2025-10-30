@@ -18,4 +18,3 @@ public class AesEncryptRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[16] key { get; set; }
 
-}

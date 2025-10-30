@@ -18,4 +18,3 @@ public class MfglibInternalSetPowerRequest : EzspFrameRequest
     /// </summary>
     public sbyte power { get; set; }
 
-}

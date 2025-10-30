@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class GetStandaloneBootloaderVersionPlatMicroPhyRequest : EzspFrameRequest
 {
-}

@@ -39,7 +39,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     ///   bit 1 : sleepMode[1]
     ///   bit 0 : sleepMode[0]
     /// </summary>
-    public abstract class EzspFrameRequest : EzspFrameV8Plus
+    public abstract class EzspFrameRequestV8Plus : EzspFrameV8Plus
     {
         private static int sequence = 0;
         
@@ -49,7 +49,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /**
          * Constructor used to create an outgoing frame
          */
-        protected EzspFrameRequest()
+        protected EzspFrameRequestV8Plus()
         {
             _sequenceNumber = Interlocked.Increment(ref sequence) & 0xff;
         }

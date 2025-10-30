@@ -23,4 +23,3 @@ public class DsaVerify283k1Request : EzspFrameRequest
     /// </summary>
     public sl_zigbee_signature_283k1_data_t receivedSig { get; set; }
 
-}

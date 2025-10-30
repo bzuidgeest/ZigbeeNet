@@ -13,4 +13,3 @@ public class GetTokenInfoRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

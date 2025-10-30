@@ -28,4 +28,3 @@ public class EnergyScanRequestRequest : EzspFrameRequest
     /// </summary>
     public ushort scanCount { get; set; }
 
-}

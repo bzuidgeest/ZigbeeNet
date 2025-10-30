@@ -13,4 +13,3 @@ public class ProxyNextBroadcastFromLongRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[8] euiSource { get; set; }
 
-}

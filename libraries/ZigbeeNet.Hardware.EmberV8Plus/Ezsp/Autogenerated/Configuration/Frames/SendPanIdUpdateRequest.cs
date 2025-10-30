@@ -13,4 +13,3 @@ public class SendPanIdUpdateRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_pan_id_t newPan { get; set; }
 
-}

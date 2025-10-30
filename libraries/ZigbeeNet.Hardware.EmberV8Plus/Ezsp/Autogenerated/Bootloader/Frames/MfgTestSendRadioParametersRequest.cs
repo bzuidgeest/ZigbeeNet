@@ -18,4 +18,3 @@ public class MfgTestSendRadioParametersRequest : EzspFrameRequest
     /// </summary>
     public sbyte crystalOffset { get; set; }
 
-}

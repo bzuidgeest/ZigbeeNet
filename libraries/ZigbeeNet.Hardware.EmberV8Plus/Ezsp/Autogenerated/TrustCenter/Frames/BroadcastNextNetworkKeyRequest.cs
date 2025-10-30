@@ -13,4 +13,3 @@ public class BroadcastNextNetworkKeyRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_key_data_t key { get; set; }
 
-}

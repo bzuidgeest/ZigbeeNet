@@ -18,4 +18,3 @@ public class FindKeyTableEntryRequest : EzspFrameRequest
     /// </summary>
     public bool linkKey { get; set; }
 
-}

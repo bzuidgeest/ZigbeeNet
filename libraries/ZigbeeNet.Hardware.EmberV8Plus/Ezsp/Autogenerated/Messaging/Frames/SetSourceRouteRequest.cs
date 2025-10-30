@@ -23,4 +23,3 @@ public class SetSourceRouteRequest : EzspFrameRequest
     /// </summary>
     public uint16_t[relayCount] relayList { get; set; }
 
-}

@@ -18,4 +18,3 @@ public class SetChildPowerRequest : EzspFrameRequest
     /// </summary>
     public sbyte newPower { get; set; }
 
-}

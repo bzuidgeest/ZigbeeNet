@@ -13,4 +13,3 @@ public class MfglibInternalStartRequest : EzspFrameRequest
     /// </summary>
     public bool rxCallback { get; set; }
 
-}

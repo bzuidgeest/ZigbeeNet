@@ -23,4 +23,3 @@ public class PollForDataRequest : EzspFrameRequest
     /// </summary>
     public byte failureLimit { get; set; }
 
-}

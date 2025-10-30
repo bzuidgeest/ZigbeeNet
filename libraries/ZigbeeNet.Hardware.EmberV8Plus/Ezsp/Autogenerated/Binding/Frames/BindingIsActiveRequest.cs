@@ -13,4 +13,3 @@ public class BindingIsActiveRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

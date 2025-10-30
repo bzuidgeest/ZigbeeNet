@@ -13,4 +13,3 @@ public class SetRadioPowerRequest : EzspFrameRequest
     /// </summary>
     public sbyte power { get; set; }
 
-}

@@ -13,4 +13,3 @@ public class SetBrokenRouteErrorCodeRequest : EzspFrameRequest
     /// </summary>
     public byte errorCode { get; set; }
 
-}

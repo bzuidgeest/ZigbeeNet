@@ -13,4 +13,3 @@ public class ZllSetRxOnWhenIdleRequest : EzspFrameRequest
     /// </summary>
     public uint durationMs { get; set; }
 
-}

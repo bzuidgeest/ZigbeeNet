@@ -12,4 +12,3 @@ public class ConcentratorNoteRouteErrorRequest : EzspFrameRequest
 
     public sl_802154_short_addr_t nodeId { get; set; }
 
-}

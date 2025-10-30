@@ -13,4 +13,3 @@ public class LaunchStandaloneBootloaderRequest : EzspFrameRequest
     /// </summary>
     public bool enabled { get; set; }
 
-}

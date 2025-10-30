@@ -13,4 +13,3 @@ public class WriteNodeDataRequest : EzspFrameRequest
     /// </summary>
     public bool erase { get; set; }
 
-}

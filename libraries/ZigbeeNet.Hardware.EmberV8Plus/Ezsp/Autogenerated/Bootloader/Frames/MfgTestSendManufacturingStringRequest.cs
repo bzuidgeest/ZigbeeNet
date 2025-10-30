@@ -13,4 +13,3 @@ public class MfgTestSendManufacturingStringRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_manufacturing_string_t newString { get; set; }
 
-}

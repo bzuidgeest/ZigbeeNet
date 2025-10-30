@@ -58,4 +58,3 @@ public class WriteAttributeRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[dataLength] data { get; set; }
 
-}

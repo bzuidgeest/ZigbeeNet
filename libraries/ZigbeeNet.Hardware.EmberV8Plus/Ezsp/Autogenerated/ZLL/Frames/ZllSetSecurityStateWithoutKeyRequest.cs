@@ -13,4 +13,3 @@ public class ZllSetSecurityStateWithoutKeyRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_zll_initial_security_state_t securityState { get; set; }
 
-}

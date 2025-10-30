@@ -13,4 +13,3 @@ public class CounterRequiresDestinationNodeIdRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_counter_type_t counter { get; set; }
 
-}

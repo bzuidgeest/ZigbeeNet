@@ -18,4 +18,3 @@ public class GetTokenDataRequest : EzspFrameRequest
     /// </summary>
     public uint index { get; set; }
 
-}

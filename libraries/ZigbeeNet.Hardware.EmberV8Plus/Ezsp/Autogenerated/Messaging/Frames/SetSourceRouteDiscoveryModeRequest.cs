@@ -13,4 +13,3 @@ public class SetSourceRouteDiscoveryModeRequest : EzspFrameRequest
     /// </summary>
     public byte mode { get; set; }
 
-}

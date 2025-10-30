@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class CustomFrameHandlerRequest : EzspFrameRequest
 {
-}

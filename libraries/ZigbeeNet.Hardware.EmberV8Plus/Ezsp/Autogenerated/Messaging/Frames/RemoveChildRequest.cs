@@ -13,4 +13,3 @@ public class RemoveChildRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t childEui64 { get; set; }
 
-}

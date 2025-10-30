@@ -28,4 +28,3 @@ public class SendRawMessageRequest : EzspFrameRequest
     /// </summary>
     public bool useCca { get; set; }
 
-}

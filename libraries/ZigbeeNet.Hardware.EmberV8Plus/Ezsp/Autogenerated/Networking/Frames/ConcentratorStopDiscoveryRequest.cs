@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ConcentratorStopDiscoveryRequest : EzspFrameRequest
 {
-}

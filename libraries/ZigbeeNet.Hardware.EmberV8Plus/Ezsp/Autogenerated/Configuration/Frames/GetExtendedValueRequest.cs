@@ -18,4 +18,3 @@ public class GetExtendedValueRequest : EzspFrameRequest
     /// </summary>
     public uint characteristics { get; set; }
 
-}

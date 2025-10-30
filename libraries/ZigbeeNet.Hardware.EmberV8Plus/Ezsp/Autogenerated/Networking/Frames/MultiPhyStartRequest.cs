@@ -33,4 +33,3 @@ public class MultiPhyStartRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_multi_phy_nwk_config_t bitmask { get; set; }
 
-}

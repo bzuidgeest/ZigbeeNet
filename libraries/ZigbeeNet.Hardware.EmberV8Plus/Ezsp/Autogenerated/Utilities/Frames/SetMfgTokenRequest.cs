@@ -23,4 +23,3 @@ public class SetMfgTokenRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[tokenDataLength] tokenData { get; set; }
 
-}

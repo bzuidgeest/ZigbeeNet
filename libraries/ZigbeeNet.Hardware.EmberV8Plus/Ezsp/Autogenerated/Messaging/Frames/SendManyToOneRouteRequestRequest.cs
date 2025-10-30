@@ -18,4 +18,3 @@ public class SendManyToOneRouteRequestRequest : EzspFrameRequest
     /// </summary>
     public byte radius { get; set; }
 
-}

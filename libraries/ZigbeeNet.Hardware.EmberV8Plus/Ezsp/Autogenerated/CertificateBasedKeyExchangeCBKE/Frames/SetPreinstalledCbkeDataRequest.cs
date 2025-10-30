@@ -23,4 +23,3 @@ public class SetPreinstalledCbkeDataRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_private_key_data_t myKey { get; set; }
 
-}

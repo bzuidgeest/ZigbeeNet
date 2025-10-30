@@ -13,4 +13,3 @@ public class DelayTestRequest : EzspFrameRequest
     /// </summary>
     public ushort delay { get; set; }
 
-}

@@ -23,4 +23,3 @@ public class SetAddressTableInfoRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_short_addr_t id { get; set; }
 
-}

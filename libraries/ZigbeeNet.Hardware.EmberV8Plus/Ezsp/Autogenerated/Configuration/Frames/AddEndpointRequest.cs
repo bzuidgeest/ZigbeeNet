@@ -48,4 +48,3 @@ public class AddEndpointRequest : EzspFrameRequest
     /// </summary>
     public uint16_t[outputClusterCount] outputClusterList { get; set; }
 
-}

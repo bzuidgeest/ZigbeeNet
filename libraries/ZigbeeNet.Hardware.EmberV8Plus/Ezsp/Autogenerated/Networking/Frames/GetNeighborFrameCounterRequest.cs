@@ -13,4 +13,3 @@ public class GetNeighborFrameCounterRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t eui64 { get; set; }
 
-}

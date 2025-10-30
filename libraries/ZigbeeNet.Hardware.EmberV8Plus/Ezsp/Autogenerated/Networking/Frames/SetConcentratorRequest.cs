@@ -43,4 +43,3 @@ public class SetConcentratorRequest : EzspFrameRequest
     /// </summary>
     public byte maxHops { get; set; }
 
-}

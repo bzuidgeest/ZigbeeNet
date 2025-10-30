@@ -8,4 +8,3 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 /// </summary>
 public class BroadcastNetworkKeySwitchRequest : EzspFrameRequest
 {
-}

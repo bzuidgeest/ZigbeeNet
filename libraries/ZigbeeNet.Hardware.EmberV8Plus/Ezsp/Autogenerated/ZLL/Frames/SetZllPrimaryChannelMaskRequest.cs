@@ -13,4 +13,3 @@ public class SetZllPrimaryChannelMaskRequest : EzspFrameRequest
     /// </summary>
     public uint zllPrimaryChannelMask { get; set; }
 
-}

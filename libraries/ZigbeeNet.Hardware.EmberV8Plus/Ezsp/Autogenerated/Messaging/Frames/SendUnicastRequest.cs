@@ -38,4 +38,3 @@ public class SendUnicastRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[messageLength] messageContents { get; set; }
 
-}

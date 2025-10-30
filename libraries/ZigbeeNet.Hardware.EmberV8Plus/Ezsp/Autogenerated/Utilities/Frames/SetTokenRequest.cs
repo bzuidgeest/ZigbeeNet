@@ -18,4 +18,3 @@ public class SetTokenRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[8] tokenData { get; set; }
 
-}

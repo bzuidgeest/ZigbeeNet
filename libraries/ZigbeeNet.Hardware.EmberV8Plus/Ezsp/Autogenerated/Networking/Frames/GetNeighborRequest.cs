@@ -13,4 +13,3 @@ public class GetNeighborRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

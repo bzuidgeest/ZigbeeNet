@@ -11,17 +11,17 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
     /// </summary>
     public class EzspSingleResponseTransaction : IEzspTransaction
     {
-        private EzspFrameRequest _request;
-        private EzspFrameResponse _response;
+        private EzspFrameRequestV8Plus _request;
+        private EzspFrameResponseV8Plus _response;
         private Type _requiredResponse;
 
-        public EzspSingleResponseTransaction(EzspFrameRequest request, Type requiredResponse) 
+        public EzspSingleResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse) 
         {
             this._request = request;
             this._requiredResponse = requiredResponse;
         }
 
-        public bool IsMatch(EzspFrameResponse response) 
+        public bool IsMatch(EzspFrameResponseV8Plus response) 
         {
             if (response.GetType() == _requiredResponse && _request.GetSequenceNumber() == response.GetSequenceNumber()) 
             {
@@ -34,7 +34,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
             }
         }
 
-        public EzspFrameRequest GetRequest() 
+        public EzspFrameRequestV8Plus GetRequest() 
         {
             return _request;
         }
@@ -48,18 +48,18 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
             return EmberStatus.UNKNOWN;
         }
 
-        public EzspFrameResponse GetResponse() 
+        public EzspFrameResponseV8Plus GetResponse() 
         {
             return _response;
         }
 
-        public List<EzspFrameResponse> GetResponses() 
+        public List<EzspFrameResponseV8Plus> GetResponses() 
         {
             if (_response == null) 
                 return null;
 
             // This transaction only allows a single response
-            return new List<EzspFrameResponse>() { _response };
+            return new List<EzspFrameResponseV8Plus>() { _response };
         }
     }
 }

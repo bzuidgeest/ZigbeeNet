@@ -13,4 +13,3 @@ public class GetAddressTableInfoRequest : EzspFrameRequest
     /// </summary>
     public byte addressTableIndex { get; set; }
 
-}

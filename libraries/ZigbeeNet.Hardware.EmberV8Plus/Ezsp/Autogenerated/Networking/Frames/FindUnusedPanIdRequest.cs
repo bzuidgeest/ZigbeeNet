@@ -18,4 +18,3 @@ public class FindUnusedPanIdRequest : EzspFrameRequest
     /// </summary>
     public byte duration { get; set; }
 
-}

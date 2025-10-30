@@ -13,4 +13,3 @@ public class GetRouteTableEntryRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

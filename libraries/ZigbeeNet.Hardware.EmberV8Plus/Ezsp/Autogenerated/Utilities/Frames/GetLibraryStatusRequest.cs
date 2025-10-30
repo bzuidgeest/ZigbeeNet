@@ -13,4 +13,3 @@ public class GetLibraryStatusRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_library_id_t libraryId { get; set; }
 
-}

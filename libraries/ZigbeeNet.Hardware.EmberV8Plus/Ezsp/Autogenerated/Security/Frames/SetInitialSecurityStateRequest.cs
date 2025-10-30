@@ -13,4 +13,3 @@ public class SetInitialSecurityStateRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_initial_security_state_t state { get; set; }
 
-}

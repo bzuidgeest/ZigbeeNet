@@ -13,4 +13,3 @@ public class SetIncomingTcLinkKeyFrameCounterRequest : EzspFrameRequest
     /// </summary>
     public uint frameCounter { get; set; }
 
-}

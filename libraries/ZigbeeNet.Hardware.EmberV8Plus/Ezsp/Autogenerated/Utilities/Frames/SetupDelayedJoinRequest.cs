@@ -13,4 +13,3 @@ public class SetupDelayedJoinRequest : EzspFrameRequest
     /// </summary>
     public byte networkKeyTimeoutS { get; set; }
 
-}

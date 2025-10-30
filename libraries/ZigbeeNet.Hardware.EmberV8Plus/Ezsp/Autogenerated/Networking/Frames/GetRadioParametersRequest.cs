@@ -13,4 +13,3 @@ public class GetRadioParametersRequest : EzspFrameRequest
     /// </summary>
     public byte phyIndex { get; set; }
 
-}

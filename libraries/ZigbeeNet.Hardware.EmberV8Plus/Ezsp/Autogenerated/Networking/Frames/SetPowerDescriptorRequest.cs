@@ -13,4 +13,3 @@ public class SetPowerDescriptorRequest : EzspFrameRequest
     /// </summary>
     public ushort descriptor { get; set; }
 
-}

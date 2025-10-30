@@ -23,4 +23,3 @@ public class MultiPhySetRadioChannelRequest : EzspFrameRequest
     /// </summary>
     public byte channel { get; set; }
 
-}

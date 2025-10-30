@@ -13,4 +13,3 @@ public class SetZllAdditionalStateRequest : EzspFrameRequest
     /// </summary>
     public ushort state { get; set; }
 
-}

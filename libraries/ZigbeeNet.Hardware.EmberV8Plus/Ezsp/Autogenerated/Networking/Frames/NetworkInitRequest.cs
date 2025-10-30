@@ -13,4 +13,3 @@ public class NetworkInitRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_network_init_struct_t networkInitStruct { get; set; }
 
-}

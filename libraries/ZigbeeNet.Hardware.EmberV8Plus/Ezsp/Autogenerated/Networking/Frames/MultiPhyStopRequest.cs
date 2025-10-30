@@ -13,4 +13,3 @@ public class MultiPhyStopRequest : EzspFrameRequest
     /// </summary>
     public byte phyIndex { get; set; }
 
-}

@@ -13,4 +13,3 @@ public class SetRoutingShortcutThresholdRequest : EzspFrameRequest
     /// </summary>
     public byte costThresh { get; set; }
 
-}

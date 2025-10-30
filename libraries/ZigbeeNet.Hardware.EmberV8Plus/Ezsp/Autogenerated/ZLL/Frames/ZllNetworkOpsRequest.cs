@@ -23,4 +23,3 @@ public class ZllNetworkOpsRequest : EzspFrameRequest
     /// </summary>
     public sbyte radioTxPower { get; set; }
 
-}

@@ -13,4 +13,3 @@ public class GpProxyTableLookupRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_gp_address_t addr { get; set; }
 
-}

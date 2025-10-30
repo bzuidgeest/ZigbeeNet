@@ -13,4 +13,3 @@ public class VersionRequest : EzspFrameRequest
     /// </summary>
     public byte desiredProtocolVersion { get; set; }
 
-}

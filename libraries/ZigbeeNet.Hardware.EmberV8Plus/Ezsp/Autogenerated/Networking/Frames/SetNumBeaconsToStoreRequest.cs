@@ -13,4 +13,3 @@ public class SetNumBeaconsToStoreRequest : EzspFrameRequest
     /// </summary>
     public byte numBeacons { get; set; }
 
-}

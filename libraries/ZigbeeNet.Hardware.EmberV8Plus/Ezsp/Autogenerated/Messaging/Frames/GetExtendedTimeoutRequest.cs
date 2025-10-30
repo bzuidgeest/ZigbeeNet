@@ -13,4 +13,3 @@ public class GetExtendedTimeoutRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_long_addr_t remoteEui64 { get; set; }
 
-}

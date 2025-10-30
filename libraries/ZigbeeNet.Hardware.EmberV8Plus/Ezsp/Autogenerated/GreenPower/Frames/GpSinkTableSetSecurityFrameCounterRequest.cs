@@ -18,4 +18,3 @@ public class GpSinkTableSetSecurityFrameCounterRequest : EzspFrameRequest
     /// </summary>
     public uint sfc { get; set; }
 
-}

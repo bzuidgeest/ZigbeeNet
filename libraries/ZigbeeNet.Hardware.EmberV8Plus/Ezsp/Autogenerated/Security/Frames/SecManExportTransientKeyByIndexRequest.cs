@@ -13,4 +13,3 @@ public class SecManExportTransientKeyByIndexRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

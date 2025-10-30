@@ -23,4 +23,3 @@ public class StartScanRequest : EzspFrameRequest
     /// </summary>
     public byte duration { get; set; }
 
-}

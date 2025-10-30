@@ -47,7 +47,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          *
          * @param request {@link EzspFrameRequest}
          */
-        void QueueFrame(EzspFrameRequest request);
+        void QueueFrame(EzspFrameRequestV8Plus request);
 
         /**
          * Connect to the ASH/EZSP NCP
@@ -77,7 +77,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param eventClass Request {@link EzspFrameResponse} to wait for
          * @return response {@link Future} {@link EzspFrameResponse}
          */
-        Task<EzspFrameResponse> EventWaitAsync(Type eventClass);
+        Task<EzspFrameResponseV8Plus> EventWaitAsync(Type eventClass);
 
         /**
          * Wait for the requested {@link EzspFrameResponse} to be received
@@ -86,7 +86,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param timeout the time in milliseconds to wait for the response
          * @return the {@link EzspFrameResponse} once received, or null on exception
          */
-        EzspFrameResponse EventWait(Type eventClass, int timeout);
+        EzspFrameResponseV8Plus EventWait(Type eventClass, int timeout);
 
         /**
          * Get a map of statistics counters from the handler

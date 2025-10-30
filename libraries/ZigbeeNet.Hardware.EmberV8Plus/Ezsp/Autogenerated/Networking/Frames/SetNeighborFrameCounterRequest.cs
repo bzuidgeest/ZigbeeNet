@@ -18,4 +18,3 @@ public class SetNeighborFrameCounterRequest : EzspFrameRequest
     /// </summary>
     public uint frameCounter { get; set; }
 
-}

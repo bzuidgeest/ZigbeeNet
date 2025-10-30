@@ -28,4 +28,3 @@ public class FindAndRejoinNetworkRequest : EzspFrameRequest
     /// </summary>
     public byte nodeType { get; set; }
 
-}

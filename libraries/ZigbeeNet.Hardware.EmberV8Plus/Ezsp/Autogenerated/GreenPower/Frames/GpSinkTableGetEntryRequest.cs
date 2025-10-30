@@ -13,4 +13,3 @@ public class GpSinkTableGetEntryRequest : EzspFrameRequest
     /// </summary>
     public byte sinkIndex { get; set; }
 
-}

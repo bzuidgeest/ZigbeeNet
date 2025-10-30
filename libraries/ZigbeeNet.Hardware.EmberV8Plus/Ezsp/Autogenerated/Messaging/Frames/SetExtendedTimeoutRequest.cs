@@ -18,4 +18,3 @@ public class SetExtendedTimeoutRequest : EzspFrameRequest
     /// </summary>
     public bool extendedTimeout { get; set; }
 
-}

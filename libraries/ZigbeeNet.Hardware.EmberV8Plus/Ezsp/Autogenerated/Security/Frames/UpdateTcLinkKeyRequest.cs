@@ -13,4 +13,3 @@ public class UpdateTcLinkKeyRequest : EzspFrameRequest
     /// </summary>
     public byte maxAttempts { get; set; }
 
-}

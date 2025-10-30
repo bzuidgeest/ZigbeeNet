@@ -13,4 +13,3 @@ public class GetChildDataRequest : EzspFrameRequest
     /// </summary>
     public byte index { get; set; }
 
-}

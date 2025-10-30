@@ -18,4 +18,3 @@ public class SecManImportTransientKeyRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_sec_man_key_t plaintext_key { get; set; }
 
-}

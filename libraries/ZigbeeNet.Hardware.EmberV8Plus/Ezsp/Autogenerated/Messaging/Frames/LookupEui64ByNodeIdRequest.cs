@@ -13,4 +13,3 @@ public class LookupEui64ByNodeIdRequest : EzspFrameRequest
     /// </summary>
     public sl_802154_short_addr_t nodeId { get; set; }
 
-}

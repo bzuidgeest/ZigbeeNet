@@ -13,4 +13,3 @@ public class SetManufacturerCodeRequest : EzspFrameRequest
     /// </summary>
     public ushort code { get; set; }
 
-}

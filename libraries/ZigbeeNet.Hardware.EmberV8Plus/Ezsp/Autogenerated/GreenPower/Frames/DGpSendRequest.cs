@@ -48,4 +48,3 @@ public class DGpSendRequest : EzspFrameRequest
     /// </summary>
     public ushort gpTxQueueEntryLifetimeMs { get; set; }
 
-}

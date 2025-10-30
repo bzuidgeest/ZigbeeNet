@@ -18,4 +18,3 @@ public class SetMulticastTableEntryRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_multicast_table_entry_t value { get; set; }
 
-}

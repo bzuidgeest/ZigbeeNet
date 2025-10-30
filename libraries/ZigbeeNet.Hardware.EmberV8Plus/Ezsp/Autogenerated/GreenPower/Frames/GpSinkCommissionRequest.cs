@@ -28,4 +28,3 @@ public class GpSinkCommissionRequest : EzspFrameRequest
     /// </summary>
     public byte sinkEndpoint { get; set; }
 
-}

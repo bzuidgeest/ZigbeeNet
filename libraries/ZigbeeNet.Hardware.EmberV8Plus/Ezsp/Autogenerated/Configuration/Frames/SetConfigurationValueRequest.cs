@@ -18,4 +18,3 @@ public class SetConfigurationValueRequest : EzspFrameRequest
     /// </summary>
     public ushort value { get; set; }
 
-}

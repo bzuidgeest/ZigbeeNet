@@ -13,4 +13,3 @@ public class ResetRejoiningNeighborsFrameCounterRequest : EzspFrameRequest
     /// </summary>
     public bool reset { get; set; }
 
-}

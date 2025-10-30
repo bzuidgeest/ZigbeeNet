@@ -13,4 +13,3 @@ public class SetPendingNetworkUpdatePanIdRequest : EzspFrameRequest
     /// </summary>
     public ushort panId { get; set; }
 
-}

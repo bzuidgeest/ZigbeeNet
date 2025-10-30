@@ -18,4 +18,3 @@ public class SetPassiveAckConfigRequest : EzspFrameRequest
     /// </summary>
     public byte minAcksNeeded { get; set; }
 
-}

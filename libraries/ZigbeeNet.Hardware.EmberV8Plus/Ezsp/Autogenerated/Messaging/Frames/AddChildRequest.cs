@@ -23,4 +23,3 @@ public class AddChildRequest : EzspFrameRequest
     /// </summary>
     public sl_zigbee_node_type_t nodeType { get; set; }
 
-}

@@ -22,12 +22,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
         /**
 		 * The request we sent
 		 */
-        private EzspFrameRequest _request;
+        private EzspFrameRequestV8Plus _request;
 
         /**
 		 * A list of responses received in relation to this transaction
 		 */
-        private List<EzspFrameResponse> _responses = new List<EzspFrameResponse>();
+        private List<EzspFrameResponseV8Plus> _responses = new List<EzspFrameResponseV8Plus>();
 
         /**
 		 * The response required to complete the transaction
@@ -39,14 +39,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 		 */
         private HashSet<Type> _relatedResponses;
 
-        public EzspMultiResponseTransaction(EzspFrameRequest request, Type requiredResponse,
+        public EzspMultiResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse,
                 HashSet<Type> relatedResponses)
         {
             this._request = request;
             this._requiredResponse = requiredResponse;
             this._relatedResponses = relatedResponses;
         }
-        public bool IsMatch(EzspFrameResponse response)
+        public bool IsMatch(EzspFrameResponseV8Plus response)
         {
             // Check if this response is related to this transaction
             if (_relatedResponses.Contains(response.GetType()))
@@ -70,7 +70,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
             }
         }
 
-        public EzspFrameRequest GetRequest()
+        public EzspFrameRequestV8Plus GetRequest()
         {
             return _request;
         }
@@ -87,7 +87,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 
             return EmberStatus.UNKNOWN;
         }
-        public EzspFrameResponse GetResponse()
+        public EzspFrameResponseV8Plus GetResponse()
         {
             if (_responses.Count > 0)
             {
@@ -96,7 +96,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
             return null;
         }
 
-        public List<EzspFrameResponse> GetResponses() 
+        public List<EzspFrameResponseV8Plus> GetResponses() 
         {
             if (_responses.Count == 0)
             {

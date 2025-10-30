@@ -13,4 +13,3 @@ public class PermitJoiningRequest : EzspFrameRequest
     /// </summary>
     public byte duration { get; set; }
 
-}

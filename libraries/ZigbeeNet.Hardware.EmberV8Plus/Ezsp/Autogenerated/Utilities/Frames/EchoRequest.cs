@@ -18,4 +18,3 @@ public class EchoRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[dataLength] data { get; set; }
 
-}

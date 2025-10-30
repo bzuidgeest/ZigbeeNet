@@ -18,4 +18,3 @@ public class SetNwkUpdateIdRequest : EzspFrameRequest
     /// </summary>
     public bool set_when_on_network { get; set; }
 
-}

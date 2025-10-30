@@ -48,4 +48,3 @@ public class SendBroadcastRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[messageLength] messageContents { get; set; }
 
-}

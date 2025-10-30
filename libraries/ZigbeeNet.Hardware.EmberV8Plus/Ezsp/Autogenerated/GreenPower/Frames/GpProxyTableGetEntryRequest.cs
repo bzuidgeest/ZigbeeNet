@@ -13,4 +13,3 @@ public class GpProxyTableGetEntryRequest : EzspFrameRequest
     /// </summary>
     public byte proxyIndex { get; set; }
 
-}

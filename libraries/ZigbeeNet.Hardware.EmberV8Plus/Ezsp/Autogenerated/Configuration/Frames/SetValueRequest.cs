@@ -23,4 +23,3 @@ public class SetValueRequest : EzspFrameRequest
     /// </summary>
     public uint8_t[valueLength] value { get; set; }
 
-}
