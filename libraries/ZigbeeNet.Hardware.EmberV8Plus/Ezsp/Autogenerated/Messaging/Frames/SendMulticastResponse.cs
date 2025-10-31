@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class SendMulticastResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value. For any result other than SL_STATUS_OK, the message will not be sent. SL_STATUS_OK - The message has been submitted for transmission. SL_STATUS_INVALID_INDEX - The bindingTableIndex refers to a non-multicast binding. SL_STATUS_NETWORK_DOWN - The node is not part of a network. SL_STATUS_MESSAGE_TOO_LONG - The message is too large to fit in a MAC layer frame. SL_STATUS_ALLOCATION_FAILED - The free packet buffer pool is empty. SL_STATUS_BUSY - Insufficient resources available in Network or MAC layers to send message.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The sequence number that will be used when this message is transmitted.
     /// </summary>
-    public byte sequence { get; set; }
+    public byte Sequence { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SendMulticastResponse frame = new SendMulticastResponse();
-		frame.status = 		frame.sequence = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Sequence = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

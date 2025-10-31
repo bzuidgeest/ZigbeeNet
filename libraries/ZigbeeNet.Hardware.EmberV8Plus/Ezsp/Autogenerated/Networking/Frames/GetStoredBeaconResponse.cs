@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetStoredBeaconResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An appropriate sl_status_t status code.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The beacon to populate upon success.
     /// </summary>
-    public sl_zigbee_beacon_data_t beacon { get; set; }
+    public sl_zigbee_beacon_data_t Beacon { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetStoredBeaconResponse frame = new GetStoredBeaconResponse();
-		frame.status = 		frame.beacon = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Beacon = /* TODO: Implement parsing for type sl_zigbee_beacon_data_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

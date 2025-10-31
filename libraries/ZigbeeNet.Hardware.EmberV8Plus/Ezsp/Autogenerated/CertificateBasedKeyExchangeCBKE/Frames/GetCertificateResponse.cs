@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -18,16 +19,23 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class GetCertificateResponse : EzspFrameResponseV8Plus
 {
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The locally installed certificate.
     /// </summary>
-    public sl_zigbee_certificate_data_t localCert { get; set; }
+    public sl_zigbee_certificate_data_t Localcert { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCertificateResponse frame = new GetCertificateResponse();
-		frame.status = 		frame.localCert = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Localcert = /* TODO: Implement parsing for type sl_zigbee_certificate_data_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Threading;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
@@ -34,7 +35,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     /// </summary>
     public abstract partial class EzspFrameResponseV8Plus : EzspFrameV8Plus
     {
-        protected EzspDeserializer deserializer;
+        //protected EzspDeserializer deserializer;
 
         private const int EZSP_FC_CB_PENDING = 0x04;
 
@@ -45,17 +46,31 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          *
          * @param inputBuffer the input array to deserialize
          */
-        protected EzspFrameResponseV8Plus(int[] inputBuffer)
+        protected EzspFrameResponseV8Plus()
         {
-            deserializer = new EzspDeserializer(inputBuffer);
-
-            _sequenceNumber = deserializer.DeserializeUInt8();
-            _frameControl = deserializer.DeserializeUInt16();
-            _frameId = deserializer.DeserializeUInt16();
             
+
+            
+        }
+
+        /*Use this method in derived classes to parse the header if needed
+         * @param frameBytes the input array to deserialize
+         * @return the index after parsing the header
+         */
+        protected int ParseHeader(ReadOnlySpan<byte> frameBytes)
+        {
+            
+            _sequenceNumber = frameBytes[0];
+            _frameControl = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
+            _frameId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
+
             _isResponse = (_frameControl & EZSP_FC_RESPONSE) != 0;
             _callbackPending = (_frameControl & EZSP_FC_CB_PENDING) != 0;
+
+            return 5;
         }
+
+
 
         /**
          * Returns true if the frame control byte indicates that a callback is pending for this response frame

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetEndpointResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Endpoint number at the index.
     /// </summary>
-    public byte endpoint { get; set; }
+    public byte Endpoint { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEndpointResponse frame = new GetEndpointResponse();
-		frame.endpoint = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Endpoint = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

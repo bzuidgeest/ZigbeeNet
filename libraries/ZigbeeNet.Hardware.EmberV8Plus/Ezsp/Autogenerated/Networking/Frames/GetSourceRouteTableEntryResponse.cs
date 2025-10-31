@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -23,22 +24,30 @@ public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
 	/// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
 	/// source route at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The node ID of the destination in that entry.
     /// </summary>
-    public sl_802154_short_addr_t destination { get; set; }
+    public sl_802154_short_addr_t Destination { get; set; }
 
     /// <summary>
     /// The closer node index for this source route table entry
     /// </summary>
-    public byte closerIndex { get; set; }
+    public byte Closerindex { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetSourceRouteTableEntryResponse frame = new GetSourceRouteTableEntryResponse();
-		frame.status = 		frame.destination = 		frame.closerIndex = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Destination = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Closerindex = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

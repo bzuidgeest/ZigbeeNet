@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class CurrentStackTasksResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A bitmask of the stack&apos;s active tasks.
     /// </summary>
-    public ushort activeTasks { get; set; }
+    public ushort Activetasks { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CurrentStackTasksResponse frame = new CurrentStackTasksResponse();
-		frame.activeTasks = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Activetasks = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }

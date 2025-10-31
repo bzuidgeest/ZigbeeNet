@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class SendManyToOneRouteRequestResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the route request was successfully submitted to the transmit queue, and SL_STATUS_FAIL otherwise.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SendManyToOneRouteRequestResponse frame = new SendManyToOneRouteRequestResponse();
-		frame.status = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

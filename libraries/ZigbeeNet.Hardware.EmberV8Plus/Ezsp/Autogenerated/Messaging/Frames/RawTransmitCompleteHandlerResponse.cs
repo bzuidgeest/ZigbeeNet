@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Length of the message that was transmitted.
     /// </summary>
-    public byte messageLength { get; set; }
+    public byte Messagelength { get; set; }
 
     /// <summary>
     /// The message that was transmitted.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public uint8_t[messageLength] Messagecontents { get; set; }
 
     /// <summary>
     /// SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RawTransmitCompleteHandlerResponse frame = new RawTransmitCompleteHandlerResponse();
-		frame.messageLength = BitConverter.ReadByte();
-		frame.messageContents = 		frame.status = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Messagelength = frameBytes[index];
+		index += 1;
+		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
+		index += 0;
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

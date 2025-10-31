@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class IdConflictHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The short id for which a conflict was detected
     /// </summary>
-    public sl_802154_short_addr_t id { get; set; }
+    public sl_802154_short_addr_t Id { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IdConflictHandlerResponse frame = new IdConflictHandlerResponse();
-		frame.id = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Id = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

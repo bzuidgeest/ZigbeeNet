@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class ZllGetRadioIdleModeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current power mode.
     /// </summary>
-    public byte radioIdleMode { get; set; }
+    public byte Radioidlemode { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllGetRadioIdleModeResponse frame = new ZllGetRadioIdleModeResponse();
-		frame.radioIdleMode = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Radioidlemode = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

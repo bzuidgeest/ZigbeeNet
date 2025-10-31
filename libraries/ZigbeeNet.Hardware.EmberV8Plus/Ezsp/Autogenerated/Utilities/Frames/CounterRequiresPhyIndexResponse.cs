@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class CounterRequiresPhyIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether this counter requires a PHY index when operating on a dual-PHY system.
     /// </summary>
-    public bool requires { get; set; }
+    public bool Requires { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CounterRequiresPhyIndexResponse frame = new CounterRequiresPhyIndexResponse();
-		frame.requires = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Requires = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

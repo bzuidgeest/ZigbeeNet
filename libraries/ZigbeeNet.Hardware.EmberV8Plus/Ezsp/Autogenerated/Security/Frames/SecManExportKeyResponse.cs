@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class SecManExportKeyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Data to store the exported key in.
     /// </summary>
-    public sl_zigbee_sec_man_key_t key { get; set; }
+    public sl_zigbee_sec_man_key_t Key { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SecManExportKeyResponse frame = new SecManExportKeyResponse();
-		frame.status = 		frame.key = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Key = /* TODO: Implement parsing for type sl_zigbee_sec_man_key_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class ParentTokenSetResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the parent token has been set.
     /// </summary>
-    public bool indicator { get; set; }
+    public bool Indicator { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ParentTokenSetResponse frame = new ParentTokenSetResponse();
-		frame.indicator = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Indicator = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class CounterRequiresDestinationNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether this counter requires the destination node ID.
     /// </summary>
-    public bool requires { get; set; }
+    public bool Requires { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CounterRequiresDestinationNodeIdResponse frame = new CounterRequiresDestinationNodeIdResponse();
-		frame.requires = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Requires = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

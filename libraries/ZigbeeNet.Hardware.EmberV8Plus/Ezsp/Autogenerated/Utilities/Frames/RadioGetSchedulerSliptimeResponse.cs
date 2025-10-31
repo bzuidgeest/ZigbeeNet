@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class RadioGetSchedulerSliptimeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value of the current slip time.
     /// </summary>
-    public uint32_t[1] slipTime { get; set; }
+    public uint32_t[1] Sliptime { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RadioGetSchedulerSliptimeResponse frame = new RadioGetSchedulerSliptimeResponse();
-		frame.slipTime = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Sliptime = /* TODO: Implement parsing for type uint32_t[1] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

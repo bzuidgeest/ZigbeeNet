@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GpSinkTableFindOrAllocateEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An index of found or allocated sink or 0xFF if failed.
     /// </summary>
-    public byte index { get; set; }
+    public byte Index { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpSinkTableFindOrAllocateEntryResponse frame = new GpSinkTableFindOrAllocateEntryResponse();
-		frame.index = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Index = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

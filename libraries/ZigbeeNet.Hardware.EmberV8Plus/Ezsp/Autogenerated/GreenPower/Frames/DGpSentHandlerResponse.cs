@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class DGpSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The handle of the GPDF.
     /// </summary>
-    public byte gpepHandle { get; set; }
+    public byte Gpephandle { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		DGpSentHandlerResponse frame = new DGpSentHandlerResponse();
-		frame.status = 		frame.gpepHandle = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Gpephandle = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

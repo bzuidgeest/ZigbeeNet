@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class SendPanIdUpdateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// true if the request was successfully handed to the stack, false otherwise
     /// </summary>
-    public bool status { get; set; }
+    public bool Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SendPanIdUpdateResponse frame = new SendPanIdUpdateResponse();
-		frame.status = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

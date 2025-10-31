@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,23 +22,30 @@ public class GetXncpInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the NCP is running the XNCP library. SL_STATUS_INVALID_STATE otherwise.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The manufactured ID the user has defined in the XNCP application.
     /// </summary>
-    public ushort manufacturerId { get; set; }
+    public ushort Manufacturerid { get; set; }
 
     /// <summary>
     /// The version number of the XNCP application.
     /// </summary>
-    public ushort versionNumber { get; set; }
+    public ushort Versionnumber { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetXncpInfoResponse frame = new GetXncpInfoResponse();
-		frame.status = 		frame.manufacturerId = BitConverter.ReadUShort();
-		frame.versionNumber = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Manufacturerid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Versionnumber = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,27 +22,37 @@ public class MacPassthroughMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of MAC passthrough message received.
     /// </summary>
-    public sl_zigbee_mac_passthrough_type_t messageType { get; set; }
+    public sl_zigbee_mac_passthrough_type_t Messagetype { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t packetInfo { get; set; }
+    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+    public byte Messagelength { get; set; }
 
     /// <summary>
     /// The raw message that was received.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public uint8_t[messageLength] Messagecontents { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MacPassthroughMessageHandlerResponse frame = new MacPassthroughMessageHandlerResponse();
-		frame.messageType = 		frame.packetInfo = 		frame.messageLength = BitConverter.ReadByte();
-		frame.messageContents = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Messagetype = /* TODO: Implement parsing for type sl_zigbee_mac_passthrough_type_t */ null;
+		index += 0;
+		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
+		index += 0;
+		frame.Messagelength = frameBytes[index];
+		index += 1;
+		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

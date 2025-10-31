@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class ChildIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child or SL_ZIGBEE_NULL_NODE_ID if there isn&apos;t a child at the childIndex specified
     /// </summary>
-    public sl_802154_short_addr_t childId { get; set; }
+    public sl_802154_short_addr_t Childid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ChildIdResponse frame = new ChildIdResponse();
-		frame.childId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

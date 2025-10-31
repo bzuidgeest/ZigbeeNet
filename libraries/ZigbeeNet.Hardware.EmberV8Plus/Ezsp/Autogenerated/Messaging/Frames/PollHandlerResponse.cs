@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class PollHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child that is requesting data.
     /// </summary>
-    public sl_802154_short_addr_t childId { get; set; }
+    public sl_802154_short_addr_t Childid { get; set; }
 
     /// <summary>
     /// True if transmit is expected, false otherwise.
     /// </summary>
-    public bool transmitExpected { get; set; }
+    public bool Transmitexpected { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		PollHandlerResponse frame = new PollHandlerResponse();
-		frame.childId = 		frame.transmitExpected = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Transmitexpected = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

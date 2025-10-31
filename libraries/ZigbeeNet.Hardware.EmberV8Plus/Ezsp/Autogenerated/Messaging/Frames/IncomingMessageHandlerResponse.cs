@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,32 +22,44 @@ public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK
     /// </summary>
-    public sl_zigbee_incoming_message_type_t type { get; set; }
+    public sl_zigbee_incoming_message_type_t Type { get; set; }
 
     /// <summary>
     /// The APS frame from the incoming message.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public sl_zigbee_aps_frame_t Apsframe { get; set; }
 
     /// <summary>
     /// Miscellanous message information.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t packetInfo { get; set; }
+    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+    public byte Messagelength { get; set; }
 
     /// <summary>
     /// The incoming message.
     /// </summary>
-    public uint8_t[messageLength] message { get; set; }
+    public uint8_t[messageLength] Message { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingMessageHandlerResponse frame = new IncomingMessageHandlerResponse();
-		frame.type = 		frame.apsFrame = 		frame.packetInfo = 		frame.messageLength = BitConverter.ReadByte();
-		frame.message = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Type = /* TODO: Implement parsing for type sl_zigbee_incoming_message_type_t */ null;
+		index += 0;
+		frame.Apsframe = /* TODO: Implement parsing for type sl_zigbee_aps_frame_t */ null;
+		index += 0;
+		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
+		index += 0;
+		frame.Messagelength = frameBytes[index];
+		index += 1;
+		frame.Message = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class SwitchNetworkKeyHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The sequence number of the new network key.
     /// </summary>
-    public byte sequenceNumber { get; set; }
+    public byte Sequencenumber { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SwitchNetworkKeyHandlerResponse frame = new SwitchNetworkKeyHandlerResponse();
-		frame.sequenceNumber = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Sequencenumber = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

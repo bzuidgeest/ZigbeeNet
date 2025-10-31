@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetNumStoredBeaconsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of cached beacons that have been collected from a scan.
     /// </summary>
-    public byte numBeacons { get; set; }
+    public byte Numbeacons { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetNumStoredBeaconsResponse frame = new GetNumStoredBeaconsResponse();
-		frame.numBeacons = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Numbeacons = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

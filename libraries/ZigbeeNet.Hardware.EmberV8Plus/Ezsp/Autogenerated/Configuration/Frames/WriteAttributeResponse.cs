@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class WriteAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_zigbee_af_status_t af_status { get; set; }
+    public sl_zigbee_af_status_t AfStatus { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		WriteAttributeResponse frame = new WriteAttributeResponse();
-		frame.af_status = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.AfStatus = /* TODO: Implement parsing for type sl_zigbee_af_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

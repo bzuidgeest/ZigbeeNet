@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The unused panID which has been found.
     /// </summary>
-    public sl_802154_pan_id_t panId { get; set; }
+    public sl_802154_pan_id_t Panid { get; set; }
 
     /// <summary>
     /// The channel that the unused panID was found on.
     /// </summary>
-    public byte channel { get; set; }
+    public byte Channel { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
-		frame.panId = 		frame.channel = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Panid = /* TODO: Implement parsing for type sl_802154_pan_id_t */ null;
+		index += 0;
+		frame.Channel = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

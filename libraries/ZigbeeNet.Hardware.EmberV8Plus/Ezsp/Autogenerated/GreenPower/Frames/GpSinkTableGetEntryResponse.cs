@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GpSinkTableGetEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the requested sink entry.
     /// </summary>
-    public sl_zigbee_gp_sink_table_entry_t entry { get; set; }
+    public sl_zigbee_gp_sink_table_entry_t Entry { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpSinkTableGetEntryResponse frame = new GpSinkTableGetEntryResponse();
-		frame.status = 		frame.entry = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Entry = /* TODO: Implement parsing for type sl_zigbee_gp_sink_table_entry_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

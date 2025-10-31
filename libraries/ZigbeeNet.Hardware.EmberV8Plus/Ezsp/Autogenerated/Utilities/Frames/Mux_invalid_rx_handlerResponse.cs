@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -18,15 +19,20 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class Mux_invalid_rx_handlerResponse : EzspFrameResponseV8Plus
 {
-    public byte new_rx_channel { get; set; }
+    public byte NewRxChannel { get; set; }
 
-    public byte old_rx_channel { get; set; }
+    public byte OldRxChannel { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		Mux_invalid_rx_handlerResponse frame = new Mux_invalid_rx_handlerResponse();
-		frame.new_rx_channel = BitConverter.ReadByte();
-		frame.old_rx_channel = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.NewRxChannel = frameBytes[index];
+		index += 1;
+		frame.OldRxChannel = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

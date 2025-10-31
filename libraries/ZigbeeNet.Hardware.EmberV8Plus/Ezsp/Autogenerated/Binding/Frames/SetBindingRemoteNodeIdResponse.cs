@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -18,9 +19,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// </summary>
 public class SetBindingRemoteNodeIdResponse : EzspFrameResponseV8Plus
 {
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SetBindingRemoteNodeIdResponse frame = new SetBindingRemoteNodeIdResponse();
+		int index = frame.ParseHeader(frameBytes);
+
+
+		return frame;
 	}
-}
 }

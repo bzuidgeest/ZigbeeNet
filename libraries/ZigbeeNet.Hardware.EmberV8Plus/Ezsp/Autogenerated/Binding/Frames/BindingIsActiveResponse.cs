@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class BindingIsActiveResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the binding table entry is active, false otherwise.
     /// </summary>
-    public bool active { get; set; }
+    public bool Active { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		BindingIsActiveResponse frame = new BindingIsActiveResponse();
-		frame.active = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Active = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,27 +22,37 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public sl_zigbee_zll_network_t networkInfo { get; set; }
+    public sl_zigbee_zll_network_t Networkinfo { get; set; }
 
     /// <summary>
     /// Used to interpret deviceInfo field.
     /// </summary>
-    public bool isDeviceInfoNull { get; set; }
+    public bool Isdeviceinfonull { get; set; }
 
     /// <summary>
     /// Device specific information.
     /// </summary>
-    public sl_zigbee_zll_device_info_record_t deviceInfo { get; set; }
+    public sl_zigbee_zll_device_info_record_t Deviceinfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet received from this network.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t packetInfo { get; set; }
+    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllNetworkFoundHandlerResponse frame = new ZllNetworkFoundHandlerResponse();
-		frame.networkInfo = 		frame.isDeviceInfoNull = BitConverter.ReadBool();
-		frame.deviceInfo = 		frame.packetInfo = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Networkinfo = /* TODO: Implement parsing for type sl_zigbee_zll_network_t */ null;
+		index += 0;
+		frame.Isdeviceinfonull = frameBytes[index];
+		index += 1;
+		frame.Deviceinfo = /* TODO: Implement parsing for type sl_zigbee_zll_device_info_record_t */ null;
+		index += 0;
+		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetChildDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if there is a child at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_JOINED if there is no child at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public sl_zigbee_child_data_t childData { get; set; }
+    public sl_zigbee_child_data_t Childdata { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetChildDataResponse frame = new GetChildDataResponse();
-		frame.status = 		frame.childData = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Childdata = /* TODO: Implement parsing for type sl_zigbee_child_data_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

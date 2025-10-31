@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class GetNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The 16-bit ID.
     /// </summary>
-    public sl_802154_short_addr_t nodeId { get; set; }
+    public sl_802154_short_addr_t Nodeid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetNodeIdResponse frame = new GetNodeIdResponse();
-		frame.nodeId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Nodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

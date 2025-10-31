@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class SendUnicastResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The sequence number that will be used when this message is transmitted.
     /// </summary>
-    public byte sequence { get; set; }
+    public byte Sequence { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SendUnicastResponse frame = new SendUnicastResponse();
-		frame.status = 		frame.sequence = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Sequence = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

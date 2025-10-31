@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,26 +22,37 @@ public class SecManExportLinkKeyByEuiResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of key export operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Context referring to the exported key, containing the table index that this key is located in.
     /// </summary>
-    public sl_zigbee_sec_man_context_t context { get; set; }
+    public sl_zigbee_sec_man_context_t Context { get; set; }
 
     /// <summary>
     /// The exported key.
     /// </summary>
-    public sl_zigbee_sec_man_key_t plaintext_key { get; set; }
+    public sl_zigbee_sec_man_key_t PlaintextKey { get; set; }
 
     /// <summary>
     /// Metadata about the key.
     /// </summary>
-    public sl_zigbee_sec_man_aps_key_metadata_t key_data { get; set; }
+    public sl_zigbee_sec_man_aps_key_metadata_t KeyData { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SecManExportLinkKeyByEuiResponse frame = new SecManExportLinkKeyByEuiResponse();
-		frame.status = 		frame.context = 		frame.plaintext_key = 		frame.key_data = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Context = /* TODO: Implement parsing for type sl_zigbee_sec_man_context_t */ null;
+		index += 0;
+		frame.PlaintextKey = /* TODO: Implement parsing for type sl_zigbee_sec_man_key_t */ null;
+		index += 0;
+		frame.KeyData = /* TODO: Implement parsing for type sl_zigbee_sec_man_aps_key_metadata_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

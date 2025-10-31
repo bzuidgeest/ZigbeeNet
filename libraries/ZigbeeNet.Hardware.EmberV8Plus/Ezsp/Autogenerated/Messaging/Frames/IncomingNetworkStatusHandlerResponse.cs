@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class IncomingNetworkStatusHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// One byte over-the-air error code from network status message
     /// </summary>
-    public byte errorCode { get; set; }
+    public byte Errorcode { get; set; }
 
     /// <summary>
     /// The short ID of the remote node
     /// </summary>
-    public sl_802154_short_addr_t target { get; set; }
+    public sl_802154_short_addr_t Target { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingNetworkStatusHandlerResponse frame = new IncomingNetworkStatusHandlerResponse();
-		frame.errorCode = BitConverter.ReadByte();
-		frame.target = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Errorcode = frameBytes[index];
+		index += 1;
+		frame.Target = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

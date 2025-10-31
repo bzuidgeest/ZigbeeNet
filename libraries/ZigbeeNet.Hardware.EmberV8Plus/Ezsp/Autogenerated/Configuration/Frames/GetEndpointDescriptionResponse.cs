@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Description of this endpoint.
     /// </summary>
-    public sl_zigbee_endpoint_description_t result { get; set; }
+    public sl_zigbee_endpoint_description_t Result { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEndpointDescriptionResponse frame = new GetEndpointDescriptionResponse();
-		frame.result = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Result = /* TODO: Implement parsing for type sl_zigbee_endpoint_description_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

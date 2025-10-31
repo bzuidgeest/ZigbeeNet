@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class SetInitialSecurityStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-    public sl_status_t success { get; set; }
+    public sl_status_t Success { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SetInitialSecurityStateResponse frame = new SetInitialSecurityStateResponse();
-		frame.success = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Success = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,30 +22,37 @@ public class GetStandaloneBootloaderVersionPlatMicroPhyResponse : EzspFrameRespo
     /// <summary>
     /// BOOTLOADER_INVALID_VERSION if the standalone bootloader is not present, or the version of the installed standalone bootloader.
     /// </summary>
-    public ushort bootloader_version { get; set; }
+    public ushort BootloaderVersion { get; set; }
 
     /// <summary>
     /// The value of PLAT on the node
     /// </summary>
-    public byte nodePlat { get; set; }
+    public byte Nodeplat { get; set; }
 
     /// <summary>
     /// The value of MICRO on the node
     /// </summary>
-    public byte nodeMicro { get; set; }
+    public byte Nodemicro { get; set; }
 
     /// <summary>
     /// The value of PHY on the node
     /// </summary>
-    public byte nodePhy { get; set; }
+    public byte Nodephy { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetStandaloneBootloaderVersionPlatMicroPhyResponse frame = new GetStandaloneBootloaderVersionPlatMicroPhyResponse();
-		frame.bootloader_version = BitConverter.ReadUShort();
-		frame.nodePlat = BitConverter.ReadByte();
-		frame.nodeMicro = BitConverter.ReadByte();
-		frame.nodePhy = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.BootloaderVersion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Nodeplat = frameBytes[index];
+		index += 1;
+		frame.Nodemicro = frameBytes[index];
+		index += 1;
+		frame.Nodephy = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

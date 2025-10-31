@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GenerateCbkeKeys283k1HandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the CBKE operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The generated ephemeral public key.
     /// </summary>
-    public sl_zigbee_public_key_283k1_data_t ephemeralPublicKey { get; set; }
+    public sl_zigbee_public_key_283k1_data_t Ephemeralpublickey { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GenerateCbkeKeys283k1HandlerResponse frame = new GenerateCbkeKeys283k1HandlerResponse();
-		frame.status = 		frame.ephemeralPublicKey = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Ephemeralpublickey = /* TODO: Implement parsing for type sl_zigbee_public_key_283k1_data_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

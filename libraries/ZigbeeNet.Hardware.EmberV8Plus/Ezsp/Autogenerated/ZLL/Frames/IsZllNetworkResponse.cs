@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class IsZllNetworkResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL network?
     /// </summary>
-    public bool isZllNetwork { get; set; }
+    public bool Iszllnetwork { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IsZllNetworkResponse frame = new IsZllNetworkResponse();
-		frame.isZllNetwork = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Iszllnetwork = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,31 +22,44 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The Node Id of the node whose status changed
     /// </summary>
-    public sl_802154_short_addr_t newNodeId { get; set; }
+    public sl_802154_short_addr_t Newnodeid { get; set; }
 
     /// <summary>
     /// The EUI64 of the node whose status changed.
     /// </summary>
-    public sl_802154_long_addr_t newNodeEui64 { get; set; }
+    public sl_802154_long_addr_t Newnodeeui64 { get; set; }
 
     /// <summary>
     /// The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.
     /// </summary>
-    public sl_zigbee_device_update_t status { get; set; }
+    public sl_zigbee_device_update_t Status { get; set; }
 
     /// <summary>
     /// An sl_zigbee_join_decision_t reflecting the decision made.
     /// </summary>
-    public sl_zigbee_join_decision_t policyDecision { get; set; }
+    public sl_zigbee_join_decision_t Policydecision { get; set; }
 
     /// <summary>
     /// The parent of the node whose status has changed.
     /// </summary>
-    public sl_802154_short_addr_t parentOfNewNodeId { get; set; }
+    public sl_802154_short_addr_t Parentofnewnodeid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		TrustCenterPostJoinHandlerResponse frame = new TrustCenterPostJoinHandlerResponse();
-		frame.newNodeId = 		frame.newNodeEui64 = 		frame.status = 		frame.policyDecision = 		frame.parentOfNewNodeId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Newnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Newnodeeui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Status = /* TODO: Implement parsing for type sl_zigbee_device_update_t */ null;
+		index += 0;
+		frame.Policydecision = /* TODO: Implement parsing for type sl_zigbee_join_decision_t */ null;
+		index += 0;
+		frame.Parentofnewnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

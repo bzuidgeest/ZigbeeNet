@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,28 +22,37 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure, handled by the EZSP layer as a uint8_t. 255 indicates an EZSP-specific error.
     /// </summary>
-    public sl_zigbee_af_status_t af_status { get; set; }
+    public sl_zigbee_af_status_t AfStatus { get; set; }
 
     /// <summary>
     /// Attribute data type.
     /// </summary>
-    public byte dataType { get; set; }
+    public byte Datatype { get; set; }
 
     /// <summary>
     /// Length of attribute data.
     /// </summary>
-    public byte readLength { get; set; }
+    public byte Readlength { get; set; }
 
     /// <summary>
     /// Attribute data.
     /// </summary>
-    public uint8_t[readLength] dataPtr { get; set; }
+    public uint8_t[readLength] Dataptr { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAttributeResponse frame = new ReadAttributeResponse();
-		frame.af_status = 		frame.dataType = BitConverter.ReadByte();
-		frame.readLength = BitConverter.ReadByte();
-		frame.dataPtr = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.AfStatus = /* TODO: Implement parsing for type sl_zigbee_af_status_t */ null;
+		index += 0;
+		frame.Datatype = frameBytes[index];
+		index += 1;
+		frame.Readlength = frameBytes[index];
+		index += 1;
+		frame.Dataptr = /* TODO: Implement parsing for type uint8_t[readLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

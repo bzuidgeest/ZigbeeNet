@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class GetMfgTokenResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte tokenDataLength { get; set; }
+    public byte Tokendatalength { get; set; }
 
     /// <summary>
     /// The manufacturing token data.
     /// </summary>
-    public uint8_t[tokenDataLength] tokenData { get; set; }
+    public uint8_t[tokenDataLength] Tokendata { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetMfgTokenResponse frame = new GetMfgTokenResponse();
-		frame.tokenDataLength = BitConverter.ReadByte();
-		frame.tokenData = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Tokendatalength = frameBytes[index];
+		index += 1;
+		frame.Tokendata = /* TODO: Implement parsing for type uint8_t[tokenDataLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

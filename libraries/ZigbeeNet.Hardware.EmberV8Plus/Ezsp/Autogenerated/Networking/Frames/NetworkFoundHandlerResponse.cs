@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,23 +22,30 @@ public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parameters associated with the network found.
     /// </summary>
-    public sl_zigbee_zigbee_network_t networkFound { get; set; }
+    public sl_zigbee_zigbee_network_t Networkfound { get; set; }
 
     /// <summary>
     /// Link quality of incoming packet from network.
     /// </summary>
-    public byte lastHopLqi { get; set; }
+    public byte Lasthoplqi { get; set; }
 
     /// <summary>
     /// Power (in dBm) of incoming packet.
     /// </summary>
-    public sbyte lastHopRssi { get; set; }
+    public sbyte Lasthoprssi { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		NetworkFoundHandlerResponse frame = new NetworkFoundHandlerResponse();
-		frame.networkFound = 		frame.lastHopLqi = BitConverter.ReadByte();
-		frame.lastHopRssi = BitConverter.ReadSByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Networkfound = /* TODO: Implement parsing for type sl_zigbee_zigbee_network_t */ null;
+		index += 0;
+		frame.Lasthoplqi = frameBytes[index];
+		index += 1;
+		frame.Lasthoprssi = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

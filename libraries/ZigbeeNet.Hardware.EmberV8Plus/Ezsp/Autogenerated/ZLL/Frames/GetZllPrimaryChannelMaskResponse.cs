@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>
-    public uint zllPrimaryChannelMask { get; set; }
+    public uint Zllprimarychannelmask { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetZllPrimaryChannelMaskResponse frame = new GetZllPrimaryChannelMaskResponse();
-		frame.zllPrimaryChannelMask = BitConverter.ReadUInt();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Zllprimarychannelmask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+
+		return frame;
 	}
-}
 }

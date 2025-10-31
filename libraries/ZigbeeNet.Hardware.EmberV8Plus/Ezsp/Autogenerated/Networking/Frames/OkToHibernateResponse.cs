@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class OkToHibernateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the application may sleep for as long as it wishes.
     /// </summary>
-    public bool indicator { get; set; }
+    public bool Indicator { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		OkToHibernateResponse frame = new OkToHibernateResponse();
-		frame.indicator = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Indicator = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

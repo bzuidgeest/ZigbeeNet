@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class RadioGetSchedulerPrioritiesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current priorities.
     /// </summary>
-    public sl_802154_radio_priorities_t priorities { get; set; }
+    public sl_802154_radio_priorities_t Priorities { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RadioGetSchedulerPrioritiesResponse frame = new RadioGetSchedulerPrioritiesResponse();
-		frame.priorities = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Priorities = /* TODO: Implement parsing for type sl_802154_radio_priorities_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

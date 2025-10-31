@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class GetEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// The 64-bit ID.
     /// </summary>
-    public sl_802154_long_addr_t eui64 { get; set; }
+    public sl_802154_long_addr_t Eui64 { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEui64Response frame = new GetEui64Response();
-		frame.eui64 = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Eui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

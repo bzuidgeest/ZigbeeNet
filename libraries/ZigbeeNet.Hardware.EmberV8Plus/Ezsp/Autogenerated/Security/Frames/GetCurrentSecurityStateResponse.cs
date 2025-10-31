@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetCurrentSecurityStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The security configuration in use by the stack.
     /// </summary>
-    public sl_zigbee_current_security_state_t state { get; set; }
+    public sl_zigbee_current_security_state_t State { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCurrentSecurityStateResponse frame = new GetCurrentSecurityStateResponse();
-		frame.status = 		frame.state = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.State = /* TODO: Implement parsing for type sl_zigbee_current_security_state_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

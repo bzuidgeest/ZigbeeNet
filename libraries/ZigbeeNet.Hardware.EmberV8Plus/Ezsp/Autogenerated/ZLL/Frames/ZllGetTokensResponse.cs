@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class ZllGetTokensResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Data token return value.
     /// </summary>
-    public sl_zigbee_tok_type_stack_zll_data_t data { get; set; }
+    public sl_zigbee_tok_type_stack_zll_data_t Data { get; set; }
 
     /// <summary>
     /// Security token return value.
     /// </summary>
-    public sl_zigbee_tok_type_stack_zll_security_t security { get; set; }
+    public sl_zigbee_tok_type_stack_zll_security_t Security { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllGetTokensResponse frame = new ZllGetTokensResponse();
-		frame.data = 		frame.security = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Data = /* TODO: Implement parsing for type sl_zigbee_tok_type_stack_zll_data_t */ null;
+		index += 0;
+		frame.Security = /* TODO: Implement parsing for type sl_zigbee_tok_type_stack_zll_security_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

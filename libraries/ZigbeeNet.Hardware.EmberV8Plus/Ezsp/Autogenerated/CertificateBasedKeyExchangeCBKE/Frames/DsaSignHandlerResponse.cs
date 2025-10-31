@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the DSA signing operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+    public byte Messagelength { get; set; }
 
     /// <summary>
     /// The message and attached which includes the original message and the appended signature.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public uint8_t[messageLength] Messagecontents { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		DsaSignHandlerResponse frame = new DsaSignHandlerResponse();
-		frame.status = 		frame.messageLength = BitConverter.ReadByte();
-		frame.messageContents = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Messagelength = frameBytes[index];
+		index += 1;
+		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

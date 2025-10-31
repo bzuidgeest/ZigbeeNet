@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public sl_zigbee_zll_network_t networkInfo { get; set; }
+    public sl_zigbee_zll_network_t Networkinfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
-		frame.networkInfo = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Networkinfo = /* TODO: Implement parsing for type sl_zigbee_zll_network_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

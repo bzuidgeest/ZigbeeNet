@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetPermitJoiningResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether the current network permits joining.
     /// </summary>
-    public bool joiningPermitted { get; set; }
+    public bool Joiningpermitted { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetPermitJoiningResponse frame = new GetPermitJoiningResponse();
-		frame.joiningPermitted = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Joiningpermitted = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

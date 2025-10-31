@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
     /// <summary>
     /// The short id of the concentrator.
     /// </summary>
-    public sl_802154_short_addr_t source { get; set; }
+    public sl_802154_short_addr_t Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the concentrator.
     /// </summary>
-    public sl_802154_long_addr_t longId { get; set; }
+    public sl_802154_long_addr_t Longid { get; set; }
 
     /// <summary>
     /// The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
     /// </summary>
-    public byte cost { get; set; }
+    public byte Cost { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingManyToOneRouteRequestHandlerResponse frame = new IncomingManyToOneRouteRequestHandlerResponse();
-		frame.source = 		frame.longId = 		frame.cost = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Source = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Longid = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Cost = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

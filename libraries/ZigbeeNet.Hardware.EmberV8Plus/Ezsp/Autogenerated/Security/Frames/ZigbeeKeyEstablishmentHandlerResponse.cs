@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>
-    public sl_802154_long_addr_t partner { get; set; }
+    public sl_802154_long_addr_t Partner { get; set; }
 
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
     /// </summary>
-    public sl_zigbee_key_status_t status { get; set; }
+    public sl_zigbee_key_status_t Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
-		frame.partner = 		frame.status = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Partner = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Status = /* TODO: Implement parsing for type sl_zigbee_key_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

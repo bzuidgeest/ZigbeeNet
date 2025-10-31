@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameRes
     /// <summary>
     /// Whether or not a rejoining neighbor&apos;s incoming FC gets reset (true or false).
     /// </summary>
-    public bool getsReset { get; set; }
+    public bool Getsreset { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IsResetRejoiningNeighborsFrameCounterEnabledResponse frame = new IsResetRejoiningNeighborsFrameCounterEnabledResponse();
-		frame.getsReset = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Getsreset = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

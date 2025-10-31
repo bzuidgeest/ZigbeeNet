@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,21 +22,30 @@ public class CalculateSmacs283k1HandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The Result of the CBKE operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The calculated value of the initiator&apos;s SMAC
     /// </summary>
-    public sl_zigbee_smac_data_t initiatorSmac { get; set; }
+    public sl_zigbee_smac_data_t Initiatorsmac { get; set; }
 
     /// <summary>
     /// The calculated value of the responder&apos;s SMAC
     /// </summary>
-    public sl_zigbee_smac_data_t responderSmac { get; set; }
+    public sl_zigbee_smac_data_t Respondersmac { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CalculateSmacs283k1HandlerResponse frame = new CalculateSmacs283k1HandlerResponse();
-		frame.status = 		frame.initiatorSmac = 		frame.responderSmac = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Initiatorsmac = /* TODO: Implement parsing for type sl_zigbee_smac_data_t */ null;
+		index += 0;
+		frame.Respondersmac = /* TODO: Implement parsing for type sl_zigbee_smac_data_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

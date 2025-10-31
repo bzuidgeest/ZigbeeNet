@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The requested binding.
     /// </summary>
-    public sl_zigbee_binding_table_entry_t entry { get; set; }
+    public sl_zigbee_binding_table_entry_t Entry { get; set; }
 
     /// <summary>
     /// The index at which the binding was added.
     /// </summary>
-    public byte index { get; set; }
+    public byte Index { get; set; }
 
     /// <summary>
     /// SL_STATUS_OK if the binding was added to the table and any other status if not.
     /// </summary>
-    public sl_status_t policyDecision { get; set; }
+    public sl_status_t Policydecision { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RemoteSetBindingHandlerResponse frame = new RemoteSetBindingHandlerResponse();
-		frame.entry = 		frame.index = BitConverter.ReadByte();
-		frame.policyDecision = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Entry = /* TODO: Implement parsing for type sl_zigbee_binding_table_entry_t */ null;
+		index += 0;
+		frame.Index = frameBytes[index];
+		index += 1;
+		frame.Policydecision = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

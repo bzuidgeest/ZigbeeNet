@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,39 +22,51 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The source of the route record.
     /// </summary>
-    public sl_802154_short_addr_t source { get; set; }
+    public sl_802154_short_addr_t Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the source.
     /// </summary>
-    public sl_802154_long_addr_t sourceEui { get; set; }
+    public sl_802154_long_addr_t Sourceeui { get; set; }
 
     /// <summary>
     /// The link quality from the node that last relayed the route record.
     /// </summary>
-    public byte lastHopLqi { get; set; }
+    public byte Lasthoplqi { get; set; }
 
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-    public sbyte lastHopRssi { get; set; }
+    public sbyte Lasthoprssi { get; set; }
 
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
     /// </summary>
-    public byte relayCount { get; set; }
+    public byte Relaycount { get; set; }
 
     /// <summary>
     /// The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
     /// </summary>
-    public uint8_t[relayCount*2] relayList { get; set; }
+    public uint8_t[relayCount*2] Relaylist { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
-		frame.source = 		frame.sourceEui = 		frame.lastHopLqi = BitConverter.ReadByte();
-		frame.lastHopRssi = BitConverter.ReadSByte();
-		frame.relayCount = BitConverter.ReadByte();
-		frame.relayList = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Source = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Sourceeui = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Lasthoplqi = frameBytes[index];
+		index += 1;
+		frame.Lasthoprssi = frameBytes[index];
+		index += 1;
+		frame.Relaycount = frameBytes[index];
+		index += 1;
+		frame.Relaylist = /* TODO: Implement parsing for type uint8_t[relayCount*2] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

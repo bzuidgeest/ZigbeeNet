@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class NeighborCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of active entries in the neighbor table.
     /// </summary>
-    public byte value { get; set; }
+    public byte Value { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		NeighborCountResponse frame = new NeighborCountResponse();
-		frame.value = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Value = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

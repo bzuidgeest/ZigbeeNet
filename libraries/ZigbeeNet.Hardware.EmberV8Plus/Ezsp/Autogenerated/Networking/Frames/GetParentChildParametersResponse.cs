@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of children the node currently has.
     /// </summary>
-    public byte childCount { get; set; }
+    public byte Childcount { get; set; }
 
     /// <summary>
     /// The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public sl_802154_long_addr_t parentEui64 { get; set; }
+    public sl_802154_long_addr_t Parenteui64 { get; set; }
 
     /// <summary>
     /// The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public sl_802154_short_addr_t parentNodeId { get; set; }
+    public sl_802154_short_addr_t Parentnodeid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetParentChildParametersResponse frame = new GetParentChildParametersResponse();
-		frame.childCount = BitConverter.ReadByte();
-		frame.parentEui64 = 		frame.parentNodeId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Childcount = frameBytes[index];
+		index += 1;
+		frame.Parenteui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Parentnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class CustomFrameResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The status returned by the custom command.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The length of the response.
     /// </summary>
-    public byte replyLength { get; set; }
+    public byte Replylength { get; set; }
 
     /// <summary>
     /// The response.
     /// </summary>
-    public uint8_t[replyLength] reply { get; set; }
+    public uint8_t[replyLength] Reply { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CustomFrameResponse frame = new CustomFrameResponse();
-		frame.status = 		frame.replyLength = BitConverter.ReadByte();
-		frame.reply = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Replylength = frameBytes[index];
+		index += 1;
+		frame.Reply = /* TODO: Implement parsing for type uint8_t[replyLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

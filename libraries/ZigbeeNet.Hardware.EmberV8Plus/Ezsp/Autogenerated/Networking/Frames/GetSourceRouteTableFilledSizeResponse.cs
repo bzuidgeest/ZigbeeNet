@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetSourceRouteTableFilledSizeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of filled entries in source route table.
     /// </summary>
-    public byte sourceRouteTableFilledSize { get; set; }
+    public byte Sourceroutetablefilledsize { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetSourceRouteTableFilledSizeResponse frame = new GetSourceRouteTableFilledSizeResponse();
-		frame.sourceRouteTableFilledSize = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Sourceroutetablefilledsize = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

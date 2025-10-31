@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetEndpointCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Number of configured endpoints.
     /// </summary>
-    public byte count { get; set; }
+    public byte Count { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEndpointCountResponse frame = new GetEndpointCountResponse();
-		frame.count = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Count = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

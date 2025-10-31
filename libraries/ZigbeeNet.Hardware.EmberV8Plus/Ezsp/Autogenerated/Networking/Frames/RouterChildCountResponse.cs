@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class RouterChildCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of router children.
     /// </summary>
-    public byte routerChildCount { get; set; }
+    public byte Routerchildcount { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RouterChildCountResponse frame = new RouterChildCountResponse();
-		frame.routerChildCount = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Routerchildcount = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

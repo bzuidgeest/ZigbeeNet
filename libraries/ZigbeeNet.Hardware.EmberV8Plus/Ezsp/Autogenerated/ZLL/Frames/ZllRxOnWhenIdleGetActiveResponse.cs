@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL radio on when idle mode is active?
     /// </summary>
-    public bool zllRxOnWhenIdleGetActive { get; set; }
+    public bool Zllrxonwhenidlegetactive { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllRxOnWhenIdleGetActiveResponse frame = new ZllRxOnWhenIdleGetActiveResponse();
-		frame.zllRxOnWhenIdleGetActive = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Zllrxonwhenidlegetactive = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

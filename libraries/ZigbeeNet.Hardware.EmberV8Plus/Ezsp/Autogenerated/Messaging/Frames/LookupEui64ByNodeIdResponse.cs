@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The EUI64 of the node.
     /// </summary>
-    public sl_802154_long_addr_t eui64 { get; set; }
+    public sl_802154_long_addr_t Eui64 { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		LookupEui64ByNodeIdResponse frame = new LookupEui64ByNodeIdResponse();
-		frame.status = 		frame.eui64 = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Eui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

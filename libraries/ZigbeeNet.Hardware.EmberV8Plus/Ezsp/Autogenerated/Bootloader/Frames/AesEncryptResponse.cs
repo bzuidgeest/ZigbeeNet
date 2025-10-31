@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class AesEncryptResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// 16 bytes of ciphertext.
     /// </summary>
-    public uint8_t[16] ciphertext { get; set; }
+    public uint8_t[16] Ciphertext { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		AesEncryptResponse frame = new AesEncryptResponse();
-		frame.ciphertext = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Ciphertext = /* TODO: Implement parsing for type uint8_t[16] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class EchoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;echo&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte echoLength { get; set; }
+    public byte Echolength { get; set; }
 
     /// <summary>
     /// The echo of the data.
     /// </summary>
-    public uint8_t[echoLength] echo { get; set; }
+    public uint8_t[echoLength] Echo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		EchoResponse frame = new EchoResponse();
-		frame.echoLength = BitConverter.ReadByte();
-		frame.echo = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Echolength = frameBytes[index];
+		index += 1;
+		frame.Echo = /* TODO: Implement parsing for type uint8_t[echoLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetTokenInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Token information.
     /// </summary>
-    public sl_zigbee_token_info_t tokenInfo { get; set; }
+    public sl_zigbee_token_info_t Tokeninfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTokenInfoResponse frame = new GetTokenInfoResponse();
-		frame.status = 		frame.tokenInfo = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Tokeninfo = /* TODO: Implement parsing for type sl_zigbee_token_info_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

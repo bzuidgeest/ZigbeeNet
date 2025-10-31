@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class ChildIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The child index or 0xFF if the node ID doesn&apos;t belong to a child
     /// </summary>
-    public byte childIndex { get; set; }
+    public byte Childindex { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ChildIndexResponse frame = new ChildIndexResponse();
-		frame.childIndex = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Childindex = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

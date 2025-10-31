@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class TimerHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Which timer generated the callback (0 or 1).
     /// </summary>
-    public byte timerId { get; set; }
+    public byte Timerid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		TimerHandlerResponse frame = new TimerHandlerResponse();
-		frame.timerId = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Timerid = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

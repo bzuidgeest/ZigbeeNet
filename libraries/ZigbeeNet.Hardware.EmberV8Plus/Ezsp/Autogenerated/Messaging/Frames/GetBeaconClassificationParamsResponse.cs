@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetBeaconClassificationParamsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The attempt to get the pramaters returns SL_STATUS_OK
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Gets the beacon prioritization related variable
     /// </summary>
-    public sl_zigbee_beacon_classification_params_t param { get; set; }
+    public sl_zigbee_beacon_classification_params_t Param { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetBeaconClassificationParamsResponse frame = new GetBeaconClassificationParamsResponse();
-		frame.status = 		frame.param = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Param = /* TODO: Implement parsing for type sl_zigbee_beacon_classification_params_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

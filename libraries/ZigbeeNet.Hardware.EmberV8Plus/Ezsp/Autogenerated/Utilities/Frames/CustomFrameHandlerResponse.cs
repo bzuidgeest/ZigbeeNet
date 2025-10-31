@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class CustomFrameHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the custom frame payload.
     /// </summary>
-    public byte payloadLength { get; set; }
+    public byte Payloadlength { get; set; }
 
     /// <summary>
     /// The payload of the custom frame.
     /// </summary>
-    public uint8_t[payloadLength] payload { get; set; }
+    public uint8_t[payloadLength] Payload { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CustomFrameHandlerResponse frame = new CustomFrameHandlerResponse();
-		frame.payloadLength = BitConverter.ReadByte();
-		frame.payload = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Payloadlength = frameBytes[index];
+		index += 1;
+		frame.Payload = /* TODO: Implement parsing for type uint8_t[payloadLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

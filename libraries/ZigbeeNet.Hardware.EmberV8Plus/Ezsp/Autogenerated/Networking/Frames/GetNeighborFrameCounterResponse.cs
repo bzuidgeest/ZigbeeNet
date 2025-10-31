@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class GetNeighborFrameCounterResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Return the frame counter of the node from the neighbor or child table
     /// </summary>
-    public uint returnFrameCounter { get; set; }
+    public uint Returnframecounter { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetNeighborFrameCounterResponse frame = new GetNeighborFrameCounterResponse();
-		frame.status = 		frame.returnFrameCounter = BitConverter.ReadUInt();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Returnframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+
+		return frame;
 	}
-}
 }

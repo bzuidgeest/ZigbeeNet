@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetManufacturerCodeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The manufacturer code for the local node.
     /// </summary>
-    public ushort code { get; set; }
+    public ushort Code { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetManufacturerCodeResponse frame = new GetManufacturerCodeResponse();
-		frame.code = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Code = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class SecManGetNetworkKeyInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Success or failure of retrieving network key info.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Information about current and alternate network keys.
     /// </summary>
-    public sl_zigbee_sec_man_network_key_info_t network_key_info { get; set; }
+    public sl_zigbee_sec_man_network_key_info_t NetworkKeyInfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SecManGetNetworkKeyInfoResponse frame = new SecManGetNetworkKeyInfoResponse();
-		frame.status = 		frame.network_key_info = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.NetworkKeyInfo = /* TODO: Implement parsing for type sl_zigbee_sec_man_network_key_info_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

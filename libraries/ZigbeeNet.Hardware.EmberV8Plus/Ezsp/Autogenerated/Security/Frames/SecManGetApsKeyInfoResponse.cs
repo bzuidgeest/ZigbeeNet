@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class SecManGetApsKeyInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of metadata retrieval operation.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Metadata about the referenced key.
     /// </summary>
-    public sl_zigbee_sec_man_aps_key_metadata_t key_data { get; set; }
+    public sl_zigbee_sec_man_aps_key_metadata_t KeyData { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SecManGetApsKeyInfoResponse frame = new SecManGetApsKeyInfoResponse();
-		frame.status = 		frame.key_data = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.KeyData = /* TODO: Implement parsing for type sl_zigbee_sec_man_aps_key_metadata_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

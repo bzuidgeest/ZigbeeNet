@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the operation
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The updated hash context.
     /// </summary>
-    public sl_zigbee_aes_mmo_hash_context_t returnContext { get; set; }
+    public sl_zigbee_aes_mmo_hash_context_t Returncontext { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		AesMmoHashResponse frame = new AesMmoHashResponse();
-		frame.status = 		frame.returnContext = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Returncontext = /* TODO: Implement parsing for type sl_zigbee_aes_mmo_hash_context_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

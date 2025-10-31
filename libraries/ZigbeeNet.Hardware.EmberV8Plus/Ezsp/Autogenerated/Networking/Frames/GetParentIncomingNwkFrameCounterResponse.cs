@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -14,12 +15,16 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus
 {
-    public uint parentIncomingNwkFrameCounter { get; set; }
+    public uint Parentincomingnwkframecounter { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetParentIncomingNwkFrameCounterResponse frame = new GetParentIncomingNwkFrameCounterResponse();
-		frame.parentIncomingNwkFrameCounter = BitConverter.ReadUInt();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Parentincomingnwkframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+
+		return frame;
 	}
-}
 }

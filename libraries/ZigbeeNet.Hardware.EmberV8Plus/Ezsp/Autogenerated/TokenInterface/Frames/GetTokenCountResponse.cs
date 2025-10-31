@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetTokenCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Total number of tokens.
     /// </summary>
-    public uint count { get; set; }
+    public uint Count { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTokenCountResponse frame = new GetTokenCountResponse();
-		frame.count = BitConverter.ReadUInt();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Count = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+
+		return frame;
 	}
-}
 }

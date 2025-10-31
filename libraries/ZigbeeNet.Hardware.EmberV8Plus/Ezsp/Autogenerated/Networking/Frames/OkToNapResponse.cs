@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -22,12 +23,16 @@ public class OkToNapResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the application may sleep but the stack may be expecting incoming messages.
     /// </summary>
-    public bool value { get; set; }
+    public bool Value { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		OkToNapResponse frame = new OkToNapResponse();
-		frame.value = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Value = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class StackTokenChangedHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The address of the stack token that has changed.
     /// </summary>
-    public ushort tokenAddress { get; set; }
+    public ushort Tokenaddress { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		StackTokenChangedHandlerResponse frame = new StackTokenChangedHandlerResponse();
-		frame.tokenAddress = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Tokenaddress = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }

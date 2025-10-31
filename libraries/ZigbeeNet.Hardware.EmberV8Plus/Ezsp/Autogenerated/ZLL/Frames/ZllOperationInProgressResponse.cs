@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class ZllOperationInProgressResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL operation in progress?
     /// </summary>
-    public bool zllOperationInProgress { get; set; }
+    public bool Zlloperationinprogress { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllOperationInProgressResponse frame = new ZllOperationInProgressResponse();
-		frame.zllOperationInProgress = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Zlloperationinprogress = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -310,9 +310,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     else
                     {
                         // Simple scalar type - use global using alias
-                        string csharpType = MapCTypes.MapBaseCType(simpleTypedefDefinition.Type);
+                        cMapping csharpType = MapCTypes.MapBaseCType(simpleTypedefDefinition.Type);
                         sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
-                        sb.AppendLine($"global using {typedef.Name} = {csharpType};");
+                        sb.AppendLine($"global using {typedef.Name} = {csharpType.cSharpTypeName};");
                     }
                     sb.AppendLine();
                 }
@@ -355,19 +355,19 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     string fieldName = field.Name![..nameBracketIndex];
                     string arrayPart = field.Name[nameBracketIndex..];
                     string arraySize = arrayPart.Trim('[', ']');
-                    string csharpBaseType = MapCTypes.MapBaseCType(field.Type);
+                    cMapping csharpBaseType = MapCTypes.MapBaseCType(field.Type);
 
                     // Check if array size is numeric (compile-time constant)
                     if (int.TryParse(arraySize, out _))
                     {
                         // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType} {fieldName}[{arraySize}];");
+                        sb.AppendLine($"    public fixed {csharpBaseType.cSharpTypeName} {fieldName}[{arraySize}];");
                     }
                     else
                     {
                         // Array size is a symbolic constant - use a comment and skip
                         sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType} {fieldName}[{arraySize}];");
+                        sb.AppendLine($"    // public fixed {csharpBaseType.cSharpTypeName} {fieldName}[{arraySize}];");
                     }
                 }
                 // Check if the type contains array notation (e.g., uint8_t[8])
@@ -377,7 +377,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     // Extract base type and array size
                     string baseType = field.Type[..typeBracketIndex];
                     string arrayPart = field.Type[typeBracketIndex..];
-                    string csharpBaseType = MapCTypes.MapBaseCType(baseType);
+                    cMapping csharpBaseType = MapCTypes.MapBaseCType(baseType);
 
                     // Extract array size from [N] format
                     string arraySize = arrayPart.Trim('[', ']');
@@ -386,20 +386,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     if (int.TryParse(arraySize, out _))
                     {
                         // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType} {field.Name}[{arraySize}];");
+                        sb.AppendLine($"    public fixed {csharpBaseType.cSharpTypeName} {field.Name}[{arraySize}];");
                     }
                     else
                     {
                         // Array size is a symbolic constant - use a comment and skip
                         sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType} {field.Name}[{arraySize}];");
+                        sb.AppendLine($"    // public fixed {csharpBaseType.cSharpTypeName} {field.Name}[{arraySize}];");
                     }
                 }
                 else
                 {
                     // Simple scalar type
-                    string csharpType = MapCTypes.MapBaseCType(field.Type);
-                    sb.AppendLine($"    public {csharpType} {field.Name};");
+                    cMapping csharpType = MapCTypes.MapBaseCType(field.Type);
+                    sb.AppendLine($"    public {csharpType.cSharpTypeName} {field.Name};");
                 }
                 sb.AppendLine();
             }

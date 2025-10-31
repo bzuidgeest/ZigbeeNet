@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetPhyInterfaceCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value indicate how many phy interfaces present.
     /// </summary>
-    public byte interfaceCount { get; set; }
+    public byte Interfacecount { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetPhyInterfaceCountResponse frame = new GetPhyInterfaceCountResponse();
-		frame.interfaceCount = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Interfacecount = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

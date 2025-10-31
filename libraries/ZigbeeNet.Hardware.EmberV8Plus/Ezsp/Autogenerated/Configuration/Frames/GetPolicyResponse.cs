@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetPolicyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the policy was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;policyId&lt;/i&gt;.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The current decision for the specified policy.
     /// </summary>
-    public sl_zigbee_ezsp_decision_id_t decisionId { get; set; }
+    public sl_zigbee_ezsp_decision_id_t Decisionid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetPolicyResponse frame = new GetPolicyResponse();
-		frame.status = 		frame.decisionId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Decisionid = /* TODO: Implement parsing for type sl_zigbee_ezsp_decision_id_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

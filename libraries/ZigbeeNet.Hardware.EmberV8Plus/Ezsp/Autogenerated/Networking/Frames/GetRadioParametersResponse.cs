@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetRadioParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The current radio parameters based on provided phy index.
     /// </summary>
-    public sl_zigbee_multi_phy_radio_parameters_t parameters { get; set; }
+    public sl_zigbee_multi_phy_radio_parameters_t Parameters { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetRadioParametersResponse frame = new GetRadioParametersResponse();
-		frame.status = 		frame.parameters = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Parameters = /* TODO: Implement parsing for type sl_zigbee_multi_phy_radio_parameters_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

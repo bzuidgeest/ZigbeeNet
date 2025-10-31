@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetInitialNeighborOutgoingCostResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The default cost associated with new neighbor&apos;s outgoing links.
     /// </summary>
-    public byte cost { get; set; }
+    public byte Cost { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetInitialNeighborOutgoingCostResponse frame = new GetInitialNeighborOutgoingCostResponse();
-		frame.cost = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Cost = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

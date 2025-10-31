@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetCurrentNetworkResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return the current network index.
     /// </summary>
-    public byte index { get; set; }
+    public byte Index { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCurrentNetworkResponse frame = new GetCurrentNetworkResponse();
-		frame.index = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Index = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -45,6 +45,36 @@ namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
             return pascalCased;
         }
 
+        public static string PropertyName(string propertyName)
+        {
+            // Remove spaces and special characters, convert to PascalCase
+            if (string.IsNullOrWhiteSpace(propertyName))
+                return propertyName;
+
+            // Remove sl_ prefix if present
+            if (propertyName.StartsWith("sl_", StringComparison.OrdinalIgnoreCase))
+                propertyName = propertyName[3..];
+
+            // Remove _t suffix if present
+            if (propertyName.EndsWith("_t", StringComparison.OrdinalIgnoreCase))
+                propertyName = propertyName[..^2];
+
+            // Split by underscores and non-alphanumeric characters
+            var parts = System.Text.RegularExpressions.Regex.Split(propertyName, @"[_\W]+");
+
+            // PascalCase: capitalize first letter of each part
+            var pascalCased = string.Concat(parts.Select(part =>
+                part.Length > 0 ? char.ToUpper(part[0]) + part[1..].ToLower() : ""));
+
+            // Check if reserved keyword and prefix with @ if needed
+            if (IsReservedKeyword(pascalCased))
+            {
+                pascalCased = "@" + pascalCased;
+            }
+
+            return pascalCased;
+        }
+
         public static bool IsReservedKeyword(string word)
         {
             if (string.IsNullOrWhiteSpace(word))

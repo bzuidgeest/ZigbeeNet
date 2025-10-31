@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,17 +22,23 @@ public class RemoteDeleteBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The index of the binding whose deletion was requested.
     /// </summary>
-    public byte index { get; set; }
+    public byte Index { get; set; }
 
     /// <summary>
     /// SL_STATUS_OK if the binding was removed from the table and any other status if not.
     /// </summary>
-    public sl_status_t policyDecision { get; set; }
+    public sl_status_t Policydecision { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RemoteDeleteBindingHandlerResponse frame = new RemoteDeleteBindingHandlerResponse();
-		frame.index = BitConverter.ReadByte();
-		frame.policyDecision = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Index = frameBytes[index];
+		index += 1;
+		frame.Policydecision = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

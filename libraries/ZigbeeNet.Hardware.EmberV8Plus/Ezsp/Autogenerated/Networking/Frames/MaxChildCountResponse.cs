@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class MaxChildCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum number of children.
     /// </summary>
-    public byte maxChildCount { get; set; }
+    public byte Maxchildcount { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MaxChildCountResponse frame = new MaxChildCountResponse();
-		frame.maxChildCount = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Maxchildcount = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

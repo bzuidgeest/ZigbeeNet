@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,22 +22,30 @@ public class GetValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
     /// </summary>
-    public byte valueLength { get; set; }
+    public byte Valuelength { get; set; }
 
     /// <summary>
     /// The value.
     /// </summary>
-    public uint8_t[valueLength] value { get; set; }
+    public uint8_t[valueLength] Value { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetValueResponse frame = new GetValueResponse();
-		frame.status = 		frame.valueLength = BitConverter.ReadByte();
-		frame.value = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Valuelength = frameBytes[index];
+		index += 1;
+		frame.Value = /* TODO: Implement parsing for type uint8_t[valueLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

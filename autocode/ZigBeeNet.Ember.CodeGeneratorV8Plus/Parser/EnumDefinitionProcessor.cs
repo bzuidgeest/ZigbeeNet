@@ -58,10 +58,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 }
 
                 // Map C type to C# type
-                string csharpType = MapCTypes.MapBaseCType(enumDef.Type);
+                cMapping csharpType = MapCTypes.MapBaseCType(enumDef.Type);
 
                 // Generate enum declaration
-                sb.AppendLine($"public enum {sanitizedEnumerationName} : {csharpType}");
+                sb.AppendLine($"public enum {sanitizedEnumerationName} : {csharpType.cSharpTypeName}");
                 sb.AppendLine("{");
 
                 // Generate enum items

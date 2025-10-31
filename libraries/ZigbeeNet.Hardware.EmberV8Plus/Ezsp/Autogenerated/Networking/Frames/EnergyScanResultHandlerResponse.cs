@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,18 +22,23 @@ public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The 802.15.4 channel number that was scanned.
     /// </summary>
-    public byte channel { get; set; }
+    public byte Channel { get; set; }
 
     /// <summary>
     /// The maximum RSSI value found on the channel.
     /// </summary>
-    public sbyte maxRssiValue { get; set; }
+    public sbyte Maxrssivalue { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		EnergyScanResultHandlerResponse frame = new EnergyScanResultHandlerResponse();
-		frame.channel = BitConverter.ReadByte();
-		frame.maxRssiValue = BitConverter.ReadSByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Channel = frameBytes[index];
+		index += 1;
+		frame.Maxrssivalue = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

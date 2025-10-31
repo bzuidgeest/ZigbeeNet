@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetMaxMacRetriesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Max MAC retries
     /// </summary>
-    public byte retries { get; set; }
+    public byte Retries { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetMaxMacRetriesResponse frame = new GetMaxMacRetriesResponse();
-		frame.retries = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Retries = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class LookupNodeIdByEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the short ID was found, SL_STATUS_FAIL if the short ID is not known.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The short ID of the node or SL_ZIGBEE_NULL_NODE_ID if the short ID is not known.
     /// </summary>
-    public sl_802154_short_addr_t nodeId { get; set; }
+    public sl_802154_short_addr_t Nodeid { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		LookupNodeIdByEui64Response frame = new LookupNodeIdByEui64Response();
-		frame.status = 		frame.nodeId = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Nodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

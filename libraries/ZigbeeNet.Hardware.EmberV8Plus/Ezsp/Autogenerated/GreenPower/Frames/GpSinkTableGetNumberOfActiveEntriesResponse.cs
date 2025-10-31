@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Pl
     /// <summary>
     /// Number of active entries in sink table.
     /// </summary>
-    public byte number_of_entries { get; set; }
+    public byte NumberOfEntries { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpSinkTableGetNumberOfActiveEntriesResponse frame = new GpSinkTableGetNumberOfActiveEntriesResponse();
-		frame.number_of_entries = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.NumberOfEntries = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

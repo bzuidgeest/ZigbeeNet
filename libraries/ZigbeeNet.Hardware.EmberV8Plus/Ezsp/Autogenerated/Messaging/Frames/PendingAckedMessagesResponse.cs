@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class PendingAckedMessagesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if there is a pending message for this network in the APS retry queue, false if not.
     /// </summary>
-    public bool pending_messages { get; set; }
+    public bool PendingMessages { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		PendingAckedMessagesResponse frame = new PendingAckedMessagesResponse();
-		frame.pending_messages = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.PendingMessages = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

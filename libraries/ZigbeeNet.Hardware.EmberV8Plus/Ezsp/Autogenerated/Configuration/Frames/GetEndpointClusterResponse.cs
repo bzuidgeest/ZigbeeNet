@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GetEndpointClusterResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ID of the requested cluster.
     /// </summary>
-    public ushort endpoint_cluster { get; set; }
+    public ushort EndpointCluster { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEndpointClusterResponse frame = new GetEndpointClusterResponse();
-		frame.endpoint_cluster = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.EndpointCluster = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }

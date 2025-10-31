@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,44 +22,58 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The type of message sent.
     /// </summary>
-    public sl_zigbee_outgoing_message_type_t type { get; set; }
+    public sl_zigbee_outgoing_message_type_t Type { get; set; }
 
     /// <summary>
     /// The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
     /// </summary>
-    public ushort indexOrDestination { get; set; }
+    public ushort Indexordestination { get; set; }
 
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public sl_zigbee_aps_frame_t Apsframe { get; set; }
 
     /// <summary>
     /// The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
     /// </summary>
-    public ushort messageTag { get; set; }
+    public ushort Messagetag { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+    public byte Messagelength { get; set; }
 
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public uint8_t[messageLength] Messagecontents { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MessageSentHandlerResponse frame = new MessageSentHandlerResponse();
-		frame.status = 		frame.type = 		frame.indexOrDestination = BitConverter.ReadUShort();
-		frame.apsFrame = 		frame.messageTag = BitConverter.ReadUShort();
-		frame.messageLength = BitConverter.ReadByte();
-		frame.messageContents = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Type = /* TODO: Implement parsing for type sl_zigbee_outgoing_message_type_t */ null;
+		index += 0;
+		frame.Indexordestination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Apsframe = /* TODO: Implement parsing for type sl_zigbee_aps_frame_t */ null;
+		index += 0;
+		frame.Messagetag = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Messagelength = frameBytes[index];
+		index += 1;
+		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

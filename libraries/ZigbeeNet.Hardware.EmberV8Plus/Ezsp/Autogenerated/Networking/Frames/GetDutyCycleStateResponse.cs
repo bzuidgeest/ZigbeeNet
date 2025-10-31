@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating the success or failure of the command.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// The current duty cycle state in effect.
     /// </summary>
-    public sl_zigbee_duty_cycle_state_t returnedState { get; set; }
+    public sl_zigbee_duty_cycle_state_t Returnedstate { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetDutyCycleStateResponse frame = new GetDutyCycleStateResponse();
-		frame.status = 		frame.returnedState = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Returnedstate = /* TODO: Implement parsing for type sl_zigbee_duty_cycle_state_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

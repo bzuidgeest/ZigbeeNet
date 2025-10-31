@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class MaximumPayloadLengthResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum APS payload length.
     /// </summary>
-    public byte apsLength { get; set; }
+    public byte Apslength { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MaximumPayloadLengthResponse frame = new MaximumPayloadLengthResponse();
-		frame.apsLength = BitConverter.ReadByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Apslength = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

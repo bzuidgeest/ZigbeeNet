@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,33 +22,44 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The index of the child of interest.
     /// </summary>
-    public byte index { get; set; }
+    public byte Index { get; set; }
 
     /// <summary>
     /// True if the child is joining. False the child is leaving.
     /// </summary>
-    public bool joining { get; set; }
+    public bool Joining { get; set; }
 
     /// <summary>
     /// The node ID of the child.
     /// </summary>
-    public sl_802154_short_addr_t childId { get; set; }
+    public sl_802154_short_addr_t Childid { get; set; }
 
     /// <summary>
     /// The EUI64 of the child.
     /// </summary>
-    public sl_802154_long_addr_t childEui64 { get; set; }
+    public sl_802154_long_addr_t Childeui64 { get; set; }
 
     /// <summary>
     /// The node type of the child.
     /// </summary>
-    public sl_zigbee_node_type_t childType { get; set; }
+    public sl_zigbee_node_type_t Childtype { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ChildJoinHandlerResponse frame = new ChildJoinHandlerResponse();
-		frame.index = BitConverter.ReadByte();
-		frame.joining = BitConverter.ReadBool();
-		frame.childId = 		frame.childEui64 = 		frame.childType = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Index = frameBytes[index];
+		index += 1;
+		frame.Joining = frameBytes[index];
+		index += 1;
+		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
+		index += 0;
+		frame.Childeui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
+		index += 0;
+		frame.Childtype = /* TODO: Implement parsing for type sl_zigbee_node_type_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

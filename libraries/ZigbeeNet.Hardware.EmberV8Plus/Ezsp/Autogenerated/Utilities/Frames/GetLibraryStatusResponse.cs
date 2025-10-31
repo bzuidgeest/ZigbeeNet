@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class GetLibraryStatusResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The status of the library being queried.
     /// </summary>
-    public sl_zigbee_library_status_t status { get; set; }
+    public sl_zigbee_library_status_t Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetLibraryStatusResponse frame = new GetLibraryStatusResponse();
-		frame.status = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_zigbee_library_status_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

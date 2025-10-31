@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,16 +22,23 @@ public class GetCurrentDutyCycleResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK  if the duty cycles were read successfully, SL_STATUS_INVALID_PARAMETER maxDevices is greater than SL_ZIGBEE_MAX_END_DEVICE_CHILDREN + 1.
     /// </summary>
-    public sl_status_t status { get; set; }
+    public sl_status_t Status { get; set; }
 
     /// <summary>
     /// Consumed duty cycles up to maxDevices. When the number of children that are being monitored is less than maxDevices, the sl_802154_short_addr_t element in the sl_zigbee_per_device_duty_cycle_t will be 0xFFFF.
     /// </summary>
-    public uint8_t[134] arrayOfDeviceDutyCycles { get; set; }
+    public uint8_t[134] Arrayofdevicedutycycles { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCurrentDutyCycleResponse frame = new GetCurrentDutyCycleResponse();
-		frame.status = 		frame.arrayOfDeviceDutyCycles = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
+		index += 0;
+		frame.Arrayofdevicedutycycles = /* TODO: Implement parsing for type uint8_t[134] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

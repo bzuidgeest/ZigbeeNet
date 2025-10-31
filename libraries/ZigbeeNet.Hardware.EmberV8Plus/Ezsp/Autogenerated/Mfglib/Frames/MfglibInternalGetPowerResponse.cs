@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class MfglibInternalGetPowerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Power in units of dBm. Refer to radio data sheet for valid range.
     /// </summary>
-    public sbyte power { get; set; }
+    public sbyte Power { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MfglibInternalGetPowerResponse frame = new MfglibInternalGetPowerResponse();
-		frame.power = BitConverter.ReadSByte();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Power = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

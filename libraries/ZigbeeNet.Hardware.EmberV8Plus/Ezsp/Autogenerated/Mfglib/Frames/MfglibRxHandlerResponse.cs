@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,29 +22,37 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The link quality observed during the reception
     /// </summary>
-    public byte linkQuality { get; set; }
+    public byte Linkquality { get; set; }
 
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-    public sbyte rssi { get; set; }
+    public sbyte Rssi { get; set; }
 
     /// <summary>
     /// The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
     /// </summary>
-    public byte packetLength { get; set; }
+    public byte Packetlength { get; set; }
 
     /// <summary>
     /// The received packet (last 2 bytes are not FCS / CRC and may be discarded)
     /// </summary>
-    public uint8_t[packetLength] packetContents { get; set; }
+    public uint8_t[packetLength] Packetcontents { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();
-		frame.linkQuality = BitConverter.ReadByte();
-		frame.rssi = BitConverter.ReadSByte();
-		frame.packetLength = BitConverter.ReadByte();
-		frame.packetContents = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Linkquality = frameBytes[index];
+		index += 1;
+		frame.Rssi = frameBytes[index];
+		index += 1;
+		frame.Packetlength = frameBytes[index];
+		index += 1;
+		frame.Packetcontents = /* TODO: Implement parsing for type uint8_t[packetLength] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

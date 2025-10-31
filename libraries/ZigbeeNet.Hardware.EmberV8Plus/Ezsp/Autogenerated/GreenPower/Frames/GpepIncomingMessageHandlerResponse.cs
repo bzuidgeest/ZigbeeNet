@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// GP parameters list represented as a macro for GP endpoint incoming message handler and callbacks prototypes.
     /// </summary>
-    public sl_zigbee_gp_params_t param { get; set; }
+    public sl_zigbee_gp_params_t Param { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpepIncomingMessageHandlerResponse frame = new GpepIncomingMessageHandlerResponse();
-		frame.param = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Param = /* TODO: Implement parsing for type sl_zigbee_gp_params_t */ null;
+		index += 0;
+
+		return frame;
+	}
 }

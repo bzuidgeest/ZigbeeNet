@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,23 +22,30 @@ public class GetTimerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-    public ushort time { get; set; }
+    public ushort Time { get; set; }
 
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-    public sl_zigbee_event_units_t units { get; set; }
+    public sl_zigbee_event_units_t Units { get; set; }
 
     /// <summary>
     /// True if a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. False if only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-    public bool repeat { get; set; }
+    public bool Repeat { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTimerResponse frame = new GetTimerResponse();
-		frame.time = BitConverter.ReadUShort();
-		frame.units = 		frame.repeat = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Time = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Units = /* TODO: Implement parsing for type sl_zigbee_event_units_t */ null;
+		index += 0;
+		frame.Repeat = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

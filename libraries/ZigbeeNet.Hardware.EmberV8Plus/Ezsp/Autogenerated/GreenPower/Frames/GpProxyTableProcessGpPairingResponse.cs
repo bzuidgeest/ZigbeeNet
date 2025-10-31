@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,12 +22,16 @@ public class GpProxyTableProcessGpPairingResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether a GP Pairing has been created or not.
     /// </summary>
-    public bool gpPairingAdded { get; set; }
+    public bool Gppairingadded { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpProxyTableProcessGpPairingResponse frame = new GpProxyTableProcessGpPairingResponse();
-		frame.gpPairingAdded = BitConverter.ReadBool();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Gppairingadded = frameBytes[index];
+		index += 1;
+
+		return frame;
 	}
-}
 }

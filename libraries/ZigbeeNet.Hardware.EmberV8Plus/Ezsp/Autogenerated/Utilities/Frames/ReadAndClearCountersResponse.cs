@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,11 +22,16 @@ public class ReadAndClearCountersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>
-    public uint16_t[SL_ZIGBEE_COUNTER_TYPE_COUNT] values { get; set; }
+    public uint16_t[SL_ZIGBEE_COUNTER_TYPE_COUNT] Values { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAndClearCountersResponse frame = new ReadAndClearCountersResponse();
-		frame.values = 	}
-}
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Values = /* TODO: Implement parsing for type uint16_t[SL_ZIGBEE_COUNTER_TYPE_COUNT] */ null;
+		index += 0;
+
+		return frame;
+	}
 }

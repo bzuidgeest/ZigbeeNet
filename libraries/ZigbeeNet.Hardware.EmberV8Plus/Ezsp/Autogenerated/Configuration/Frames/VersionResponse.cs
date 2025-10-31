@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
@@ -21,24 +22,30 @@ public class VersionResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EZSP version the NCP is using.
     /// </summary>
-    public byte protocolVersion { get; set; }
+    public byte Protocolversion { get; set; }
 
     /// <summary>
     /// The type of stack running on the NCP (2).
     /// </summary>
-    public byte stackType { get; set; }
+    public byte Stacktype { get; set; }
 
     /// <summary>
     /// The version number of the stack.
     /// </summary>
-    public ushort stackVersion { get; set; }
+    public ushort Stackversion { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(byte[] frameBytes)
+	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		VersionResponse frame = new VersionResponse();
-		frame.protocolVersion = BitConverter.ReadByte();
-		frame.stackType = BitConverter.ReadByte();
-		frame.stackVersion = BitConverter.ReadUShort();
+		int index = frame.ParseHeader(frameBytes);
+
+		frame.Protocolversion = frameBytes[index];
+		index += 1;
+		frame.Stacktype = frameBytes[index];
+		index += 1;
+		frame.Stackversion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+
+		return frame;
 	}
-}
 }
