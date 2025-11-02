@@ -6,23 +6,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
 {
-    public readonly record struct cMapping (string cSharpTypeName, int cByteSize);
+    public readonly record struct cMapping (string cSharpTypeName, int cByteSize, string description, bool isArray = false, int arraySize = 0);
     internal static class MapCTypes
     {
 
         private static readonly Dictionary<string, cMapping> CTypeMappings = new()
         {
-            { "uint8_t", new ("byte", 1) },
-            { "int8_t", new ("sbyte", 1) },
-            { "uint16_t", new ("ushort", 2) },
-            { "int16_t", new ("short", 2) },
-            { "uint32_t", new ("uint", 4) },
-            { "int32_t", new ("int", 4) },
-            { "uint64_t", new ("ulong", 8) },
-            { "int64_t", new ("long", 8) },
-            { "bool", new ("bool", 1) }
+            { "uint8_t", new ("byte", 1, string.Empty, false, 0) },
+            { "int8_t", new ("sbyte", 1, string.Empty, false, 0) },
+            { "uint16_t", new ("ushort", 2, string.Empty, false, 0) },
+            { "int16_t", new ("short", 2, string.Empty, false, 0) },
+            { "uint32_t", new ("uint", 4, string.Empty, false, 0) },
+            { "int32_t", new ("int", 4, string.Empty, false, 0) },
+            { "uint64_t", new ("ulong", 8, string.Empty, false, 0) },
+            { "int64_t", new ("long", 8, string.Empty, false, 0) },
+            { "bool", new ("bool", 1, string.Empty, false, 0) }
         };
 
         public static void AddTypeMapping(string cType, cMapping mapTo)
@@ -42,7 +42,7 @@ namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
             }
             else
             {
-                return new cMapping(cType, 0);
+                return new cMapping(cType, 0, string.Empty, false, 0);
             }
         }
     }

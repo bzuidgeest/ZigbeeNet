@@ -22,15 +22,15 @@ public class IdConflictHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The short id for which a conflict was detected
     /// </summary>
-    public sl_802154_short_addr_t Id { get; set; }
+    public ushort Id { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IdConflictHandlerResponse frame = new IdConflictHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Id = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Id = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}

@@ -19,6 +19,6 @@ public class MfgTestSendManufacturingStringRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The 16-byte manufacturing string.
     /// </summary>
-    public sl_zigbee_manufacturing_string_t newString { get; set; }
+    public byte newString { get; set; }
 
 }

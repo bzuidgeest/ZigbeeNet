@@ -22,7 +22,7 @@ public class PollHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child that is requesting data.
     /// </summary>
-    public sl_802154_short_addr_t Childid { get; set; }
+    public ushort Childid { get; set; }
 
     /// <summary>
     /// True if transmit is expected, false otherwise.
@@ -34,8 +34,8 @@ public class PollHandlerResponse : EzspFrameResponseV8Plus
 		PollHandlerResponse frame = new PollHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 		frame.Transmitexpected = frameBytes[index];
 		index += 1;
 

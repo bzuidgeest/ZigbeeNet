@@ -19,12 +19,12 @@ public class UnicastNwkKeyUpdateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node ID of the device that will receive the message
     /// </summary>
-    public sl_802154_short_addr_t destShort { get; set; }
+    public ushort destShort { get; set; }
 
     /// <summary>
     /// The long address (EUI64) of the device that will receive the message.
     /// </summary>
-    public sl_802154_long_addr_t destLong { get; set; }
+    public byte destLong { get; set; }
 
     /// <summary>
     /// The NWK key to send to the new device.

@@ -19,7 +19,7 @@ public class SetSourceRouteRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The destination of the source route.
     /// </summary>
-    public sl_802154_short_addr_t destination { get; set; }
+    public ushort destination { get; set; }
 
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.

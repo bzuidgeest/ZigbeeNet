@@ -22,12 +22,12 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
     /// <summary>
     /// The short id of the concentrator.
     /// </summary>
-    public sl_802154_short_addr_t Source { get; set; }
+    public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the concentrator.
     /// </summary>
-    public sl_802154_long_addr_t Longid { get; set; }
+    public byte Longid { get; set; }
 
     /// <summary>
     /// The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
@@ -39,10 +39,10 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
 		IncomingManyToOneRouteRequestHandlerResponse frame = new IncomingManyToOneRouteRequestHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Source = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
-		frame.Longid = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Longid = frameBytes[index];
+		index += 1;
 		frame.Cost = frameBytes[index];
 		index += 1;
 

@@ -27,7 +27,7 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the node.
     /// </summary>
-    public sl_802154_long_addr_t Eui64 { get; set; }
+    public byte Eui64 { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -36,8 +36,8 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
 
 		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
 		index += 0;
-		frame.Eui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Eui64 = frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

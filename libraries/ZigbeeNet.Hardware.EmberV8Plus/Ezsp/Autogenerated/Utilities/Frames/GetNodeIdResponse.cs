@@ -22,15 +22,15 @@ public class GetNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The 16-bit ID.
     /// </summary>
-    public sl_802154_short_addr_t Nodeid { get; set; }
+    public ushort Nodeid { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetNodeIdResponse frame = new GetNodeIdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Nodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Nodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}

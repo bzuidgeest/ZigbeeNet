@@ -24,6 +24,6 @@ public class SetBindingRemoteNodeIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short ID of the destination node.
     /// </summary>
-    public sl_802154_short_addr_t nodeId { get; set; }
+    public ushort nodeId { get; set; }
 
 }

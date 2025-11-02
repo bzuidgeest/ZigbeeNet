@@ -19,6 +19,6 @@ public class SecManExportLinkKeyByEuiRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// EUI64 associated with the key to export.
     /// </summary>
-    public sl_802154_long_addr_t eui { get; set; }
+    public byte eui { get; set; }
 
 }

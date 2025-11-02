@@ -19,6 +19,6 @@ public class RemoveChildRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The long ID of the node.
     /// </summary>
-    public sl_802154_long_addr_t childEui64 { get; set; }
+    public byte childEui64 { get; set; }
 
 }

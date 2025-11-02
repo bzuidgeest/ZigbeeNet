@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
 {
     internal static class Sanitize
     {
@@ -43,6 +43,72 @@ namespace ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility
             }
 
             return pascalCased;
+        }
+
+        public static string StructureName(string enumerationName)
+        {
+            // Remove spaces and special characters, convert to PascalCase
+            if (string.IsNullOrWhiteSpace(enumerationName))
+                return enumerationName;
+
+            // Remove sl_ prefix if present
+            if (enumerationName.StartsWith("sl_", StringComparison.OrdinalIgnoreCase))
+                enumerationName = enumerationName[3..];
+
+            // Remove _t suffix if present
+            if (enumerationName.EndsWith("_t", StringComparison.OrdinalIgnoreCase))
+                enumerationName = enumerationName[..^2];
+
+            // Split by underscores and non-alphanumeric characters
+            var parts = System.Text.RegularExpressions.Regex.Split(enumerationName, @"[_\W]+");
+
+            // PascalCase: capitalize first letter of each part
+            var pascalCased = string.Concat(parts.Select(part =>
+                part.Length > 0 ? char.ToUpper(part[0]) + part[1..].ToLower() : ""));
+
+            // Check if reserved keyword and prefix with @ if needed
+            if (IsReservedKeyword(pascalCased))
+            {
+                pascalCased = "@" + pascalCased;
+            }
+
+            return pascalCased;
+        }
+
+        public static string TypeName(string typeName)
+        {
+            // Remove spaces and special characters, convert to PascalCase
+            if (string.IsNullOrWhiteSpace(typeName))
+                return typeName;
+
+            // Remove sl_ prefix if present
+            if (typeName.StartsWith("sl_", StringComparison.OrdinalIgnoreCase))
+                typeName = typeName[3..];
+
+            // Remove _t suffix if present
+            if (typeName.EndsWith("_t", StringComparison.OrdinalIgnoreCase))
+                typeName = typeName[..^2];
+
+            if (IsReservedKeyword(typeName) == true)
+            {
+                return typeName;
+            }
+            else
+            {
+                // Split by underscores and non-alphanumeric characters
+                var parts = System.Text.RegularExpressions.Regex.Split(typeName, @"[_\W]+");
+
+                // PascalCase: capitalize first letter of each part
+                var pascalCased = string.Concat(parts.Select(part =>
+                    part.Length > 0 ? char.ToUpper(part[0]) + part[1..].ToLower() : ""));
+
+                // Check if reserved keyword and prefix with @ if needed
+                if (IsReservedKeyword(typeName) == true)
+                {
+                    pascalCased = "@" + pascalCased;
+                }
+                return pascalCased;
+            }
         }
 
         public static string PropertyName(string propertyName)

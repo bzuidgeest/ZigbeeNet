@@ -19,11 +19,11 @@ public class RemoveNeighborRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short ID of the neighbor.
     /// </summary>
-    public sl_802154_short_addr_t shortId { get; set; }
+    public ushort shortId { get; set; }
 
     /// <summary>
     /// The long ID of the neighbor.
     /// </summary>
-    public sl_802154_long_addr_t longId { get; set; }
+    public byte longId { get; set; }
 
 }

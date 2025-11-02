@@ -18,6 +18,6 @@ public class ConcentratorNoteRouteErrorRequest : EzspFrameRequestV8Plus
 {
     public sl_status_t status { get; set; }
 
-    public sl_802154_short_addr_t nodeId { get; set; }
+    public ushort nodeId { get; set; }
 
 }

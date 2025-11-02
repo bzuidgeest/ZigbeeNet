@@ -22,12 +22,12 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The source of the route record.
     /// </summary>
-    public sl_802154_short_addr_t Source { get; set; }
+    public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the source.
     /// </summary>
-    public sl_802154_long_addr_t Sourceeui { get; set; }
+    public byte Sourceeui { get; set; }
 
     /// <summary>
     /// The link quality from the node that last relayed the route record.
@@ -54,10 +54,10 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
 		IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Source = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
-		frame.Sourceeui = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Sourceeui = frameBytes[index];
+		index += 1;
 		frame.Lasthoplqi = frameBytes[index];
 		index += 1;
 		frame.Lasthoprssi = frameBytes[index];

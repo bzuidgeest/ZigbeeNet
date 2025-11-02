@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser

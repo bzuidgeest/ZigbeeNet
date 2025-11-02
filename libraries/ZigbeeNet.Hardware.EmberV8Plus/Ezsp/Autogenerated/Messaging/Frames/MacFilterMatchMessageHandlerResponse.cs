@@ -22,7 +22,7 @@ public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The value of the filter that was matched.
     /// </summary>
-    public sl_zigbee_mac_filter_match_data_t Filtervaluematch { get; set; }
+    public ushort Filtervaluematch { get; set; }
 
     /// <summary>
     /// The type of MAC passthrough message received.
@@ -49,8 +49,8 @@ public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus
 		MacFilterMatchMessageHandlerResponse frame = new MacFilterMatchMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Filtervaluematch = /* TODO: Implement parsing for type sl_zigbee_mac_filter_match_data_t */ null;
-		index += 0;
+		frame.Filtervaluematch = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 		frame.Legacypassthroughtype = /* TODO: Implement parsing for type sl_zigbee_mac_passthrough_type_t */ null;
 		index += 0;
 		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;

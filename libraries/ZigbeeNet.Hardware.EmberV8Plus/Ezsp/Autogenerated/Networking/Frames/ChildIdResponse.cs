@@ -22,15 +22,15 @@ public class ChildIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child or SL_ZIGBEE_NULL_NODE_ID if there isn&apos;t a child at the childIndex specified
     /// </summary>
-    public sl_802154_short_addr_t Childid { get; set; }
+    public ushort Childid { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ChildIdResponse frame = new ChildIdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}

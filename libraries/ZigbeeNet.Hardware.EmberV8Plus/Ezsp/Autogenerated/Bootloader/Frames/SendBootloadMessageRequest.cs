@@ -24,7 +24,7 @@ public class SendBootloadMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The EUI64 of the target node. Ignored if the broadcast field is set to true.
     /// </summary>
-    public sl_802154_long_addr_t destEui64 { get; set; }
+    public byte destEui64 { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.

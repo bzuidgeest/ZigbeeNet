@@ -24,7 +24,7 @@ public class SecManImportLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// EUI64 this key is associated with.
     /// </summary>
-    public sl_802154_long_addr_t address { get; set; }
+    public byte address { get; set; }
 
     /// <summary>
     /// The key data to be imported.

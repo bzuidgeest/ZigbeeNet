@@ -22,7 +22,7 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the sending node.
     /// </summary>
-    public sl_802154_long_addr_t Longid { get; set; }
+    public byte Longid { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
@@ -44,8 +44,8 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
 		IncomingBootloadMessageHandlerResponse frame = new IncomingBootloadMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Longid = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Longid = frameBytes[index];
+		index += 1;
 		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
 		index += 0;
 		frame.Messagelength = frameBytes[index];

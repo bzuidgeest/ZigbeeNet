@@ -19,7 +19,7 @@ public class SendZigbeeLeaveRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Node ID of the device being told to leave.
     /// </summary>
-    public sl_802154_pan_id_t destination { get; set; }
+    public ushort destination { get; set; }
 
     /// <summary>
     /// Bitmask indicating additional considerations for the leave request.

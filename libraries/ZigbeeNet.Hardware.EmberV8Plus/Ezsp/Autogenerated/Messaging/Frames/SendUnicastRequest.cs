@@ -24,7 +24,7 @@ public class SendUnicastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Depending on the type of addressing used, this is either the sl_802154_short_addr_t of the destination, an index into the address table, or an index into the binding table.
     /// </summary>
-    public sl_802154_short_addr_t indexOrDestination { get; set; }
+    public ushort indexOrDestination { get; set; }
 
     /// <summary>
     /// The APS frame which is to be added to the message.

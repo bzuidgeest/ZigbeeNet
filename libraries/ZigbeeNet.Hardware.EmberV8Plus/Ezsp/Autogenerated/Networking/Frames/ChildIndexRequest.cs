@@ -19,6 +19,6 @@ public class ChildIndexRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node ID of the child
     /// </summary>
-    public sl_802154_short_addr_t childId { get; set; }
+    public ushort childId { get; set; }
 
 }

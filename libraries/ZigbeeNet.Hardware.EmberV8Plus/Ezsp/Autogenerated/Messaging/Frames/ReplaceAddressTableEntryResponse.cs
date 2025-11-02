@@ -27,12 +27,12 @@ public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the address table entry before it was modified.
     /// </summary>
-    public sl_802154_long_addr_t Oldeui64 { get; set; }
+    public byte Oldeui64 { get; set; }
 
     /// <summary>
     /// One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
     /// </summary>
-    public sl_802154_short_addr_t Oldid { get; set; }
+    public ushort Oldid { get; set; }
 
     /// <summary>
     /// true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
@@ -46,10 +46,10 @@ public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
 
 		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
 		index += 0;
-		frame.Oldeui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
-		frame.Oldid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Oldeui64 = frameBytes[index];
+		index += 1;
+		frame.Oldid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 		frame.Oldextendedtimeout = frameBytes[index];
 		index += 1;
 

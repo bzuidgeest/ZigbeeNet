@@ -19,7 +19,7 @@ public class SetNeighborFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// eui64 of the node
     /// </summary>
-    public sl_802154_long_addr_t eui64 { get; set; }
+    public byte eui64 { get; set; }
 
     /// <summary>
     /// Return the frame counter of the node from the neighbor or child table

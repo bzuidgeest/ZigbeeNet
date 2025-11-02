@@ -22,15 +22,15 @@ public class GetEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// The 64-bit ID.
     /// </summary>
-    public sl_802154_long_addr_t Eui64 { get; set; }
+    public byte Eui64 { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEui64Response frame = new GetEui64Response();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Eui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Eui64 = frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

@@ -22,7 +22,7 @@ public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The unused panID which has been found.
     /// </summary>
-    public sl_802154_pan_id_t Panid { get; set; }
+    public ushort Panid { get; set; }
 
     /// <summary>
     /// The channel that the unused panID was found on.
@@ -34,8 +34,8 @@ public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus
 		UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Panid = /* TODO: Implement parsing for type sl_802154_pan_id_t */ null;
-		index += 0;
+		frame.Panid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 		frame.Channel = frameBytes[index];
 		index += 1;
 

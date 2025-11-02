@@ -32,12 +32,12 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child.
     /// </summary>
-    public sl_802154_short_addr_t Childid { get; set; }
+    public ushort Childid { get; set; }
 
     /// <summary>
     /// The EUI64 of the child.
     /// </summary>
-    public sl_802154_long_addr_t Childeui64 { get; set; }
+    public byte Childeui64 { get; set; }
 
     /// <summary>
     /// The node type of the child.
@@ -53,10 +53,10 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
 		index += 1;
 		frame.Joining = frameBytes[index];
 		index += 1;
-		frame.Childid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
-		frame.Childeui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Childeui64 = frameBytes[index];
+		index += 1;
 		frame.Childtype = /* TODO: Implement parsing for type sl_zigbee_node_type_t */ null;
 		index += 0;
 

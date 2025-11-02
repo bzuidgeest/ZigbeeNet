@@ -19,6 +19,6 @@ public class SendPanIdUpdateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The new Pan Id
     /// </summary>
-    public sl_802154_pan_id_t newPan { get; set; }
+    public ushort newPan { get; set; }
 
 }

@@ -51,6 +51,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                 .Build();
 
             await host.RunAsync();
+            Console.WriteLine("Application has exited. Press any key to exit this window.");
+            Console.ReadKey();
         }
     }
 

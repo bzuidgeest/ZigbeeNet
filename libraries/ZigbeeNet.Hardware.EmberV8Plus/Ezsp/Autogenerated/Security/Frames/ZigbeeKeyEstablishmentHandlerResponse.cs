@@ -22,7 +22,7 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>
-    public sl_802154_long_addr_t Partner { get; set; }
+    public byte Partner { get; set; }
 
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
@@ -34,8 +34,8 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
 		ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Partner = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Partner = frameBytes[index];
+		index += 1;
 		frame.Status = /* TODO: Implement parsing for type sl_zigbee_key_status_t */ null;
 		index += 0;
 

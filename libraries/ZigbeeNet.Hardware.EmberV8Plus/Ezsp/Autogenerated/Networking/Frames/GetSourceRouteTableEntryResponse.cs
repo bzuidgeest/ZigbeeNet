@@ -29,7 +29,7 @@ public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the destination in that entry.
     /// </summary>
-    public sl_802154_short_addr_t Destination { get; set; }
+    public ushort Destination { get; set; }
 
     /// <summary>
     /// The closer node index for this source route table entry
@@ -43,8 +43,8 @@ public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
 
 		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
 		index += 0;
-		frame.Destination = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Destination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 		frame.Closerindex = frameBytes[index];
 		index += 1;
 

@@ -19,6 +19,6 @@ public class SecManExportTransientKeyByEuiRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to export from.
     /// </summary>
-    public sl_802154_long_addr_t eui { get; set; }
+    public byte eui { get; set; }
 
 }

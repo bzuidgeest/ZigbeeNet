@@ -19,7 +19,7 @@ public class SendReplyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-    public sl_802154_short_addr_t sender { get; set; }
+    public ushort sender { get; set; }
 
     /// <summary>
     /// Value supplied by incoming unicast.

@@ -19,7 +19,7 @@ public class SetExtendedTimeoutRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address of the node for which the timeout is to be set.
     /// </summary>
-    public sl_802154_long_addr_t remoteEui64 { get; set; }
+    public byte remoteEui64 { get; set; }
 
     /// <summary>
     /// true if the retry interval should be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval should be used.

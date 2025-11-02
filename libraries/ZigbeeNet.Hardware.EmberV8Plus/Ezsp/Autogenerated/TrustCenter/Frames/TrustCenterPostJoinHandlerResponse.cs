@@ -22,12 +22,12 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The Node Id of the node whose status changed
     /// </summary>
-    public sl_802154_short_addr_t Newnodeid { get; set; }
+    public ushort Newnodeid { get; set; }
 
     /// <summary>
     /// The EUI64 of the node whose status changed.
     /// </summary>
-    public sl_802154_long_addr_t Newnodeeui64 { get; set; }
+    public byte Newnodeeui64 { get; set; }
 
     /// <summary>
     /// The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.
@@ -42,23 +42,23 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parent of the node whose status has changed.
     /// </summary>
-    public sl_802154_short_addr_t Parentofnewnodeid { get; set; }
+    public ushort Parentofnewnodeid { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		TrustCenterPostJoinHandlerResponse frame = new TrustCenterPostJoinHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Newnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
-		frame.Newnodeeui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
+		frame.Newnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.Newnodeeui64 = frameBytes[index];
+		index += 1;
 		frame.Status = /* TODO: Implement parsing for type sl_zigbee_device_update_t */ null;
 		index += 0;
 		frame.Policydecision = /* TODO: Implement parsing for type sl_zigbee_join_decision_t */ null;
 		index += 0;
-		frame.Parentofnewnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Parentofnewnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}

@@ -19,6 +19,6 @@ public class GetExtendedTimeoutRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address of the node for which the timeout is to be returned.
     /// </summary>
-    public sl_802154_long_addr_t remoteEui64 { get; set; }
+    public byte remoteEui64 { get; set; }
 
 }

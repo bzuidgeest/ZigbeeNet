@@ -19,11 +19,11 @@ public class SendTrustCenterLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short address of the node to which this command will be sent
     /// </summary>
-    public sl_802154_short_addr_t destinationNodeId { get; set; }
+    public ushort destinationNodeId { get; set; }
 
     /// <summary>
     /// The long address of the node to which this command will be sent
     /// </summary>
-    public sl_802154_long_addr_t destinationEui64 { get; set; }
+    public byte destinationEui64 { get; set; }
 
 }

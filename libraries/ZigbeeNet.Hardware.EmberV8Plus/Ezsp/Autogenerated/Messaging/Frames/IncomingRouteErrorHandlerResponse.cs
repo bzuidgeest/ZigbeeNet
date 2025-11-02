@@ -27,7 +27,7 @@ public class IncomingRouteErrorHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The short id of the remote node.
     /// </summary>
-    public sl_802154_short_addr_t Target { get; set; }
+    public ushort Target { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -36,8 +36,8 @@ public class IncomingRouteErrorHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
 		index += 0;
-		frame.Target = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Target = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}

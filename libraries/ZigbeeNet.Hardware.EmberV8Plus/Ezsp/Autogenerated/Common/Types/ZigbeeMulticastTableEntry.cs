@@ -1,0 +1,29 @@
+/// <summary>
+/// A multicast table entry indicates that a particular endpoint is a member of a particular multicast group. Only devices with an endpoint in a multicast group will receive messages sent to that multicast group.
+/// </summary>
+
+using System.Runtime.InteropServices;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct ZigbeeMulticastTableEntry
+{
+	/// <summary>
+	/// The multicast group ID.
+	/// </summary>
+	public ushort multicastId;
+
+	/// <summary>
+	/// The endpoint that is a member, or 0 if this entry is not in use (the ZDO is not a member of any multicast groups.)
+	/// </summary>
+	public byte endpoint;
+
+	/// <summary>
+	/// The network index of the network the entry is related to.
+	/// </summary>
+	public byte networkIndex;
+
+}
+

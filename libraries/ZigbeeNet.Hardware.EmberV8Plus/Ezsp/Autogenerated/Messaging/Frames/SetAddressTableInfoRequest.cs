@@ -24,11 +24,11 @@ public class SetAddressTableInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The EUI64 to use for the address table entry.
     /// </summary>
-    public sl_802154_long_addr_t eui64 { get; set; }
+    public byte eui64 { get; set; }
 
     /// <summary>
     /// The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index or SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID which indicates that the entry stored in the address table at the given index is not in use.
     /// </summary>
-    public sl_802154_short_addr_t id { get; set; }
+    public ushort id { get; set; }
 
 }

@@ -9,7 +9,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
     public class EzspSection
     {
         [YamlMember(Alias = "section")]
-        public string? Section { get; set; }
+        public string Name { get; set; }
 
         [YamlMember(Alias = "ncpCpps")]
         public object? NcpCpps { get; set; }

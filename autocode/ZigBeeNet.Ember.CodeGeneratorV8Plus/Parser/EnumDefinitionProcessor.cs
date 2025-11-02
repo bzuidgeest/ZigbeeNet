@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
@@ -52,9 +52,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 // Generate XML documentation
                 if (!string.IsNullOrWhiteSpace(enumDef.Description))
                 {
-                    sb.AppendLine("/// <summary>");
-                    sb.AppendLine($"/// {enumDef.Description.XmlEscape()}");
-                    sb.AppendLine("/// </summary>");
+                    TextHelper.AppendBasicSummary(sb, enumDef.Description);
                 }
 
                 // Map C type to C# type
@@ -74,9 +72,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         // Add XML documentation for enum item
                         if (!string.IsNullOrWhiteSpace(item.Description))
                         {
-                            sb.AppendLine("    /// <summary>");
-                            sb.AppendLine($"    /// {item.Description.XmlEscape()}");
-                            sb.AppendLine("    /// </summary>");
+                            TextHelper.AppendBasicSummary(sb, item.Description, 1);
                         }
 
                         // Add enum item with value

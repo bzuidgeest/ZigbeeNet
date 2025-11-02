@@ -3,12 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using ZigBeeNet.Ember.CodeGeneratorV8Plus.Utility;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
+using System.Globalization;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 {
@@ -49,42 +53,32 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                     foreach (var section in sections)
                     {
-                        _logger.LogInformation("  Section: {section}", section.Section);
+                        _logger.LogInformation("\tSection: {section}", section.Name);
 
-                        #region // types
-                        if (section.Typedefs != null && section.Typedefs.Count > 0)
+                        string sanitizedSectionName = Sanitize.SectionName(section.Name);
+                        
+                        #region // simple types
+                        var simpleCount = 0;
+                        var complexCount = 0;
+
+                        if (section.Typedefs != null && section.Typedefs.Any(x => x.Definition is SimpleTypedefDefinition))
                         {
-                            var simpleTypedefs = new List<Typedef>();
-                            var simpleCount = 0;
-                            var complexCount = 0;
 
-                            foreach (var typedef in section.Typedefs)
+                            foreach (var typedef in section.Typedefs.Where(x => x.Definition is SimpleTypedefDefinition))
                             {
-                                if (typedef.Definition is SimpleTypedefDefinition simple)
+                                simpleCount++;
+
+                                string content = SimpleTypeDefinitionProcessor.ProcessSimpleTypeDefinition(_logger, typedef, definitionPath.Substring(0, definitionPath.LastIndexOf('\\')), sanitizedSectionName);
+                                if (string.IsNullOrWhiteSpace(content) == false)
                                 {
-                                    simpleCount++;
-                                    simpleTypedefs.Add(typedef);
-                                    _logger.LogInformation("      - {name} (simple): {type}", typedef.Name, simple.Type);
-                                }
-                                else if (typedef.Definition is ComplexTypedefDefinition complex)
-                                {
-                                    complexCount++;
-                                    _logger.LogInformation("      - {name} (complex): {fieldCount} fields", typedef.Name, complex.Fields.Count);
-                                    ProcessComplexTypeDefinition(section.Section, typedef);
+                                    SaveEnumFile(section.Name, typedef.Name, content);
                                 }
                             }
-
-                            // Process all simple typedefs for this section at once
-                            if (simpleTypedefs.Count > 0)
-                            {
-                                ProcessSimpleTypeDefinitions(section.Section, simpleTypedefs);
-                            }
-
-                            _logger.LogInformation("    Found {count} typedef(s) - {simple} simple, {complex} complex",
-                                section.Typedefs.Count, simpleCount, complexCount);
                         }
+
                         #endregion
 
+                        // Structs (complex types) might contain enums, so process enums first
                         #region // Enums
                         if (section.Enums != null && section.Enums.Count > 0)
                         {
@@ -92,24 +86,41 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             foreach (var enumDef in section.Enums)
                             {
                                 _logger.LogInformation("      - {name} ({type}): {itemCount} items", enumDef.Name, enumDef.Type, enumDef.Items?.Count ?? 0);
-                                string enumFileContent = EnumDefinitionProcessor.ProcessEnumDefinition(_logger, section.Section, enumDef);
+                                string enumFileContent = EnumDefinitionProcessor.ProcessEnumDefinition(_logger, section.Name, enumDef);
                                 if (string.IsNullOrWhiteSpace(enumFileContent))
                                 {
-                                    _logger.LogWarning("Enum file content is empty for {enum} in section {section}", enumDef.Name, section.Section);
+                                    _logger.LogWarning("Enum file content is empty for {enum} in section {section}", enumDef.Name, section.Name);
                                     continue;
                                 }
-                                SaveEnumFile(section.Section, enumDef.Name, enumFileContent);
+                                SaveEnumFile(section.Name, Sanitize.EnumerationName(enumDef.Name), enumFileContent);
                             }
                         }
                         #endregion
 
+                        #region // complex types
+                        if (section.Typedefs != null && section.Typedefs.Any(x => x.Definition is ComplexTypedefDefinition))
+                        {
+                            foreach (var typedef in section.Typedefs.Where(x => x.Definition is ComplexTypedefDefinition))
+                            {
+                                complexCount++;
+
+                                string complexTypeContent = ComplexTypeDefinitionProcessor.ProcessComplexTypeDefinition(_logger, sanitizedSectionName, typedef);
+
+                                SaveComplexTypeFile(section.Name, Sanitize.StructureName(typedef.Name), complexTypeContent);
+                            }
+                        }
+                        #endregion
+
+                        _logger.LogInformation("\t\tFound {count} typedef(s) - {simple} simple, {complex} complex",
+                            section.Typedefs?.Count ?? 0, simpleCount, complexCount);
+
                         #region // Frames
                         if (section.Frames != null && section.Frames.Count > 0)
                         {
-                            frameNamespaces.Add($"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{Sanitize.SectionName(section.Section)}.Frames;");
+                            frameNamespaces.Add($"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{Sanitize.SectionName(section.Name)}.Frames;");
 
                             _logger.LogInformation("    Found {count} frame(s)", section.Frames.Count);
-                            
+
                             foreach (var frameDefinition in section.Frames)
                             {
                                 _logger.LogInformation("      - {name} ({value}): {cmdArgs} cmd args, {respArgs} resp args",
@@ -117,20 +128,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     frameDefinition.CommandArguments?.Count ?? 0,
                                     frameDefinition.ResponseArguments?.Count ?? 0);
 
-                                string frameRequestContent = FrameDefinitionProcessor.ProcessFrameDefinitionForRequest(_logger, section.Section, frameDefinition);
-                                string frameResponseContent = FrameDefinitionProcessor.ProcessFrameDefinitionForResponse(_logger, section.Section, frameDefinition);
+                                string frameRequestContent = FrameDefinitionProcessor.ProcessFrameDefinitionForRequest(_logger, section.Name, frameDefinition);
+                                string frameResponseContent = FrameDefinitionProcessor.ProcessFrameDefinitionForResponse(_logger, section.Name, frameDefinition);
 
                                 string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..];
                                 string classNameResponse = className + "Response";
 
                                 if (string.IsNullOrWhiteSpace(frameRequestContent) == false)
                                 {
-                                    SaveFrameFile(section.Section, $"{className}Request", frameRequestContent);
+                                    SaveFrameFile(section.Name, $"{className}Request", frameRequestContent);
                                 }
 
                                 if (string.IsNullOrWhiteSpace(frameResponseContent) == false)
                                 {
-                                    SaveFrameFile(section.Section, classNameResponse, frameResponseContent);
+                                    SaveFrameFile(section.Name, classNameResponse, frameResponseContent);
                                 }
 
                                 frameNumberResponses.Add(frameDefinition.Value, classNameResponse);
@@ -139,7 +150,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         #endregion
                     }
 
-                    
+
                     StringBuilder EzspFrameResponseV8PlusAutoGeneratedContent = new StringBuilder();
                     EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine("//------------------------------------------------------------------------------");
                     EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine("// <auto-generated>");
@@ -156,7 +167,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     {
                         EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine($"using {frameNamespace}");
                     }
-                    
+
                     EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine("namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
                     EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine();
                     EzspFrameResponseV8PlusAutoGeneratedContent.AppendLine("public abstract partial class EzspFrameResponseV8Plus");
@@ -178,6 +189,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             {
                 _logger.LogError(ex, "Error processing version {version}", versionName);
             }
+        }
+
+
+        private void SaveComplexTypeFile(string sectionName, string typeName, string content)
+        {
+            // Create output directory for this section
+            string sanitizedSectionName = Sanitize.SectionName(sectionName);
+            string outputDir = Path.Combine(_settings.OutputDirectory, sanitizedSectionName, "Types");
+            Directory.CreateDirectory(outputDir);
+
+            string fileName = $"{typeName}.cs";
+            string filePath = Path.Combine(outputDir, fileName);
+
+            File.WriteAllText(filePath, content);
         }
 
         private void SaveEnumFile(string sectionName, string enumName, string content)
@@ -209,206 +234,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             File.WriteAllText(filename, fileContent);
         }
 
-        private void ProcessSimpleTypeDefinitions(string sectionName, List<Typedef> typedefs)
-        {
-            try
-            {
-                if (typedefs == null || typedefs.Count == 0)
-                {
-                    return;
-                }
 
-                // Create output directory for this section
-                string projectDir = Directory.GetCurrentDirectory();
-                string outputDir = Path.Combine(_settings.OutputDirectory, Sanitize.SectionName(sectionName));
-                Directory.CreateDirectory(outputDir);
 
-                // Create a file for type aliases
-                string fileName = "TypeAliases.cs";
-                string filePath = Path.Combine(outputDir, fileName);
-
-                // Generate the complete file with all typedefs
-                var content = GenerateTypeAliasFile(sectionName, typedefs);
-                File.WriteAllText(filePath, content);
-                _logger.LogDebug("Created type alias file with {count} aliases: {path}", typedefs.Count, filePath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing simple typedefs for section {section}", sectionName);
-            }
-        }
-        private void ProcessComplexTypeDefinition(string sectionName, Typedef typedef)
-        {
-            try
-            {
-                if (typedef?.Definition is not ComplexTypedefDefinition complex)
-                {
-                    return;
-                }
-
-                // Create output directory for this section
-                string sanitizedSectionName = Sanitize.SectionName(sectionName);
-                string outputDir = Path.Combine(_settings.OutputDirectory, sanitizedSectionName, "Types");
-                Directory.CreateDirectory(outputDir);
-
-                // Create a separate file for each struct
-                string fileName = $"{typedef.Name}.cs";
-                string filePath = Path.Combine(outputDir, fileName);
-
-                // Generate the struct definition
-                var content = GenerateComplexTypeDefinition(typedef, complex);
-
-                // Create file with namespace wrapper using section name
-                var fileContent = new StringBuilder();
-                fileContent.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types;");
-                fileContent.AppendLine();
-                fileContent.Append(content);
-                File.WriteAllText(filePath, fileContent.ToString());
-
-                _logger.LogDebug("Created complex type definition: {path}", filePath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing complex typedef {name} for section {section}", typedef?.Name, sectionName);
-            }
-        }
-
-        private static string GenerateTypeAliasFile(string sectionName, List<Typedef> typedefs)
-        {
-            var sb = new StringBuilder();
-
-            // No namespace declaration - global using directives must be at file level
-
-            foreach (var typedef in typedefs)
-            {
-                if (typedef.Definition is SimpleTypedefDefinition simpleTypedefDefinition)
-                {
-                    if (!string.IsNullOrEmpty(typedef.Description))
-                    {
-                        sb.AppendLine($"/// <summary>");
-                        sb.AppendLine($"/// {typedef.Description}");
-                        sb.AppendLine($"/// </summary>");
-                    }
-
-                    // Check if this is an array type
-                    int bracketIndex = simpleTypedefDefinition.Type.IndexOf('[');
-                    if (bracketIndex >= 0)
-                    {
-                        if (typedef.Name.Contains("string"))
-                        {
-                            // (array types cannot be used in type aliases, see if they work as string....)");
-                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
-                            sb.AppendLine($"global using {typedef.Name} = string;");
-                        }
-                        else
-                        {
-                            // Array type - cannot use in alias, skip it
-                            sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type} (array types cannot be used in type aliases)</remarks>");
-                            sb.AppendLine($"// Skipped: {typedef.Name}");
-                        }
-                    }
-                    else
-                    {
-                        // Simple scalar type - use global using alias
-                        cMapping csharpType = MapCTypes.MapBaseCType(simpleTypedefDefinition.Type);
-                        sb.AppendLine($"/// <remarks>Original C type: {simpleTypedefDefinition.Type}</remarks>");
-                        sb.AppendLine($"global using {typedef.Name} = {csharpType.cSharpTypeName};");
-                    }
-                    sb.AppendLine();
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        private static string GenerateComplexTypeDefinition(Typedef typedef, ComplexTypedefDefinition complex)
-        {
-            var sb = new StringBuilder();
-
-            // Add XML documentation
-            if (!string.IsNullOrEmpty(typedef.Description))
-            {
-                sb.AppendLine("/// <summary>");
-                sb.AppendLine($"/// {typedef.Description}");
-                sb.AppendLine("/// </summary>");
-            }
-
-            // Generate struct definition
-            sb.AppendLine($"public struct {typedef.Name}");
-            sb.AppendLine("{");
-
-            // Add fields
-            foreach (var field in complex.Fields)
-            {
-                if (!string.IsNullOrEmpty(field.Description))
-                {
-                    sb.AppendLine("    /// <summary>");
-                    sb.AppendLine($"    /// {field.Description}");
-                    sb.AppendLine("    /// </summary>");
-                }
-
-                // Check if the field name contains array notation (e.g., fieldName[SIZE])
-                int nameBracketIndex = field.Name?.IndexOf('[') ?? -1;
-                if (nameBracketIndex >= 0)
-                {
-                    // Extract field name and array size from name
-                    string fieldName = field.Name![..nameBracketIndex];
-                    string arrayPart = field.Name[nameBracketIndex..];
-                    string arraySize = arrayPart.Trim('[', ']');
-                    cMapping csharpBaseType = MapCTypes.MapBaseCType(field.Type);
-
-                    // Check if array size is numeric (compile-time constant)
-                    if (int.TryParse(arraySize, out _))
-                    {
-                        // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType.cSharpTypeName} {fieldName}[{arraySize}];");
-                    }
-                    else
-                    {
-                        // Array size is a symbolic constant - use a comment and skip
-                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType.cSharpTypeName} {fieldName}[{arraySize}];");
-                    }
-                }
-                // Check if the type contains array notation (e.g., uint8_t[8])
-                else if (field.Type?.IndexOf('[') >= 0)
-                {
-                    int typeBracketIndex = field.Type.IndexOf('[');
-                    // Extract base type and array size
-                    string baseType = field.Type[..typeBracketIndex];
-                    string arrayPart = field.Type[typeBracketIndex..];
-                    cMapping csharpBaseType = MapCTypes.MapBaseCType(baseType);
-
-                    // Extract array size from [N] format
-                    string arraySize = arrayPart.Trim('[', ']');
-
-                    // Check if array size is numeric (compile-time constant)
-                    if (int.TryParse(arraySize, out _))
-                    {
-                        // Use fixed keyword for fixed-size arrays with numeric constants
-                        sb.AppendLine($"    public fixed {csharpBaseType.cSharpTypeName} {field.Name}[{arraySize}];");
-                    }
-                    else
-                    {
-                        // Array size is a symbolic constant - use a comment and skip
-                        sb.AppendLine($"    // Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"    // public fixed {csharpBaseType.cSharpTypeName} {field.Name}[{arraySize}];");
-                    }
-                }
-                else
-                {
-                    // Simple scalar type
-                    cMapping csharpType = MapCTypes.MapBaseCType(field.Type);
-                    sb.AppendLine($"    public {csharpType.cSharpTypeName} {field.Name};");
-                }
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("}");
-            sb.AppendLine();
-
-            return sb.ToString();
-        }
 
     }
 }

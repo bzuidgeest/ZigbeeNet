@@ -27,12 +27,12 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public sl_802154_long_addr_t Parenteui64 { get; set; }
+    public byte Parenteui64 { get; set; }
 
     /// <summary>
     /// The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public sl_802154_short_addr_t Parentnodeid { get; set; }
+    public ushort Parentnodeid { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -41,10 +41,10 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
 
 		frame.Childcount = frameBytes[index];
 		index += 1;
-		frame.Parenteui64 = /* TODO: Implement parsing for type sl_802154_long_addr_t */ null;
-		index += 0;
-		frame.Parentnodeid = /* TODO: Implement parsing for type sl_802154_short_addr_t */ null;
-		index += 0;
+		frame.Parenteui64 = frameBytes[index];
+		index += 1;
+		frame.Parentnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
 
 		return frame;
 	}
