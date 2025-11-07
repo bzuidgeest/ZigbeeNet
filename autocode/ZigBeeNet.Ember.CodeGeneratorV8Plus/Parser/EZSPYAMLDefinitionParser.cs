@@ -71,7 +71,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 string content = SimpleTypeDefinitionProcessor.ProcessSimpleTypeDefinition(_logger, typedef, definitionPath.Substring(0, definitionPath.LastIndexOf('\\')), sanitizedSectionName);
                                 if (string.IsNullOrWhiteSpace(content) == false)
                                 {
-                                    SaveEnumFile(section.Name, typedef.Name, content);
+                                    SaveEnumFile(section.Name, Sanitize.EnumerationName(typedef.Name), content);
                                 }
                             }
                         }

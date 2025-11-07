@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 {
@@ -76,7 +77,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         }
 
                         // Add enum item with value
-                        sb.Append($"    {item.Name} = {item.Value}");
+                        if (String.IsNullOrEmpty(item.Value))
+                            sb.Append($"    {item.Name}");
+                        else
+                            sb.Append($"    {item.Name} = {item.Value}");
 
                         // Add comma if not the last item
                         if (i < enumDef.Items.Count - 1)
