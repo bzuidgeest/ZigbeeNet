@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 
@@ -23,7 +25,7 @@ public class SetInitialSecurityStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-    public sl_status_t Success { get; set; }
+    public Status Success { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

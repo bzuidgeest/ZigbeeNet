@@ -30,7 +30,7 @@ public class AddChildRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The nodetype e.g., SL_ZIGBEE_ROUTER defining, if this would be added to the child table or neighbor table.
     /// </summary>
-    public sl_zigbee_node_type_t nodeType { get; set; }
+    public ZigbeeNodeType nodeType { get; set; }
 
 }
 

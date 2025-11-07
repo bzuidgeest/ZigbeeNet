@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 
@@ -23,12 +25,12 @@ public class ZllGetTokensResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Data token return value.
     /// </summary>
-    public sl_zigbee_tok_type_stack_zll_data_t Data { get; set; }
+    public ZigbeeTokTypeStackZllData Data { get; set; }
 
     /// <summary>
     /// Security token return value.
     /// </summary>
-    public sl_zigbee_tok_type_stack_zll_security_t Security { get; set; }
+    public ZigbeeTokTypeStackZllSecurity Security { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -30,7 +30,7 @@ public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The message to be en/de-crypted.
     /// </summary>
-    public uint8_t[length_combined_arg] message { get; set; }
+    public Uint8TLengthCombinedArg message { get; set; }
 
     /// <summary>
     /// Index just past the APS frame.

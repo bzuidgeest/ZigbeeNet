@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -23,7 +25,7 @@ public class SetNwkUpdateIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of set operation for the network update ID.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

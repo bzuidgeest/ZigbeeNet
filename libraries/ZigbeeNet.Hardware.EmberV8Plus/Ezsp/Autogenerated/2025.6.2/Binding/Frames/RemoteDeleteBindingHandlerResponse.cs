@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 
@@ -28,7 +30,7 @@ public class RemoteDeleteBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the binding was removed from the table and any other status if not.
     /// </summary>
-    public sl_status_t Policydecision { get; set; }
+    public Status Policydecision { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

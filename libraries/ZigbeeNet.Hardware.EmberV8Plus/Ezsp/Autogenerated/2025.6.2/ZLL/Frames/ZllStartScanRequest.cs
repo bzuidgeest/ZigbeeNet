@@ -30,7 +30,7 @@ public class ZllStartScanRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node type of the local device.
     /// </summary>
-    public sl_zigbee_node_type_t nodeType { get; set; }
+    public ZigbeeNodeType nodeType { get; set; }
 
 }
 

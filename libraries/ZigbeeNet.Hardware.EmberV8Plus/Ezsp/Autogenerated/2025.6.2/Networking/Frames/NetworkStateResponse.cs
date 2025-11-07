@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,7 +25,7 @@ public class NetworkStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_network_status_t value indicating the current join status.
     /// </summary>
-    public sl_zigbee_network_status_t Status { get; set; }
+    public ZigbeeNetworkStatus Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

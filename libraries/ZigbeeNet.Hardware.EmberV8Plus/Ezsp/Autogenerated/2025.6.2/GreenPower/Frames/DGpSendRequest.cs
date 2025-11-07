@@ -30,7 +30,7 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The Address of the destination GPD.
     /// </summary>
-    public sl_zigbee_gp_address_t addr { get; set; }
+    public ZigbeeGpAddress addr { get; set; }
 
     /// <summary>
     /// The GPD command ID to send.
@@ -45,7 +45,7 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The GP command payload.
     /// </summary>
-    public uint8_t[gpdAsduLength] gpdAsdu { get; set; }
+    public Uint8TGpdasdulength gpdAsdu { get; set; }
 
     /// <summary>
     /// The handle to refer to the GPDF.

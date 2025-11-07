@@ -20,7 +20,7 @@ public class CounterRequiresPhyIndexRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The counter to be checked.
     /// </summary>
-    public sl_zigbee_counter_type_t counter { get; set; }
+    public ZigbeeCounterType counter { get; set; }
 
 }
 

@@ -25,7 +25,7 @@ public class GpSinkTableSetEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the sink entry to be updated.
     /// </summary>
-    public sl_zigbee_gp_sink_table_entry_t entry { get; set; }
+    public ZigbeeGpSinkTableEntry entry { get; set; }
 
 }
 

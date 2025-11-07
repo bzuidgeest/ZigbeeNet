@@ -30,7 +30,7 @@ public class DebugWriteRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The binary message.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public Uint8TMessagelength messageContents { get; set; }
 
 }
 

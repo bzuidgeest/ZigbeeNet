@@ -20,7 +20,7 @@ public class RadioSetSchedulerPrioritiesRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The current priorities.
     /// </summary>
-    public sl_802154_radio_priorities_t priorities { get; set; }
+    public _802154RadioPriorities priorities { get; set; }
 
 }
 

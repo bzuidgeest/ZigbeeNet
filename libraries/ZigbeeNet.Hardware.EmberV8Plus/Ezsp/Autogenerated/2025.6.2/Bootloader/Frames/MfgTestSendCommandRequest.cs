@@ -20,7 +20,7 @@ public class MfgTestSendCommandRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A pointer to the outgoing command string.
     /// </summary>
-    public uint8_t[1] command { get; set; }
+    public Uint8T1 command { get; set; }
 
 }
 

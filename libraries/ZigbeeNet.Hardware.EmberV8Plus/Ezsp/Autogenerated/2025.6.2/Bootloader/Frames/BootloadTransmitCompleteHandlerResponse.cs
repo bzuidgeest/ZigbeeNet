@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -23,7 +25,7 @@ public class BootloadTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
@@ -33,7 +35,7 @@ public class BootloadTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The message that was sent.
     /// </summary>
-    public uint8_t[messageLength] Messagecontents { get; set; }
+    public Uint8TMessagelength Messagecontents { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

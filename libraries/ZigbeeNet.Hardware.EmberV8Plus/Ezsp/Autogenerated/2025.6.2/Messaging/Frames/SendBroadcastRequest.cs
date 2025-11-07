@@ -35,7 +35,7 @@ public class SendBroadcastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public ZigbeeApsFrame apsFrame { get; set; }
 
     /// <summary>
     /// The message will be delivered to all nodes within &lt;i&gt;radius&lt;/i&gt; hops of the sender. A radius of zero is converted to SL_ZIGBEE_MAX_HOPS.
@@ -55,7 +55,7 @@ public class SendBroadcastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The broadcast message.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public Uint8TMessagelength messageContents { get; set; }
 
 }
 

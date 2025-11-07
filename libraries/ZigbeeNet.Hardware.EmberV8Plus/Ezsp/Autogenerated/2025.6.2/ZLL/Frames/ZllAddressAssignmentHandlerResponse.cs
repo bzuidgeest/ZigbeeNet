@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 
@@ -23,12 +25,12 @@ public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Address assignment information.
     /// </summary>
-    public sl_zigbee_zll_address_assignment_t Addressinfo { get; set; }
+    public ZigbeeZllAddressAssignment Addressinfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo Packetinfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

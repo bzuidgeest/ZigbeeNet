@@ -20,7 +20,7 @@ public class SendUnicastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Specifies the outgoing message type. Must be one of SL_ZIGBEE_OUTGOING_DIRECT, SL_ZIGBEE_OUTGOING_VIA_ADDRESS_TABLE, or SL_ZIGBEE_OUTGOING_VIA_BINDING.
     /// </summary>
-    public sl_zigbee_outgoing_message_type_t type { get; set; }
+    public ZigbeeOutgoingMessageType type { get; set; }
 
     /// <summary>
     /// Depending on the type of addressing used, this is either the sl_802154_short_addr_t of the destination, an index into the address table, or an index into the binding table.
@@ -30,7 +30,7 @@ public class SendUnicastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The APS frame which is to be added to the message.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public ZigbeeApsFrame apsFrame { get; set; }
 
     /// <summary>
     /// A value chosen by the Host. This value is used in the &lt;i&gt;sl_zigbee_ezsp_message_sent_handler&lt;/i&gt; response to refer to this message.
@@ -45,7 +45,7 @@ public class SendUnicastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Content of the message.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public Uint8TMessagelength messageContents { get; set; }
 
 }
 

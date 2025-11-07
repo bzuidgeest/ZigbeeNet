@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,12 +25,12 @@ public class GetNeighborResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_FAIL if the index is greater or equal to the number of active neighbors, or if the device is an end device. Returns SL_STATUS_OK otherwise.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The contents of the neighbor table entry.
     /// </summary>
-    public sl_zigbee_neighbor_table_entry_t Value { get; set; }
+    public ZigbeeNeighborTableEntry Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

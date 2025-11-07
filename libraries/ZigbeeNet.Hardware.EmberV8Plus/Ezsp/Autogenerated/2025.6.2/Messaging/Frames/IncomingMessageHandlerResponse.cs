@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -23,17 +25,17 @@ public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK
     /// </summary>
-    public sl_zigbee_incoming_message_type_t Type { get; set; }
+    public ZigbeeIncomingMessageType Type { get; set; }
 
     /// <summary>
     /// The APS frame from the incoming message.
     /// </summary>
-    public sl_zigbee_aps_frame_t Apsframe { get; set; }
+    public ZigbeeApsFrame Apsframe { get; set; }
 
     /// <summary>
     /// Miscellanous message information.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo Packetinfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
@@ -43,7 +45,7 @@ public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The incoming message.
     /// </summary>
-    public uint8_t[messageLength] Message { get; set; }
+    public Uint8TMessagelength Message { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

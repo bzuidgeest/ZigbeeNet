@@ -25,7 +25,7 @@ public class SendReplyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public ZigbeeApsFrame apsFrame { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
@@ -35,7 +35,7 @@ public class SendReplyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The reply message.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public Uint8TMessagelength messageContents { get; set; }
 
 }
 

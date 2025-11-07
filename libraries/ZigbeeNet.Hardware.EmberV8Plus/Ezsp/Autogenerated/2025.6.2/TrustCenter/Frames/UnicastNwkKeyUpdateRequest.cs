@@ -30,7 +30,7 @@ public class UnicastNwkKeyUpdateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The NWK key to send to the new device.
     /// </summary>
-    public sl_zigbee_key_data_t key { get; set; }
+    public ZigbeeKeyData key { get; set; }
 
 }
 

@@ -20,7 +20,7 @@ public class NetworkInitRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// An sl_zigbee_network_init_struct_t containing the options for initialization.
     /// </summary>
-    public sl_zigbee_network_init_struct_t networkInitStruct { get; set; }
+    public ZigbeeNetworkInitStruct networkInitStruct { get; set; }
 
 }
 

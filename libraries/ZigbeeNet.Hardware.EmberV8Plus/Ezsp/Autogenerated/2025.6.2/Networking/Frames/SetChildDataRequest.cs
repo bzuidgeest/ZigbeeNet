@@ -25,7 +25,7 @@ public class SetChildDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public sl_zigbee_child_data_t childData { get; set; }
+    public ZigbeeChildData childData { get; set; }
 
 }
 

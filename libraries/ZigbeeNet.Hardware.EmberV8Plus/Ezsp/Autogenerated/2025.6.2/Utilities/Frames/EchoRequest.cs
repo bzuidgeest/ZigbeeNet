@@ -25,7 +25,7 @@ public class EchoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The data to be echoed back.
     /// </summary>
-    public uint8_t[dataLength] data { get; set; }
+    public Uint8TDatalength data { get; set; }
 
 }
 

@@ -20,7 +20,7 @@ public class GetConfigurationValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which configuration value to read.
     /// </summary>
-    public sl_zigbee_ezsp_config_id_t configId { get; set; }
+    public ZigbeeEzspConfigId configId { get; set; }
 
 }
 

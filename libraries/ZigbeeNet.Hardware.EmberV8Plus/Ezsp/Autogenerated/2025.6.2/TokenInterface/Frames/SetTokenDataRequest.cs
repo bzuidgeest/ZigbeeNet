@@ -30,7 +30,7 @@ public class SetTokenDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Token Data
     /// </summary>
-    public sl_zigbee_token_data_t tokenData { get; set; }
+    public ZigbeeTokenData tokenData { get; set; }
 
 }
 

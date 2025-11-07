@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,7 +25,7 @@ public class GetNeighborFrameCounterResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// Return the frame counter of the node from the neighbor or child table

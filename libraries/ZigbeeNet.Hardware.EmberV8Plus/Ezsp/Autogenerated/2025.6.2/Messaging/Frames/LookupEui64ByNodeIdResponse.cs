@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -23,7 +25,7 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The EUI64 of the node.

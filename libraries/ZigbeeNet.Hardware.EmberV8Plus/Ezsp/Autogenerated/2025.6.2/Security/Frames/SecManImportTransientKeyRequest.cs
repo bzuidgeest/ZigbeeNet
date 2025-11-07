@@ -25,7 +25,7 @@ public class SecManImportTransientKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The key to import.
     /// </summary>
-    public sl_zigbee_sec_man_key_t plaintext_key { get; set; }
+    public ZigbeeSecManKey plaintext_key { get; set; }
 
 }
 

@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 
@@ -23,12 +25,12 @@ public class SecManGetApsKeyInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of metadata retrieval operation.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// Metadata about the referenced key.
     /// </summary>
-    public sl_zigbee_sec_man_aps_key_metadata_t KeyData { get; set; }
+    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

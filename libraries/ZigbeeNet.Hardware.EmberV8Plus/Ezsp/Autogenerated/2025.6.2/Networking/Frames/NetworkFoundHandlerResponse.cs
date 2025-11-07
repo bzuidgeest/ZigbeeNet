@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,7 +25,7 @@ public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parameters associated with the network found.
     /// </summary>
-    public sl_zigbee_zigbee_network_t Networkfound { get; set; }
+    public ZigbeeZigbeeNetwork Networkfound { get; set; }
 
     /// <summary>
     /// Link quality of incoming packet from network.

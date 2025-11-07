@@ -20,7 +20,7 @@ public class SleepyToSleepyNetworkStartRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Specification of the new network.
     /// </summary>
-    public sl_zigbee_network_parameters_t parameters { get; set; }
+    public ZigbeeNetworkParameters parameters { get; set; }
 
     /// <summary>
     /// Whether this device is initiating or joining the network.

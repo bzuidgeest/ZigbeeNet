@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -23,7 +25,7 @@ public class GetExtendedValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
@@ -33,7 +35,7 @@ public class GetExtendedValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The value.
     /// </summary>
-    public uint8_t[valueLength] Value { get; set; }
+    public Uint8TValuelength Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

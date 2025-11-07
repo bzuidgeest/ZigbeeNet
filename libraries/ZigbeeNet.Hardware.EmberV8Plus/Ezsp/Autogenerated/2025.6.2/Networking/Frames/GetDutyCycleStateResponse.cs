@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,12 +25,12 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating the success or failure of the command.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The current duty cycle state in effect.
     /// </summary>
-    public sl_zigbee_duty_cycle_state_t Returnedstate { get; set; }
+    public ZigbeeDutyCycleState Returnedstate { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

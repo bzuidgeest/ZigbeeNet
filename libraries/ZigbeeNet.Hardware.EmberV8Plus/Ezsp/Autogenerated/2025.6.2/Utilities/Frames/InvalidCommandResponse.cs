@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -23,7 +25,7 @@ public class InvalidCommandResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The reason why the command was invalid.
     /// </summary>
-    public sl_zigbee_ezsp_status_t Reason { get; set; }
+    public ZigbeeEzspStatus Reason { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

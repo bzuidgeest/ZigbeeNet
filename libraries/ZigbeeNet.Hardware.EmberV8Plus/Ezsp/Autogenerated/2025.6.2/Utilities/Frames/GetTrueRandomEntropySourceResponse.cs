@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -23,7 +25,7 @@ public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value indicates the used entropy source.
     /// </summary>
-    public sl_zigbee_entropy_source_t Entropysource { get; set; }
+    public ZigbeeEntropySource Entropysource { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

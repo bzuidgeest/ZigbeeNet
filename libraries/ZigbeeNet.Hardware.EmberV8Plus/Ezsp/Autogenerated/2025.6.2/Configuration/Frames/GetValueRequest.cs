@@ -20,7 +20,7 @@ public class GetValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which value to read.
     /// </summary>
-    public sl_zigbee_ezsp_value_id_t valueId { get; set; }
+    public ZigbeeEzspValueId valueId { get; set; }
 
 }
 

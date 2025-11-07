@@ -20,12 +20,12 @@ public class AesEncryptRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// 16 bytes of plaintext.
     /// </summary>
-    public uint8_t[16] plaintext { get; set; }
+    public Uint8T16 plaintext { get; set; }
 
     /// <summary>
     /// The 16-byte encryption key to use.
     /// </summary>
-    public uint8_t[16] key { get; set; }
+    public Uint8T16 key { get; set; }
 
 }
 

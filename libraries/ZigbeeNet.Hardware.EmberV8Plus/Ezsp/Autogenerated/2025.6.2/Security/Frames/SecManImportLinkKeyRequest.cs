@@ -30,7 +30,7 @@ public class SecManImportLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The key data to be imported.
     /// </summary>
-    public sl_zigbee_sec_man_key_t plaintext_key { get; set; }
+    public ZigbeeSecManKey plaintext_key { get; set; }
 
 }
 

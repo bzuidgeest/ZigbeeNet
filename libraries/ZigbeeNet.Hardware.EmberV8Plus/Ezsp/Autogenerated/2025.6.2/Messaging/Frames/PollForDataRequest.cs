@@ -25,7 +25,7 @@ public class PollForDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The units for &lt;i&gt;interval&lt;/i&gt;.
     /// </summary>
-    public sl_zigbee_event_units_t units { get; set; }
+    public ZigbeeEventUnits units { get; set; }
 
     /// <summary>
     /// The number of poll failures that will be tolerated before a &lt;i&gt;pollCompleteHandler&lt;/i&gt; callback is generated. A value of zero will result in a callback for every poll. Any status value apart from SL_STATUS_OK and SL_STATUS_MAC_NO_DATA is counted as a failure.

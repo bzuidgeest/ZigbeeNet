@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -28,7 +30,7 @@ public class GetMfgTokenResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The manufacturing token data.
     /// </summary>
-    public uint8_t[tokenDataLength] Tokendata { get; set; }
+    public Uint8TTokendatalength Tokendata { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

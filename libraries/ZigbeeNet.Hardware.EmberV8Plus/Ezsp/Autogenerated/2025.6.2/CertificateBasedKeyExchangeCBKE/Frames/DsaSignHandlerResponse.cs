@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
 
@@ -23,7 +25,7 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the DSA signing operation.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
@@ -33,7 +35,7 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The message and attached which includes the original message and the appended signature.
     /// </summary>
-    public uint8_t[messageLength] Messagecontents { get; set; }
+    public Uint8TMessagelength Messagecontents { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

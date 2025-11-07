@@ -20,12 +20,12 @@ public class SecManImportKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Metadata to identify where the imported key should be stored.
     /// </summary>
-    public sl_zigbee_sec_man_context_t context { get; set; }
+    public ZigbeeSecManContext context { get; set; }
 
     /// <summary>
     /// The key to be imported.
     /// </summary>
-    public sl_zigbee_sec_man_key_t key { get; set; }
+    public ZigbeeSecManKey key { get; set; }
 
 }
 

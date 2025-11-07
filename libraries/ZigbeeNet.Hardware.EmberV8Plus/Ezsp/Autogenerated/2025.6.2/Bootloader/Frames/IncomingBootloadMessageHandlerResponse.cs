@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -28,7 +30,7 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo Packetinfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
@@ -38,7 +40,7 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The bootload message that was sent.
     /// </summary>
-    public uint8_t[messageLength] Messagecontents { get; set; }
+    public Uint8TMessagelength Messagecontents { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

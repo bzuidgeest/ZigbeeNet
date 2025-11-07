@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
 
@@ -23,12 +25,12 @@ public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the CBKE operation.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The generated ephemeral public key.
     /// </summary>
-    public sl_zigbee_public_key_data_t Ephemeralpublickey { get; set; }
+    public ZigbeePublicKeyData Ephemeralpublickey { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

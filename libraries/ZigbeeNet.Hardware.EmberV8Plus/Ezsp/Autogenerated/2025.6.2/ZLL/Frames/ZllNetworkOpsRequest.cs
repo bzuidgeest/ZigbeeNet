@@ -20,12 +20,12 @@ public class ZllNetworkOpsRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public sl_zigbee_zll_network_t networkInfo { get; set; }
+    public ZigbeeZllNetwork networkInfo { get; set; }
 
     /// <summary>
     /// Operation indicator.
     /// </summary>
-    public sl_zigbee_ezsp_zll_network_operation_t op { get; set; }
+    public ZigbeeEzspZllNetworkOperation op { get; set; }
 
     /// <summary>
     /// Radio transmission power.

@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 
@@ -23,7 +25,7 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The requested binding.
     /// </summary>
-    public sl_zigbee_binding_table_entry_t Entry { get; set; }
+    public ZigbeeBindingTableEntry Entry { get; set; }
 
     /// <summary>
     /// The index at which the binding was added.
@@ -33,7 +35,7 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the binding was added to the table and any other status if not.
     /// </summary>
-    public sl_status_t Policydecision { get; set; }
+    public Status Policydecision { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

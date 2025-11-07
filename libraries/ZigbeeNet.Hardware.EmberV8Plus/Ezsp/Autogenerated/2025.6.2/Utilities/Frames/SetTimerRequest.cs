@@ -30,7 +30,7 @@ public class SetTimerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-    public sl_zigbee_event_units_t units { get; set; }
+    public ZigbeeEventUnits units { get; set; }
 
     /// <summary>
     /// If true, a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. If false, only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.

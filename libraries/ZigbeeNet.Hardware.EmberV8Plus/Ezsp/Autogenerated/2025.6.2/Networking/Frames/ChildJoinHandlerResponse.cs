@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -43,7 +45,7 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node type of the child.
     /// </summary>
-    public sl_zigbee_node_type_t Childtype { get; set; }
+    public ZigbeeNodeType Childtype { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

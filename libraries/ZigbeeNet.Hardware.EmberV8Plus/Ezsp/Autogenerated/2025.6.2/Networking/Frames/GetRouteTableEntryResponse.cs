@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,12 +25,12 @@ public class GetRouteTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_FAIL if the index is out of range or the device is an end device, and SL_STATUS_OK otherwise.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The contents of the route table entry.
     /// </summary>
-    public sl_zigbee_route_table_entry_t Value { get; set; }
+    public ZigbeeRouteTableEntry Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

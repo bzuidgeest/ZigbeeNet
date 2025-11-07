@@ -25,7 +25,7 @@ public class SetTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The data to write to the token.
     /// </summary>
-    public uint8_t[8] tokenData { get; set; }
+    public Uint8T8 tokenData { get; set; }
 
 }
 

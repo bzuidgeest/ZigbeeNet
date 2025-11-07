@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,17 +25,17 @@ public class GetNetworkParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// An sl_zigbee_node_type_t value indicating the current node type.
     /// </summary>
-    public sl_zigbee_node_type_t Nodetype { get; set; }
+    public ZigbeeNodeType Nodetype { get; set; }
 
     /// <summary>
     /// The current network parameters.
     /// </summary>
-    public sl_zigbee_network_parameters_t Parameters { get; set; }
+    public ZigbeeNetworkParameters Parameters { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -25,7 +25,7 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The target GPD.
     /// </summary>
-    public sl_zigbee_gp_address_t addr { get; set; }
+    public ZigbeeGpAddress addr { get; set; }
 
     /// <summary>
     /// The communication mode of the GP Sink.
@@ -50,12 +50,12 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The IEEE address of the GP Sink.
     /// </summary>
-    public uint8_t[8] sinkIeeeAddress { get; set; }
+    public Uint8T8 sinkIeeeAddress { get; set; }
 
     /// <summary>
     /// The key to use for the target GPD.
     /// </summary>
-    public sl_zigbee_key_data_t gpdKey { get; set; }
+    public ZigbeeKeyData gpdKey { get; set; }
 
     /// <summary>
     /// The GPD security frame counter.

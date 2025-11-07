@@ -51,8 +51,8 @@ public struct ZigbeeGpProxyTableEntry
 	/// The list of sinks (hardcoded to 2 which is the spec minimum).
 	/// </summary>
 	// Array field with symbolic size: GP_SINK_LIST_ENTRIES
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = GP_SINK_LIST_ENTRIES)]
-	public ZigbeeGpSinkListEntry[] sinkList[GP_SINK_LIST_ENTRIES];
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public ZigbeeGpSinkListEntry[] sinkList;
 	/// <summary>
 	/// The groupcast radius.
 	/// </summary>

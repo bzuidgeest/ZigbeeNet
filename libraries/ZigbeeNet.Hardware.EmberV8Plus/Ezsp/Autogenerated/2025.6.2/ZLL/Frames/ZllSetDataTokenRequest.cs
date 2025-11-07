@@ -20,7 +20,7 @@ public class ZllSetDataTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Data token to be set.
     /// </summary>
-    public sl_zigbee_tok_type_stack_zll_data_t data { get; set; }
+    public ZigbeeTokTypeStackZllData data { get; set; }
 
 }
 

@@ -20,7 +20,7 @@ public class GetMfgTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which manufacturing token to read.
     /// </summary>
-    public sl_zigbee_ezsp_mfg_token_id_t tokenId { get; set; }
+    public ZigbeeEzspMfgTokenId tokenId { get; set; }
 
 }
 

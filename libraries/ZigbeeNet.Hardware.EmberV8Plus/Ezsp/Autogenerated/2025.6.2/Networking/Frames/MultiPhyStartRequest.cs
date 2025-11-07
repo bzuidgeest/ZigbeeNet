@@ -40,7 +40,7 @@ public class MultiPhyStartRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Network configuration bitmask.
     /// </summary>
-    public sl_zigbee_multi_phy_nwk_config_t bitmask { get; set; }
+    public ZigbeeMultiPhyNwkConfig bitmask { get; set; }
 
 }
 

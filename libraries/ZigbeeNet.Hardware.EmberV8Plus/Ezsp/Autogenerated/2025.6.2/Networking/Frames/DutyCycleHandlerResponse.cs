@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -33,7 +35,7 @@ public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current duty cycle state.
     /// </summary>
-    public sl_zigbee_duty_cycle_state_t State { get; set; }
+    public ZigbeeDutyCycleState State { get; set; }
 
     /// <summary>
     /// The total number of connected end devices that are being monitored for duty cycle.
@@ -43,7 +45,7 @@ public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack&apos;s nodeId, and thus the total aggregate duty cycle for the device.
     /// </summary>
-    public sl_zigbee_per_device_duty_cycle_t Arrayofdevicedutycycles { get; set; }
+    public ZigbeePerDeviceDutyCycle Arrayofdevicedutycycles { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

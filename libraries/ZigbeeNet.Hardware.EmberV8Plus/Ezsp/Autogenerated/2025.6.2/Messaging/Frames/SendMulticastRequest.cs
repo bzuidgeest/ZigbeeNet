@@ -20,7 +20,7 @@ public class SendMulticastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The APS frame for the message. The multicast will be sent to the groupId in this frame.
     /// </summary>
-    public sl_zigbee_aps_frame_t apsFrame { get; set; }
+    public ZigbeeApsFrame apsFrame { get; set; }
 
     /// <summary>
     /// The message will be delivered to all nodes within this number of hops of the sender. A value of zero is converted to SL_ZIGBEE_MAX_HOPS.
@@ -55,7 +55,7 @@ public class SendMulticastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The multicast message.
     /// </summary>
-    public uint8_t[messageLength] messageContents { get; set; }
+    public Uint8TMessagelength messageContents { get; set; }
 
 }
 

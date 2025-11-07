@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -23,7 +25,7 @@ public class WriteAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure.
     /// </summary>
-    public sl_zigbee_af_status_t AfStatus { get; set; }
+    public ZigbeeAfStatus AfStatus { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

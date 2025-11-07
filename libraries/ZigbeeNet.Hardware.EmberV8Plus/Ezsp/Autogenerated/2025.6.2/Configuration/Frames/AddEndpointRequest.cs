@@ -50,12 +50,12 @@ public class AddEndpointRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Input cluster IDs the endpoint will accept.
     /// </summary>
-    public uint16_t[inputClusterCount] inputClusterList { get; set; }
+    public Uint16TInputclustercount inputClusterList { get; set; }
 
     /// <summary>
     /// Output cluster IDs the endpoint may send.
     /// </summary>
-    public uint16_t[outputClusterCount] outputClusterList { get; set; }
+    public Uint16TOutputclustercount outputClusterList { get; set; }
 
 }
 

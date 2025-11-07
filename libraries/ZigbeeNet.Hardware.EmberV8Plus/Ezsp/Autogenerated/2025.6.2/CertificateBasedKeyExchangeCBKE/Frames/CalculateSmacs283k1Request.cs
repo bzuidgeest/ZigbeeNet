@@ -25,12 +25,12 @@ public class CalculateSmacs283k1Request : EzspFrameRequestV8Plus
     /// <summary>
     /// The key establishment partner&apos;s implicit certificate.
     /// </summary>
-    public sl_zigbee_certificate_283k1_data_t partnerCertificate { get; set; }
+    public ZigbeeCertificate283k1Data partnerCertificate { get; set; }
 
     /// <summary>
     /// The key establishment partner&apos;s ephemeral public key
     /// </summary>
-    public sl_zigbee_public_key_283k1_data_t partnerEphemeralPublicKey { get; set; }
+    public ZigbeePublicKey283k1Data partnerEphemeralPublicKey { get; set; }
 
 }
 

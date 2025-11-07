@@ -32,6 +32,34 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         {
             _versionName = versionName;
 
+            // Read numeric constants from header file if they exist
+            foreach (var headerFile in Directory.GetFiles(versionDir, "*.h"))
+            {
+                _logger.LogInformation("Processing C constants from {file}", headerFile);
+
+                string[] lines = File.ReadAllLines(headerFile);
+                foreach(string line in lines)
+                {
+                    var match = Regex.Match(line, @"#define\s+(?<name>[A-Za-z_0-9]+)\s+(?<value>[A-Za-z_0-9]+)");
+                    if (match.Success)
+                    {
+                        var name = match.Groups["name"].Value.Trim();
+                        var value = match.Groups["value"].Value.Trim();
+                        //if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out int intValue))
+                        //{
+                        //    value = intValue.ToString();
+                        //}
+                        //else if (value.StartsWith("0x") && int.TryParse(value[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int hexValue))
+                        //{
+                        //    value = hexValue.ToString();
+                        //}
+                        MapCConstants.AddConstantMapping(name, value);
+                        _logger.LogInformation("Mapped C constant: {name} = {value})", name, value);
+                    }
+                }
+            }
+
+
             try
             {
                 var deserializer = new DeserializerBuilder()

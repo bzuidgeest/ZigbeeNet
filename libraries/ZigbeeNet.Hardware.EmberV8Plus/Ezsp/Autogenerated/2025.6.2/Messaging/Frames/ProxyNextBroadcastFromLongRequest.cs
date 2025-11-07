@@ -20,7 +20,7 @@ public class ProxyNextBroadcastFromLongRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The long source from which to send the broadcast
     /// </summary>
-    public uint8_t[8] euiSource { get; set; }
+    public Uint8T8 euiSource { get; set; }
 
 }
 

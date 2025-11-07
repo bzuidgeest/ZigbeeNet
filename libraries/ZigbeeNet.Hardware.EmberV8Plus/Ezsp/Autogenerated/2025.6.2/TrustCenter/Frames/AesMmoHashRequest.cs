@@ -20,7 +20,7 @@ public class AesMmoHashRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The hash context to update.
     /// </summary>
-    public sl_zigbee_aes_mmo_hash_context_t context { get; set; }
+    public ZigbeeAesMmoHashContext context { get; set; }
 
     /// <summary>
     /// This indicates whether the final hash value should be calculated
@@ -35,7 +35,7 @@ public class AesMmoHashRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The data to hash.
     /// </summary>
-    public uint8_t[length] data { get; set; }
+    public Uint8TLength data { get; set; }
 
 }
 

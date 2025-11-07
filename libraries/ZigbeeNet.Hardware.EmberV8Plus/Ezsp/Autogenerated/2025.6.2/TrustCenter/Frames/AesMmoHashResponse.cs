@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 
@@ -23,12 +25,12 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the operation
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The updated hash context.
     /// </summary>
-    public sl_zigbee_aes_mmo_hash_context_t Returncontext { get; set; }
+    public ZigbeeAesMmoHashContext Returncontext { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

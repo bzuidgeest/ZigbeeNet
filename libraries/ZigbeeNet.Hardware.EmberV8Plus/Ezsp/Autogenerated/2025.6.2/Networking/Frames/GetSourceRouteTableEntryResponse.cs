@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -25,7 +27,7 @@ public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
 	/// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
 	/// source route at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The node ID of the destination in that entry.

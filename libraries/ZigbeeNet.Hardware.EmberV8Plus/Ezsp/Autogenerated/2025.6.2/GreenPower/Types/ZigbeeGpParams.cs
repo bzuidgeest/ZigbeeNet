@@ -81,8 +81,8 @@ public struct ZigbeeGpParams
 	/// The GPD command payload.
 	/// </summary>
 	// Array field with symbolic size: SL_ZIGBEE_GP_MAX_APPLICATION_PAYLOAD
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = SL_ZIGBEE_GP_MAX_APPLICATION_PAYLOAD)]
-	public byte[] gpdCommandPayload[SL_ZIGBEE_GP_MAX_APPLICATION_PAYLOAD];
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
+	public byte[] gpdCommandPayload;
 	/// <summary>
 	/// Rx packet information.
 	/// </summary>

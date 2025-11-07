@@ -30,7 +30,7 @@ public class SetSourceRouteRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The source route.
     /// </summary>
-    public uint16_t[relayCount] relayList { get; set; }
+    public Uint16TRelaycount relayList { get; set; }
 
 }
 

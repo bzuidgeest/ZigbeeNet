@@ -25,7 +25,7 @@ public class CustomFrameRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The payload of the custom frame.
     /// </summary>
-    public uint8_t[payloadLength] payload { get; set; }
+    public Uint8TPayloadlength payload { get; set; }
 
 }
 

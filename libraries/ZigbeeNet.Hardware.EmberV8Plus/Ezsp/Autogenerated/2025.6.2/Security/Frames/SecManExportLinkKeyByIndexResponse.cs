@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 
@@ -23,22 +25,22 @@ public class SecManExportLinkKeyByIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of key export operation.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// Context referencing the exported key.  Contains information like the EUI64 address it is associated with.
     /// </summary>
-    public sl_zigbee_sec_man_context_t Context { get; set; }
+    public ZigbeeSecManContext Context { get; set; }
 
     /// <summary>
     /// The exported key.
     /// </summary>
-    public sl_zigbee_sec_man_key_t PlaintextKey { get; set; }
+    public ZigbeeSecManKey PlaintextKey { get; set; }
 
     /// <summary>
     /// Metadata about the key.
     /// </summary>
-    public sl_zigbee_sec_man_aps_key_metadata_t KeyData { get; set; }
+    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

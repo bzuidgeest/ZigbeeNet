@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -28,7 +30,7 @@ public class GetTimerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-    public sl_zigbee_event_units_t Units { get; set; }
+    public ZigbeeEventUnits Units { get; set; }
 
     /// <summary>
     /// True if a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. False if only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.

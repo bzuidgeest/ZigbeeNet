@@ -25,7 +25,7 @@ public class SetBindingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The contents of the binding entry.
     /// </summary>
-    public sl_zigbee_binding_table_entry_t value { get; set; }
+    public ZigbeeBindingTableEntry value { get; set; }
 
 }
 

@@ -25,7 +25,7 @@ public class SetMulticastTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The contents of the multicast entry.
     /// </summary>
-    public sl_zigbee_multicast_table_entry_t value { get; set; }
+    public ZigbeeMulticastTableEntry value { get; set; }
 
 }
 

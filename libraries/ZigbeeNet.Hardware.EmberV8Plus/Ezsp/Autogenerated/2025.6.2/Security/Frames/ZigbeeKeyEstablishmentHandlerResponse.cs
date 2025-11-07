@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 
@@ -28,7 +30,7 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
     /// </summary>
-    public sl_zigbee_key_status_t Status { get; set; }
+    public ZigbeeKeyStatus Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

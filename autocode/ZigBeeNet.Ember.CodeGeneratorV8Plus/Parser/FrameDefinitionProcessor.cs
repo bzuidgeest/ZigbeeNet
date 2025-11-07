@@ -84,7 +84,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         }
 
                         cMapping csharpType = MapCTypes.MapBaseCType(arg.Type);
-                        sb.AppendLine($"    public {csharpType.cSharpTypeName} {arg.Name} {{ get; set; }}");
+                        string sanitizedTypeName = Sanitize.TypeName(csharpType.cSharpTypeName);
+                        if (char.IsDigit(sanitizedTypeName[0]) == true)
+                        {
+                            sanitizedTypeName = "_" + sanitizedTypeName;
+                        }
+                        sb.AppendLine($"    public {sanitizedTypeName} {arg.Name} {{ get; set; }}");
                         sb.AppendLine();
                     }
                 }
@@ -142,6 +147,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 sb.AppendLine("using System.Buffers.Binary;");
                 sb.AppendLine("using System.Collections.Generic;");
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
+                sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;");
+                sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;");
                 sb.AppendLine();
 
                 // Generate namespace
@@ -179,7 +186,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         }
 
                         cMapping csharpType = MapCTypes.MapBaseCType(arg.Type);
-                        sb.AppendLine($"    public {csharpType.cSharpTypeName} {Sanitize.PropertyName(arg.Name)} {{ get; set; }}");
+                        string sanitizedTypeName = Sanitize.TypeName(csharpType.cSharpTypeName);
+                        if (char.IsDigit(sanitizedTypeName[0]) == true)
+                        {
+                            sanitizedTypeName = "_" + sanitizedTypeName;
+                        }
+                        sb.AppendLine($"    public {sanitizedTypeName} {Sanitize.PropertyName(arg.Name)} {{ get; set; }}");
                         sb.AppendLine();
                     }
                 }

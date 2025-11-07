@@ -20,7 +20,7 @@ public class GpProxyTableLookupRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address to search for
     /// </summary>
-    public sl_zigbee_gp_address_t addr { get; set; }
+    public ZigbeeGpAddress addr { get; set; }
 
 }
 

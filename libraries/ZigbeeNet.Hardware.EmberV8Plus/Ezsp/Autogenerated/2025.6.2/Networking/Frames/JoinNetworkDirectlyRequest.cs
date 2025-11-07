@@ -20,12 +20,12 @@ public class JoinNetworkDirectlyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Specifies the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.
     /// </summary>
-    public sl_zigbee_node_type_t localNodeType { get; set; }
+    public ZigbeeNodeType localNodeType { get; set; }
 
     /// <summary>
     /// Specifies the network with which the node should associate.
     /// </summary>
-    public sl_zigbee_beacon_data_t beacon { get; set; }
+    public ZigbeeBeaconData beacon { get; set; }
 
     /// <summary>
     /// The radio transmit power to use, specified in dBm.

@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -23,12 +25,12 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The type of message sent.
     /// </summary>
-    public sl_zigbee_outgoing_message_type_t Type { get; set; }
+    public ZigbeeOutgoingMessageType Type { get; set; }
 
     /// <summary>
     /// The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
@@ -38,7 +40,7 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-    public sl_zigbee_aps_frame_t Apsframe { get; set; }
+    public ZigbeeApsFrame Apsframe { get; set; }
 
     /// <summary>
     /// The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
@@ -53,7 +55,7 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
     /// </summary>
-    public uint8_t[messageLength] Messagecontents { get; set; }
+    public Uint8TMessagelength Messagecontents { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

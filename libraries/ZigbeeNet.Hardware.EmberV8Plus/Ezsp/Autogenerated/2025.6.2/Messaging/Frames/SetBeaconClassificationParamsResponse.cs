@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -23,12 +25,12 @@ public class SetBeaconClassificationParamsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The attempt to set the pramaters returns SL_STATUS_OK
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// Gets the beacon prioritization related variable
     /// </summary>
-    public sl_zigbee_beacon_classification_params_t Param { get; set; }
+    public ZigbeeBeaconClassificationParams Param { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

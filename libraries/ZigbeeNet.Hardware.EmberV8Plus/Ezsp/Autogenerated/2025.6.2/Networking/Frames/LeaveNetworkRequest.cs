@@ -20,7 +20,7 @@ public class LeaveNetworkRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// This parameter gives options when leave network
     /// </summary>
-    public sl_zigbee_leave_network_option_t options { get; set; }
+    public ZigbeeLeaveNetworkOption options { get; set; }
 
 }
 

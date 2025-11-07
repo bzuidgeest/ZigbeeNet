@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 
@@ -23,7 +25,7 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public sl_zigbee_zll_network_t Networkinfo { get; set; }
+    public ZigbeeZllNetwork Networkinfo { get; set; }
 
     /// <summary>
     /// Used to interpret deviceInfo field.
@@ -33,12 +35,12 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Device specific information.
     /// </summary>
-    public sl_zigbee_zll_device_info_record_t Deviceinfo { get; set; }
+    public ZigbeeZllDeviceInfoRecord Deviceinfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet received from this network.
     /// </summary>
-    public sl_zigbee_rx_packet_info_t Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo Packetinfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

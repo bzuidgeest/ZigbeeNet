@@ -25,7 +25,7 @@ public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The packet to send. The last two bytes will be replaced with the 16-bit CRC.
     /// </summary>
-    public uint8_t[packetLength] packetContents { get; set; }
+    public Uint8TPacketlength packetContents { get; set; }
 
 }
 

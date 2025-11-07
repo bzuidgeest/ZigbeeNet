@@ -20,7 +20,7 @@ public class SetMfgTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which manufacturing token to set.
     /// </summary>
-    public sl_zigbee_ezsp_mfg_token_id_t tokenId { get; set; }
+    public ZigbeeEzspMfgTokenId tokenId { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
@@ -30,7 +30,7 @@ public class SetMfgTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The manufacturing token data.
     /// </summary>
-    public uint8_t[tokenDataLength] tokenData { get; set; }
+    public Uint8TTokendatalength tokenData { get; set; }
 
 }
 

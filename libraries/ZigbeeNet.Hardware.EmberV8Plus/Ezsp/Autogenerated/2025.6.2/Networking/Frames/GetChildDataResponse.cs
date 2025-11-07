@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -23,12 +25,12 @@ public class GetChildDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if there is a child at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_JOINED if there is no child at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public sl_status_t Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public sl_zigbee_child_data_t Childdata { get; set; }
+    public ZigbeeChildData Childdata { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

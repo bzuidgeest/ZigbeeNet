@@ -11,6 +11,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -23,7 +25,7 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure, handled by the EZSP layer as a uint8_t. 255 indicates an EZSP-specific error.
     /// </summary>
-    public sl_zigbee_af_status_t AfStatus { get; set; }
+    public ZigbeeAfStatus AfStatus { get; set; }
 
     /// <summary>
     /// Attribute data type.
@@ -38,7 +40,7 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Attribute data.
     /// </summary>
-    public uint8_t[readLength] Dataptr { get; set; }
+    public Uint8TReadlength Dataptr { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

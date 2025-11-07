@@ -20,17 +20,17 @@ public class SetPreinstalledCbkeDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The Certificate Authority&apos;s public key.
     /// </summary>
-    public sl_zigbee_public_key_data_t caPublic { get; set; }
+    public ZigbeePublicKeyData caPublic { get; set; }
 
     /// <summary>
     /// The node&apos;s new certificate signed by the CA.
     /// </summary>
-    public sl_zigbee_certificate_data_t myCert { get; set; }
+    public ZigbeeCertificateData myCert { get; set; }
 
     /// <summary>
     /// The node&apos;s new static private key.
     /// </summary>
-    public sl_zigbee_private_key_data_t myKey { get; set; }
+    public ZigbeePrivateKeyData myKey { get; set; }
 
 }
 

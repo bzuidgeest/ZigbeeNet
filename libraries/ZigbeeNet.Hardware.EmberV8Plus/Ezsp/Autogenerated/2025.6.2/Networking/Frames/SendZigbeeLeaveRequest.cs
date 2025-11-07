@@ -25,7 +25,7 @@ public class SendZigbeeLeaveRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Bitmask indicating additional considerations for the leave request.
     /// </summary>
-    public sl_zigbee_leave_request_flags_t flags { get; set; }
+    public ZigbeeLeaveRequestFlags flags { get; set; }
 
 }
 

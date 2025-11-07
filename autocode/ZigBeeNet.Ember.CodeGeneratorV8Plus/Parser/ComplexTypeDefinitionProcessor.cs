@@ -95,14 +95,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     if (int.TryParse(arraySize, out _))
                     {
                         sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {field.Name};");
+                        sb.AppendLine($"\tpublic {santizedTypeName}[] {fieldName};");
                     }
                     else
                     {
                         // Array size is a symbolic constant - use a comment and skip
                         sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
-                        sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {field.Name};");
+                        sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
+                        sb.AppendLine($"\tpublic {santizedTypeName}[] {fieldName};");
                     }
                 }
                 // Check if the type contains array notation (e.g., uint8_t[8])
