@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -25,8 +26,8 @@ public class GetExtendedPanIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Extended PAN ID of this node.  Valid only if it is currently on a network.
     /// </summary>
-    public Uint8T8 Extendedpanid { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] extendedPanId;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetExtendedPanIdResponse frame = new GetExtendedPanIdResponse();

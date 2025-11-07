@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -55,8 +56,8 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
     /// </summary>
-    public Uint8TMessagelength Messagecontents { get; set; }
-
+	// Array field with symbolic size: messageLength
+	public byte[] messageContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MessageSentHandlerResponse frame = new MessageSentHandlerResponse();

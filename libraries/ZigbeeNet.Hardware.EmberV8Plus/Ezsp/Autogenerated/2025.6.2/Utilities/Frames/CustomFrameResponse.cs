@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -35,8 +36,8 @@ public class CustomFrameResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The response.
     /// </summary>
-    public Uint8TReplylength Reply { get; set; }
-
+	// Array field with symbolic size: replyLength
+	public byte[] reply;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CustomFrameResponse frame = new CustomFrameResponse();

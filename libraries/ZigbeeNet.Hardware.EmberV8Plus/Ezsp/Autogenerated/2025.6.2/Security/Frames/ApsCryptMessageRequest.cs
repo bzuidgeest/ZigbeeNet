@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 
@@ -30,8 +36,8 @@ public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The message to be en/de-crypted.
     /// </summary>
-    public Uint8TLengthCombinedArg message { get; set; }
-
+	// Array field with symbolic size: length_combined_arg
+	public byte[] message;
     /// <summary>
     /// Index just past the APS frame.
     /// </summary>

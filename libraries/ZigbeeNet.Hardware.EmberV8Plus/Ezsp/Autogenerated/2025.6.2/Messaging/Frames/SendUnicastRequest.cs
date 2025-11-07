@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -45,8 +51,8 @@ public class SendUnicastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Content of the message.
     /// </summary>
-    public Uint8TMessagelength messageContents { get; set; }
-
+	// Array field with symbolic size: messageLength
+	public byte[] messageContents;
 }
 
 #endif

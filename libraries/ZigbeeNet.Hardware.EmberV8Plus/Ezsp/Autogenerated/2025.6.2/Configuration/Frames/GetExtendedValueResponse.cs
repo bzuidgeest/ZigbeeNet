@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -35,8 +36,8 @@ public class GetExtendedValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The value.
     /// </summary>
-    public Uint8TValuelength Value { get; set; }
-
+	// Array field with symbolic size: valueLength
+	public byte[] value;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetExtendedValueResponse frame = new GetExtendedValueResponse();

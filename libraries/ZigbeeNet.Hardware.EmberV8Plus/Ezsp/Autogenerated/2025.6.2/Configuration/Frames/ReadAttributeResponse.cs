@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -40,8 +41,8 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Attribute data.
     /// </summary>
-    public Uint8TReadlength Dataptr { get; set; }
-
+	// Array field with symbolic size: readLength
+	public byte[] dataPtr;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAttributeResponse frame = new ReadAttributeResponse();

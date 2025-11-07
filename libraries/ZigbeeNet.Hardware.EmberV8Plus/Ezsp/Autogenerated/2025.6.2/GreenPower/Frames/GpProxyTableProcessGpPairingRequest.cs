@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 
@@ -50,8 +56,7 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The IEEE address of the GP Sink.
     /// </summary>
-    public Uint8T8 sinkIeeeAddress { get; set; }
-
+	public byte[] sinkIeeeAddress;
     /// <summary>
     /// The key to use for the target GPD.
     /// </summary>

@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 
@@ -35,8 +41,8 @@ public class AesMmoHashRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The data to hash.
     /// </summary>
-    public Uint8TLength data { get; set; }
-
+	// Array field with symbolic size: length
+	public byte[] data;
 }
 
 #endif

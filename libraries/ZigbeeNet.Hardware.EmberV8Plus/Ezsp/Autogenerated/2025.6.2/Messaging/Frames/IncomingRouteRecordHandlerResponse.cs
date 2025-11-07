@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -50,8 +51,8 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
     /// </summary>
-    public Uint8TRelaycount2 Relaylist { get; set; }
-
+	// Array field with symbolic size: relayCount*2
+	public byte[] relayList;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();

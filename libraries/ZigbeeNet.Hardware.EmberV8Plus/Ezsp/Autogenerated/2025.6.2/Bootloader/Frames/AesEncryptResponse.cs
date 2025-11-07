@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -25,8 +26,8 @@ public class AesEncryptResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// 16 bytes of ciphertext.
     /// </summary>
-    public Uint8T16 Ciphertext { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+	public byte[] ciphertext;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		AesEncryptResponse frame = new AesEncryptResponse();

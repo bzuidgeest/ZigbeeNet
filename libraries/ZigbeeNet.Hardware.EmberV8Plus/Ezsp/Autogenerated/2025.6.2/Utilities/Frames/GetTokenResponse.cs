@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -30,8 +31,8 @@ public class GetTokenResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The contents of the token.
     /// </summary>
-    public Uint8T8 Tokendata { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] tokenData;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTokenResponse frame = new GetTokenResponse();

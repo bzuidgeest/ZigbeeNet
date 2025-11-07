@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -30,8 +36,8 @@ public class SetValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The new value.
     /// </summary>
-    public Uint8TValuelength value { get; set; }
-
+	// Array field with symbolic size: valueLength
+	public byte[] value;
 }
 
 #endif

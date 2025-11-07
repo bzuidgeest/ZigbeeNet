@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -30,8 +31,8 @@ public class EchoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The echo of the data.
     /// </summary>
-    public Uint8TEcholength Echo { get; set; }
-
+	// Array field with symbolic size: echoLength
+	public byte[] echo;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		EchoResponse frame = new EchoResponse();

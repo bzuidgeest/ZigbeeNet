@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 
@@ -40,8 +41,8 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The received packet (last 2 bytes are not FCS / CRC and may be discarded)
     /// </summary>
-    public Uint8TPacketlength Packetcontents { get; set; }
-
+	// Array field with symbolic size: packetLength
+	public byte[] packetContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();

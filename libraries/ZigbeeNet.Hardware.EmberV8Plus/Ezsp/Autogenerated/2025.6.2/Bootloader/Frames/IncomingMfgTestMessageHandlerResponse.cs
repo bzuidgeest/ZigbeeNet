@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -35,8 +36,8 @@ public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A pointer to the data received in the current message.
     /// </summary>
-    public Uint8T1 Data { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+	public byte[] data;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingMfgTestMessageHandlerResponse frame = new IncomingMfgTestMessageHandlerResponse();

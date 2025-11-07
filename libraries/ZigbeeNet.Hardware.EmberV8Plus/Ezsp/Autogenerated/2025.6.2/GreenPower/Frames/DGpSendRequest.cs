@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 
@@ -45,8 +51,8 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The GP command payload.
     /// </summary>
-    public Uint8TGpdasdulength gpdAsdu { get; set; }
-
+	// Array field with symbolic size: gpdAsduLength
+	public byte[] gpdAsdu;
     /// <summary>
     /// The handle to refer to the GPDF.
     /// </summary>

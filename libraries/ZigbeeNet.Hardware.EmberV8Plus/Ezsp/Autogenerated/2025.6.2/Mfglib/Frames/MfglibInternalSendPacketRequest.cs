@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 
@@ -25,8 +31,8 @@ public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The packet to send. The last two bytes will be replaced with the 16-bit CRC.
     /// </summary>
-    public Uint8TPacketlength packetContents { get; set; }
-
+	// Array field with symbolic size: packetLength
+	public byte[] packetContents;
 }
 
 #endif

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -25,8 +26,8 @@ public class ReadAndClearCountersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>
-    public Uint16TSlZigbeeCounterTypeCount Values { get; set; }
-
+	// Array field with symbolic size: SL_ZIGBEE_COUNTER_TYPE_COUNT
+	public ushort[] values;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAndClearCountersResponse frame = new ReadAndClearCountersResponse();

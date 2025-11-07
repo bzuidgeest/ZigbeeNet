@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 
@@ -25,8 +26,8 @@ public class RadioGetSchedulerSliptimeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value of the current slip time.
     /// </summary>
-    public Uint32T1 Sliptime { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+	public uint[] slipTime;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RadioGetSchedulerSliptimeResponse frame = new RadioGetSchedulerSliptimeResponse();

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
@@ -30,8 +31,8 @@ public class GetCurrentDutyCycleResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Consumed duty cycles up to maxDevices. When the number of children that are being monitored is less than maxDevices, the sl_802154_short_addr_t element in the sl_zigbee_per_device_duty_cycle_t will be 0xFFFF.
     /// </summary>
-    public Uint8T134 Arrayofdevicedutycycles { get; set; }
-
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 134)]
+	public byte[] arrayOfDeviceDutyCycles;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCurrentDutyCycleResponse frame = new GetCurrentDutyCycleResponse();

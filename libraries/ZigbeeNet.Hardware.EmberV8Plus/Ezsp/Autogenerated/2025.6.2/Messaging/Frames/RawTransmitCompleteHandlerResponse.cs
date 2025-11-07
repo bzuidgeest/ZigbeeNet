@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 
@@ -30,8 +31,8 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The message that was transmitted.
     /// </summary>
-    public Uint8TMessagelength Messagecontents { get; set; }
-
+	// Array field with symbolic size: messageLength
+	public byte[] messageContents;
     /// <summary>
     /// SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
     /// </summary>

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -35,8 +36,8 @@ public class BootloadTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The message that was sent.
     /// </summary>
-    public Uint8TMessagelength Messagecontents { get; set; }
-
+	// Array field with symbolic size: messageLength
+	public byte[] messageContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		BootloadTransmitCompleteHandlerResponse frame = new BootloadTransmitCompleteHandlerResponse();

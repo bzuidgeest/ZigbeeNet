@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -20,8 +26,7 @@ public class MfgTestSendCommandRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A pointer to the outgoing command string.
     /// </summary>
-    public Uint8T1 command { get; set; }
-
+	public byte[] command;
 }
 
 #endif

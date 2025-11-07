@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 
@@ -20,13 +26,11 @@ public class AesEncryptRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// 16 bytes of plaintext.
     /// </summary>
-    public Uint8T16 plaintext { get; set; }
-
+	public byte[] plaintext;
     /// <summary>
     /// The 16-byte encryption key to use.
     /// </summary>
-    public Uint8T16 key { get; set; }
-
+	public byte[] key;
 }
 
 #endif

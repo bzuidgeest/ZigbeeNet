@@ -7,7 +7,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 
@@ -50,13 +56,13 @@ public class AddEndpointRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Input cluster IDs the endpoint will accept.
     /// </summary>
-    public Uint16TInputclustercount inputClusterList { get; set; }
-
+	// Array field with symbolic size: inputClusterCount
+	public ushort[] inputClusterList;
     /// <summary>
     /// Output cluster IDs the endpoint may send.
     /// </summary>
-    public Uint16TOutputclustercount outputClusterList { get; set; }
-
+	// Array field with symbolic size: outputClusterCount
+	public ushort[] outputClusterList;
 }
 
 #endif
