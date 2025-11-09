@@ -33,7 +33,7 @@ public class OkToLongPollResponse : EzspFrameResponseV8Plus
 		OkToLongPollResponse frame = new OkToLongPollResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Indicator = frameBytes[index];
+		frame.Indicator = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

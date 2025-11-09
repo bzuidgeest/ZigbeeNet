@@ -33,7 +33,7 @@ public class SendPanIdUpdateResponse : EzspFrameResponseV8Plus
 		SendPanIdUpdateResponse frame = new SendPanIdUpdateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = frameBytes[index];
+		frame.Status = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

@@ -33,8 +33,8 @@ public class CounterRolloverHandlerResponse : EzspFrameResponseV8Plus
 		CounterRolloverHandlerResponse frame = new CounterRolloverHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Type = /* TODO: Implement parsing for type sl_zigbee_counter_type_t */ null;
-		index += 0;
+		frame.Type = (ZigbeeCounterType)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

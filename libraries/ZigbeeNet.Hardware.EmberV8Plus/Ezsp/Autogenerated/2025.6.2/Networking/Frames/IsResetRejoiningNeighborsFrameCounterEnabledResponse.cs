@@ -33,7 +33,7 @@ public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameRes
 		IsResetRejoiningNeighborsFrameCounterEnabledResponse frame = new IsResetRejoiningNeighborsFrameCounterEnabledResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Getsreset = frameBytes[index];
+		frame.Getsreset = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

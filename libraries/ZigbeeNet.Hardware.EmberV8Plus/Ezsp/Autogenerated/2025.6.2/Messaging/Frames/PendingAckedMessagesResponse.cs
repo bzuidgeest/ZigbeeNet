@@ -33,7 +33,7 @@ public class PendingAckedMessagesResponse : EzspFrameResponseV8Plus
 		PendingAckedMessagesResponse frame = new PendingAckedMessagesResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.PendingMessages = frameBytes[index];
+		frame.PendingMessages = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

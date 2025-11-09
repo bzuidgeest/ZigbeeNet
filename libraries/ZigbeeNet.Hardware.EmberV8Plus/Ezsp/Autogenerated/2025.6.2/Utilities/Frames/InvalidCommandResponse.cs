@@ -33,8 +33,8 @@ public class InvalidCommandResponse : EzspFrameResponseV8Plus
 		InvalidCommandResponse frame = new InvalidCommandResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Reason = /* TODO: Implement parsing for type sl_zigbee_ezsp_status_t */ null;
-		index += 0;
+		frame.Reason = (ZigbeeEzspStatus)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

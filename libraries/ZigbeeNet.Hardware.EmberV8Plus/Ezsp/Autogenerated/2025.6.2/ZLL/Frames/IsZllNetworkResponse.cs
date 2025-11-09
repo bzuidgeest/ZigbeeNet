@@ -33,7 +33,7 @@ public class IsZllNetworkResponse : EzspFrameResponseV8Plus
 		IsZllNetworkResponse frame = new IsZllNetworkResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Iszllnetwork = frameBytes[index];
+		frame.Iszllnetwork = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

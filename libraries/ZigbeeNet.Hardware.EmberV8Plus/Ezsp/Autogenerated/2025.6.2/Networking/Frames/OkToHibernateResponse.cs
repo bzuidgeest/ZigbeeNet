@@ -33,7 +33,7 @@ public class OkToHibernateResponse : EzspFrameResponseV8Plus
 		OkToHibernateResponse frame = new OkToHibernateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Indicator = frameBytes[index];
+		frame.Indicator = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

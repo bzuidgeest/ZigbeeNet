@@ -33,7 +33,7 @@ public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus
 		ZllRxOnWhenIdleGetActiveResponse frame = new ZllRxOnWhenIdleGetActiveResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zllrxonwhenidlegetactive = frameBytes[index];
+		frame.Zllrxonwhenidlegetactive = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

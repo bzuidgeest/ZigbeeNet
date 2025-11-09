@@ -33,7 +33,7 @@ public class AddressTableEntryIsActiveResponse : EzspFrameResponseV8Plus
 		AddressTableEntryIsActiveResponse frame = new AddressTableEntryIsActiveResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Active = frameBytes[index];
+		frame.Active = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

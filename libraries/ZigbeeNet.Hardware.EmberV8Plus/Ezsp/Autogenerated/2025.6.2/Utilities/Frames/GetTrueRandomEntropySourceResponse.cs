@@ -33,8 +33,8 @@ public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus
 		GetTrueRandomEntropySourceResponse frame = new GetTrueRandomEntropySourceResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Entropysource = /* TODO: Implement parsing for type sl_zigbee_entropy_source_t */ null;
-		index += 0;
+		frame.Entropysource = (ZigbeeEntropySource)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

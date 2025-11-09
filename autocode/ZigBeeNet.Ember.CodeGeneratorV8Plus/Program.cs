@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Parser;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator
@@ -44,6 +45,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                     services.Configure<ApplicationSettings>(configuration);
                     services.AddSingleton(sp => sp.GetRequiredService<IOptions<ApplicationSettings>>().Value);
 
+                    services.AddSingleton<TypeMapperService>();
+                    services.AddSingleton<FrameDefinitionProcessorService>();
                     services.AddHostedService<Worker>();
                     services.AddTransient<EZSPDefinitionsProcessor>();
                     services.AddTransient<EZSPYAMLDefinitionParser>();

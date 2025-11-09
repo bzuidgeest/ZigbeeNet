@@ -33,8 +33,8 @@ public class NetworkStateResponse : EzspFrameResponseV8Plus
 		NetworkStateResponse frame = new NetworkStateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_zigbee_network_status_t */ null;
-		index += 0;
+		frame.Status = (ZigbeeNetworkStatus)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

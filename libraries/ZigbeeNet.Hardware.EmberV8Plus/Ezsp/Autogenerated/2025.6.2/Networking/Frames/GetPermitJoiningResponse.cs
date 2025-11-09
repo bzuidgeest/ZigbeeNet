@@ -33,7 +33,7 @@ public class GetPermitJoiningResponse : EzspFrameResponseV8Plus
 		GetPermitJoiningResponse frame = new GetPermitJoiningResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Joiningpermitted = frameBytes[index];
+		frame.Joiningpermitted = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

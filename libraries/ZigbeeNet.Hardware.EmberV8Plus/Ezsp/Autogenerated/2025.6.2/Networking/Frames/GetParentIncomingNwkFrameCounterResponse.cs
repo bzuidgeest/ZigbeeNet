@@ -26,7 +26,7 @@ public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus
 		GetParentIncomingNwkFrameCounterResponse frame = new GetParentIncomingNwkFrameCounterResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Parentincomingnwkframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.Parentincomingnwkframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, {4));
 		index += 4;
 
 		return frame;

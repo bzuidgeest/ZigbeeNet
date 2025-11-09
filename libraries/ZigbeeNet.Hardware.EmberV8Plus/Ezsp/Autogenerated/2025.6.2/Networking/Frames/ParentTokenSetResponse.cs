@@ -33,7 +33,7 @@ public class ParentTokenSetResponse : EzspFrameResponseV8Plus
 		ParentTokenSetResponse frame = new ParentTokenSetResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Indicator = frameBytes[index];
+		frame.Indicator = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

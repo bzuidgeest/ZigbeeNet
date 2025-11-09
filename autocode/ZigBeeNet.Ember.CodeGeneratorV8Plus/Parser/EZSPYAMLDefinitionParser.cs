@@ -13,6 +13,8 @@ using YamlDotNet.Serialization.NamingConventions;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 using System.Globalization;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Models.TypeMapper;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 {
@@ -21,11 +23,15 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         private readonly ILogger<EZSPYAMLDefinitionParser> _logger;
         private readonly ApplicationSettings _settings;
         private string _versionName = string.Empty;
+        private readonly FrameDefinitionProcessorService _frameDefinitionProcessorService;
+        private readonly TypeMapperService _tyepMapperService;
 
-        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, ApplicationSettings settings)
+        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, ApplicationSettings settings, FrameDefinitionProcessorService frameDefinitionProcessorService, TypeMapperService typeMapperService)
         {
             _logger = loggerFactory.CreateLogger<EZSPYAMLDefinitionParser>();
             _settings = settings;
+            _frameDefinitionProcessorService = frameDefinitionProcessorService;
+            _tyepMapperService = typeMapperService;
         }
 
         public void Process(string versionDir, string definitionPath, string versionName)
@@ -38,7 +44,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 _logger.LogInformation("Processing C constants from {file}", headerFile);
 
                 string[] lines = File.ReadAllLines(headerFile);
-                foreach(string line in lines)
+                foreach (string line in lines)
                 {
                     var match = Regex.Match(line, @"#define\s+(?<name>[A-Za-z_0-9]+)\s+(?<value>[A-Za-z_0-9]+)");
                     if (match.Success)
@@ -117,13 +123,38 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             foreach (var enumDef in section.Enums)
                             {
                                 _logger.LogInformation("      - {name} ({type}): {itemCount} items", enumDef.Name, enumDef.Type, enumDef.Items?.Count ?? 0);
-                                string enumFileContent = EnumDefinitionProcessor.ProcessEnumDefinition(_logger, section.Name, enumDef);
-                                if (string.IsNullOrWhiteSpace(enumFileContent))
+                                TypeMapping? enumBaseTypeMapping = _tyepMapperService.GetTypeMapping(enumDef.Type);
+
+                                if (enumBaseTypeMapping is not null)
                                 {
-                                    _logger.LogWarning("Enum file content is empty for {enum} in section {section}", enumDef.Name, section.Name);
-                                    continue;
+                                    _tyepMapperService.AddTypeMapping(
+                                        new CType(enumDef.Name, enumBaseTypeMapping.Value.CType.SizeInBytes, enumDef.Description)
+                                        {
+                                            IsEnum = true,
+                                            UnderlyingTypeName = enumBaseTypeMapping.Value.CType.Name
+                                        },
+                                        new CSharpType(Sanitize.EnumerationName(enumDef.Name))
+                                        {
+                                            IsEnum = true,
+                                            UnderlyingTypeName = enumBaseTypeMapping.Value.CSharpType.Name,
+                                        }
+                                    );
+
+                                    string enumFileContent = EnumDefinitionProcessor.ProcessEnumDefinition(_logger, section.Name, enumDef);
+                                    if (string.IsNullOrWhiteSpace(enumFileContent))
+                                    {
+                                        _logger.LogWarning("Enum file content is empty for {enum} in section {section}", enumDef.Name, section.Name);
+                                        continue;
+                                    }
+                                    SaveEnumFile(section.Name, Sanitize.EnumerationName(enumDef.Name), enumFileContent); 
                                 }
-                                SaveEnumFile(section.Name, Sanitize.EnumerationName(enumDef.Name), enumFileContent);
+                                else
+                                {
+                                    _logger.LogError("No type mapping found for enum base type {type} of enum {enum} in section {section}, cannot finish", enumDef.Type, enumDef.Name, section.Name);
+                                    return;
+                                }
+
+
                             }
                         }
                         #endregion
@@ -159,8 +190,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     frameDefinition.CommandArguments?.Count ?? 0,
                                     frameDefinition.ResponseArguments?.Count ?? 0);
 
-                                string frameRequestContent = FrameDefinitionProcessor.ProcessFrameDefinitionForRequest(_logger, section.Name, frameDefinition);
-                                string frameResponseContent = FrameDefinitionProcessor.ProcessFrameDefinitionForResponse(_logger, section.Name, frameDefinition);
+                                string frameRequestContent = _frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
+                                string frameResponseContent = _frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
 
                                 string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..];
                                 string classNameResponse = className + "Response";
@@ -243,7 +274,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             string sanitizedSectionName = Sanitize.SectionName(sectionName);
             string outputPath = Path.Combine(_settings.OutputDirectory, _versionName, sanitizedSectionName, subSection);
             Directory.CreateDirectory(outputPath);
-            
+
             File.WriteAllText(Path.Combine(outputPath, $"{fileName}.cs"), $"#if VERSION_{_versionName.Replace('.', '_')}\r\n{fileContent}\r\n#endif");
         }
 

@@ -34,7 +34,7 @@ public class OkToNapResponse : EzspFrameResponseV8Plus
 		OkToNapResponse frame = new OkToNapResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Value = frameBytes[index];
+		frame.Value = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

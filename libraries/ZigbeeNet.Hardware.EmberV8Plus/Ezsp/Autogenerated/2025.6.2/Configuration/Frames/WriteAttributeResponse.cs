@@ -33,8 +33,8 @@ public class WriteAttributeResponse : EzspFrameResponseV8Plus
 		WriteAttributeResponse frame = new WriteAttributeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.AfStatus = /* TODO: Implement parsing for type sl_zigbee_af_status_t */ null;
-		index += 0;
+		frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

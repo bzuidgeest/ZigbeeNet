@@ -33,7 +33,7 @@ public class CounterRequiresPhyIndexResponse : EzspFrameResponseV8Plus
 		CounterRequiresPhyIndexResponse frame = new CounterRequiresPhyIndexResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Requires = frameBytes[index];
+		frame.Requires = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

@@ -45,9 +45,9 @@ public class GetTimerResponse : EzspFrameResponseV8Plus
 
 		frame.Time = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Units = /* TODO: Implement parsing for type sl_zigbee_event_units_t */ null;
-		index += 0;
-		frame.Repeat = frameBytes[index];
+		frame.Units = (ZigbeeEventUnits)frameBytes[index];
+		index += 1;
+		frame.Repeat = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

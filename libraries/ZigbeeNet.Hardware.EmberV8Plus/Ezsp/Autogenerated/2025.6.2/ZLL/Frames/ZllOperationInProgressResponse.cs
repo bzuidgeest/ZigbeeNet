@@ -33,7 +33,7 @@ public class ZllOperationInProgressResponse : EzspFrameResponseV8Plus
 		ZllOperationInProgressResponse frame = new ZllOperationInProgressResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zlloperationinprogress = frameBytes[index];
+		frame.Zlloperationinprogress = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;
