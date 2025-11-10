@@ -249,6 +249,11 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             cMapping csharpBaseType = MapCTypes.MapBaseCType(fieldArrayType);
                             string santizedTypeName = Sanitize.TypeName(csharpBaseType.cSharpTypeName);
 
+                            if (Char.IsDigit(santizedTypeName[0]) == true)
+                            {
+                                santizedTypeName = "_" + santizedTypeName;
+                            }
+
                             // Check if array size is numeric (compile-time constant)
                             if (int.TryParse(arraySize, out _))
                             {
@@ -301,7 +306,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         {
                             typeMapping = _typeMapper.GetTypeMapping(arg.Type.GetArrayDefinitionBaseType());
                             if (typeMapping == null)
-                            {                                 
+                            {
                                 _logger.LogError("No type mapping found for array base type {argType} in frame {commandName}", arg.Type.GetArrayDefinitionBaseType(), frameDefinition.CommandName);
                                 sb.AppendLine($"\t\t// Unknown type mapping for array base type {arg.Type.GetArrayDefinitionBaseType()} of argument {arg.Name} in frame {frameDefinition.CommandName}");
                                 //return string.Empty;
@@ -311,20 +316,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             string arrayLengthSymbolicSize = arg.Type.GetArrayDefinitionSymbolicSize();
 
                             // todo incomplete - need code for different primitives.
-        //                    public static class SpanExtensions
-        //{
-        //    public static T[] ToArray<T>(this ReadOnlySpan<T> span)
-        //    {
-        //        var array = new T[span.Length];
-        //        span.CopyTo(array);
-        //        return array;
-        //    }
-        //}
+                            //                    public static class SpanExtensions
+                            //{
+                            //    public static T[] ToArray<T>(this ReadOnlySpan<T> span)
+                            //    {
+                            //        var array = new T[span.Length];
+                            //        span.CopyTo(array);
+                            //        return array;
+                            //    }
+                            //}
 
-        //ReadOnlySpan<byte> bytes = stackalloc byte[16];
-        //                    // reinterpret as ints
-        //                    ReadOnlySpan<int> ints = MemoryMarshal.Cast<byte, int>(bytes);
-        //                    int[] arr = ints.ToArray();  // using the extension above
+                            //ReadOnlySpan<byte> bytes = stackalloc byte[16];
+                            //                    // reinterpret as ints
+                            //                    ReadOnlySpan<int> ints = MemoryMarshal.Cast<byte, int>(bytes);
+                            //                    int[] arr = ints.ToArray();  // using the extension above
 
                             if (typeMapping?.CSharpType.Name == "byte" && isVariableLengthArray == true)
                             {
@@ -395,7 +400,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                             frameBytesPosition += typeMapping?.CType.SizeInBytes ?? 0;
                         }
-                        
+
                     }
                 }
 
