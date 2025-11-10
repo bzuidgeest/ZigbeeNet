@@ -26,28 +26,28 @@ public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parameters associated with the network found.
     /// </summary>
-    public ZigbeeZigbeeNetwork Networkfound { get; set; }
+    public ZigbeeZigbeeNetwork NetworkFound { get; set; }
 
     /// <summary>
     /// Link quality of incoming packet from network.
     /// </summary>
-    public byte Lasthoplqi { get; set; }
+    public byte LastHopLqi { get; set; }
 
     /// <summary>
     /// Power (in dBm) of incoming packet.
     /// </summary>
-    public sbyte Lasthoprssi { get; set; }
+    public sbyte LastHopRssi { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		NetworkFoundHandlerResponse frame = new NetworkFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkfound = MemoryMarshal.Read<ZigbeeZigbeeNetwork>(frameBytes.Slice(index, 14));
+		frame.NetworkFound = MemoryMarshal.Read<ZigbeeZigbeeNetwork>(frameBytes.Slice(index, 14));
 		index += 14;
-		frame.Lasthoplqi = frameBytes[index];
+		frame.LastHopLqi = frameBytes[index];
 		index += 1;
-		frame.Lasthoprssi = frameBytes[index];
+		frame.LastHopRssi = (sbyte)frameBytes[index];
 		index += 1;
 
 		return frame;

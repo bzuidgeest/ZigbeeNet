@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
@@ -251,14 +253,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             if (int.TryParse(arraySize, out _))
                             {
                                 sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {santizedTypeName}[] {Sanitize.PropertyName(arg.Name)};");
                             }
                             else
                             {
                                 // Array size is a symbolic constant 
                                 sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
                                 //sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {santizedTypeName}[] {Sanitize.PropertyName(arg.Name)};");
                             }
                         }
                         else
@@ -283,7 +285,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 if (frameDefinition.ResponseArguments != null && frameDefinition.ResponseArguments.Count > 0)
                 {
                     int frameBytesPosition = 0;
-                    foreach (var arg in frameDefinition.ResponseArguments)
+                    foreach (FrameArgument arg in frameDefinition.ResponseArguments)
                     {
                         //if (!string.IsNullOrWhiteSpace(arg.Description))
                         //{
@@ -292,46 +294,108 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         //    sb.AppendLine("    /// </summary>");
                         //}
 
-                        TypeMapping? typeMapping = _typeMapper.GetTypeMapping(arg.Type);
+                        sb.Append($"\t\tframe.{Sanitize.PropertyName(arg.Name)} = ");
 
-                        if (typeMapping != null)
+                        TypeMapping? typeMapping = null;
+                        if (arg.Type.IsArrayTypeDefinition() == true)
                         {
-                            sb.Append($"\t\tframe.{Sanitize.PropertyName(arg.Name)} = ");
-
-                            if (typeMapping?.CType.IsEnum == true)
-                            {
-                                TypeMapping baseTypeMapping = _typeMapper.GetTypeMapping(typeMapping?.CType.UnderlyingTypeName ?? "") ?? throw new InvalidOperationException($"No type mapping found for underlying type {typeMapping?.CType.UnderlyingTypeName} of enum {typeMapping?.CType.Name}");
-                                sb.Append($"({typeMapping?.CSharpType.Name})");
-                                sb.AppendLine(ReadPrimitiveTypeString(baseTypeMapping.CType.Name));
+                            typeMapping = _typeMapper.GetTypeMapping(arg.Type.GetArrayDefinitionBaseType());
+                            if (typeMapping == null)
+                            {                                 
+                                _logger.LogError("No type mapping found for array base type {argType} in frame {commandName}", arg.Type.GetArrayDefinitionBaseType(), frameDefinition.CommandName);
+                                sb.AppendLine($"\t\t// Unknown type mapping for array base type {arg.Type.GetArrayDefinitionBaseType()} of argument {arg.Name} in frame {frameDefinition.CommandName}");
+                                //return string.Empty;
                             }
-                            else if (typeMapping?.CType.IsStruct == true)
+                            int arraySize = arg.Type.GetArrayDefinitionSize();
+                            bool isVariableLengthArray = (arraySize == -1);
+                            string arrayLengthSymbolicSize = arg.Type.GetArrayDefinitionSymbolicSize();
+
+                            // todo incomplete - need code for different primitives.
+        //                    public static class SpanExtensions
+        //{
+        //    public static T[] ToArray<T>(this ReadOnlySpan<T> span)
+        //    {
+        //        var array = new T[span.Length];
+        //        span.CopyTo(array);
+        //        return array;
+        //    }
+        //}
+
+        //ReadOnlySpan<byte> bytes = stackalloc byte[16];
+        //                    // reinterpret as ints
+        //                    ReadOnlySpan<int> ints = MemoryMarshal.Cast<byte, int>(bytes);
+        //                    int[] arr = ints.ToArray();  // using the extension above
+
+                            if (typeMapping?.CSharpType.Name == "byte" && isVariableLengthArray == true)
                             {
-                                if (typeMapping?.CType.IsVariableLengthStruct == true)
+                                sb.AppendLine($"frameBytes.Slice(index, frame.{Sanitize.PropertyName(arrayLengthSymbolicSize)}).ToArray();");
+                                sb.AppendLine($"\t\tindex += frame.{Sanitize.PropertyName(arrayLengthSymbolicSize)};");
+                            }
+                            else if (isVariableLengthArray == true)
+                            {
+                                //sb.AppendLine($"MemoryMarshal.Cast<byte, {typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {Char.ToUpper(arrayLengthSymbolicSize[0])}{arrayLengthSymbolicSize[1..]})).ToArray();");
+                                //sb.AppendLine($"\t\tindex += {typeMapping?.CType.SizeInBytes * arraySize};");
+                            }
+                            else
+                            {
+                                sb.AppendLine($"MemoryMarshal.Cast<byte, {typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes * arraySize})).ToArray();");
+                                sb.AppendLine($"\t\tindex += {typeMapping?.CType.SizeInBytes * arraySize};");
+                            }
+                            //if (isVariableLengthArray == true)
+                            //{
+                            //    sb.AppendLine($"frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes} * {Char.ToUpper(arrayLengthSymbolicSize[0])}{arrayLengthSymbolicSize[1..]})");
+                            //}
+                            //else
+                            //{
+                            //    sb.AppendLine($"MemoryMarshal.Cast<byte, {typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes * arraySize})).ToArray();");
+                            //}
+
+
+                        }
+                        else
+                        {
+                            typeMapping = _typeMapper.GetTypeMapping(arg.Type);
+
+                            if (typeMapping != null)
+                            {
+
+
+                                if (typeMapping?.CType.IsEnum == true)
                                 {
-                                    //sb.AppendLine($"{typeMapping?.CSharpType.Name}.Parse(frameBytes.Slice(index, frameBytes.Length - index));");
-                                    sb.AppendLine("Hello fix this");
+                                    TypeMapping baseTypeMapping = _typeMapper.GetTypeMapping(typeMapping?.CType.UnderlyingTypeName ?? "") ?? throw new InvalidOperationException($"No type mapping found for underlying type {typeMapping?.CType.UnderlyingTypeName} of enum {typeMapping?.CType.Name}");
+                                    sb.Append($"({typeMapping?.CSharpType.Name})");
+                                    sb.AppendLine(ReadPrimitiveTypeString(baseTypeMapping.CType.Name));
+                                }
+                                else if (typeMapping?.CType.IsStruct == true)
+                                {
+                                    if (typeMapping?.CType.IsVariableLengthStruct == true)
+                                    {
+                                        //sb.AppendLine($"{typeMapping?.CSharpType.Name}.Parse(frameBytes.Slice(index, frameBytes.Length - index));");
+                                        sb.AppendLine("Hello fix this");
+                                        _logger.LogError("Variable length struct parsing not implemented for argument {argName} of type {argType} in frame {commandName}", arg.Name, arg.Type, frameDefinition.CommandName);
+                                    }
+                                    else
+                                    {
+                                        sb.AppendLine($"MemoryMarshal.Read<{typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes}));");
+                                    }
                                 }
                                 else
                                 {
-                                    sb.AppendLine($"MemoryMarshal.Read<{typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes}));");
+                                    sb.AppendLine(ReadPrimitiveTypeString(typeMapping.Value.CType.Name));
                                 }
                             }
                             else
                             {
-                                sb.AppendLine(ReadPrimitiveTypeString(typeMapping.Value.CType.Name));
+                                _logger.LogError("No type mapping found for argument {argName} of type {argType} in frame {commandName}", arg.Name, arg.Type, frameDefinition.CommandName);
+                                sb.AppendLine($"\t\t// Unknown type mapping for argument {arg.Name} of type {arg.Type}");
+                                //return string.Empty;
                             }
-
 
                             sb.AppendLine($"\t\tindex += {typeMapping?.CType.SizeInBytes};");
 
                             frameBytesPosition += typeMapping?.CType.SizeInBytes ?? 0;
                         }
-                        else
-                        {
-                            _logger.LogError("No type mapping found for argument {argName} of type {argType} in frame {commandName}", arg.Name, arg.Type, frameDefinition.CommandName);
-                            sb.AppendLine($"\t\t// Unknown type mapping for argument {arg.Name} of type {arg.Type}");
-                            return string.Empty;
-                        }
+                        
                     }
                 }
 
@@ -366,7 +430,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 "int64_t" => "BinaryPrimitives.ReadInt64LittleEndian(frameBytes.Slice(index, 8));",
                 "uint64_t" => "BinaryPrimitives.ReadUInt64LittleEndian(frameBytes.Slice(index, 8));",
                 "uint8_t" => "frameBytes[index];",
-                "int8_t" => "frameBytes[index];",
+                "int8_t" => "(sbyte)frameBytes[index];",
                 "bool" => "((frameBytes[index] & 1) == 1);",
                 _ => throw new Exception($"Not a primitive type: {cPrimitveName}"),
             };

@@ -26,35 +26,35 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public ZigbeeZllNetwork Networkinfo { get; set; }
+    public ZigbeeZllNetwork NetworkInfo { get; set; }
 
     /// <summary>
     /// Used to interpret deviceInfo field.
     /// </summary>
-    public bool Isdeviceinfonull { get; set; }
+    public bool IsDeviceInfoNull { get; set; }
 
     /// <summary>
     /// Device specific information.
     /// </summary>
-    public ZigbeeZllDeviceInfoRecord Deviceinfo { get; set; }
+    public ZigbeeZllDeviceInfoRecord DeviceInfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet received from this network.
     /// </summary>
-    public ZigbeeRxPacketInfo Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllNetworkFoundHandlerResponse frame = new ZllNetworkFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkinfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
+		frame.NetworkInfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
 		index += 40;
-		frame.Isdeviceinfonull = ((frameBytes[index] & 1) == 1);
+		frame.IsDeviceInfoNull = ((frameBytes[index] & 1) == 1);
 		index += 1;
-		frame.Deviceinfo = MemoryMarshal.Read<ZigbeeZllDeviceInfoRecord>(frameBytes.Slice(index, 15));
+		frame.DeviceInfo = MemoryMarshal.Read<ZigbeeZllDeviceInfoRecord>(frameBytes.Slice(index, 15));
 		index += 15;
-		frame.Packetinfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
 		index += 18;
 
 		return frame;

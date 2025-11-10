@@ -26,29 +26,29 @@ public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of the incoming message. Currently, the only possibility is MFG_TEST_TYPE_ACK.
     /// </summary>
-    public byte Messagetype { get; set; }
+    public byte MessageType { get; set; }
 
     /// <summary>
     /// The length of the incoming message.
     /// </summary>
-    public byte Datalength { get; set; }
+    public byte DataLength { get; set; }
 
     /// <summary>
     /// A pointer to the data received in the current message.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
-	public byte[] data;
+	public byte[] Data;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingMfgTestMessageHandlerResponse frame = new IncomingMfgTestMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Messagetype = frameBytes[index];
+		frame.MessageType = frameBytes[index];
 		index += 1;
-		frame.Datalength = frameBytes[index];
+		frame.DataLength = frameBytes[index];
 		index += 1;
-		frame.Data = /* TODO: Implement parsing for type uint8_t[1] */ null;
-		index += 0;
+		frame.Data = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 1)).ToArray();
+		index += 1;
 
 		return frame;
 	}

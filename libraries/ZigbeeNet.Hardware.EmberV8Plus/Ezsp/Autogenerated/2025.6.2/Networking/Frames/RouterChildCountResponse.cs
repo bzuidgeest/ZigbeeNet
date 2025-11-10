@@ -26,14 +26,14 @@ public class RouterChildCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of router children.
     /// </summary>
-    public byte Routerchildcount { get; set; }
+    public byte RouterChildCount { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RouterChildCountResponse frame = new RouterChildCountResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Routerchildcount = frameBytes[index];
+		frame.RouterChildCount = frameBytes[index];
 		index += 1;
 
 		return frame;

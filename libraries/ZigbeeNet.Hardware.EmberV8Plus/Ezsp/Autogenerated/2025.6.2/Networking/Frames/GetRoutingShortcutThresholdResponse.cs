@@ -26,14 +26,14 @@ public class GetRoutingShortcutThresholdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The routing shortcut threshold
     /// </summary>
-    public byte Routingshortcutthresh { get; set; }
+    public byte RoutingShortcutThresh { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetRoutingShortcutThresholdResponse frame = new GetRoutingShortcutThresholdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Routingshortcutthresh = frameBytes[index];
+		frame.RoutingShortcutThresh = frameBytes[index];
 		index += 1;
 
 		return frame;

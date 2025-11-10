@@ -26,28 +26,28 @@ public class VersionResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EZSP version the NCP is using.
     /// </summary>
-    public byte Protocolversion { get; set; }
+    public byte ProtocolVersion { get; set; }
 
     /// <summary>
     /// The type of stack running on the NCP (2).
     /// </summary>
-    public byte Stacktype { get; set; }
+    public byte StackType { get; set; }
 
     /// <summary>
     /// The version number of the stack.
     /// </summary>
-    public ushort Stackversion { get; set; }
+    public ushort StackVersion { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		VersionResponse frame = new VersionResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Protocolversion = frameBytes[index];
+		frame.ProtocolVersion = frameBytes[index];
 		index += 1;
-		frame.Stacktype = frameBytes[index];
+		frame.StackType = frameBytes[index];
 		index += 1;
-		frame.Stackversion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.StackVersion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

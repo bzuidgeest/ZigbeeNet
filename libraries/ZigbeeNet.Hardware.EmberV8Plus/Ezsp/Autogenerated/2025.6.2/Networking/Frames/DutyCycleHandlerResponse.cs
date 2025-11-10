@@ -26,7 +26,7 @@ public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The channel page whose duty cycle state has changed.
     /// </summary>
-    public byte Channelpage { get; set; }
+    public byte ChannelPage { get; set; }
 
     /// <summary>
     /// The channel number whose duty cycle state has changed.
@@ -41,27 +41,27 @@ public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The total number of connected end devices that are being monitored for duty cycle.
     /// </summary>
-    public byte Totaldevices { get; set; }
+    public byte TotalDevices { get; set; }
 
     /// <summary>
     /// Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack&apos;s nodeId, and thus the total aggregate duty cycle for the device.
     /// </summary>
-    public ZigbeePerDeviceDutyCycle Arrayofdevicedutycycles { get; set; }
+    public ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		DutyCycleHandlerResponse frame = new DutyCycleHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Channelpage = frameBytes[index];
+		frame.ChannelPage = frameBytes[index];
 		index += 1;
 		frame.Channel = frameBytes[index];
 		index += 1;
 		frame.State = (ZigbeeDutyCycleState)frameBytes[index];
 		index += 1;
-		frame.Totaldevices = frameBytes[index];
+		frame.TotalDevices = frameBytes[index];
 		index += 1;
-		frame.Arrayofdevicedutycycles = MemoryMarshal.Read<ZigbeePerDeviceDutyCycle>(frameBytes.Slice(index, 4));
+		frame.ArrayOfDeviceDutyCycles = MemoryMarshal.Read<ZigbeePerDeviceDutyCycle>(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

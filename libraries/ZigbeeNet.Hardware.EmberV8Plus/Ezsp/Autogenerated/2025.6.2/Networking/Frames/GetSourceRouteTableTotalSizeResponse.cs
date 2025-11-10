@@ -26,14 +26,14 @@ public class GetSourceRouteTableTotalSizeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Total size of source route table.
     /// </summary>
-    public byte Sourceroutetabletotalsize { get; set; }
+    public byte SourceRouteTableTotalSize { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetSourceRouteTableTotalSizeResponse frame = new GetSourceRouteTableTotalSizeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Sourceroutetabletotalsize = frameBytes[index];
+		frame.SourceRouteTableTotalSize = frameBytes[index];
 		index += 1;
 
 		return frame;

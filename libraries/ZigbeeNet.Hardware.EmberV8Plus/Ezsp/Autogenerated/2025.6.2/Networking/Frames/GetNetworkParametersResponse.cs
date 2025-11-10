@@ -31,7 +31,7 @@ public class GetNetworkParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_node_type_t value indicating the current node type.
     /// </summary>
-    public ZigbeeNodeType Nodetype { get; set; }
+    public ZigbeeNodeType NodeType { get; set; }
 
     /// <summary>
     /// The current network parameters.
@@ -45,7 +45,7 @@ public class GetNetworkParametersResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Nodetype = (ZigbeeNodeType)frameBytes[index];
+		frame.NodeType = (ZigbeeNodeType)frameBytes[index];
 		index += 1;
 		frame.Parameters = MemoryMarshal.Read<ZigbeeNetworkParameters>(frameBytes.Slice(index, 20));
 		index += 20;

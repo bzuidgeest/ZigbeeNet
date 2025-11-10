@@ -26,22 +26,22 @@ public class EchoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;echo&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Echolength { get; set; }
+    public byte EchoLength { get; set; }
 
     /// <summary>
     /// The echo of the data.
     /// </summary>
 	// Array field with symbolic size: echoLength
-	public byte[] echo;
+	public byte[] Echo;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		EchoResponse frame = new EchoResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Echolength = frameBytes[index];
+		frame.EchoLength = frameBytes[index];
 		index += 1;
-		frame.Echo = /* TODO: Implement parsing for type uint8_t[echoLength] */ null;
-		index += 0;
+		frame.Echo = frameBytes.Slice(index, frame.EchoLength).ToArray();
+		index += frame.EchoLength;
 
 		return frame;
 	}

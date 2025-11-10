@@ -26,22 +26,22 @@ public class GetMfgTokenResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Tokendatalength { get; set; }
+    public byte TokenDataLength { get; set; }
 
     /// <summary>
     /// The manufacturing token data.
     /// </summary>
 	// Array field with symbolic size: tokenDataLength
-	public byte[] tokenData;
+	public byte[] TokenData;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetMfgTokenResponse frame = new GetMfgTokenResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Tokendatalength = frameBytes[index];
+		frame.TokenDataLength = frameBytes[index];
 		index += 1;
-		frame.Tokendata = /* TODO: Implement parsing for type uint8_t[tokenDataLength] */ null;
-		index += 0;
+		frame.TokenData = frameBytes.Slice(index, frame.TokenDataLength).ToArray();
+		index += frame.TokenDataLength;
 
 		return frame;
 	}

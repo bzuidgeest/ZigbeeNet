@@ -26,14 +26,14 @@ public class GetPhyInterfaceCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value indicate how many phy interfaces present.
     /// </summary>
-    public byte Interfacecount { get; set; }
+    public byte InterfaceCount { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetPhyInterfaceCountResponse frame = new GetPhyInterfaceCountResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Interfacecount = frameBytes[index];
+		frame.InterfaceCount = frameBytes[index];
 		index += 1;
 
 		return frame;

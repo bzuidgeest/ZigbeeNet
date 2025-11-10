@@ -31,7 +31,7 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current duty cycle state in effect.
     /// </summary>
-    public ZigbeeDutyCycleState Returnedstate { get; set; }
+    public ZigbeeDutyCycleState ReturnedState { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Returnedstate = (ZigbeeDutyCycleState)frameBytes[index];
+		frame.ReturnedState = (ZigbeeDutyCycleState)frameBytes[index];
 		index += 1;
 
 		return frame;

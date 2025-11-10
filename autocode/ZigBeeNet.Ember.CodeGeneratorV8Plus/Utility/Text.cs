@@ -52,15 +52,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
             return 0; // Not an array
         }
 
-        //public static string GetTypeNameWithoutArraySize(string cTypeString)
-        //{
-        //    int startIndex = cTypeString.IndexOf('[');
-        //    if (startIndex >= 0)
-        //    {
-        //        return cTypeString.Substring(0, startIndex).Trim();
-        //    }
-        //    return cTypeString.Trim();
-        //}
+        public static string GetArrayDefinitionSymbolicSize(this string cTypeString)
+        {
+            int startIndex = cTypeString.IndexOf('[');
+            int endIndex = cTypeString.IndexOf(']');
+            if (startIndex >= 0 && endIndex > startIndex)
+            {
+                return cTypeString.Substring(startIndex + 1, endIndex - startIndex - 1);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
 
         public static string GetArrayDefinitionBaseType(this string cTypeString)
         {

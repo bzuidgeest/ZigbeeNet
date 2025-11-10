@@ -31,24 +31,24 @@ public class GetExtendedValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
     /// </summary>
-    public byte Valuelength { get; set; }
+    public byte ValueLength { get; set; }
 
     /// <summary>
     /// The value.
     /// </summary>
 	// Array field with symbolic size: valueLength
-	public byte[] value;
+	public byte[] Value;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetExtendedValueResponse frame = new GetExtendedValueResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Valuelength = frameBytes[index];
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.ValueLength = frameBytes[index];
 		index += 1;
-		frame.Value = /* TODO: Implement parsing for type uint8_t[valueLength] */ null;
-		index += 0;
+		frame.Value = frameBytes.Slice(index, frame.ValueLength).ToArray();
+		index += frame.ValueLength;
 
 		return frame;
 	}

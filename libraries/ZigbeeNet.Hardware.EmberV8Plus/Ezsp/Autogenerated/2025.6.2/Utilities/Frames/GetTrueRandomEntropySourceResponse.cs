@@ -26,14 +26,14 @@ public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value indicates the used entropy source.
     /// </summary>
-    public ZigbeeEntropySource Entropysource { get; set; }
+    public ZigbeeEntropySource EntropySource { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTrueRandomEntropySourceResponse frame = new GetTrueRandomEntropySourceResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Entropysource = (ZigbeeEntropySource)frameBytes[index];
+		frame.EntropySource = (ZigbeeEntropySource)frameBytes[index];
 		index += 1;
 
 		return frame;

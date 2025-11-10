@@ -26,14 +26,14 @@ public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>
-    public uint Zllprimarychannelmask { get; set; }
+    public uint ZllPrimaryChannelMask { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetZllPrimaryChannelMaskResponse frame = new GetZllPrimaryChannelMaskResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zllprimarychannelmask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.ZllPrimaryChannelMask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

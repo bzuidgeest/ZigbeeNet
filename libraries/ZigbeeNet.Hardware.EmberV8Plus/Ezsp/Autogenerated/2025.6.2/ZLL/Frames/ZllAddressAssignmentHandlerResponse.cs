@@ -26,21 +26,21 @@ public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Address assignment information.
     /// </summary>
-    public ZigbeeZllAddressAssignment Addressinfo { get; set; }
+    public ZigbeeZllAddressAssignment AddressInfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public ZigbeeRxPacketInfo Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllAddressAssignmentHandlerResponse frame = new ZllAddressAssignmentHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Addressinfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
+		frame.AddressInfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
 		index += 14;
-		frame.Packetinfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
 		index += 18;
 
 		return frame;

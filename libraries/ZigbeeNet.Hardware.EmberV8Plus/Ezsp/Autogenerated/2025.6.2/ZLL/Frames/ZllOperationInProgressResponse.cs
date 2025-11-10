@@ -26,14 +26,14 @@ public class ZllOperationInProgressResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL operation in progress?
     /// </summary>
-    public bool Zlloperationinprogress { get; set; }
+    public bool ZllOperationInProgress { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllOperationInProgressResponse frame = new ZllOperationInProgressResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zlloperationinprogress = ((frameBytes[index] & 1) == 1);
+		frame.ZllOperationInProgress = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

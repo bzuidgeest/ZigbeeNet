@@ -36,7 +36,7 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the binding was added to the table and any other status if not.
     /// </summary>
-    public Status Policydecision { get; set; }
+    public Status PolicyDecision { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -47,7 +47,7 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
 		index += 14;
 		frame.Index = frameBytes[index];
 		index += 1;
-		frame.Policydecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.PolicyDecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

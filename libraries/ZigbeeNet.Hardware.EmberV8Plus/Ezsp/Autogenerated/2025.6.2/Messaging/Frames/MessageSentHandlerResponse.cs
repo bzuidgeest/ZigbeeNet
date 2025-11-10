@@ -36,47 +36,47 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
     /// </summary>
-    public ushort Indexordestination { get; set; }
+    public ushort IndexOrDestination { get; set; }
 
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-    public ZigbeeApsFrame Apsframe { get; set; }
+    public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
     /// </summary>
-    public ushort Messagetag { get; set; }
+    public ushort MessageTag { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Messagelength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MessageSentHandlerResponse frame = new MessageSentHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Type = /* TODO: Implement parsing for type sl_zigbee_outgoing_message_type_t */ null;
-		index += 0;
-		frame.Indexordestination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.Apsframe = /* TODO: Implement parsing for type sl_zigbee_aps_frame_t */ null;
-		index += 0;
-		frame.Messagetag = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.Messagelength = frameBytes[index];
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Type = (ZigbeeOutgoingMessageType)frameBytes[index];
 		index += 1;
-		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
-		index += 0;
+		frame.IndexOrDestination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
+		index += 12;
+		frame.MessageTag = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		index += 2;
+		frame.MessageLength = frameBytes[index];
+		index += 1;
+		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+		index += frame.MessageLength;
 
 		return frame;
 	}

@@ -31,7 +31,7 @@ public class GetChildDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public ZigbeeChildData Childdata { get; set; }
+    public ZigbeeChildData ChildData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GetChildDataResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Childdata = MemoryMarshal.Read<ZigbeeChildData>(frameBytes.Slice(index, 14));
+		frame.ChildData = MemoryMarshal.Read<ZigbeeChildData>(frameBytes.Slice(index, 14));
 		index += 14;
 
 		return frame;

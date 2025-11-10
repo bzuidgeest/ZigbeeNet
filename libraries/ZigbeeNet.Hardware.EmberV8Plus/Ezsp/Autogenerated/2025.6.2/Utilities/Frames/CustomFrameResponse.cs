@@ -31,24 +31,24 @@ public class CustomFrameResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the response.
     /// </summary>
-    public byte Replylength { get; set; }
+    public byte ReplyLength { get; set; }
 
     /// <summary>
     /// The response.
     /// </summary>
 	// Array field with symbolic size: replyLength
-	public byte[] reply;
+	public byte[] Reply;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CustomFrameResponse frame = new CustomFrameResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Replylength = frameBytes[index];
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.ReplyLength = frameBytes[index];
 		index += 1;
-		frame.Reply = /* TODO: Implement parsing for type uint8_t[replyLength] */ null;
-		index += 0;
+		frame.Reply = frameBytes.Slice(index, frame.ReplyLength).ToArray();
+		index += frame.ReplyLength;
 
 		return frame;
 	}

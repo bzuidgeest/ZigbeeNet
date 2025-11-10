@@ -28,7 +28,7 @@ public class GetCertificate283k1Response : EzspFrameResponseV8Plus
     /// <summary>
     /// The locally installed certificate.
     /// </summary>
-    public ZigbeeCertificate283k1Data Localcert { get; set; }
+    public ZigbeeCertificate283k1Data LocalCert { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -37,7 +37,7 @@ public class GetCertificate283k1Response : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Localcert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));
+		frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));
 		index += 74;
 
 		return frame;

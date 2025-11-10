@@ -26,14 +26,14 @@ public class IsZllNetworkResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL network?
     /// </summary>
-    public bool Iszllnetwork { get; set; }
+    public bool IsZllNetwork { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IsZllNetworkResponse frame = new IsZllNetworkResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Iszllnetwork = ((frameBytes[index] & 1) == 1);
+		frame.IsZllNetwork = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

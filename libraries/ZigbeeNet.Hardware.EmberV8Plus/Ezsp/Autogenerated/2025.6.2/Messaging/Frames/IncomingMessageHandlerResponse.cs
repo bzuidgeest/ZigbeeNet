@@ -31,38 +31,38 @@ public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The APS frame from the incoming message.
     /// </summary>
-    public ZigbeeApsFrame Apsframe { get; set; }
+    public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// Miscellanous message information.
     /// </summary>
-    public ZigbeeRxPacketInfo Packetinfo { get; set; }
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Messagelength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The incoming message.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] message;
+	public byte[] Message;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingMessageHandlerResponse frame = new IncomingMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Type = /* TODO: Implement parsing for type sl_zigbee_incoming_message_type_t */ null;
-		index += 0;
-		frame.Apsframe = /* TODO: Implement parsing for type sl_zigbee_aps_frame_t */ null;
-		index += 0;
-		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
-		index += 0;
-		frame.Messagelength = frameBytes[index];
+		frame.Type = (ZigbeeIncomingMessageType)frameBytes[index];
 		index += 1;
-		frame.Message = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
-		index += 0;
+		frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
+		index += 12;
+		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		index += 18;
+		frame.MessageLength = frameBytes[index];
+		index += 1;
+		frame.Message = frameBytes.Slice(index, frame.MessageLength).ToArray();
+		index += frame.MessageLength;
 
 		return frame;
 	}

@@ -31,12 +31,12 @@ public class CalculateSmacs283k1HandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The calculated value of the initiator&apos;s SMAC
     /// </summary>
-    public ZigbeeSmacData Initiatorsmac { get; set; }
+    public ZigbeeSmacData InitiatorSmac { get; set; }
 
     /// <summary>
     /// The calculated value of the responder&apos;s SMAC
     /// </summary>
-    public ZigbeeSmacData Respondersmac { get; set; }
+    public ZigbeeSmacData ResponderSmac { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -45,9 +45,9 @@ public class CalculateSmacs283k1HandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Initiatorsmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+		frame.InitiatorSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
 		index += 16;
-		frame.Respondersmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+		frame.ResponderSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
 		index += 16;
 
 		return frame;

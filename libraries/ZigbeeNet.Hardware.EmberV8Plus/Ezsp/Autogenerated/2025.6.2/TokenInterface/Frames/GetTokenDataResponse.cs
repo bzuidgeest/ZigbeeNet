@@ -32,7 +32,7 @@ public class GetTokenDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Token Data
     /// </summary>
-    public ZigbeeTokenData Tokendata { get; set; }
+    public ZigbeeTokenData TokenData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -41,7 +41,7 @@ public class GetTokenDataResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Tokendata = MemoryMarshal.Read<ZigbeeTokenData>(frameBytes.Slice(index, 68));
+		frame.TokenData = MemoryMarshal.Read<ZigbeeTokenData>(frameBytes.Slice(index, 68));
 		index += 68;
 
 		return frame;

@@ -8,10 +8,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
     public class FrameArgument
     {
         [YamlMember(Alias = "type")]
-        public string? Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         [YamlMember(Alias = "name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [YamlMember(Alias = "description")]
         public string? Description { get; set; }

@@ -31,31 +31,31 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Attribute data type.
     /// </summary>
-    public byte Datatype { get; set; }
+    public byte DataType { get; set; }
 
     /// <summary>
     /// Length of attribute data.
     /// </summary>
-    public byte Readlength { get; set; }
+    public byte ReadLength { get; set; }
 
     /// <summary>
     /// Attribute data.
     /// </summary>
 	// Array field with symbolic size: readLength
-	public byte[] dataPtr;
+	public byte[] DataPtr;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAttributeResponse frame = new ReadAttributeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.AfStatus = /* TODO: Implement parsing for type sl_zigbee_af_status_t */ null;
-		index += 0;
-		frame.Datatype = frameBytes[index];
+		frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
 		index += 1;
-		frame.Readlength = frameBytes[index];
+		frame.DataType = frameBytes[index];
 		index += 1;
-		frame.Dataptr = /* TODO: Implement parsing for type uint8_t[readLength] */ null;
-		index += 0;
+		frame.ReadLength = frameBytes[index];
+		index += 1;
+		frame.DataPtr = frameBytes.Slice(index, frame.ReadLength).ToArray();
+		index += frame.ReadLength;
 
 		return frame;
 	}

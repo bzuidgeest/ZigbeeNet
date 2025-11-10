@@ -27,15 +27,13 @@ public class ReadAndClearCountersResponse : EzspFrameResponseV8Plus
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>
 	// Array field with symbolic size: SL_ZIGBEE_COUNTER_TYPE_COUNT
-	public ushort[] values;
+	public ushort[] Values;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadAndClearCountersResponse frame = new ReadAndClearCountersResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Values = /* TODO: Implement parsing for type uint16_t[SL_ZIGBEE_COUNTER_TYPE_COUNT] */ null;
-		index += 0;
-
+		frame.Values = 
 		return frame;
 	}
 }

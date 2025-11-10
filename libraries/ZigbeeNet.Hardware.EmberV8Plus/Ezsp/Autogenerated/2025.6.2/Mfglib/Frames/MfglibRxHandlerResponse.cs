@@ -26,7 +26,7 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The link quality observed during the reception
     /// </summary>
-    public byte Linkquality { get; set; }
+    public byte LinkQuality { get; set; }
 
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
@@ -36,26 +36,26 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
     /// </summary>
-    public byte Packetlength { get; set; }
+    public byte PacketLength { get; set; }
 
     /// <summary>
     /// The received packet (last 2 bytes are not FCS / CRC and may be discarded)
     /// </summary>
 	// Array field with symbolic size: packetLength
-	public byte[] packetContents;
+	public byte[] PacketContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Linkquality = frameBytes[index];
+		frame.LinkQuality = frameBytes[index];
 		index += 1;
-		frame.Rssi = frameBytes[index];
+		frame.Rssi = (sbyte)frameBytes[index];
 		index += 1;
-		frame.Packetlength = frameBytes[index];
+		frame.PacketLength = frameBytes[index];
 		index += 1;
-		frame.Packetcontents = /* TODO: Implement parsing for type uint8_t[packetLength] */ null;
-		index += 0;
+		frame.PacketContents = frameBytes.Slice(index, frame.PacketLength).ToArray();
+		index += frame.PacketLength;
 
 		return frame;
 	}

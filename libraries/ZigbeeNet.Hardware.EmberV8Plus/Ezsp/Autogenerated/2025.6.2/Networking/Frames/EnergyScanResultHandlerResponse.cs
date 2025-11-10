@@ -31,7 +31,7 @@ public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum RSSI value found on the channel.
     /// </summary>
-    public sbyte Maxrssivalue { get; set; }
+    public sbyte MaxRssiValue { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Channel = frameBytes[index];
 		index += 1;
-		frame.Maxrssivalue = frameBytes[index];
+		frame.MaxRssiValue = (sbyte)frameBytes[index];
 		index += 1;
 
 		return frame;

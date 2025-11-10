@@ -31,7 +31,7 @@ public class GetDutyCycleLimitsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return current duty cycle limits if returnedLimits is not NULL
     /// </summary>
-    public ZigbeeDutyCycleLimits Returnedlimits { get; set; }
+    public ZigbeeDutyCycleLimits ReturnedLimits { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GetDutyCycleLimitsResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Returnedlimits = MemoryMarshal.Read<ZigbeeDutyCycleLimits>(frameBytes.Slice(index, 6));
+		frame.ReturnedLimits = MemoryMarshal.Read<ZigbeeDutyCycleLimits>(frameBytes.Slice(index, 6));
 		index += 6;
 
 		return frame;

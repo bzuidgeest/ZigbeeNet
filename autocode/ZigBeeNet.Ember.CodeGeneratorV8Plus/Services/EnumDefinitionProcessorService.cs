@@ -109,9 +109,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
 
                     // Add enum item with value
                     if (String.IsNullOrEmpty(item.Value))
-                        sb.Append($"\t\t{item.Name}");
+                        sb.Append($"\t{item.Name}");
                     else
-                        sb.Append($"\t\t{item.Name} = {item.Value}");
+                        sb.Append($"\t{item.Name} = {item.Value}");
 
                     // Add comma if not the last item
                     if (i < enumDefinition.Items.Count - 1)

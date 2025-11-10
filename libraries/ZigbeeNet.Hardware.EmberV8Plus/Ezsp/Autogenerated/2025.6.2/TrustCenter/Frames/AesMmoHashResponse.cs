@@ -31,7 +31,7 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The updated hash context.
     /// </summary>
-    public ZigbeeAesMmoHashContext Returncontext { get; set; }
+    public ZigbeeAesMmoHashContext ReturnContext { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Returncontext = MemoryMarshal.Read<ZigbeeAesMmoHashContext>(frameBytes.Slice(index, 20));
+		frame.ReturnContext = MemoryMarshal.Read<ZigbeeAesMmoHashContext>(frameBytes.Slice(index, 20));
 		index += 20;
 
 		return frame;

@@ -31,7 +31,7 @@ public class GetPolicyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current decision for the specified policy.
     /// </summary>
-    public ZigbeeEzspDecisionId Decisionid { get; set; }
+    public ZigbeeEzspDecisionId DecisionId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GetPolicyResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Decisionid = (ZigbeeEzspDecisionId)frameBytes[index];
+		frame.DecisionId = (ZigbeeEzspDecisionId)frameBytes[index];
 		index += 1;
 
 		return frame;

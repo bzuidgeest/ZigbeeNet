@@ -31,17 +31,17 @@ public class GetStandaloneBootloaderVersionPlatMicroPhyResponse : EzspFrameRespo
     /// <summary>
     /// The value of PLAT on the node
     /// </summary>
-    public byte Nodeplat { get; set; }
+    public byte NodePlat { get; set; }
 
     /// <summary>
     /// The value of MICRO on the node
     /// </summary>
-    public byte Nodemicro { get; set; }
+    public byte NodeMicro { get; set; }
 
     /// <summary>
     /// The value of PHY on the node
     /// </summary>
-    public byte Nodephy { get; set; }
+    public byte NodePhy { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -50,11 +50,11 @@ public class GetStandaloneBootloaderVersionPlatMicroPhyResponse : EzspFrameRespo
 
 		frame.BootloaderVersion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Nodeplat = frameBytes[index];
+		frame.NodePlat = frameBytes[index];
 		index += 1;
-		frame.Nodemicro = frameBytes[index];
+		frame.NodeMicro = frameBytes[index];
 		index += 1;
-		frame.Nodephy = frameBytes[index];
+		frame.NodePhy = frameBytes[index];
 		index += 1;
 
 		return frame;

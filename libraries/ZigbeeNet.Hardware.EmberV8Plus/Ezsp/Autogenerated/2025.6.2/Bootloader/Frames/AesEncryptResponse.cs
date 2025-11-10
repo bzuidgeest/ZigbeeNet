@@ -27,14 +27,14 @@ public class AesEncryptResponse : EzspFrameResponseV8Plus
     /// 16 bytes of ciphertext.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-	public byte[] ciphertext;
+	public byte[] Ciphertext;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		AesEncryptResponse frame = new AesEncryptResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Ciphertext = /* TODO: Implement parsing for type uint8_t[16] */ null;
-		index += 0;
+		frame.Ciphertext = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 16)).ToArray();
+		index += 16;
 
 		return frame;
 	}

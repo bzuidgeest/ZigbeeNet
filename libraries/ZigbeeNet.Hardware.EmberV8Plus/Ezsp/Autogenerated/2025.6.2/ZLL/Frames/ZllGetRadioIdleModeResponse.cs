@@ -26,14 +26,14 @@ public class ZllGetRadioIdleModeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current power mode.
     /// </summary>
-    public byte Radioidlemode { get; set; }
+    public byte RadioIdleMode { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllGetRadioIdleModeResponse frame = new ZllGetRadioIdleModeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Radioidlemode = frameBytes[index];
+		frame.RadioIdleMode = frameBytes[index];
 		index += 1;
 
 		return frame;

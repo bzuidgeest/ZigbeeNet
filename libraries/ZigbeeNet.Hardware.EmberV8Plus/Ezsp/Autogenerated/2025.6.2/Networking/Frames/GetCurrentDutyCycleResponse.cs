@@ -32,16 +32,16 @@ public class GetCurrentDutyCycleResponse : EzspFrameResponseV8Plus
     /// Consumed duty cycles up to maxDevices. When the number of children that are being monitored is less than maxDevices, the sl_802154_short_addr_t element in the sl_zigbee_per_device_duty_cycle_t will be 0xFFFF.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 134)]
-	public byte[] arrayOfDeviceDutyCycles;
+	public byte[] ArrayOfDeviceDutyCycles;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetCurrentDutyCycleResponse frame = new GetCurrentDutyCycleResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Arrayofdevicedutycycles = /* TODO: Implement parsing for type uint8_t[134] */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.ArrayOfDeviceDutyCycles = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 134)).ToArray();
+		index += 134;
 
 		return frame;
 	}

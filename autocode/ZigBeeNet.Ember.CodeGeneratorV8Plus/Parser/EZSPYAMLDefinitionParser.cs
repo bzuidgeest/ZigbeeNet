@@ -166,18 +166,18 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     });
                                 }
                                 _typeMapperService.AddTypeMapping(
-                                        new CType(typedef.Name, 0, typedef.Description)
-                                        {
-                                            IsStruct = true,
-                                            SizeInBytes = typeSizeInBytes,
-                                            IsVariableLengthStruct = isVariableLengthStruct,
-                                        },
-                                        new CSharpType(Sanitize.TypeName(typedef.Name))
-                                        {
-                                            IsStruct = true,
-                                            Namespace = $"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types",
-                                        }
-                                    );
+                                    new CType(typedef.Name, 0, typedef.Description)
+                                    {
+                                        IsStruct = true,
+                                        SizeInBytes = typeSizeInBytes,
+                                        IsVariableLengthStruct = isVariableLengthStruct,
+                                    },
+                                    new CSharpType(Sanitize.TypeName(typedef.Name))
+                                    {
+                                        IsStruct = true,
+                                        Namespace = $"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types",
+                                    }
+                                );
 
                                 SaveComplexTypeFile(section.Name, Sanitize.StructureName(typedef.Name), complexTypeContent);
                             }

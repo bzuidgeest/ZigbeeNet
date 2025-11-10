@@ -32,16 +32,16 @@ public class GetTokenResponse : EzspFrameResponseV8Plus
     /// The contents of the token.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] tokenData;
+	public byte[] TokenData;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetTokenResponse frame = new GetTokenResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Tokendata = /* TODO: Implement parsing for type uint8_t[8] */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.TokenData = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
+		index += 8;
 
 		return frame;
 	}

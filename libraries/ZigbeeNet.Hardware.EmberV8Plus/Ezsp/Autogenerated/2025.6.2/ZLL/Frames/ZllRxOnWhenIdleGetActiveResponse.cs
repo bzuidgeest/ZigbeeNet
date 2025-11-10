@@ -26,14 +26,14 @@ public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL radio on when idle mode is active?
     /// </summary>
-    public bool Zllrxonwhenidlegetactive { get; set; }
+    public bool ZllRxOnWhenIdleGetActive { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllRxOnWhenIdleGetActiveResponse frame = new ZllRxOnWhenIdleGetActiveResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zllrxonwhenidlegetactive = ((frameBytes[index] & 1) == 1);
+		frame.ZllRxOnWhenIdleGetActive = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

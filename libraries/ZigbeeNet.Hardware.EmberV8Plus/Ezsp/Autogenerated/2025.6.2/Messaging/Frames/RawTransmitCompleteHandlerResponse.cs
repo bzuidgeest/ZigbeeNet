@@ -26,13 +26,13 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Length of the message that was transmitted.
     /// </summary>
-    public byte Messagelength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The message that was transmitted.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
     /// <summary>
     /// SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
     /// </summary>
@@ -43,12 +43,12 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
 		RawTransmitCompleteHandlerResponse frame = new RawTransmitCompleteHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Messagelength = frameBytes[index];
+		frame.MessageLength = frameBytes[index];
 		index += 1;
-		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
-		index += 0;
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+		index += frame.MessageLength;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

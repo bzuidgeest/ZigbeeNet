@@ -31,7 +31,7 @@ public class SendBroadcastResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The APS sequence number that will be used when this message is transmitted.
     /// </summary>
-    public byte Apssequence { get; set; }
+    public byte ApsSequence { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class SendBroadcastResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Apssequence = frameBytes[index];
+		frame.ApsSequence = frameBytes[index];
 		index += 1;
 
 		return frame;

@@ -26,14 +26,14 @@ public class SwitchNetworkKeyHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The sequence number of the new network key.
     /// </summary>
-    public byte Sequencenumber { get; set; }
+    public byte SequenceNumber { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		SwitchNetworkKeyHandlerResponse frame = new SwitchNetworkKeyHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Sequencenumber = frameBytes[index];
+		frame.SequenceNumber = frameBytes[index];
 		index += 1;
 
 		return frame;

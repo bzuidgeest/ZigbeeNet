@@ -27,14 +27,14 @@ public class GetExtendedPanIdResponse : EzspFrameResponseV8Plus
     /// Extended PAN ID of this node.  Valid only if it is currently on a network.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] extendedPanId;
+	public byte[] ExtendedPanId;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetExtendedPanIdResponse frame = new GetExtendedPanIdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Extendedpanid = /* TODO: Implement parsing for type uint8_t[8] */ null;
-		index += 0;
+		frame.ExtendedPanId = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
+		index += 8;
 
 		return frame;
 	}

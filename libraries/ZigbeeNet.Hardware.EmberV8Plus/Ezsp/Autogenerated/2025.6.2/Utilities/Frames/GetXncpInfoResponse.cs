@@ -31,12 +31,12 @@ public class GetXncpInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The manufactured ID the user has defined in the XNCP application.
     /// </summary>
-    public ushort Manufacturerid { get; set; }
+    public ushort ManufacturerId { get; set; }
 
     /// <summary>
     /// The version number of the XNCP application.
     /// </summary>
-    public ushort Versionnumber { get; set; }
+    public ushort VersionNumber { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -45,9 +45,9 @@ public class GetXncpInfoResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Manufacturerid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ManufacturerId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Versionnumber = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.VersionNumber = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

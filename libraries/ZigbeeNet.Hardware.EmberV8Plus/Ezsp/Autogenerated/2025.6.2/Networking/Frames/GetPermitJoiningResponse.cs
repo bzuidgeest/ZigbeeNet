@@ -26,14 +26,14 @@ public class GetPermitJoiningResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether the current network permits joining.
     /// </summary>
-    public bool Joiningpermitted { get; set; }
+    public bool JoiningPermitted { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetPermitJoiningResponse frame = new GetPermitJoiningResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Joiningpermitted = ((frameBytes[index] & 1) == 1);
+		frame.JoiningPermitted = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

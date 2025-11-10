@@ -31,7 +31,7 @@ public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The generated ephemeral public key.
     /// </summary>
-    public ZigbeePublicKeyData Ephemeralpublickey { get; set; }
+    public ZigbeePublicKeyData EphemeralPublicKey { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Ephemeralpublickey = MemoryMarshal.Read<ZigbeePublicKeyData>(frameBytes.Slice(index, 22));
+		frame.EphemeralPublicKey = MemoryMarshal.Read<ZigbeePublicKeyData>(frameBytes.Slice(index, 22));
 		index += 22;
 
 		return frame;

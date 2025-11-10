@@ -32,7 +32,7 @@ public class DGpSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The handle of the GPDF.
     /// </summary>
-    public byte Gpephandle { get; set; }
+    public byte GpepHandle { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -41,7 +41,7 @@ public class DGpSentHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Gpephandle = frameBytes[index];
+		frame.GpepHandle = frameBytes[index];
 		index += 1;
 
 		return frame;

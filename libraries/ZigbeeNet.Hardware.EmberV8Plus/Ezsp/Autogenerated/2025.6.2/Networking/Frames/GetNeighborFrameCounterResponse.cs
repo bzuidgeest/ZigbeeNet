@@ -31,7 +31,7 @@ public class GetNeighborFrameCounterResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return the frame counter of the node from the neighbor or child table
     /// </summary>
-    public uint Returnframecounter { get; set; }
+    public uint ReturnFrameCounter { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -40,7 +40,7 @@ public class GetNeighborFrameCounterResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Returnframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.ReturnFrameCounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

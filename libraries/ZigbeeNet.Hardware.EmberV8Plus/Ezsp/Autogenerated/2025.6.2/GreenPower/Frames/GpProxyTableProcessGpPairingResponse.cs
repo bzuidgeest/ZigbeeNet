@@ -27,14 +27,14 @@ public class GpProxyTableProcessGpPairingResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether a GP Pairing has been created or not.
     /// </summary>
-    public bool Gppairingadded { get; set; }
+    public bool GpPairingAdded { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpProxyTableProcessGpPairingResponse frame = new GpProxyTableProcessGpPairingResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Gppairingadded = ((frameBytes[index] & 1) == 1);
+		frame.GpPairingAdded = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

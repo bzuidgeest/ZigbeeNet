@@ -33,7 +33,7 @@ public class MfglibInternalGetPowerResponse : EzspFrameResponseV8Plus
 		MfglibInternalGetPowerResponse frame = new MfglibInternalGetPowerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Power = frameBytes[index];
+		frame.Power = (sbyte)frameBytes[index];
 		index += 1;
 
 		return frame;

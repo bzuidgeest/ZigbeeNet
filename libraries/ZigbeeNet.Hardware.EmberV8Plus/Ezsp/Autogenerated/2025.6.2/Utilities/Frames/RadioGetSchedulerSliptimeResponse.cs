@@ -27,14 +27,14 @@ public class RadioGetSchedulerSliptimeResponse : EzspFrameResponseV8Plus
     /// Value of the current slip time.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
-	public uint[] slipTime;
+	public uint[] SlipTime;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		RadioGetSchedulerSliptimeResponse frame = new RadioGetSchedulerSliptimeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Sliptime = /* TODO: Implement parsing for type uint32_t[1] */ null;
-		index += 0;
+		frame.SlipTime = MemoryMarshal.Cast<byte, uint>(frameBytes.Slice(index, 4)).ToArray();
+		index += 4;
 
 		return frame;
 	}

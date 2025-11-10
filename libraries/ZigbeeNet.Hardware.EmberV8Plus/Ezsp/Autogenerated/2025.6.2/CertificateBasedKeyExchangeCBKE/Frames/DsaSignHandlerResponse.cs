@@ -31,24 +31,24 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Messagelength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The message and attached which includes the original message and the appended signature.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		DsaSignHandlerResponse frame = new DsaSignHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Messagelength = frameBytes[index];
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.MessageLength = frameBytes[index];
 		index += 1;
-		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
-		index += 0;
+		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+		index += frame.MessageLength;
 
 		return frame;
 	}

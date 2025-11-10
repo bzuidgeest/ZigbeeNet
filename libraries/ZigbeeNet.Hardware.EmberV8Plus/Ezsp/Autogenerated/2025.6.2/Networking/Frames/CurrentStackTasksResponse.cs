@@ -26,14 +26,14 @@ public class CurrentStackTasksResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A bitmask of the stack&apos;s active tasks.
     /// </summary>
-    public ushort Activetasks { get; set; }
+    public ushort ActiveTasks { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CurrentStackTasksResponse frame = new CurrentStackTasksResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Activetasks = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ActiveTasks = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

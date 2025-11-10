@@ -26,14 +26,14 @@ public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameRes
     /// <summary>
     /// Whether or not a rejoining neighbor&apos;s incoming FC gets reset (true or false).
     /// </summary>
-    public bool Getsreset { get; set; }
+    public bool GetsReset { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IsResetRejoiningNeighborsFrameCounterEnabledResponse frame = new IsResetRejoiningNeighborsFrameCounterEnabledResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Getsreset = ((frameBytes[index] & 1) == 1);
+		frame.GetsReset = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

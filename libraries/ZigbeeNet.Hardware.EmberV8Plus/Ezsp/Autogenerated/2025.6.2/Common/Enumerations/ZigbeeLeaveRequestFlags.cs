@@ -9,11 +9,11 @@ public enum ZigbeeLeaveRequestFlags : byte
 	/// <summary>
 	/// Leave and rejoin the network.
 	/// </summary>
-		SL_ZIGBEE_ZIGBEE_LEAVE_AND_REJOIN = 0x80,
+	SL_ZIGBEE_ZIGBEE_LEAVE_AND_REJOIN = 0x80,
 	/// <summary>
 	/// Leave the network and do not rejoin.
 	/// </summary>
-		SL_ZIGBEE_ZIGBEE_LEAVE_WITHOUT_REJOIN = 0x00
+	SL_ZIGBEE_ZIGBEE_LEAVE_WITHOUT_REJOIN = 0x00
 }
 
 #endif

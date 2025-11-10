@@ -26,14 +26,14 @@ public class MaximumPayloadLengthResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum APS payload length.
     /// </summary>
-    public byte Apslength { get; set; }
+    public byte ApsLength { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		MaximumPayloadLengthResponse frame = new MaximumPayloadLengthResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Apslength = frameBytes[index];
+		frame.ApsLength = frameBytes[index];
 		index += 1;
 
 		return frame;

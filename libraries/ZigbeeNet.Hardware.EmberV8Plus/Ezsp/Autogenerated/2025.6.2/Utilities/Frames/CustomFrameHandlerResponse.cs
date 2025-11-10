@@ -26,22 +26,22 @@ public class CustomFrameHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the custom frame payload.
     /// </summary>
-    public byte Payloadlength { get; set; }
+    public byte PayloadLength { get; set; }
 
     /// <summary>
     /// The payload of the custom frame.
     /// </summary>
 	// Array field with symbolic size: payloadLength
-	public byte[] payload;
+	public byte[] Payload;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		CustomFrameHandlerResponse frame = new CustomFrameHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Payloadlength = frameBytes[index];
+		frame.PayloadLength = frameBytes[index];
 		index += 1;
-		frame.Payload = /* TODO: Implement parsing for type uint8_t[payloadLength] */ null;
-		index += 0;
+		frame.Payload = frameBytes.Slice(index, frame.PayloadLength).ToArray();
+		index += frame.PayloadLength;
 
 		return frame;
 	}

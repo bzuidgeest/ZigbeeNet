@@ -26,14 +26,14 @@ public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public ZigbeeZllNetwork Networkinfo { get; set; }
+    public ZigbeeZllNetwork NetworkInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkinfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
+		frame.NetworkInfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
 		index += 40;
 
 		return frame;

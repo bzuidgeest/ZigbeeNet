@@ -26,14 +26,14 @@ public class GetZllSecondaryChannelMaskResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The secondary ZLL channel mask
     /// </summary>
-    public uint Zllsecondarychannelmask { get; set; }
+    public uint ZllSecondaryChannelMask { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetZllSecondaryChannelMaskResponse frame = new GetZllSecondaryChannelMaskResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zllsecondarychannelmask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.ZllSecondaryChannelMask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

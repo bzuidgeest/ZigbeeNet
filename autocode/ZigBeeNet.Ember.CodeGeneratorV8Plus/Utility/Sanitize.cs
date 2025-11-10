@@ -130,7 +130,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
 
             // PascalCase: capitalize first letter of each part
             var pascalCased = string.Concat(parts.Select(part =>
-                part.Length > 0 ? char.ToUpper(part[0]) + part[1..].ToLower() : ""));
+                part.Length > 0 ? char.ToUpper(part[0]) + part[1..] : ""));
 
             // Check if reserved keyword and prefix with @ if needed
             if (IsReservedKeyword(pascalCased))

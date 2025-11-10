@@ -19,14 +19,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus
 {
-    public uint Parentincomingnwkframecounter { get; set; }
+    public uint ParentIncomingNwkFrameCounter { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetParentIncomingNwkFrameCounterResponse frame = new GetParentIncomingNwkFrameCounterResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Parentincomingnwkframecounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		frame.ParentIncomingNwkFrameCounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;
