@@ -17,9 +17,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         private readonly ILogger<FrameDefinitionProcessorService> _logger;
         private readonly TypeMapperService _typeMapper;
 
-        public FrameDefinitionProcessorService(ILoggerFactory __loggerFactory, TypeMapperService typeMapperService)
+        public FrameDefinitionProcessorService(ILoggerFactory _loggerFactory, TypeMapperService typeMapperService)
         {
-            _logger = __loggerFactory.CreateLogger<FrameDefinitionProcessorService>();
+            _logger = _loggerFactory.CreateLogger<FrameDefinitionProcessorService>();
             _typeMapper = typeMapperService;
         }
 
@@ -176,6 +176,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     _logger.LogWarning("Frame command name is empty");
                     return string.Empty;
                 }
+                string sanitizedSectionName = Sanitize.SectionName(section);
 
                 var sb = new StringBuilder();
 
@@ -194,11 +195,15 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;");
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;");
+
+                if (_typeMapper.SectionTypeMappingExists(sanitizedSectionName) == true)
+                {
+                    sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;");
+                }
                 sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.AppendLine();
 
                 // Generate namespace
-                string sanitizedSectionName = Sanitize.SectionName(section);
                 sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Frames;");
                 sb.AppendLine();
 
@@ -299,6 +304,18 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 sb.Append($"({typeMapping?.CSharpType.Name})");
                                 sb.AppendLine(ReadPrimitiveTypeString(baseTypeMapping.CType.Name));
                             }
+                            else if (typeMapping?.CType.IsStruct == true)
+                            {
+                                if (typeMapping?.CType.IsVariableLengthStruct == true)
+                                {
+                                    //sb.AppendLine($"{typeMapping?.CSharpType.Name}.Parse(frameBytes.Slice(index, frameBytes.Length - index));");
+                                    sb.AppendLine("Hello fix this");
+                                }
+                                else
+                                {
+                                    sb.AppendLine($"MemoryMarshal.Read<{typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes}));");
+                                }
+                            }
                             else
                             {
                                 sb.AppendLine(ReadPrimitiveTypeString(typeMapping.Value.CType.Name));
@@ -343,7 +360,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             return cPrimitveName switch
             {
                 "int32_t" => "BinaryPrimitives.ReadInt32LittleEndian(frameBytes.Slice(index, 4));",
-                "uint32_t" => "BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, {4));",
+                "uint32_t" => "BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));",
                 "int16_t" => "BinaryPrimitives.ReadInt16LittleEndian(frameBytes.Slice(index, 2));",
                 "uint16_t" => "BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));",
                 "int64_t" => "BinaryPrimitives.ReadInt64LittleEndian(frameBytes.Slice(index, 8));",

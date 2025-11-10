@@ -19,8 +19,7 @@ public struct ZigbeeCurrentSecurityState
 	/// <summary>
 	/// The IEEE Address of the Trust Center device.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] trustCenterLongAddress;
+	public 802154LongAddr trustCenterLongAddress;
 
 }
 

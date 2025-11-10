@@ -49,7 +49,7 @@ public struct ZigbeeBeaconData
 	/// <summary>
 	/// The PAN ID of the received beacon.
 	/// </summary>
-	public ushort panId;
+	public 802154PanId panId;
 
 	/// <summary>
 	/// The extended PAN ID of the received beacon.
@@ -59,7 +59,7 @@ public struct ZigbeeBeaconData
 	/// <summary>
 	/// The sender of the received beacon.
 	/// </summary>
-	public ushort sender;
+	public 802154ShortAddr sender;
 
 	/// <summary>
 	/// Whether or not the beacon is enhanced.

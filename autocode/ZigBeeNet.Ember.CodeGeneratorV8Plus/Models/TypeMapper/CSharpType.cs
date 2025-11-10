@@ -24,6 +24,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models.TypeMapper
         public bool IsBoolean { get; set; } = false;
         public bool IsStruct { get; set; } = false;
 
+        public string Namespace { get; set; } = string.Empty;
+
         public CSharpType(string name) 
         { 
             Name = name;

@@ -33,8 +33,8 @@ public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus
 		ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkinfo = /* TODO: Implement parsing for type sl_zigbee_zll_network_t */ null;
-		index += 0;
+		frame.Networkinfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
+		index += 40;
 
 		return frame;
 	}

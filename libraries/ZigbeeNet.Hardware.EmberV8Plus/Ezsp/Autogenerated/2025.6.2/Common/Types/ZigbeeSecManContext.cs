@@ -29,8 +29,7 @@ public struct ZigbeeSecManContext
 	/// <summary>
 	/// The EUI64 associated with this key.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public 802154LongAddr eui64;
 
 	/// <summary>
 	/// Multi-network index.

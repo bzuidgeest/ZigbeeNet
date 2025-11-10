@@ -33,7 +33,7 @@ public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
 		GetZllPrimaryChannelMaskResponse frame = new GetZllPrimaryChannelMaskResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Zllprimarychannelmask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, {4));
+		frame.Zllprimarychannelmask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

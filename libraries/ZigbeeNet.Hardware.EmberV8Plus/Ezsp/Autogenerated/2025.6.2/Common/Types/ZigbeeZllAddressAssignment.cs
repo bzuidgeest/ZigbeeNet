@@ -14,37 +14,37 @@ public struct ZigbeeZllAddressAssignment
 	/// <summary>
 	/// Relevant node id.
 	/// </summary>
-	public ushort nodeId;
+	public 802154ShortAddr nodeId;
 
 	/// <summary>
 	/// Minimum free node id.
 	/// </summary>
-	public ushort freeNodeIdMin;
+	public 802154ShortAddr freeNodeIdMin;
 
 	/// <summary>
 	/// Maximum free node id.
 	/// </summary>
-	public ushort freeNodeIdMax;
+	public 802154ShortAddr freeNodeIdMax;
 
 	/// <summary>
 	/// Minimum group id.
 	/// </summary>
-	public ushort groupIdMin;
+	public ZigbeeMulticastId groupIdMin;
 
 	/// <summary>
 	/// Maximum group id.
 	/// </summary>
-	public ushort groupIdMax;
+	public ZigbeeMulticastId groupIdMax;
 
 	/// <summary>
 	/// Minimum free group id.
 	/// </summary>
-	public ushort freeGroupIdMin;
+	public ZigbeeMulticastId freeGroupIdMin;
 
 	/// <summary>
 	/// Maximum free group id.
 	/// </summary>
-	public ushort freeGroupIdMax;
+	public ZigbeeMulticastId freeGroupIdMax;
 
 }
 

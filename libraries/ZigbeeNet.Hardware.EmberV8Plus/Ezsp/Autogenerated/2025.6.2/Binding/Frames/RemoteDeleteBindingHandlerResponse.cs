@@ -40,8 +40,8 @@ public class RemoteDeleteBindingHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Index = frameBytes[index];
 		index += 1;
-		frame.Policydecision = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Policydecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

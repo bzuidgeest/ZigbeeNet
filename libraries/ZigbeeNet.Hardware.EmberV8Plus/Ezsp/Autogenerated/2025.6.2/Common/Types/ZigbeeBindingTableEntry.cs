@@ -34,8 +34,7 @@ public struct ZigbeeBindingTableEntry
 	/// <summary>
 	/// A 64-bit identifier. This is either the destination EUI64 (for unicasts) or the 64-bit group address (for multicasts).
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] identifier;
+	public 802154LongAddr identifier;
 
 	/// <summary>
 	/// The index of the network the binding belongs to.

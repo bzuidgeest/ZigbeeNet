@@ -14,12 +14,12 @@ public struct ZigbeePerDeviceDutyCycle
 	/// <summary>
 	/// Node Id of device whose duty cycle is reported.
 	/// </summary>
-	public ushort nodeId;
+	public 802154ShortAddr nodeId;
 
 	/// <summary>
 	/// Amount of overall duty cycle consumed (up to suspend limit).
 	/// </summary>
-	public ushort dutyCycleConsumed;
+	public ZigbeeDutyCycleHectoPct dutyCycleConsumed;
 
 }
 

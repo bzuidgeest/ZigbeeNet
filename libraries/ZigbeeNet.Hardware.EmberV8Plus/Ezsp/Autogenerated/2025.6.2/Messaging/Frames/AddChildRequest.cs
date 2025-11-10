@@ -26,12 +26,12 @@ public class AddChildRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The preferred short ID of the node.
     /// </summary>
-    public ushort shortId { get; set; }
+    public _802154ShortAddr shortId { get; set; }
 
     /// <summary>
     /// The long ID of the node.
     /// </summary>
-    public byte longId { get; set; }
+    public _802154LongAddr longId { get; set; }
 
     /// <summary>
     /// The nodetype e.g., SL_ZIGBEE_ROUTER defining, if this would be added to the child table or neighbor table.

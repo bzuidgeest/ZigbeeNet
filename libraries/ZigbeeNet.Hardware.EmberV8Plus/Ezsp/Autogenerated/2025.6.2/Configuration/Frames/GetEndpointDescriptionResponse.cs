@@ -33,8 +33,8 @@ public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus
 		GetEndpointDescriptionResponse frame = new GetEndpointDescriptionResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Result = /* TODO: Implement parsing for type sl_zigbee_endpoint_description_t */ null;
-		index += 0;
+		frame.Result = MemoryMarshal.Read<ZigbeeEndpointDescription>(frameBytes.Slice(index, 7));
+		index += 7;
 
 		return frame;
 	}

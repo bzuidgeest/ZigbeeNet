@@ -26,12 +26,12 @@ public class SendBroadcastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The aliased source from which we send the broadcast. This must be SL_ZIGBEE_NULL_NODE_ID if we do not need an aliased source
     /// </summary>
-    public ushort alias { get; set; }
+    public _802154ShortAddr alias { get; set; }
 
     /// <summary>
     /// The destination to which to send the broadcast. This must be one of the three ZigBee broadcast addresses.
     /// </summary>
-    public ushort destination { get; set; }
+    public _802154ShortAddr destination { get; set; }
 
     /// <summary>
     /// The alias nwk sequence number. this won&apos;t be used if there is no aliased source.

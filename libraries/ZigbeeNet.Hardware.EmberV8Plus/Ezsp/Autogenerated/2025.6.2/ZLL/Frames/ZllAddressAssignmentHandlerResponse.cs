@@ -38,10 +38,10 @@ public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus
 		ZllAddressAssignmentHandlerResponse frame = new ZllAddressAssignmentHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Addressinfo = /* TODO: Implement parsing for type sl_zigbee_zll_address_assignment_t */ null;
-		index += 0;
-		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
-		index += 0;
+		frame.Addressinfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
+		index += 14;
+		frame.Packetinfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		index += 18;
 
 		return frame;
 	}

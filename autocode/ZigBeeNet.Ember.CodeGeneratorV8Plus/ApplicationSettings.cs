@@ -9,6 +9,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
         /// Gets or sets the output directory where generated code files will be written.
         /// </summary>
         public string OutputDirectory { get; set; } = "bin/Debug/Generated";
+
+        public string ParseVersion { get; set; } = "2025.6.2";
     }
 }
 

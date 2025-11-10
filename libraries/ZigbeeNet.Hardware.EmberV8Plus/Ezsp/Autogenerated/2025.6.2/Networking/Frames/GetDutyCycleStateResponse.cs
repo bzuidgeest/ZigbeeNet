@@ -38,10 +38,10 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
 		GetDutyCycleStateResponse frame = new GetDutyCycleStateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Returnedstate = /* TODO: Implement parsing for type sl_zigbee_duty_cycle_state_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Returnedstate = (ZigbeeDutyCycleState)frameBytes[index];
+		index += 1;
 
 		return frame;
 	}

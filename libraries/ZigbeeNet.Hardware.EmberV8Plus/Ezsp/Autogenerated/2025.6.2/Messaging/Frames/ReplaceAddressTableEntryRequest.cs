@@ -31,12 +31,12 @@ public class ReplaceAddressTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The EUI64 to be written to the address table entry.
     /// </summary>
-    public byte newEui64 { get; set; }
+    public _802154LongAddr newEui64 { get; set; }
 
     /// <summary>
     /// One of the following: The short ID corresponding to the new EUI64. SL_ZIGBEE_UNKNOWN_NODE_ID if the new EUI64 is valid but the short ID is unknown and should be discovered by the stack. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry is now unused.
     /// </summary>
-    public ushort newId { get; set; }
+    public _802154ShortAddr newId { get; set; }
 
     /// <summary>
     /// true if the retry interval should be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval should be used.

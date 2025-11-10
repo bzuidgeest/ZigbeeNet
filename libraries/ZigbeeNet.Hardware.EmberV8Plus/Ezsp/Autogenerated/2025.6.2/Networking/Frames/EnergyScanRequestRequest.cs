@@ -26,7 +26,7 @@ public class EnergyScanRequestRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The network address of the node to perform the scan.
     /// </summary>
-    public ushort target { get; set; }
+    public _802154ShortAddr target { get; set; }
 
     /// <summary>
     /// A mask of the channels to be scanned

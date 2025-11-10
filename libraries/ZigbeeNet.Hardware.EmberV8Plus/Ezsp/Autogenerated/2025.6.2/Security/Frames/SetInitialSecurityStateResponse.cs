@@ -33,8 +33,8 @@ public class SetInitialSecurityStateResponse : EzspFrameResponseV8Plus
 		SetInitialSecurityStateResponse frame = new SetInitialSecurityStateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Success = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Success = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

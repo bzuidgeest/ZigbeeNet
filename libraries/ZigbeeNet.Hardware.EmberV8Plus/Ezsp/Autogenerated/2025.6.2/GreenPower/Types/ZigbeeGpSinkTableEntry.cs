@@ -15,7 +15,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// <summary>
 	/// Internal status of the sink table entry.
 	/// </summary>
-	public byte status;
+	public ZigbeeGpSinkTableEntryStatus status;
 
 	/// <summary>
 	/// The tunneling options (this contains both options and extendedOptions from the spec).
@@ -41,7 +41,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// <summary>
 	/// The assigned alias for the GPD.
 	/// </summary>
-	public ushort assignedAlias;
+	public 802154ShortAddr assignedAlias;
 
 	/// <summary>
 	/// The groupcast radius.
@@ -56,7 +56,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// <summary>
 	/// The security frame counter of the GPD.
 	/// </summary>
-	public uint gpdSecurityFrameCounter;
+	public ZigbeeGpSecurityFrameCounter gpdSecurityFrameCounter;
 
 	/// <summary>
 	/// The key to use for GPD.

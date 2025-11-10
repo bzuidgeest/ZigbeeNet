@@ -26,7 +26,7 @@ public class GetNeighborFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// eui64 of the node
     /// </summary>
-    public byte eui64 { get; set; }
+    public _802154LongAddr eui64 { get; set; }
 
 }
 

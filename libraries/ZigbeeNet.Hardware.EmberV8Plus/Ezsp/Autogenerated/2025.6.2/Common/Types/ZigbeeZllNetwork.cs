@@ -24,13 +24,12 @@ public struct ZigbeeZllNetwork
 	/// <summary>
 	/// Associated EUI64.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public 802154LongAddr eui64;
 
 	/// <summary>
 	/// The node id.
 	/// </summary>
-	public ushort nodeId;
+	public 802154ShortAddr nodeId;
 
 	/// <summary>
 	/// The ZLL state.

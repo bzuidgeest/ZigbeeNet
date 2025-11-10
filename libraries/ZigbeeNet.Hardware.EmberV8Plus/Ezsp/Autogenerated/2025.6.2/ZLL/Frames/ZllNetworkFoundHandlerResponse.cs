@@ -48,14 +48,14 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
 		ZllNetworkFoundHandlerResponse frame = new ZllNetworkFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkinfo = /* TODO: Implement parsing for type sl_zigbee_zll_network_t */ null;
-		index += 0;
-		frame.Isdeviceinfonull = frameBytes[index];
+		frame.Networkinfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
+		index += 40;
+		frame.Isdeviceinfonull = ((frameBytes[index] & 1) == 1);
 		index += 1;
-		frame.Deviceinfo = /* TODO: Implement parsing for type sl_zigbee_zll_device_info_record_t */ null;
-		index += 0;
-		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
-		index += 0;
+		frame.Deviceinfo = MemoryMarshal.Read<ZigbeeZllDeviceInfoRecord>(frameBytes.Slice(index, 15));
+		index += 15;
+		frame.Packetinfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		index += 18;
 
 		return frame;
 	}

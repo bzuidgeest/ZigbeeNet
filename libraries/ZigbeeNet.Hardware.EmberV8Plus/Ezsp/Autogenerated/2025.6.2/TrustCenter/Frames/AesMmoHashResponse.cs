@@ -38,10 +38,10 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
 		AesMmoHashResponse frame = new AesMmoHashResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Returncontext = /* TODO: Implement parsing for type sl_zigbee_aes_mmo_hash_context_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Returncontext = MemoryMarshal.Read<ZigbeeAesMmoHashContext>(frameBytes.Slice(index, 20));
+		index += 20;
 
 		return frame;
 	}

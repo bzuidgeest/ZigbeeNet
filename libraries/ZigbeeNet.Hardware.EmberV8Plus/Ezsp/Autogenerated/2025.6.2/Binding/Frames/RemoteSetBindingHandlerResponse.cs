@@ -43,12 +43,12 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
 		RemoteSetBindingHandlerResponse frame = new RemoteSetBindingHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Entry = /* TODO: Implement parsing for type sl_zigbee_binding_table_entry_t */ null;
-		index += 0;
+		frame.Entry = MemoryMarshal.Read<ZigbeeBindingTableEntry>(frameBytes.Slice(index, 14));
+		index += 14;
 		frame.Index = frameBytes[index];
 		index += 1;
-		frame.Policydecision = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Policydecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

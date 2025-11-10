@@ -35,12 +35,12 @@ public struct ZigbeeGpParams
 	/// <summary>
 	/// The security level of the received GPDF.
 	/// </summary>
-	public byte gpdfSecurityLevel;
+	public ZigbeeGpSecurityLevel gpdfSecurityLevel;
 
 	/// <summary>
 	/// The securityKeyType used to decrypt/authenticate the incoming GPDF.
 	/// </summary>
-	public byte gpdfSecurityKeyType;
+	public ZigbeeGpKeyType gpdfSecurityKeyType;
 
 	/// <summary>
 	/// Whether the incoming GPDF had the auto-commissioning bit set.

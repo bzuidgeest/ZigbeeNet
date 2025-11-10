@@ -26,7 +26,7 @@ public class SetMessageFlagRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The ID of the child that just polled for data.
     /// </summary>
-    public ushort childId { get; set; }
+    public _802154ShortAddr childId { get; set; }
 
 }
 

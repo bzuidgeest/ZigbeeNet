@@ -20,6 +20,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Models
         {
             Type = type;
         }
+
     }
 
     /// <summary>

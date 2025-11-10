@@ -43,8 +43,8 @@ public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
 		NetworkFoundHandlerResponse frame = new NetworkFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Networkfound = /* TODO: Implement parsing for type sl_zigbee_zigbee_network_t */ null;
-		index += 0;
+		frame.Networkfound = MemoryMarshal.Read<ZigbeeZigbeeNetwork>(frameBytes.Slice(index, 14));
+		index += 14;
 		frame.Lasthoplqi = frameBytes[index];
 		index += 1;
 		frame.Lasthoprssi = frameBytes[index];

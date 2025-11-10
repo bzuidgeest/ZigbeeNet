@@ -14,8 +14,7 @@ public struct ZigbeeTransientKeyData
 	/// <summary>
 	/// The IEEE address paired with the transient link key.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public 802154LongAddr eui64;
 
 	/// <summary>
 	/// The key data structure matching the transient key.

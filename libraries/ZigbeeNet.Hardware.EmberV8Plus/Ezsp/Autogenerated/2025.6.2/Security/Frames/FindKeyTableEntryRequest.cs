@@ -26,7 +26,7 @@ public class FindKeyTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address to search for. Alternatively, all zeros may be passed in to search for the first empty entry.
     /// </summary>
-    public byte address { get; set; }
+    public _802154LongAddr address { get; set; }
 
     /// <summary>
     /// This indicates whether to search for an entry that contains a link key or a master key. true means to search for an entry with a Link Key.

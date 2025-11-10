@@ -14,17 +14,17 @@ public struct ZigbeeDutyCycleLimits
 	/// <summary>
 	/// The Limited Threshold in % * 100
 	/// </summary>
-	public ushort limitThresh;
+	public ZigbeeDutyCycleHectoPct limitThresh;
 
 	/// <summary>
 	/// The Critical Threshold in % * 100.
 	/// </summary>
-	public ushort critThresh;
+	public ZigbeeDutyCycleHectoPct critThresh;
 
 	/// <summary>
 	/// The Suspended Limit (LBT) in % * 100.
 	/// </summary>
-	public ushort suspLimit;
+	public ZigbeeDutyCycleHectoPct suspLimit;
 
 }
 

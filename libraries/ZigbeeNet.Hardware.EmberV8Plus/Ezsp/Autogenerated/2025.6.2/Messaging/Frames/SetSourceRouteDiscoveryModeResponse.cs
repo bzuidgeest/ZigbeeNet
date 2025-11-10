@@ -33,7 +33,7 @@ public class SetSourceRouteDiscoveryModeResponse : EzspFrameResponseV8Plus
 		SetSourceRouteDiscoveryModeResponse frame = new SetSourceRouteDiscoveryModeResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Remainingtime = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, {4));
+		frame.Remainingtime = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
 
 		return frame;

@@ -56,5 +56,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                 return null;
             }
         }
+        public bool SectionTypeMappingExists(string sectionName)
+        {
+            return _typeMappings.Any(tm => tm.Value.CSharpType.Namespace.Contains(sectionName, StringComparison.InvariantCultureIgnoreCase));
+        }
     }
 }

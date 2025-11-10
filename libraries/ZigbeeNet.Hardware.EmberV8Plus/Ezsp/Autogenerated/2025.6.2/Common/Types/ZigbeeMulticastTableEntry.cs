@@ -14,7 +14,7 @@ public struct ZigbeeMulticastTableEntry
 	/// <summary>
 	/// The multicast group ID.
 	/// </summary>
-	public ushort multicastId;
+	public ZigbeeMulticastId multicastId;
 
 	/// <summary>
 	/// The endpoint that is a member, or 0 if this entry is not in use (the ZDO is not a member of any multicast groups.)

@@ -44,8 +44,7 @@ public struct ZigbeeKeyStruct
 	/// <summary>
 	/// The IEEE address of the partner device also in possession of the key.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] partnerEUI64;
+	public 802154LongAddr partnerEUI64;
 
 }
 

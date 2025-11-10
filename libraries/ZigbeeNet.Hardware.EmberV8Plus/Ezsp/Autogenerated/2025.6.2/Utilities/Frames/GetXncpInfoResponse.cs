@@ -43,8 +43,8 @@ public class GetXncpInfoResponse : EzspFrameResponseV8Plus
 		GetXncpInfoResponse frame = new GetXncpInfoResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 		frame.Manufacturerid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 		frame.Versionnumber = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));

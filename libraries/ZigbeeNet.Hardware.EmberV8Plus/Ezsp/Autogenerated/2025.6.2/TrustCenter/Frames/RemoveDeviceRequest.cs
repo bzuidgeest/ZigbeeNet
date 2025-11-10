@@ -26,17 +26,17 @@ public class RemoveDeviceRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node ID of the device that will receive the message
     /// </summary>
-    public ushort destShort { get; set; }
+    public _802154ShortAddr destShort { get; set; }
 
     /// <summary>
     /// The long address (EUI64) of the device that will receive the message.
     /// </summary>
-    public byte destLong { get; set; }
+    public _802154LongAddr destLong { get; set; }
 
     /// <summary>
     /// The long address (EUI64) of the device to be removed.
     /// </summary>
-    public byte targetLong { get; set; }
+    public _802154LongAddr targetLong { get; set; }
 
 }
 

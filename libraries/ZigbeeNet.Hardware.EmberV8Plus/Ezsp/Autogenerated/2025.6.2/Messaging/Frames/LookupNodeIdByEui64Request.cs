@@ -26,7 +26,7 @@ public class LookupNodeIdByEui64Request : EzspFrameRequestV8Plus
     /// <summary>
     /// The EUI64 of the node to look up.
     /// </summary>
-    public byte eui64 { get; set; }
+    public _802154LongAddr eui64 { get; set; }
 
 }
 

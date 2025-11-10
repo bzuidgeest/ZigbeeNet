@@ -9,11 +9,11 @@ public enum ZigbeeEzspEndpointFlags : ushort
 	/// <summary>
 	/// Indicates that the endpoint is disabled and NOT discoverable via ZDO.
 	/// </summary>
-    SL_ZIGBEE_EZSP_ENDPOINT_DISABLED = 0x00,
+		SL_ZIGBEE_EZSP_ENDPOINT_DISABLED = 0x00,
 	/// <summary>
 	/// Indicates that the endpoint is enabled and discoverable via ZDO.
 	/// </summary>
-    SL_ZIGBEE_EZSP_ENDPOINT_ENABLED = 0x01
+		SL_ZIGBEE_EZSP_ENDPOINT_ENABLED = 0x01
 }
 
 #endif

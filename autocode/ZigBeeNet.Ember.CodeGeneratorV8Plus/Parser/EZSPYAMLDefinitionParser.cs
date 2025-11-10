@@ -15,6 +15,8 @@ using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 using System.Globalization;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models.TypeMapper;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 {
@@ -24,14 +26,16 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         private readonly ApplicationSettings _settings;
         private string _versionName = string.Empty;
         private readonly FrameDefinitionProcessorService _frameDefinitionProcessorService;
-        private readonly TypeMapperService _tyepMapperService;
+        private readonly TypeMapperService _typeMapperService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, ApplicationSettings settings, FrameDefinitionProcessorService frameDefinitionProcessorService, TypeMapperService typeMapperService)
+        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationSettings settings, FrameDefinitionProcessorService frameDefinitionProcessorService, TypeMapperService typeMapperService)
         {
             _logger = loggerFactory.CreateLogger<EZSPYAMLDefinitionParser>();
             _settings = settings;
             _frameDefinitionProcessorService = frameDefinitionProcessorService;
-            _tyepMapperService = typeMapperService;
+            _typeMapperService = typeMapperService;
+            _serviceProvider = serviceProvider;
         }
 
         public void Process(string versionDir, string definitionPath, string versionName)
@@ -77,6 +81,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 {
                     var sections = deserializer.Deserialize<List<EzspSection>>(definitionFileReader);
 
+
+
                     if (sections == null || sections.Count == 0)
                     {
                         _logger.LogWarning("No sections found in {file}", definitionPath);
@@ -92,24 +98,22 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     {
                         _logger.LogInformation("\tSection: {section}", section.Name);
 
+                        SimpleTypeDefinitionProcessorService simpleTypeDefinitionProcessorService = _serviceProvider.GetRequiredService<SimpleTypeDefinitionProcessorService>();
+                        EnumDefinitionProcessorService enumDefinitionProcessorService = _serviceProvider.GetRequiredService<EnumDefinitionProcessorService>();
+
                         string sanitizedSectionName = Sanitize.SectionName(section.Name);
 
                         #region // simple types
                         var simpleCount = 0;
                         var complexCount = 0;
 
-                        if (section.Typedefs != null && section.Typedefs.Any(x => x.Definition is SimpleTypedefDefinition))
+                        if (section.Typedefs != null)
                         {
-
-                            foreach (var typedef in section.Typedefs.Where(x => x.Definition is SimpleTypedefDefinition))
+                            foreach (var typedef in section.Typedefs.Where(x => x.IsSimple))
                             {
                                 simpleCount++;
 
-                                string content = SimpleTypeDefinitionProcessor.ProcessSimpleTypeDefinition(_logger, typedef, definitionPath.Substring(0, definitionPath.LastIndexOf('\\')), sanitizedSectionName);
-                                if (string.IsNullOrWhiteSpace(content) == false)
-                                {
-                                    SaveEnumFile(section.Name, Sanitize.EnumerationName(typedef.Name), content);
-                                }
+                                simpleTypeDefinitionProcessorService.Process(sanitizedSectionName, typedef);
                             }
                         }
 
@@ -119,42 +123,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         #region // Enums
                         if (section.Enums != null && section.Enums.Count > 0)
                         {
-                            _logger.LogInformation("    Found {count} enum(s)", section.Enums.Count);
+                            _logger.LogInformation("\t\tFound {count} enum(s)", section.Enums.Count);
                             foreach (var enumDef in section.Enums)
                             {
-                                _logger.LogInformation("      - {name} ({type}): {itemCount} items", enumDef.Name, enumDef.Type, enumDef.Items?.Count ?? 0);
-                                TypeMapping? enumBaseTypeMapping = _tyepMapperService.GetTypeMapping(enumDef.Type);
-
-                                if (enumBaseTypeMapping is not null)
-                                {
-                                    _tyepMapperService.AddTypeMapping(
-                                        new CType(enumDef.Name, enumBaseTypeMapping.Value.CType.SizeInBytes, enumDef.Description)
-                                        {
-                                            IsEnum = true,
-                                            UnderlyingTypeName = enumBaseTypeMapping.Value.CType.Name
-                                        },
-                                        new CSharpType(Sanitize.EnumerationName(enumDef.Name))
-                                        {
-                                            IsEnum = true,
-                                            UnderlyingTypeName = enumBaseTypeMapping.Value.CSharpType.Name,
-                                        }
-                                    );
-
-                                    string enumFileContent = EnumDefinitionProcessor.ProcessEnumDefinition(_logger, section.Name, enumDef);
-                                    if (string.IsNullOrWhiteSpace(enumFileContent))
-                                    {
-                                        _logger.LogWarning("Enum file content is empty for {enum} in section {section}", enumDef.Name, section.Name);
-                                        continue;
-                                    }
-                                    SaveEnumFile(section.Name, Sanitize.EnumerationName(enumDef.Name), enumFileContent); 
-                                }
-                                else
-                                {
-                                    _logger.LogError("No type mapping found for enum base type {type} of enum {enum} in section {section}, cannot finish", enumDef.Type, enumDef.Name, section.Name);
-                                    return;
-                                }
-
-
+                                enumDefinitionProcessorService.Process(sanitizedSectionName, enumDef);
                             }
                         }
                         #endregion
@@ -165,8 +137,47 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             foreach (var typedef in section.Typedefs.Where(x => x.Definition is ComplexTypedefDefinition))
                             {
                                 complexCount++;
+                                ComplexTypedefDefinition complexTypedefDefinition = (ComplexTypedefDefinition)typedef.Definition;
 
                                 string complexTypeContent = ComplexTypeDefinitionProcessor.ProcessComplexTypeDefinition(_logger, sanitizedSectionName, typedef);
+
+                                bool isVariableLengthStruct = complexTypedefDefinition.Fields.Any(field => field.Type.Contains('[') == true && field.Type.GetArrayDefinitionSize() == -1);
+                                int typeSizeInBytes = -1;
+
+                                if (isVariableLengthStruct == false)
+                                {
+                                    typeSizeInBytes = (typedef.Definition as ComplexTypedefDefinition)!.Fields.Sum(field =>
+                                    {
+                                        TypeMapping? fieldTypeMapping = _typeMapperService.GetTypeMapping(field.Type.GetArrayDefinitionBaseType());
+                                        if (fieldTypeMapping is null)
+                                        {
+                                            _logger.LogError("No type mapping found for field type {type} of field {field} in complex type {complexType} in section {section}, cannot finish",
+                                                field.Type, field.Name, typedef.Name, section.Name);
+                                            return 0;
+                                        }
+                                        else if (fieldTypeMapping.HasValue && field.Type.EndsWith(']') == true)
+                                        {
+                                            return fieldTypeMapping.Value.CType.SizeInBytes * field.Type.GetArrayDefinitionSize();
+                                        }
+                                        else
+                                        {
+                                            return fieldTypeMapping?.CType.SizeInBytes ?? 0;
+                                        }
+                                    });
+                                }
+                                _typeMapperService.AddTypeMapping(
+                                        new CType(typedef.Name, 0, typedef.Description)
+                                        {
+                                            IsStruct = true,
+                                            SizeInBytes = typeSizeInBytes,
+                                            IsVariableLengthStruct = isVariableLengthStruct,
+                                        },
+                                        new CSharpType(Sanitize.TypeName(typedef.Name))
+                                        {
+                                            IsStruct = true,
+                                            Namespace = $"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types",
+                                        }
+                                    );
 
                                 SaveComplexTypeFile(section.Name, Sanitize.StructureName(typedef.Name), complexTypeContent);
                             }

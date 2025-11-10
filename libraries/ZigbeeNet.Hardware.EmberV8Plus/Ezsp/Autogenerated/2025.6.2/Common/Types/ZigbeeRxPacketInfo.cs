@@ -19,8 +19,7 @@ public struct ZigbeeRxPacketInfo
 	/// <summary>
 	/// EUI64 of the sender of the message if the sender chose to this information in the message. The ::SL_ZIGBEE_APS_OPTION_SOURCE_EUI64 bit in the options field of the APS frame of the incoming message indicates that the EUI64 is present in the message.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] sender_long_id;
+	public 802154LongAddr sender_long_id;
 
 	/// <summary>
 	/// The index of the entry in the binding table that matches the sender of the message or 0xFF if there is no matching entry.

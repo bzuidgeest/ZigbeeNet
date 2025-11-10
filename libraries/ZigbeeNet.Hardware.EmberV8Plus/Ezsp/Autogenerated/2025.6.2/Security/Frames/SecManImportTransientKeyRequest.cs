@@ -26,7 +26,7 @@ public class SecManImportTransientKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// EUI64 associated with this transient key.
     /// </summary>
-    public byte eui64 { get; set; }
+    public _802154LongAddr eui64 { get; set; }
 
     /// <summary>
     /// The key to import.

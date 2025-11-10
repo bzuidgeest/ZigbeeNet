@@ -34,8 +34,7 @@ public struct ZigbeeInitialSecurityState
 	/// <summary>
 	/// This is the long address of the trust center on the network that will be joined. It is usually NOT set prior to joining the network and instead it is learned during the joining message exchange. This field is only examined if ::SL_ZIGBEE_HAVE_TRUST_CENTER_EUI64 is set in the sl_zigbee_initial_security_state_t::bitmask. Most devices should clear that bit and leave this field alone. This field must be set when using commissioning mode.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] preconfiguredTrustCenterEui64;
+	public 802154LongAddr preconfiguredTrustCenterEui64;
 
 }
 

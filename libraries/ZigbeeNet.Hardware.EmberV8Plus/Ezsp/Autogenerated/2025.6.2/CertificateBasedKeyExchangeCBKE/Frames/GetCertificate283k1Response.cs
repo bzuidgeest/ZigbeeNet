@@ -35,10 +35,10 @@ public class GetCertificate283k1Response : EzspFrameResponseV8Plus
 		GetCertificate283k1Response frame = new GetCertificate283k1Response();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Localcert = /* TODO: Implement parsing for type sl_zigbee_certificate_283k1_data_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Localcert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));
+		index += 74;
 
 		return frame;
 	}

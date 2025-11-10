@@ -43,12 +43,12 @@ public class GetNetworkParametersResponse : EzspFrameResponseV8Plus
 		GetNetworkParametersResponse frame = new GetNetworkParametersResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Nodetype = /* TODO: Implement parsing for type sl_zigbee_node_type_t */ null;
-		index += 0;
-		frame.Parameters = /* TODO: Implement parsing for type sl_zigbee_network_parameters_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Nodetype = (ZigbeeNodeType)frameBytes[index];
+		index += 1;
+		frame.Parameters = MemoryMarshal.Read<ZigbeeNetworkParameters>(frameBytes.Slice(index, 20));
+		index += 20;
 
 		return frame;
 	}

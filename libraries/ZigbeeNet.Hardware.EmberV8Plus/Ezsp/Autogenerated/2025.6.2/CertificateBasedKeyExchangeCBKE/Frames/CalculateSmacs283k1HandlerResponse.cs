@@ -43,12 +43,12 @@ public class CalculateSmacs283k1HandlerResponse : EzspFrameResponseV8Plus
 		CalculateSmacs283k1HandlerResponse frame = new CalculateSmacs283k1HandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Initiatorsmac = /* TODO: Implement parsing for type sl_zigbee_smac_data_t */ null;
-		index += 0;
-		frame.Respondersmac = /* TODO: Implement parsing for type sl_zigbee_smac_data_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Initiatorsmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+		index += 16;
+		frame.Respondersmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+		index += 16;
 
 		return frame;
 	}

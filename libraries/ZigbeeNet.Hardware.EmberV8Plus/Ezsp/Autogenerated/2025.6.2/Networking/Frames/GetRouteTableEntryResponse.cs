@@ -38,10 +38,10 @@ public class GetRouteTableEntryResponse : EzspFrameResponseV8Plus
 		GetRouteTableEntryResponse frame = new GetRouteTableEntryResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Value = /* TODO: Implement parsing for type sl_zigbee_route_table_entry_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Value = MemoryMarshal.Read<ZigbeeRouteTableEntry>(frameBytes.Slice(index, 8));
+		index += 8;
 
 		return frame;
 	}

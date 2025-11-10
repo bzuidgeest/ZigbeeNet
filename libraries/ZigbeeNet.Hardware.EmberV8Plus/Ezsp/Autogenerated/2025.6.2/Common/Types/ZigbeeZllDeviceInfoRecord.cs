@@ -14,8 +14,7 @@ public struct ZigbeeZllDeviceInfoRecord
 	/// <summary>
 	/// EUI64 associated with the device.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] ieeeAddress;
+	public 802154LongAddr ieeeAddress;
 
 	/// <summary>
 	/// Endpoint id.

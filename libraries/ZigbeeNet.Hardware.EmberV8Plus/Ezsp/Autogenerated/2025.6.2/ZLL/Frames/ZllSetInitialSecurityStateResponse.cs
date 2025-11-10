@@ -33,8 +33,8 @@ public class ZllSetInitialSecurityStateResponse : EzspFrameResponseV8Plus
 		ZllSetInitialSecurityStateResponse frame = new ZllSetInitialSecurityStateResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

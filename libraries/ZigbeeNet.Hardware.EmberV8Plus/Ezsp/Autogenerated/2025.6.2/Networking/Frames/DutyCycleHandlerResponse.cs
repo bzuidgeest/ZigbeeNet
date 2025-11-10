@@ -57,12 +57,12 @@ public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
 		index += 1;
 		frame.Channel = frameBytes[index];
 		index += 1;
-		frame.State = /* TODO: Implement parsing for type sl_zigbee_duty_cycle_state_t */ null;
-		index += 0;
+		frame.State = (ZigbeeDutyCycleState)frameBytes[index];
+		index += 1;
 		frame.Totaldevices = frameBytes[index];
 		index += 1;
-		frame.Arrayofdevicedutycycles = /* TODO: Implement parsing for type sl_zigbee_per_device_duty_cycle_t */ null;
-		index += 0;
+		frame.Arrayofdevicedutycycles = MemoryMarshal.Read<ZigbeePerDeviceDutyCycle>(frameBytes.Slice(index, 4));
+		index += 4;
 
 		return frame;
 	}

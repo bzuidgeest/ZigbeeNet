@@ -32,5 +32,62 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
                 sb.AppendLine($"{indent}/// </summary>");
             }
         }
+
+        public static int GetArrayDefinitionSize(this string cTypeString)
+        {
+            int startIndex = cTypeString.IndexOf('[');
+            int endIndex = cTypeString.IndexOf(']');
+            if (startIndex >= 0 && endIndex > startIndex)
+            {
+                bool isNumeric = int.TryParse(cTypeString.Substring(startIndex + 1, endIndex - startIndex - 1), out int arraySize);
+                if (isNumeric)
+                {
+                    return arraySize;
+                }
+                else
+                {
+                    return -1; // Variable length array
+                }
+            }
+            return 0; // Not an array
+        }
+
+        //public static string GetTypeNameWithoutArraySize(string cTypeString)
+        //{
+        //    int startIndex = cTypeString.IndexOf('[');
+        //    if (startIndex >= 0)
+        //    {
+        //        return cTypeString.Substring(0, startIndex).Trim();
+        //    }
+        //    return cTypeString.Trim();
+        //}
+
+        public static string GetArrayDefinitionBaseType(this string cTypeString)
+        {
+            int startIndex = cTypeString.IndexOf('[');
+            if (startIndex >= 0)
+            {
+                return cTypeString.Substring(0, startIndex).Trim();
+            }
+            return cTypeString.Trim();
+        }
+
+        public static bool IsArrayTypeDefinition(this string cTypeString)
+        {
+            return cTypeString.Contains('[') && cTypeString.Contains(']');
+        }
+
+        public static IEnumerable<string> ReadAllLines(this string text)
+        {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+
+            using var reader = new StringReader(text);
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                yield return line;
+            }
+        }
+
     }
 }

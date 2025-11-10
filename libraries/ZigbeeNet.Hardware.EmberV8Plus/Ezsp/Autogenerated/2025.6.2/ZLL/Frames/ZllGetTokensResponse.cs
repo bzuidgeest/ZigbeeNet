@@ -38,10 +38,10 @@ public class ZllGetTokensResponse : EzspFrameResponseV8Plus
 		ZllGetTokensResponse frame = new ZllGetTokensResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Data = /* TODO: Implement parsing for type sl_zigbee_tok_type_stack_zll_data_t */ null;
-		index += 0;
-		frame.Security = /* TODO: Implement parsing for type sl_zigbee_tok_type_stack_zll_security_t */ null;
-		index += 0;
+		frame.Data = MemoryMarshal.Read<ZigbeeTokTypeStackZllData>(frameBytes.Slice(index, 15));
+		index += 15;
+		frame.Security = MemoryMarshal.Read<ZigbeeTokTypeStackZllSecurity>(frameBytes.Slice(index, 37));
+		index += 37;
 
 		return frame;
 	}

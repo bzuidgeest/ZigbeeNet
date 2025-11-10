@@ -39,8 +39,7 @@ public struct ZigbeeNeighborTableEntry
 	/// <summary>
 	/// The 8 byte EUI64 of the neighbor.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] longId;
+	public 802154LongAddr longId;
 
 }
 

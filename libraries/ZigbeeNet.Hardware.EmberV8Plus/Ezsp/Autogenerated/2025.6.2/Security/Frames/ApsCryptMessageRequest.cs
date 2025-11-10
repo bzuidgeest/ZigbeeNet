@@ -46,7 +46,7 @@ public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// IEEE address of the device this message is associated with.
     /// </summary>
-    public byte remoteEui64 { get; set; }
+    public _802154LongAddr remoteEui64 { get; set; }
 
 }
 

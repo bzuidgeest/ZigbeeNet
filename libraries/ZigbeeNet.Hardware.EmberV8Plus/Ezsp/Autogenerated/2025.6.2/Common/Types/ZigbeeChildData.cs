@@ -14,8 +14,7 @@ public struct ZigbeeChildData
 	/// <summary>
 	/// The EUI64 of the child
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public 802154LongAddr eui64;
 
 	/// <summary>
 	/// The node type of the child
@@ -25,7 +24,7 @@ public struct ZigbeeChildData
 	/// <summary>
 	/// The short address of the child
 	/// </summary>
-	public ushort id;
+	public 802154ShortAddr id;
 
 	/// <summary>
 	/// The phy of the child

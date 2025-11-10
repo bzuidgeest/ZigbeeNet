@@ -9,7 +9,7 @@ public enum ZigbeeMultiPhyNwkConfig : byte
 	/// <summary>
 	/// Enable broadcast support on Routers
 	/// </summary>
-    SL_ZIGBEE_BROADCAST_SUPPORT = 0x01
+		SL_ZIGBEE_BROADCAST_SUPPORT = 0x01
 }
 
 #endif

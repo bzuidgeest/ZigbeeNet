@@ -15,7 +15,7 @@ public struct ZigbeeGpProxyTableEntry
 	/// <summary>
 	/// Internal status of the proxy table entry.
 	/// </summary>
-	public byte status;
+	public ZigbeeGpProxyTableEntryStatus status;
 
 	/// <summary>
 	/// The tunneling options (this contains both options and extendedOptions from the spec).
@@ -30,7 +30,7 @@ public struct ZigbeeGpProxyTableEntry
 	/// <summary>
 	/// The assigned alias for the GPD.
 	/// </summary>
-	public ushort assignedAlias;
+	public 802154ShortAddr assignedAlias;
 
 	/// <summary>
 	/// The security options field.
@@ -40,7 +40,7 @@ public struct ZigbeeGpProxyTableEntry
 	/// <summary>
 	/// The security frame counter of the GPD.
 	/// </summary>
-	public uint gpdSecurityFrameCounter;
+	public ZigbeeGpSecurityFrameCounter gpdSecurityFrameCounter;
 
 	/// <summary>
 	/// The key to use for GPD.

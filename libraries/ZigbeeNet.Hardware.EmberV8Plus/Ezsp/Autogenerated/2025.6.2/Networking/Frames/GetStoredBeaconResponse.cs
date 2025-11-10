@@ -38,10 +38,10 @@ public class GetStoredBeaconResponse : EzspFrameResponseV8Plus
 		GetStoredBeaconResponse frame = new GetStoredBeaconResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Beacon = /* TODO: Implement parsing for type sl_zigbee_beacon_data_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.Beacon = MemoryMarshal.Read<ZigbeeBeaconData>(frameBytes.Slice(index, 22));
+		index += 22;
 
 		return frame;
 	}
