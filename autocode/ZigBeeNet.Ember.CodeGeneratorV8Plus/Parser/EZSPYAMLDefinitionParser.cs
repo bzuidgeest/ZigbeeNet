@@ -25,15 +25,13 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         private readonly ILogger<EZSPYAMLDefinitionParser> _logger;
         private readonly ApplicationSettings _settings;
         private string _versionName = string.Empty;
-        private readonly FrameDefinitionProcessorService _frameDefinitionProcessorService;
         private readonly TypeMapperService _typeMapperService;
         private readonly IServiceProvider _serviceProvider;
 
-        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationSettings settings, FrameDefinitionProcessorService frameDefinitionProcessorService, TypeMapperService typeMapperService)
+        public EZSPYAMLDefinitionParser(ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationSettings settings, TypeMapperService typeMapperService)
         {
             _logger = loggerFactory.CreateLogger<EZSPYAMLDefinitionParser>();
             _settings = settings;
-            _frameDefinitionProcessorService = frameDefinitionProcessorService;
             _typeMapperService = typeMapperService;
             _serviceProvider = serviceProvider;
         }
@@ -41,6 +39,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         public void Process(string versionDir, string definitionPath, string versionName)
         {
             _versionName = versionName;
+
+            
 
             // Read numeric constants from header file if they exist
             foreach (var headerFile in Directory.GetFiles(versionDir, "*.h"))
@@ -69,6 +69,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 }
             }
 
+            
 
             try
             {
@@ -81,7 +82,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 {
                     var sections = deserializer.Deserialize<List<EzspSection>>(definitionFileReader);
 
-
+                    // add some other common constants
+                    ;
+                    MapCConstants.AddConstantMapping("SL_ZIGBEE_COUNTER_TYPE_COUNT", sections.Single(x => x.Name == "Common").Enums.Single(x => x.Name == "sl_zigbee_counter_type_t").Items.Single(x => x.Name == "SL_ZIGBEE_COUNTER_TYPE_COUNT").Value);
 
                     if (sections == null || sections.Count == 0)
                     {
@@ -100,6 +103,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                         SimpleTypeDefinitionProcessorService simpleTypeDefinitionProcessorService = _serviceProvider.GetRequiredService<SimpleTypeDefinitionProcessorService>();
                         EnumDefinitionProcessorService enumDefinitionProcessorService = _serviceProvider.GetRequiredService<EnumDefinitionProcessorService>();
+                        ComplexTypeDefinitionProcessorService complexTypeDefinitionProcessorService = _serviceProvider.GetRequiredService<ComplexTypeDefinitionProcessorService>();
+                        FrameDefinitionProcessorService frameDefinitionProcessorService = _serviceProvider.GetRequiredService<FrameDefinitionProcessorService>();
 
                         string sanitizedSectionName = Sanitize.SectionName(section.Name);
 
@@ -139,47 +144,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 complexCount++;
                                 ComplexTypedefDefinition complexTypedefDefinition = (ComplexTypedefDefinition)typedef.Definition;
 
-                                string complexTypeContent = ComplexTypeDefinitionProcessor.ProcessComplexTypeDefinition(_logger, sanitizedSectionName, typedef);
-
-                                bool isVariableLengthStruct = complexTypedefDefinition.Fields.Any(field => field.Type.Contains('[') == true && field.Type.GetArrayDefinitionSize() == -1);
-                                int typeSizeInBytes = -1;
-
-                                if (isVariableLengthStruct == false)
-                                {
-                                    typeSizeInBytes = (typedef.Definition as ComplexTypedefDefinition)!.Fields.Sum(field =>
-                                    {
-                                        TypeMapping? fieldTypeMapping = _typeMapperService.GetTypeMapping(field.Type.GetArrayDefinitionBaseType());
-                                        if (fieldTypeMapping is null)
-                                        {
-                                            _logger.LogError("No type mapping found for field type {type} of field {field} in complex type {complexType} in section {section}, cannot finish",
-                                                field.Type, field.Name, typedef.Name, section.Name);
-                                            return 0;
-                                        }
-                                        else if (fieldTypeMapping.HasValue && field.Type.EndsWith(']') == true)
-                                        {
-                                            return fieldTypeMapping.Value.CType.SizeInBytes * field.Type.GetArrayDefinitionSize();
-                                        }
-                                        else
-                                        {
-                                            return fieldTypeMapping?.CType.SizeInBytes ?? 0;
-                                        }
-                                    });
-                                }
-                                _typeMapperService.AddTypeMapping(
-                                    new CType(typedef.Name, 0, typedef.Description)
-                                    {
-                                        IsStruct = true,
-                                        SizeInBytes = typeSizeInBytes,
-                                        IsVariableLengthStruct = isVariableLengthStruct,
-                                    },
-                                    new CSharpType(Sanitize.TypeName(typedef.Name))
-                                    {
-                                        IsStruct = true,
-                                        Namespace = $"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types",
-                                    }
-                                );
-
-                                SaveComplexTypeFile(section.Name, Sanitize.StructureName(typedef.Name), complexTypeContent);
+                                complexTypeDefinitionProcessorService.ProcessComplexTypeDefinition(section.Name, typedef);
                             }
                         }
                         #endregion
@@ -201,8 +166,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     frameDefinition.CommandArguments?.Count ?? 0,
                                     frameDefinition.ResponseArguments?.Count ?? 0);
 
-                                string frameRequestContent = _frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
-                                string frameResponseContent = _frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
+                                string frameRequestContent = frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
+                                string frameResponseContent = frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
 
                                 string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..];
                                 string classNameResponse = className + "Response";

@@ -49,6 +49,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                     services.AddTransient<FileService>();
                     services.AddTransient<EnumDefinitionProcessorService>();
                     services.AddTransient<SimpleTypeDefinitionProcessorService>();
+                    services.AddTransient<ComplexTypeDefinitionProcessorService>();
                     services.AddTransient<FrameDefinitionProcessorService>();
                     services.AddHostedService<Worker>();
                     services.AddTransient<EZSPDefinitionsProcessor>();
@@ -120,6 +121,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
         {
             try
             {
+               
+
+
                 // Find all version folders in Resources directory
                 // Look for Resources relative to the project directory
                 string projectDir = Directory.GetCurrentDirectory();

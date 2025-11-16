@@ -27,13 +27,16 @@ public class ReadCountersResponse : EzspFrameResponseV8Plus
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>
 	// Array field with symbolic size: SL_ZIGBEE_COUNTER_TYPE_COUNT
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
 	public ushort[] Values;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReadCountersResponse frame = new ReadCountersResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Values = 
+		frame.Values = MemoryMarshal.Cast<byte, ushort>(frameBytes.Slice(index, 80)).ToArray();
+		index += 80;
+
 		return frame;
 	}
 }

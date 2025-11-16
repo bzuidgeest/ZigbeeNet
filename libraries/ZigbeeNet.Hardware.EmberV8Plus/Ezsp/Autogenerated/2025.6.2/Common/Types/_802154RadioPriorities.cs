@@ -10,7 +10,7 @@
 
 
 /// <summary>
-/// Metadata for APS link keys.
+/// Scheduler priorities for radio operations
 /// </summary>
 
 using System.Runtime.InteropServices;
@@ -19,27 +19,32 @@ using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct ZigbeeSecManApsKeyMetadata
+public struct _802154RadioPriorities
 {
 	/// <summary>
-	/// Bitmask of key properties
+	/// The priority of a Zigbee RX operation while not receiving a packet
 	/// </summary>
-	public Zigbeekeystructbitmask bitmask;
+	public byte background_rx;
 
 	/// <summary>
-	/// Outgoing frame counter.
+	/// Starting priority of a Zigbee TX operation. The first transmit of the packet, before retries, uses this priority
 	/// </summary>
-	public uint outgoing_frame_counter;
+	public byte min_tx_priority;
 
 	/// <summary>
-	/// Incoming frame counter.
+	/// The increase in TX priority (which is a decrement in value) for each retry
 	/// </summary>
-	public uint incoming_frame_counter;
+	public byte tx_step;
 
 	/// <summary>
-	/// Remaining lifetime (for transient keys).
+	/// Maximum priority of a Zigbee TX operation. Retried messages have priorities bumped by tx_step, up to a maximum of max_tx_priority
 	/// </summary>
-	public ushort ttl_in_seconds;
+	public byte max_tx_priority;
+
+	/// <summary>
+	/// The priority of a Zigbee RX operation while receiving a packet
+	/// </summary>
+	public byte active_rx;
 
 }
 

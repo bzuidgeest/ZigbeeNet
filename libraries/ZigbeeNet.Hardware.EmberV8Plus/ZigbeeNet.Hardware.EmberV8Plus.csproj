@@ -34,6 +34,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MyStruct.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
 
@@ -46,5 +50,9 @@
     <Folder Include="Ezsp\Frames\" />
     <Folder Include="Ezsp\Structures\" />
     <Folder Include="Ezsp\Types\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="MyStruct.cs" />
   </ItemGroup>
 </Project>

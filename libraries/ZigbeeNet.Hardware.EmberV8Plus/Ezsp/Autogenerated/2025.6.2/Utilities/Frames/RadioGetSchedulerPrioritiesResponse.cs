@@ -33,7 +33,7 @@ public class RadioGetSchedulerPrioritiesResponse : EzspFrameResponseV8Plus
 		RadioGetSchedulerPrioritiesResponse frame = new RadioGetSchedulerPrioritiesResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Priorities = MemoryMarshal.Read<802154RadioPriorities>(frameBytes.Slice(index, 5));
+		frame.Priorities = MemoryMarshal.Read<_802154RadioPriorities>(frameBytes.Slice(index, 5));
 		index += 5;
 
 		return frame;

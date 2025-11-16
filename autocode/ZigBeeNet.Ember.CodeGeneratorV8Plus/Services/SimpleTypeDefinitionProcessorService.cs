@@ -78,6 +78,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                 if (baseTypeMapping is not null)
                 {
                     typeSizeInBytes = baseTypeMapping.Value.CType.SizeInBytes;
+                    cSharpTypeName = baseTypeMapping.Value.CSharpType.Name;
                 }
             }
 

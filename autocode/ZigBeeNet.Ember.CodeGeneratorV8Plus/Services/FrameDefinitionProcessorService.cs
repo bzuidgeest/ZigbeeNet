@@ -264,7 +264,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             {
                                 // Array size is a symbolic constant 
                                 sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
-                                //sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
+                                if (frameDefinition.ResponseArguments.Any(a => a.Name == arraySize) == true)
+                                {
+                                    //_logger.LogWarning("Symbolic array size {arraySize} for argument {argName} in frame {commandName} does not match any other argument names", arraySize, arg.Name, frameDefinition.CommandName);
+                                }
+                                else if (string.IsNullOrEmpty(MapCConstants.MapConstant(arraySize)) == false)
+                                {
+                                    sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
+                                }
                                 sb.AppendLine($"\tpublic {santizedTypeName}[] {Sanitize.PropertyName(arg.Name)};");
                             }
                         }
@@ -312,8 +319,20 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 //return string.Empty;
                             }
                             int arraySize = arg.Type.GetArrayDefinitionSize();
+                            string arrayLengthSymbolicSize = string.Empty;
+
+                            // if we have a symbolic size, try to map it to a constant
+                            if (arraySize == -1)
+                            {
+                                arrayLengthSymbolicSize = arg.Type.GetArrayDefinitionSymbolicSize();
+                                if (string.IsNullOrEmpty(MapCConstants.MapConstant(arrayLengthSymbolicSize)) == false)
+                                {
+                                    arraySize = int.Parse(MapCConstants.MapConstant(arrayLengthSymbolicSize));
+                                }
+                            }
+
+
                             bool isVariableLengthArray = (arraySize == -1);
-                            string arrayLengthSymbolicSize = arg.Type.GetArrayDefinitionSymbolicSize();
 
                             // todo incomplete - need code for different primitives.
                             //                    public static class SpanExtensions

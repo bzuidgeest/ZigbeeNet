@@ -102,11 +102,17 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
                 var pascalCased = string.Concat(parts.Select(part =>
                     part.Length > 0 ? char.ToUpper(part[0]) + part[1..].ToLower() : ""));
 
+                if (char.IsDigit(pascalCased[0]) == true)
+                {
+                    pascalCased = "_" + pascalCased;
+                }
+
                 // Check if reserved keyword and prefix with @ if needed
                 if (IsReservedKeyword(typeName) == true)
                 {
                     pascalCased = "@" + pascalCased;
                 }
+
                 return pascalCased;
             }
         }

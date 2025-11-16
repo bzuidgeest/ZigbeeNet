@@ -33,6 +33,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
 
         public void AddTypeMapping(CType cType, CSharpType cSharpType)
         {
+            // Ensure C# type name does not start with a digit
+            if (char.IsDigit(cSharpType.Name[0]) == true)
+            {
+                cSharpType.Name = "_" + cSharpType.Name;
+            }
+
             if (_typeMappings.TryAdd(cType.Name, new TypeMapping(cType, cSharpType)) == true)
 
             {
