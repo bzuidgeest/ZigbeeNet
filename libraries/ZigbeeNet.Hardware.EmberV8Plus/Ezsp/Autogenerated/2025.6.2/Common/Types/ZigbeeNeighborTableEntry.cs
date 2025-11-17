@@ -13,7 +13,9 @@
 /// A neighbor table entry stores information about the reliability of RF links to and from neighboring nodes.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -50,7 +52,7 @@ public struct ZigbeeNeighborTableEntry
 	/// The 8 byte EUI64 of the neighbor.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] longId;
+	public byte[] longId;
 
 }
 

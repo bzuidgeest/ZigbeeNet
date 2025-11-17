@@ -26,7 +26,7 @@ public class InvalidCommandResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The reason why the command was invalid.
     /// </summary>
-    public ZigbeeEzspStatus Reason { get; set; }
+	public ZigbeeEzspStatus Reason { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

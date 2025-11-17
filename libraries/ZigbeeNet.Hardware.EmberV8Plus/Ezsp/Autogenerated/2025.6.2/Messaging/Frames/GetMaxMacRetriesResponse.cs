@@ -26,7 +26,7 @@ public class GetMaxMacRetriesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Max MAC retries
     /// </summary>
-    public byte Retries { get; set; }
+	public byte Retries { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

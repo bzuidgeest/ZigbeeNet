@@ -26,12 +26,12 @@ public class RemoteDeleteBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The index of the binding whose deletion was requested.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// SL_STATUS_OK if the binding was removed from the table and any other status if not.
     /// </summary>
-    public Status PolicyDecision { get; set; }
+	public Status PolicyDecision { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

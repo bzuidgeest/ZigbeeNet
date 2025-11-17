@@ -26,7 +26,7 @@ public class SecManExportTransientKeyByIndexRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to export from.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

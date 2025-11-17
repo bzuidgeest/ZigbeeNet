@@ -13,7 +13,9 @@
 /// Scheduler priorities for radio operations
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;

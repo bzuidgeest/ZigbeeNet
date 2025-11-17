@@ -26,12 +26,12 @@ public class GetExtendedValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which extended value ID to read.
     /// </summary>
-    public ZigbeeEzspExtendedValueId valueId { get; set; }
+	public ZigbeeEzspExtendedValueId valueId { get; set; }
 
     /// <summary>
     /// Identifies which characteristics of the extended value ID to read. These are specific to the value being read.
     /// </summary>
-    public uint characteristics { get; set; }
+	public uint characteristics { get; set; }
 
 }
 

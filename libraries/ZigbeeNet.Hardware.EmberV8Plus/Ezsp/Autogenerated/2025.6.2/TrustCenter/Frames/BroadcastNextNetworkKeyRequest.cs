@@ -26,7 +26,7 @@ public class BroadcastNextNetworkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// An optional pointer to a 16-byte encryption key (SL_ZIGBEE_ENCRYPTION_KEY_SIZE). An all zero key may be passed in, which will cause the stack to randomly generate a new key.
     /// </summary>
-    public ZigbeeKeyData key { get; set; }
+	public ZigbeeKeyData key { get; set; }
 
 }
 

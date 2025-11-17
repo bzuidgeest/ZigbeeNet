@@ -26,7 +26,7 @@ public class StackStatusHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Stack status
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

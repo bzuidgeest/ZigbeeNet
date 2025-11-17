@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,12 +27,12 @@ public class GpSinkTableSetEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the requested sink table entry.
     /// </summary>
-    public byte sinkIndex { get; set; }
+	public byte sinkIndex { get; set; }
 
     /// <summary>
     /// An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the sink entry to be updated.
     /// </summary>
-    public ZigbeeGpSinkTableEntry entry { get; set; }
+	public ZigbeeGpSinkTableEntry entry { get; set; }
 
 }
 

@@ -19,7 +19,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 public class SetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus
 {
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,7 +26,7 @@ public class GetEndpointClusterResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ID of the requested cluster.
     /// </summary>
-    public ushort EndpointCluster { get; set; }
+	public ushort EndpointCluster { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

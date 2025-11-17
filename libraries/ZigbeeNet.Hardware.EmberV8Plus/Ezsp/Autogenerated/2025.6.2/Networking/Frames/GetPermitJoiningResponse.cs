@@ -26,7 +26,7 @@ public class GetPermitJoiningResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether the current network permits joining.
     /// </summary>
-    public bool JoiningPermitted { get; set; }
+	public bool JoiningPermitted { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

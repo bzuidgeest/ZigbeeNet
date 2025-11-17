@@ -26,7 +26,7 @@ public class WriteAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure.
     /// </summary>
-    public ZigbeeAfStatus AfStatus { get; set; }
+	public ZigbeeAfStatus AfStatus { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

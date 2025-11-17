@@ -26,7 +26,7 @@ public class GetZllSecondaryChannelMaskResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The secondary ZLL channel mask
     /// </summary>
-    public uint ZllSecondaryChannelMask { get; set; }
+	public uint ZllSecondaryChannelMask { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

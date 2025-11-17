@@ -26,7 +26,7 @@ public class RadioGetSchedulerPrioritiesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current priorities.
     /// </summary>
-    public _802154RadioPriorities Priorities { get; set; }
+	public _802154RadioPriorities Priorities { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

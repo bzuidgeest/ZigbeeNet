@@ -26,7 +26,7 @@ public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameRes
     /// <summary>
     /// Whether or not a rejoining neighbor&apos;s incoming FC gets reset (true or false).
     /// </summary>
-    public bool GetsReset { get; set; }
+	public bool GetsReset { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

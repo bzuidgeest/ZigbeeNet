@@ -13,7 +13,9 @@
 /// Context for Zigbee Security Manager operations.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,7 +26,7 @@ public struct ZigbeeSecManContext
 	/// <summary>
 	/// The type of key being referenced.
 	/// </summary>
-	public Zigbeesecmankeytype core_key_type;
+	public ZigbeeSecManKeyType core_key_type;
 
 	/// <summary>
 	/// The index of the referenced key.
@@ -34,13 +36,13 @@ public struct ZigbeeSecManContext
 	/// <summary>
 	/// The type of key derivation operation to perform on a key.
 	/// </summary>
-	public Zigbeesecmanderivedkeytype derived_type;
+	public ZigbeeSecManDerivedKeyType derived_type;
 
 	/// <summary>
 	/// The EUI64 associated with this key.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] eui64;
+	public byte[] eui64;
 
 	/// <summary>
 	/// Multi-network index.
@@ -50,7 +52,7 @@ public struct ZigbeeSecManContext
 	/// <summary>
 	/// Flag bitmask.
 	/// </summary>
-	public Zigbeesecmanflags flags;
+	public ZigbeeSecManFlags flags;
 
 	/// <summary>
 	/// Algorithm to use with this key (for PSA APIs)

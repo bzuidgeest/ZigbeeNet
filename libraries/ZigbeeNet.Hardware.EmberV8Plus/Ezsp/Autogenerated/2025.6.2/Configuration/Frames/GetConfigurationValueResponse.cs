@@ -26,12 +26,12 @@ public class GetConfigurationValueResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;configId&lt;/i&gt;.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The configuration value.
     /// </summary>
-    public ushort Value { get; set; }
+	public ushort Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

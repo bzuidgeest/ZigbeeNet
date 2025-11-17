@@ -26,7 +26,7 @@ public class UpdateTcLinkKeyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure of sending the request. If the Node Descriptor is successfully transmitted, sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will be called at a later time with a final status result.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

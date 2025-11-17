@@ -26,7 +26,7 @@ public class MaxChildCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum number of children.
     /// </summary>
-    public byte MaxChildCount { get; set; }
+	public byte MaxChildCount { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

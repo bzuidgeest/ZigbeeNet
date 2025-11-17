@@ -26,12 +26,13 @@ public class SetExtendedTimeoutRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address of the node for which the timeout is to be set.
     /// </summary>
-    public _802154LongAddr remoteEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] remoteEui64;
 
     /// <summary>
     /// true if the retry interval should be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval should be used.
     /// </summary>
-    public bool extendedTimeout { get; set; }
+	public bool extendedTimeout { get; set; }
 
 }
 

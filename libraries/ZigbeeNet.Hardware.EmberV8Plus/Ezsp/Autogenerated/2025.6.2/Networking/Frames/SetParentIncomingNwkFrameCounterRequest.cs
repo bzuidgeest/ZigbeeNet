@@ -19,7 +19,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 public class SetParentIncomingNwkFrameCounterRequest : EzspFrameRequestV8Plus
 {
-    public uint value { get; set; }
+	public uint value { get; set; }
 
 }
 

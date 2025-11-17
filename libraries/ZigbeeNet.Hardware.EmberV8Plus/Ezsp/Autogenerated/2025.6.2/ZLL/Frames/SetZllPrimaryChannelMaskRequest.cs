@@ -26,7 +26,7 @@ public class SetZllPrimaryChannelMaskRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>
-    public uint zllPrimaryChannelMask { get; set; }
+	public uint zllPrimaryChannelMask { get; set; }
 
 }
 

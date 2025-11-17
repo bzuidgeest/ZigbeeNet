@@ -26,7 +26,7 @@ public class GetMfgTokenResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte TokenDataLength { get; set; }
+	public byte TokenDataLength { get; set; }
 
     /// <summary>
     /// The manufacturing token data.

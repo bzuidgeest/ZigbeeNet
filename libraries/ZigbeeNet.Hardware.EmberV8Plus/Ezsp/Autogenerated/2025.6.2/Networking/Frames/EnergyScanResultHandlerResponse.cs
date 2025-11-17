@@ -26,12 +26,12 @@ public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The 802.15.4 channel number that was scanned.
     /// </summary>
-    public byte Channel { get; set; }
+	public byte Channel { get; set; }
 
     /// <summary>
     /// The maximum RSSI value found on the channel.
     /// </summary>
-    public sbyte MaxRssiValue { get; set; }
+	public sbyte MaxRssiValue { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

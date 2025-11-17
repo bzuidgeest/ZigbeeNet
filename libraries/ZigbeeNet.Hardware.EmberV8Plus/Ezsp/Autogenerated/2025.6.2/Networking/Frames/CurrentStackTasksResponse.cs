@@ -26,7 +26,7 @@ public class CurrentStackTasksResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// A bitmask of the stack&apos;s active tasks.
     /// </summary>
-    public ushort ActiveTasks { get; set; }
+	public ushort ActiveTasks { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

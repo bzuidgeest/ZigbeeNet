@@ -26,12 +26,12 @@ public class GetCurrentSecurityStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The security configuration in use by the stack.
     /// </summary>
-    public ZigbeeCurrentSecurityState State { get; set; }
+	public ZigbeeCurrentSecurityState State { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

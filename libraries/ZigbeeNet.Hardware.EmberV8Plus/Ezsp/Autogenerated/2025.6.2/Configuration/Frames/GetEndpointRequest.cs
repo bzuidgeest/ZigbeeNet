@@ -26,7 +26,7 @@ public class GetEndpointRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to retrieve the endpoint number for.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

@@ -26,7 +26,7 @@ public class EchoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;echo&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte EchoLength { get; set; }
+	public byte EchoLength { get; set; }
 
     /// <summary>
     /// The echo of the data.

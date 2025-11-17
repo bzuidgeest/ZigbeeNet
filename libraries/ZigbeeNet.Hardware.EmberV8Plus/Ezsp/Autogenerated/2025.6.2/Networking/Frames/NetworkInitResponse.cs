@@ -26,7 +26,7 @@ public class NetworkInitResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value that indicates one of the following: successful initialization, SL_STATUS_NOT_JOINED if the node is not part of a network, or the reason for failure.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

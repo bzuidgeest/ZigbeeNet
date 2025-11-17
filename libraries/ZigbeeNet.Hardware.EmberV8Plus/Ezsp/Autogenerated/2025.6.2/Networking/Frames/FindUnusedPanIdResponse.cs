@@ -26,7 +26,7 @@ public class FindUnusedPanIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The error condition that occurred during the scan. Value will be SL_STATUS_OK if there are no errors.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

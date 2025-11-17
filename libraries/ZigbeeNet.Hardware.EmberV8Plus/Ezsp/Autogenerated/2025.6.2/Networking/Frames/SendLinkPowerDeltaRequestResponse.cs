@@ -26,7 +26,7 @@ public class SendLinkPowerDeltaRequestResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating the success or failure of sending the request.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
@@ -26,17 +27,17 @@ public class SetTokenDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Key of the token in the token table for which data is to be set.
     /// </summary>
-    public uint token { get; set; }
+	public uint token { get; set; }
 
     /// <summary>
     /// Index in case of the indexed token.
     /// </summary>
-    public uint index { get; set; }
+	public uint index { get; set; }
 
     /// <summary>
     /// Token Data
     /// </summary>
-    public ZigbeeTokenData tokenData { get; set; }
+	public ZigbeeTokenData tokenData { get; set; }
 
 }
 

@@ -13,7 +13,9 @@
 /// A structure containing a child node&apos;s data.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -25,12 +27,12 @@ public struct ZigbeeChildData
 	/// The EUI64 of the child
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] eui64;
+	public byte[] eui64;
 
 	/// <summary>
 	/// The node type of the child
 	/// </summary>
-	public Zigbeenodetype type;
+	public ZigbeeNodeType type;
 
 	/// <summary>
 	/// The short address of the child

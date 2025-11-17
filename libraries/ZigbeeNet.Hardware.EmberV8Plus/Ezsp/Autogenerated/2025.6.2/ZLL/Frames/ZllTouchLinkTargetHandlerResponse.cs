@@ -26,7 +26,7 @@ public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public ZigbeeZllNetwork NetworkInfo { get; set; }
+	public ZigbeeZllNetwork NetworkInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

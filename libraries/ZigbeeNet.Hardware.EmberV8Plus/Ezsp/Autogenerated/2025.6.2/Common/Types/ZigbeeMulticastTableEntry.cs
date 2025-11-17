@@ -13,7 +13,9 @@
 /// A multicast table entry indicates that a particular endpoint is a member of a particular multicast group. Only devices with an endpoint in a multicast group will receive messages sent to that multicast group.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;

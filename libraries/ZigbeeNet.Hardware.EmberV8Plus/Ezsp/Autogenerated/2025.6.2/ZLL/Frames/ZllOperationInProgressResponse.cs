@@ -26,7 +26,7 @@ public class ZllOperationInProgressResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL operation in progress?
     /// </summary>
-    public bool ZllOperationInProgress { get; set; }
+	public bool ZllOperationInProgress { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

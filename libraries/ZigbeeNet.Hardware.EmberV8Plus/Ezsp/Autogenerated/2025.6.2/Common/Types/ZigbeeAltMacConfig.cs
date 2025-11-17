@@ -13,7 +13,9 @@
 /// Defines alternate MAC configuration parameters.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -29,8 +31,9 @@ public struct ZigbeeAltMacConfig
 	/// <summary>
 	/// To register the transmit callback. Called when there is packet to transmit.
 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = )]
-	public [] macTransmit;
+	// Note: MacTransmitCallback is defined as a function pointer, used only locally, not serialized.
+	[NonSerialized]
+	public MacTransmitCallback macTransmit;
 
 }
 

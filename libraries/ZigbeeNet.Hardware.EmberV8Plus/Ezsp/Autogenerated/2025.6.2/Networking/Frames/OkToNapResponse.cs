@@ -27,7 +27,7 @@ public class OkToNapResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the application may sleep but the stack may be expecting incoming messages.
     /// </summary>
-    public bool Value { get; set; }
+	public bool Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

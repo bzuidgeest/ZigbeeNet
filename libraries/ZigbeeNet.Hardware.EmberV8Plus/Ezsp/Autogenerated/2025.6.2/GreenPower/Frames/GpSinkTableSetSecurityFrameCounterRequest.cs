@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,12 +27,12 @@ public class GpSinkTableSetSecurityFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to the Sink table
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
     /// <summary>
     /// Security Frame Counter
     /// </summary>
-    public uint sfc { get; set; }
+	public uint sfc { get; set; }
 
 }
 

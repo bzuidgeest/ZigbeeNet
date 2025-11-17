@@ -26,7 +26,7 @@ public class PendingAckedMessagesResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if there is a pending message for this network in the APS retry queue, false if not.
     /// </summary>
-    public bool PendingMessages { get; set; }
+	public bool PendingMessages { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

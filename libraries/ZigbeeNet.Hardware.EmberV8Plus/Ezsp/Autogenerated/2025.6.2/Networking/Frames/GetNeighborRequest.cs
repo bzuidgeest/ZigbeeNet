@@ -26,7 +26,7 @@ public class GetNeighborRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the neighbor of interest. Neighbors are stored in ascending order by node id, with all unused entries at the end of the table.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

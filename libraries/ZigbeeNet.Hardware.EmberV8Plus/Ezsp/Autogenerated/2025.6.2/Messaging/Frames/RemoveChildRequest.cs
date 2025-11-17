@@ -26,7 +26,8 @@ public class RemoveChildRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The long ID of the node.
     /// </summary>
-    public _802154LongAddr childEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] childEui64;
 
 }
 

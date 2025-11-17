@@ -13,7 +13,9 @@
 /// Metadata for APS link keys.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,7 +26,7 @@ public struct ZigbeeSecManApsKeyMetadata
 	/// <summary>
 	/// Bitmask of key properties
 	/// </summary>
-	public Zigbeekeystructbitmask bitmask;
+	public ZigbeeKeyStructBitmask bitmask;
 
 	/// <summary>
 	/// Outgoing frame counter.

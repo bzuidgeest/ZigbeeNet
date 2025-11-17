@@ -26,7 +26,7 @@ public class ResetRejoiningNeighborsFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Whether or not a neighbor&apos;s incoming FC should be reset upon rejoining (true or false).
     /// </summary>
-    public bool reset { get; set; }
+	public bool reset { get; set; }
 
 }
 

@@ -26,17 +26,17 @@ public class GetXncpInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the NCP is running the XNCP library. SL_STATUS_INVALID_STATE otherwise.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The manufactured ID the user has defined in the XNCP application.
     /// </summary>
-    public ushort ManufacturerId { get; set; }
+	public ushort ManufacturerId { get; set; }
 
     /// <summary>
     /// The version number of the XNCP application.
     /// </summary>
-    public ushort VersionNumber { get; set; }
+	public ushort VersionNumber { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

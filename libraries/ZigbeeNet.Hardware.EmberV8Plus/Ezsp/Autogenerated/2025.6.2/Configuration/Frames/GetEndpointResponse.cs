@@ -26,7 +26,7 @@ public class GetEndpointResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Endpoint number at the index.
     /// </summary>
-    public byte Endpoint { get; set; }
+	public byte Endpoint { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

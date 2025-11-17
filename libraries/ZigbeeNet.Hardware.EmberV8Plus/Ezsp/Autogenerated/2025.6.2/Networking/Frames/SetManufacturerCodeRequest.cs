@@ -26,7 +26,7 @@ public class SetManufacturerCodeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The manufacturer code for the local node.
     /// </summary>
-    public ushort code { get; set; }
+	public ushort code { get; set; }
 
 }
 

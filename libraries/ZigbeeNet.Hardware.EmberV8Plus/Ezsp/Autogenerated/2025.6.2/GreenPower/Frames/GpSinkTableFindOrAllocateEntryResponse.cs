@@ -27,7 +27,7 @@ public class GpSinkTableFindOrAllocateEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An index of found or allocated sink or 0xFF if failed.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -46,7 +46,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
             }
 
             sb.AppendLine();
+            sb.AppendLine("using System;");
             sb.AppendLine("using System.Runtime.InteropServices;");
+            sb.AppendLine("using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;");
             sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;");
             if (sectionName != "Common")
             {
@@ -90,20 +92,18 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                     
                     TypeMapping? csharpBaseType = _typeMapperService.GetTypeMapping(field.Type);
                     
-                    string santizedTypeName = Sanitize.TypeName(csharpBaseType?.CSharpType.Name);
-
                     // Check if array size is numeric (compile-time constant)
                     if (int.TryParse(arraySize, out _))
                     {
                         sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {fieldName};");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {fieldName};");
                     }
                     else
                     {
                         // Array size is a symbolic constant - use a comment and skip
                         sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
                         sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {fieldName};");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {fieldName};");
                     }
                 }
                 // Check if the type contains array notation (e.g., uint8_t[8])
@@ -114,8 +114,6 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                     string baseType = field.Type[..typeBracketIndex];
                     string arrayPart = field.Type[typeBracketIndex..];
                     TypeMapping? csharpBaseType = _typeMapperService.GetTypeMapping(baseType);
-                    string santizedTypeName = Sanitize.TypeName(csharpBaseType?.CSharpType.Name);
-
 
                     // Extract array size from [N] format
                     string arraySize = arrayPart.Trim('[', ']');
@@ -124,36 +122,36 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                     if (int.TryParse(arraySize, out _))
                     {
                         sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {field.Name};");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {field.Name};");
                     }
                     else
                     {
                         // Array size is a symbolic constant - use a comment and skip
                         sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
                         sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {field.Name};");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {field.Name};");
                     }
                 }
                 else
                 {
                     // Simple scalar type
-                    TypeMapping? baseType = _typeMapperService.GetTypeMapping(field.Type);
-                    string santizedTypeName = Sanitize.TypeName(baseType?.CSharpType.Name);
+                    TypeMapping? csharpBaseType = _typeMapperService.GetTypeMapping(field.Type);
                     
-                    if (baseType?.CType.IsArray == false)
+                    if (csharpBaseType?.CType.IsArray == true)
+                    {
+                        sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {csharpBaseType?.CType.ArrayLength})]");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {field.Name};");
+                        
+                    }
+                    else
                     {
                         // Special case: if the field type is "MacTransmitCallback", 
                         if (field.Type == "MacTransmitCallback")
                         {
-                            sb.AppendLine($"\t// Note: MacTransmitCallback is defined as a function pointer, used only locally, not serialized.");
-                            sb.AppendLine($"[NonSerialized]");
+                            sb.AppendLine("\t// Note: MacTransmitCallback is defined as a function pointer, used only locally, not serialized.");
+                            sb.AppendLine("\t[NonSerialized]");
                         }
-                        sb.AppendLine($"\tpublic {santizedTypeName} {field.Name};");
-                    }
-                    else
-                    {
-                        sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {baseType?.CType.ArrayLength})]");
-                        sb.AppendLine($"\tpublic {santizedTypeName}[] {field.Name};");
+                        sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name ?? field.Type} {field.Name};");
                     }
                     sb.AppendLine();
                 }

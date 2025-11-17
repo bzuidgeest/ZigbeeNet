@@ -26,7 +26,7 @@ public class GetCurrentDutyCycleRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Number of devices to retrieve consumed duty cycle.
     /// </summary>
-    public byte maxDevices { get; set; }
+	public byte maxDevices { get; set; }
 
 }
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,22 +27,22 @@ public class GpSinkCommissionRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// commissioning options
     /// </summary>
-    public byte options { get; set; }
+	public byte options { get; set; }
 
     /// <summary>
     /// gpm address for security.
     /// </summary>
-    public ushort gpmAddrForSecurity { get; set; }
+	public ushort gpmAddrForSecurity { get; set; }
 
     /// <summary>
     /// gpm address for pairing.
     /// </summary>
-    public ushort gpmAddrForPairing { get; set; }
+	public ushort gpmAddrForPairing { get; set; }
 
     /// <summary>
     /// sink endpoint.
     /// </summary>
-    public byte sinkEndpoint { get; set; }
+	public byte sinkEndpoint { get; set; }
 
 }
 

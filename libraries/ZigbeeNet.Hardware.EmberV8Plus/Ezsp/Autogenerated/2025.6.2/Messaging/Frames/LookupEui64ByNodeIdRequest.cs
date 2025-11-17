@@ -26,7 +26,7 @@ public class LookupEui64ByNodeIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short ID of the node to look up.
     /// </summary>
-    public _802154ShortAddr nodeId { get; set; }
+	public ushort nodeId { get; set; }
 
 }
 

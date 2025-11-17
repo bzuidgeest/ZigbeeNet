@@ -26,7 +26,7 @@ public class SetNumBeaconsToStoreRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The number of beacons to cache when scanning.
     /// </summary>
-    public byte numBeacons { get; set; }
+	public byte numBeacons { get; set; }
 
 }
 

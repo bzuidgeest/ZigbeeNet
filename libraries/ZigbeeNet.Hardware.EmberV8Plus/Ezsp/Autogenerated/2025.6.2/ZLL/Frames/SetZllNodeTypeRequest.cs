@@ -26,7 +26,7 @@ public class SetZllNodeTypeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node type to be set.
     /// </summary>
-    public ZigbeeNodeType nodeType { get; set; }
+	public ZigbeeNodeType nodeType { get; set; }
 
 }
 

@@ -26,7 +26,8 @@ public class MfgTestSendManufacturingStringRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The 16-byte manufacturing string.
     /// </summary>
-    public ZigbeeManufacturingString newString { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+	public byte[] newString;
 
 }
 

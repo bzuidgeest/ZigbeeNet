@@ -34,6 +34,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         /// <returns>Generated C# request class code as a string.</returns>
         internal string ProcessFrameDefinitionForRequest(string section, FrameDefinition frameDefinition)
         {
+            string sanitizedSectionName = Sanitize.SectionName(section);
+
             try
             {
                 if (frameDefinition == null)
@@ -65,11 +67,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;");
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;");
                 sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;");
+                if (_typeMapper.SectionTypeMappingExists(sanitizedSectionName) == true)
+                {
+                    sb.AppendLine($"using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types;");
+                }
                 sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.AppendLine();
 
                 // Generate namespace
-                string sanitizedSectionName = Sanitize.SectionName(section);
                 sb.AppendLine($"namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Frames;");
                 sb.AppendLine();
 
@@ -110,32 +115,41 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             string fieldArrayType = arg.Type![..typeBracketIndex];
                             string arrayPart = arg.Type[typeBracketIndex..];
                             string arraySize = arrayPart.Trim('[', ']');
-                            cMapping csharpBaseType = MapCTypes.MapBaseCType(fieldArrayType);
-                            string santizedTypeName = Sanitize.TypeName(csharpBaseType.cSharpTypeName);
+                            TypeMapping? csharpBaseType = _typeMapper.GetTypeMapping(fieldArrayType);
+                            //string santizedTypeName = Sanitize.TypeName(csharpBaseType?.CSharpType.Name);
 
                             // Check if array size is numeric (compile-time constant)
                             if (int.TryParse(arraySize, out _))
                             {
                                 //sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name};");
                             }
                             else
                             {
                                 // Array size is a symbolic constant 
                                 sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
                                 //sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name};");
                             }
                         }
                         else
                         {
-                            cMapping csharpType = MapCTypes.MapBaseCType(arg.Type);
-                            string sanitizedTypeName = Sanitize.TypeName(csharpType.cSharpTypeName);
-                            if (char.IsDigit(sanitizedTypeName[0]) == true)
+                            TypeMapping? typeMapping = _typeMapper.GetTypeMapping(arg.Type);
+                            //string sanitizedTypeName = Sanitize.TypeName(typeMapping?.CSharpType.Name);
+                            //if (char.IsDigit(sanitizedTypeName[0]) == true)
+                            //{
+                            //    sanitizedTypeName = "_" + sanitizedTypeName;
+                            //}
+                            if (typeMapping?.CSharpType.IsArray == true)
                             {
-                                sanitizedTypeName = "_" + sanitizedTypeName;
+                                sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {typeMapping?.CSharpType.ArrayLength})]");
+                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name}[] {arg.Name};");
                             }
-                            sb.AppendLine($"    public {sanitizedTypeName} {arg.Name} {{ get; set; }}");
+                            else
+                            {
+                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name} {arg.Name} {{ get; set; }}");
+                            }
+                            
                             sb.AppendLine();
                         }
                     }
@@ -200,7 +214,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 if (_typeMapper.SectionTypeMappingExists(sanitizedSectionName) == true)
                 {
-                    sb.AppendLine("using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;");
+                    sb.AppendLine($"using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{sanitizedSectionName}.Types;");
                 }
                 sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.AppendLine();
@@ -246,19 +260,18 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             string fieldArrayType = arg.Type![..typeBracketIndex];
                             string arrayPart = arg.Type[typeBracketIndex..];
                             string arraySize = arrayPart.Trim('[', ']');
-                            cMapping csharpBaseType = MapCTypes.MapBaseCType(fieldArrayType);
-                            string santizedTypeName = Sanitize.TypeName(csharpBaseType.cSharpTypeName);
+                            TypeMapping? csharpBaseType = _typeMapper.GetTypeMapping(fieldArrayType);
 
-                            if (Char.IsDigit(santizedTypeName[0]) == true)
-                            {
-                                santizedTypeName = "_" + santizedTypeName;
-                            }
+                            //if (Char.IsDigit(santizedTypeName[0]) == true)
+                            //{
+                            //    santizedTypeName = "_" + santizedTypeName;
+                            //}
 
                             // Check if array size is numeric (compile-time constant)
                             if (int.TryParse(arraySize, out _))
                             {
                                 sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {Sanitize.PropertyName(arg.Name)};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.PropertyName(arg.Name)};");
                             }
                             else
                             {
@@ -272,18 +285,13 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 {
                                     sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
                                 }
-                                sb.AppendLine($"\tpublic {santizedTypeName}[] {Sanitize.PropertyName(arg.Name)};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.PropertyName(arg.Name)};");
                             }
                         }
                         else
                         {
-                            cMapping csharpType = MapCTypes.MapBaseCType(arg.Type);
-                            string sanitizedTypeName = Sanitize.TypeName(csharpType.cSharpTypeName);
-                            if (char.IsDigit(sanitizedTypeName[0]) == true)
-                            {
-                                sanitizedTypeName = "_" + sanitizedTypeName;
-                            }
-                            sb.AppendLine($"    public {sanitizedTypeName} {Sanitize.PropertyName(arg.Name)} {{ get; set; }}");
+                            TypeMapping? csharpBaseType = _typeMapper.GetTypeMapping(arg.Type);
+                            sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name} {Sanitize.PropertyName(arg.Name)} {{ get; set; }}");
                             sb.AppendLine();
                         }
                     }

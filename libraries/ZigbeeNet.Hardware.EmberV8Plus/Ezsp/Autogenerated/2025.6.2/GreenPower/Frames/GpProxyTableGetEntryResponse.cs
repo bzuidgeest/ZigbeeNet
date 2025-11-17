@@ -27,12 +27,12 @@ public class GpProxyTableGetEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// An sl_zigbee_gp_proxy_table_entry_t struct containing a copy of the requested proxy entry.
     /// </summary>
-    public ZigbeeGpProxyTableEntry Entry { get; set; }
+	public ZigbeeGpProxyTableEntry Entry { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

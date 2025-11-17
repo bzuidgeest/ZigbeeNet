@@ -26,7 +26,7 @@ public class MfgTestSendRebootCommandResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or failure of the command.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,32 +26,32 @@ public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The type of message sent.
     /// </summary>
-    public ZigbeeOutgoingMessageType Type { get; set; }
+	public ZigbeeOutgoingMessageType Type { get; set; }
 
     /// <summary>
     /// The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
     /// </summary>
-    public ushort IndexOrDestination { get; set; }
+	public ushort IndexOrDestination { get; set; }
 
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-    public ZigbeeApsFrame ApsFrame { get; set; }
+	public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
     /// </summary>
-    public ushort MessageTag { get; set; }
+	public ushort MessageTag { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte MessageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.

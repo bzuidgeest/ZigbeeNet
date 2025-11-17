@@ -26,17 +26,17 @@ public class ZllStartScanRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The range of channels to scan.
     /// </summary>
-    public uint channelMask { get; set; }
+	public uint channelMask { get; set; }
 
     /// <summary>
     /// The radio output power used for the scan requests.
     /// </summary>
-    public sbyte radioPowerForScan { get; set; }
+	public sbyte radioPowerForScan { get; set; }
 
     /// <summary>
     /// The node type of the local device.
     /// </summary>
-    public ZigbeeNodeType nodeType { get; set; }
+	public ZigbeeNodeType nodeType { get; set; }
 
 }
 

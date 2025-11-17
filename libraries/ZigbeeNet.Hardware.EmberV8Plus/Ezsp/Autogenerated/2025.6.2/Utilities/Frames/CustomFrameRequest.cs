@@ -26,7 +26,7 @@ public class CustomFrameRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the custom frame payload (maximum 119 bytes).
     /// </summary>
-    public byte payloadLength { get; set; }
+	public byte payloadLength { get; set; }
 
     /// <summary>
     /// The payload of the custom frame.

@@ -26,7 +26,7 @@ public class CounterRolloverHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Type of Counter
     /// </summary>
-    public ZigbeeCounterType Type { get; set; }
+	public ZigbeeCounterType Type { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

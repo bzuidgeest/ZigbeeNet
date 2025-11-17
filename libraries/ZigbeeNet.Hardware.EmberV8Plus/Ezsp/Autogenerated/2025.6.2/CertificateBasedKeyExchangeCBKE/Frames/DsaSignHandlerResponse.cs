@@ -26,12 +26,12 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the DSA signing operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte MessageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The message and attached which includes the original message and the appended signature.

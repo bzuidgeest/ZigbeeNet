@@ -13,7 +13,9 @@
 /// Incoming message Information
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -30,7 +32,7 @@ public struct ZigbeeRxPacketInfo
 	/// EUI64 of the sender of the message if the sender chose to this information in the message. The ::SL_ZIGBEE_APS_OPTION_SOURCE_EUI64 bit in the options field of the APS frame of the incoming message indicates that the EUI64 is present in the message.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] sender_long_id;
+	public byte[] sender_long_id;
 
 	/// <summary>
 	/// The index of the entry in the binding table that matches the sender of the message or 0xFF if there is no matching entry.

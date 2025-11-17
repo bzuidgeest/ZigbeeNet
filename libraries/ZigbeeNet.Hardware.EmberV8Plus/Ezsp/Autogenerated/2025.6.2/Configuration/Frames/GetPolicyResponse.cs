@@ -26,12 +26,12 @@ public class GetPolicyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the policy was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;policyId&lt;/i&gt;.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The current decision for the specified policy.
     /// </summary>
-    public ZigbeeEzspDecisionId DecisionId { get; set; }
+	public ZigbeeEzspDecisionId DecisionId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

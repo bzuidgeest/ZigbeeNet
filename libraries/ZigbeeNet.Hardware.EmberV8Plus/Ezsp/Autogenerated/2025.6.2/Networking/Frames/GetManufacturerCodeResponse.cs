@@ -26,7 +26,7 @@ public class GetManufacturerCodeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The manufacturer code for the local node.
     /// </summary>
-    public ushort Code { get; set; }
+	public ushort Code { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

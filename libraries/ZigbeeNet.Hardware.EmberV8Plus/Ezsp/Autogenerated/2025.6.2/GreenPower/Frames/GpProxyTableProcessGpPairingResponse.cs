@@ -27,7 +27,7 @@ public class GpProxyTableProcessGpPairingResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether a GP Pairing has been created or not.
     /// </summary>
-    public bool GpPairingAdded { get; set; }
+	public bool GpPairingAdded { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

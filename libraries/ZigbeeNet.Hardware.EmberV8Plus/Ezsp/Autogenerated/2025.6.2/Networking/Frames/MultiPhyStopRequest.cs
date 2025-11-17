@@ -26,7 +26,7 @@ public class MultiPhyStopRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.
     /// </summary>
-    public byte phyIndex { get; set; }
+	public byte phyIndex { get; set; }
 
 }
 

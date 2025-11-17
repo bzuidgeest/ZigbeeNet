@@ -26,12 +26,12 @@ public class SetMulticastTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of a multicast table entry
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
     /// <summary>
     /// The contents of the multicast entry.
     /// </summary>
-    public ZigbeeMulticastTableEntry value { get; set; }
+	public ZigbeeMulticastTableEntry value { get; set; }
 
 }
 

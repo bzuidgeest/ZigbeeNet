@@ -26,12 +26,12 @@ public class AesMmoHashResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the operation
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The updated hash context.
     /// </summary>
-    public ZigbeeAesMmoHashContext ReturnContext { get; set; }
+	public ZigbeeAesMmoHashContext ReturnContext { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,7 +26,7 @@ public class SetMacPollFailureWaitTimeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Time in milliseconds the device waits before retrying a data poll when a MAC level data poll fails for any reason.
     /// </summary>
-    public uint waitBeforeRetryIntervalMs { get; set; }
+	public uint waitBeforeRetryIntervalMs { get; set; }
 
 }
 

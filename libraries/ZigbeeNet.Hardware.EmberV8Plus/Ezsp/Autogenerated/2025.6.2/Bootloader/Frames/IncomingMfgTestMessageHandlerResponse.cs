@@ -26,12 +26,12 @@ public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of the incoming message. Currently, the only possibility is MFG_TEST_TYPE_ACK.
     /// </summary>
-    public byte MessageType { get; set; }
+	public byte MessageType { get; set; }
 
     /// <summary>
     /// The length of the incoming message.
     /// </summary>
-    public byte DataLength { get; set; }
+	public byte DataLength { get; set; }
 
     /// <summary>
     /// A pointer to the data received in the current message.

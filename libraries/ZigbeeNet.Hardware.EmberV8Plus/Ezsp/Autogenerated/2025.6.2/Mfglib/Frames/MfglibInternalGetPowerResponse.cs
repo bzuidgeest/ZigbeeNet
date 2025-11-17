@@ -26,7 +26,7 @@ public class MfglibInternalGetPowerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Power in units of dBm. Refer to radio data sheet for valid range.
     /// </summary>
-    public sbyte Power { get; set; }
+	public sbyte Power { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

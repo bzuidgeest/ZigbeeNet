@@ -26,12 +26,12 @@ public class FindUnusedPanIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The channels that will be scanned for available panIds.
     /// </summary>
-    public uint channelMask { get; set; }
+	public uint channelMask { get; set; }
 
     /// <summary>
     /// The duration of the procedure.
     /// </summary>
-    public byte duration { get; set; }
+	public byte duration { get; set; }
 
 }
 

@@ -26,22 +26,22 @@ public class SecManExportTransientKeyByIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of key export operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// Context struct for export operation.
     /// </summary>
-    public ZigbeeSecManContext Context { get; set; }
+	public ZigbeeSecManContext Context { get; set; }
 
     /// <summary>
     /// The exported key.
     /// </summary>
-    public ZigbeeSecManKey PlaintextKey { get; set; }
+	public ZigbeeSecManKey PlaintextKey { get; set; }
 
     /// <summary>
     /// Metadata about the key.
     /// </summary>
-    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
+	public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

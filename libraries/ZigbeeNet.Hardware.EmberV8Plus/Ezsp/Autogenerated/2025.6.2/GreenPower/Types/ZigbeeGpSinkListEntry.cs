@@ -13,7 +13,9 @@
 /// A sink list entry.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
@@ -31,7 +33,7 @@ public struct ZigbeeGpSinkListEntry
 	/// The EUI64 of the target sink.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] sinkEUI;
+	public byte[] sinkEUI;
 
 	/// <summary>
 	/// The short address of the target sink.

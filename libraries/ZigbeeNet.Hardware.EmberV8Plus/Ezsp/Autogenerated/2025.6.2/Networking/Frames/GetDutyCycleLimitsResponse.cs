@@ -26,12 +26,12 @@ public class GetDutyCycleLimitsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating the success or failure of the command.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// Return current duty cycle limits if returnedLimits is not NULL
     /// </summary>
-    public ZigbeeDutyCycleLimits ReturnedLimits { get; set; }
+	public ZigbeeDutyCycleLimits ReturnedLimits { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

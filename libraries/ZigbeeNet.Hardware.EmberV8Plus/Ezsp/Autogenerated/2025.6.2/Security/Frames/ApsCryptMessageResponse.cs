@@ -26,7 +26,7 @@ public class ApsCryptMessageResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of the encryption/decryption call.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

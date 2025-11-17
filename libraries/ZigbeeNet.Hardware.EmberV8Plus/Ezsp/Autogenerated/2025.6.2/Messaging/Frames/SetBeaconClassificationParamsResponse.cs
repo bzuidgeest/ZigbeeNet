@@ -26,12 +26,12 @@ public class SetBeaconClassificationParamsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The attempt to set the pramaters returns SL_STATUS_OK
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// Gets the beacon prioritization related variable
     /// </summary>
-    public ZigbeeBeaconClassificationParams Param { get; set; }
+	public ZigbeeBeaconClassificationParams Param { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

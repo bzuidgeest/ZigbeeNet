@@ -26,12 +26,13 @@ public class SetNeighborFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// eui64 of the node
     /// </summary>
-    public _802154LongAddr eui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] eui64;
 
     /// <summary>
     /// Return the frame counter of the node from the neighbor or child table
     /// </summary>
-    public uint frameCounter { get; set; }
+	public uint frameCounter { get; set; }
 
 }
 

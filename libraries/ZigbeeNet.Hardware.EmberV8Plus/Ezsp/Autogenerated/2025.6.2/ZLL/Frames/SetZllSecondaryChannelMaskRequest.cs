@@ -26,7 +26,7 @@ public class SetZllSecondaryChannelMaskRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The secondary ZLL channel mask
     /// </summary>
-    public uint zllSecondaryChannelMask { get; set; }
+	public uint zllSecondaryChannelMask { get; set; }
 
 }
 

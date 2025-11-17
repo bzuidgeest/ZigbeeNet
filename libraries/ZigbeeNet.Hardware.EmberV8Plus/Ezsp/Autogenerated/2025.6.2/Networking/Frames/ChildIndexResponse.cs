@@ -26,7 +26,7 @@ public class ChildIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The child index or 0xFF if the node ID doesn&apos;t belong to a child
     /// </summary>
-    public byte ChildIndex { get; set; }
+	public byte ChildIndex { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

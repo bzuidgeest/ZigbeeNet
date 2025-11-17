@@ -26,7 +26,7 @@ public class GetEndpointCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Number of configured endpoints.
     /// </summary>
-    public byte Count { get; set; }
+	public byte Count { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

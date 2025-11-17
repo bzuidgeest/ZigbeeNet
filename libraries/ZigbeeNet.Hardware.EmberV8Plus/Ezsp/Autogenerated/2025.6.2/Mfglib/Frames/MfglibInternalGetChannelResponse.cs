@@ -26,7 +26,7 @@ public class MfglibInternalGetChannelResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current channel.
     /// </summary>
-    public byte Channel { get; set; }
+	public byte Channel { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,7 +26,7 @@ public class SecManImportTransientKeyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of key import operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

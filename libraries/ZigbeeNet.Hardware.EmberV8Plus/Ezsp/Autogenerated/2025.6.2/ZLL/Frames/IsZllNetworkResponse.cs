@@ -26,7 +26,7 @@ public class IsZllNetworkResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// ZLL network?
     /// </summary>
-    public bool IsZllNetwork { get; set; }
+	public bool IsZllNetwork { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

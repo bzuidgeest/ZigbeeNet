@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
@@ -27,7 +27,7 @@ public class GpSecurityTestVectorsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,7 +26,7 @@ public class SetInitialSecurityStateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The security configuration to be set.
     /// </summary>
-    public ZigbeeInitialSecurityState state { get; set; }
+	public ZigbeeInitialSecurityState state { get; set; }
 
 }
 

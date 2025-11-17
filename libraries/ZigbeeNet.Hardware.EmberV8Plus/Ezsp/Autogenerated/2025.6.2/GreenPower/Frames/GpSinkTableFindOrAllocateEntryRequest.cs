@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,7 +27,7 @@ public class GpSinkTableFindOrAllocateEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// An sl_zigbee_gp_address_t struct containing a copy of the gpd address to be found.
     /// </summary>
-    public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress addr { get; set; }
 
 }
 

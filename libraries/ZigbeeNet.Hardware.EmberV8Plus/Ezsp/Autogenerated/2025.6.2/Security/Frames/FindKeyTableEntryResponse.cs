@@ -26,7 +26,7 @@ public class FindKeyTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This indicates the index of the entry that matches the search criteria. A value of 0xFF is returned if not matching entry is found.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

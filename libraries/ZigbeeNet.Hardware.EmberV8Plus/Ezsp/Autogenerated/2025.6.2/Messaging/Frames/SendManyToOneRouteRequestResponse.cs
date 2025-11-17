@@ -26,7 +26,7 @@ public class SendManyToOneRouteRequestResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the route request was successfully submitted to the transmit queue, and SL_STATUS_FAIL otherwise.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

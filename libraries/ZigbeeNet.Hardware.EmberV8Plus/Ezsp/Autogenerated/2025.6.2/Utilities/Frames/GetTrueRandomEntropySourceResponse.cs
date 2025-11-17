@@ -26,7 +26,7 @@ public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Value indicates the used entropy source.
     /// </summary>
-    public ZigbeeEntropySource EntropySource { get; set; }
+	public ZigbeeEntropySource EntropySource { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

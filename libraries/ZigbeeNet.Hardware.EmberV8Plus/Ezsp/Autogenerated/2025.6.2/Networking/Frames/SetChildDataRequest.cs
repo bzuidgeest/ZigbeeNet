@@ -26,12 +26,12 @@ public class SetChildDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the child of interest in the child table. Possible indexes range from zero to (SL_ZIGBEE_CHILD_TABLE_SIZE - 1).
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public ZigbeeChildData childData { get; set; }
+	public ZigbeeChildData childData { get; set; }
 
 }
 

@@ -13,7 +13,9 @@
 /// The transient key data structure.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -25,12 +27,12 @@ public struct ZigbeeTransientKeyData
 	/// The IEEE address paired with the transient link key.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] eui64;
+	public byte[] eui64;
 
 	/// <summary>
 	/// The key data structure matching the transient key.
 	/// </summary>
-	public Zigbeekeydata keyData;
+	public ZigbeeKeyData keyData;
 
 	/// <summary>
 	/// The incoming frame counter associated with this key.
@@ -40,7 +42,7 @@ public struct ZigbeeTransientKeyData
 	/// <summary>
 	/// This bitmask indicates whether various fields in the structure contain valid data.
 	/// </summary>
-	public Zigbeekeystructbitmask bitmask;
+	public ZigbeeKeyStructBitmask bitmask;
 
 	/// <summary>
 	/// The number of seconds remaining before the key is automatically timed out of the transient key table.

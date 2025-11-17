@@ -26,7 +26,7 @@ public class GetNumStoredBeaconsResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of cached beacons that have been collected from a scan.
     /// </summary>
-    public byte NumBeacons { get; set; }
+	public byte NumBeacons { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

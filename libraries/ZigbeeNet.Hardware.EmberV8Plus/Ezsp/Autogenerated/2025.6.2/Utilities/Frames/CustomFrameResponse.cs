@@ -26,12 +26,12 @@ public class CustomFrameResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The status returned by the custom command.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The length of the response.
     /// </summary>
-    public byte ReplyLength { get; set; }
+	public byte ReplyLength { get; set; }
 
     /// <summary>
     /// The response.

@@ -26,7 +26,7 @@ public class TimerHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Which timer generated the callback (0 or 1).
     /// </summary>
-    public byte TimerId { get; set; }
+	public byte TimerId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,12 +26,12 @@ public class DebugWriteRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// true if the message should be interpreted as binary data, false if the message should be interpreted as ASCII text.
     /// </summary>
-    public bool binaryMessage { get; set; }
+	public bool binaryMessage { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+	public byte messageLength { get; set; }
 
     /// <summary>
     /// The binary message.

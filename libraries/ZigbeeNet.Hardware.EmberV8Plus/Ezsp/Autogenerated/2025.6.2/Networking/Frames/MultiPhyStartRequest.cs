@@ -26,27 +26,27 @@ public class MultiPhyStartRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.
     /// </summary>
-    public byte phyIndex { get; set; }
+	public byte phyIndex { get; set; }
 
     /// <summary>
     /// Desired radio channel page.
     /// </summary>
-    public byte page { get; set; }
+	public byte page { get; set; }
 
     /// <summary>
     /// Desired radio channel.
     /// </summary>
-    public byte channel { get; set; }
+	public byte channel { get; set; }
 
     /// <summary>
     /// Desired radio output power, in dBm.
     /// </summary>
-    public sbyte power { get; set; }
+	public sbyte power { get; set; }
 
     /// <summary>
     /// Network configuration bitmask.
     /// </summary>
-    public ZigbeeMultiPhyNwkConfig bitmask { get; set; }
+	public ZigbeeMultiPhyNwkConfig bitmask { get; set; }
 
 }
 

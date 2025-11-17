@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
@@ -26,7 +27,7 @@ public class GetTokenInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index of the token in the token table for which information is needed.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

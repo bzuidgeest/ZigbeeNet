@@ -26,7 +26,7 @@ public class WriteNodeDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Erase the node type or not
     /// </summary>
-    public bool erase { get; set; }
+	public bool erase { get; set; }
 
 }
 

@@ -26,7 +26,7 @@ public class BroadcastNetworkKeySwitchResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// sl_status_t value that indicates the success or failure of the command.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

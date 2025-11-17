@@ -26,12 +26,12 @@ public class SetConfigurationValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which configuration value to change.
     /// </summary>
-    public ZigbeeEzspConfigId configId { get; set; }
+	public ZigbeeEzspConfigId configId { get; set; }
 
     /// <summary>
     /// The new configuration value.
     /// </summary>
-    public ushort value { get; set; }
+	public ushort value { get; set; }
 
 }
 

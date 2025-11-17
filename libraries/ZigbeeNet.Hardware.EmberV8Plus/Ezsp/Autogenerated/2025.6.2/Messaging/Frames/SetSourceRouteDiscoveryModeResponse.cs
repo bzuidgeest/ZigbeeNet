@@ -26,7 +26,7 @@ public class SetSourceRouteDiscoveryModeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Remaining time(ms) until next MTORR broadcast if the mode is on, MAX_INT32U_VALUE if the mode is off
     /// </summary>
-    public uint RemainingTime { get; set; }
+	public uint RemainingTime { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,37 +26,37 @@ public class SetConcentratorRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// If this bool is true the concentrator support is enabled. Otherwise is disabled. If this bool is false all the other arguments are ignored.
     /// </summary>
-    public bool on { get; set; }
+	public bool on { get; set; }
 
     /// <summary>
     /// Must be either SL_ZIGBEE_HIGH_RAM_CONCENTRATOR or SL_ZIGBEE_LOW_RAM_CONCENTRATOR. The former is used when the caller has enough memory to store source routes for the whole network. In that case, remote nodes stop sending route records once the concentrator has successfully received one. The latter is used when the concentrator has insufficient RAM to store all outbound source routes. In that case, route records are sent to the concentrator prior to every inbound APS unicast.
     /// </summary>
-    public ushort concentratorType { get; set; }
+	public ushort concentratorType { get; set; }
 
     /// <summary>
     /// The minimum amount of time that must pass between MTORR broadcasts.
     /// </summary>
-    public ushort minTime { get; set; }
+	public ushort minTime { get; set; }
 
     /// <summary>
     /// The maximum amount of time that can pass between MTORR broadcasts.
     /// </summary>
-    public ushort maxTime { get; set; }
+	public ushort maxTime { get; set; }
 
     /// <summary>
     /// The number of route errors that will trigger a re-broadcast of the MTORR.
     /// </summary>
-    public byte routeErrorThreshold { get; set; }
+	public byte routeErrorThreshold { get; set; }
 
     /// <summary>
     /// The number of APS delivery failures that will trigger a re-broadcast of the MTORR.
     /// </summary>
-    public byte deliveryFailureThreshold { get; set; }
+	public byte deliveryFailureThreshold { get; set; }
 
     /// <summary>
     /// The maximum number of hops that the MTORR broadcast will be allowed to have. A value of 0 will be converted to the SL_ZIGBEE_MAX_HOPS value set by the stack.
     /// </summary>
-    public byte maxHops { get; set; }
+	public byte maxHops { get; set; }
 
 }
 

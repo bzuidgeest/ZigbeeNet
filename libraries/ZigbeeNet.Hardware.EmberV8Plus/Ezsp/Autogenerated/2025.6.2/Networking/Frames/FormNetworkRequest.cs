@@ -26,7 +26,7 @@ public class FormNetworkRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Specification of the new network.
     /// </summary>
-    public ZigbeeNetworkParameters parameters { get; set; }
+	public ZigbeeNetworkParameters parameters { get; set; }
 
 }
 

@@ -26,7 +26,7 @@ public class OkToLongPollResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the device may poll less frequently.
     /// </summary>
-    public bool Indicator { get; set; }
+	public bool Indicator { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

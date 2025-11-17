@@ -26,7 +26,7 @@ public class RadioSetSchedulerSliptimeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value of the current slip time.
     /// </summary>
-    public uint slipTime { get; set; }
+	public uint slipTime { get; set; }
 
 }
 

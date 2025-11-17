@@ -26,7 +26,7 @@ public class PollForDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of sending the first poll.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

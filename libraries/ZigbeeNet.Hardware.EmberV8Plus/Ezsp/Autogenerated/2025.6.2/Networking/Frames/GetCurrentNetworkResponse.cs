@@ -26,7 +26,7 @@ public class GetCurrentNetworkResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Return the current network index.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

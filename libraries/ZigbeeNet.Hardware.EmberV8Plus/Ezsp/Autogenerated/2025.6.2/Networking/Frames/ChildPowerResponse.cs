@@ -26,7 +26,7 @@ public class ChildPowerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The power of the child or maximum radio power, which is the power value provided by the user while forming/joining a network if there isn&apos;t a child at the childIndex specified
     /// </summary>
-    public sbyte ChildPower { get; set; }
+	public sbyte ChildPower { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

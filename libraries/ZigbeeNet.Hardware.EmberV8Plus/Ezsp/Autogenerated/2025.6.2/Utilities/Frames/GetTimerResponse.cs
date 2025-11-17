@@ -26,17 +26,17 @@ public class GetTimerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-    public ushort Time { get; set; }
+	public ushort Time { get; set; }
 
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-    public ZigbeeEventUnits Units { get; set; }
+	public ZigbeeEventUnits Units { get; set; }
 
     /// <summary>
     /// True if a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. False if only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-    public bool Repeat { get; set; }
+	public bool Repeat { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -13,7 +13,9 @@
 /// GP parameters list.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
@@ -25,7 +27,7 @@ public struct ZigbeeGpParams
 	/// <summary>
 	/// The status of the GPDF receive.
 	/// </summary>
-	public Zigbeegpstatus status;
+	public ZigbeeGpStatus status;
 
 	/// <summary>
 	/// The gpdLink value of the received GPDF.
@@ -40,7 +42,7 @@ public struct ZigbeeGpParams
 	/// <summary>
 	/// The address of the source GPD.
 	/// </summary>
-	public Zigbeegpaddress addr;
+	public ZigbeeGpAddress addr;
 
 	/// <summary>
 	/// The security level of the received GPDF.
@@ -96,7 +98,7 @@ public struct ZigbeeGpParams
 	/// <summary>
 	/// Rx packet information.
 	/// </summary>
-	public Zigbeerxpacketinfo packetInfo;
+	public ZigbeeRxPacketInfo packetInfo;
 
 }
 

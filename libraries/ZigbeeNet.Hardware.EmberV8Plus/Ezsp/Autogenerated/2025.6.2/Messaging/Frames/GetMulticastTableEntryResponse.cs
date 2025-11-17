@@ -26,12 +26,12 @@ public class GetMulticastTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The contents of the multicast entry.
     /// </summary>
-    public ZigbeeMulticastTableEntry Value { get; set; }
+	public ZigbeeMulticastTableEntry Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

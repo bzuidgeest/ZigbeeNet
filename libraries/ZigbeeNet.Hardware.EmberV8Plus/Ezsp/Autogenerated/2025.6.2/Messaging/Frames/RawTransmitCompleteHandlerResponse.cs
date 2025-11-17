@@ -26,7 +26,7 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Length of the message that was transmitted.
     /// </summary>
-    public byte MessageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The message that was transmitted.
@@ -36,7 +36,7 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

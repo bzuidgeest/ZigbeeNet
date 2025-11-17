@@ -26,7 +26,7 @@ public class GetRadioParametersRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Desired index of phy interface for radio parameters.
     /// </summary>
-    public byte phyIndex { get; set; }
+	public byte phyIndex { get; set; }
 
 }
 

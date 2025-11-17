@@ -26,22 +26,22 @@ public class ZllNetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Information about the network.
     /// </summary>
-    public ZigbeeZllNetwork NetworkInfo { get; set; }
+	public ZigbeeZllNetwork NetworkInfo { get; set; }
 
     /// <summary>
     /// Used to interpret deviceInfo field.
     /// </summary>
-    public bool IsDeviceInfoNull { get; set; }
+	public bool IsDeviceInfoNull { get; set; }
 
     /// <summary>
     /// Device specific information.
     /// </summary>
-    public ZigbeeZllDeviceInfoRecord DeviceInfo { get; set; }
+	public ZigbeeZllDeviceInfoRecord DeviceInfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet received from this network.
     /// </summary>
-    public ZigbeeRxPacketInfo PacketInfo { get; set; }
+	public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

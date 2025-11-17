@@ -26,12 +26,12 @@ public class SecManGetNetworkKeyInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Success or failure of retrieving network key info.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// Information about current and alternate network keys.
     /// </summary>
-    public ZigbeeSecManNetworkKeyInfo NetworkKeyInfo { get; set; }
+	public ZigbeeSecManNetworkKeyInfo NetworkKeyInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

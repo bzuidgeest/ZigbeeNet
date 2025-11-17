@@ -27,7 +27,7 @@ public class GpSinkTableLookupResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The index, or 0xFF for not found
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

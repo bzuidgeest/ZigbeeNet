@@ -26,12 +26,12 @@ public class ScanCompleteHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The channel on which the current error occurred. Undefined for the case of SL_STATUS_OK.
     /// </summary>
-    public byte Channel { get; set; }
+	public byte Channel { get; set; }
 
     /// <summary>
     /// The error condition that occurred on the current channel. Value will be SL_STATUS_OK when the scan has completed.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

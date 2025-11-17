@@ -13,7 +13,9 @@
 /// The security options and information currently used by the stack.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,13 +26,13 @@ public struct ZigbeeCurrentSecurityState
 	/// <summary>
 	/// A bitmask indicating the security options currently in use by a device joined in the network.
 	/// </summary>
-	public Zigbeecurrentsecuritybitmask bitmask;
+	public ZigbeeCurrentSecurityBitmask bitmask;
 
 	/// <summary>
 	/// The IEEE Address of the Trust Center device.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] trustCenterLongAddress;
+	public byte[] trustCenterLongAddress;
 
 }
 

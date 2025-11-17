@@ -26,7 +26,7 @@ public class CounterRequiresDestinationNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether this counter requires the destination node ID.
     /// </summary>
-    public bool Requires { get; set; }
+	public bool Requires { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

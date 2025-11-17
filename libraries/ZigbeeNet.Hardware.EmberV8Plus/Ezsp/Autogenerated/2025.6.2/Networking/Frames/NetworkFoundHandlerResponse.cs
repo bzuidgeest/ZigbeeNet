@@ -26,17 +26,17 @@ public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parameters associated with the network found.
     /// </summary>
-    public ZigbeeZigbeeNetwork NetworkFound { get; set; }
+	public ZigbeeZigbeeNetwork NetworkFound { get; set; }
 
     /// <summary>
     /// Link quality of incoming packet from network.
     /// </summary>
-    public byte LastHopLqi { get; set; }
+	public byte LastHopLqi { get; set; }
 
     /// <summary>
     /// Power (in dBm) of incoming packet.
     /// </summary>
-    public sbyte LastHopRssi { get; set; }
+	public sbyte LastHopRssi { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

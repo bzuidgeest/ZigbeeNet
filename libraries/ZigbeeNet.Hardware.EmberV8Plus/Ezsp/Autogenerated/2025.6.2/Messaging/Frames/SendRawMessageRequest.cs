@@ -26,7 +26,7 @@ public class SendRawMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+	public byte messageLength { get; set; }
 
     /// <summary>
     /// The raw message.
@@ -36,12 +36,12 @@ public class SendRawMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// transmit priority.
     /// </summary>
-    public byte priority { get; set; }
+	public byte priority { get; set; }
 
     /// <summary>
     /// Should we enable CCA or not.
     /// </summary>
-    public bool useCca { get; set; }
+	public bool useCca { get; set; }
 
 }
 

@@ -26,22 +26,22 @@ public class GetStandaloneBootloaderVersionPlatMicroPhyResponse : EzspFrameRespo
     /// <summary>
     /// BOOTLOADER_INVALID_VERSION if the standalone bootloader is not present, or the version of the installed standalone bootloader.
     /// </summary>
-    public ushort BootloaderVersion { get; set; }
+	public ushort BootloaderVersion { get; set; }
 
     /// <summary>
     /// The value of PLAT on the node
     /// </summary>
-    public byte NodePlat { get; set; }
+	public byte NodePlat { get; set; }
 
     /// <summary>
     /// The value of MICRO on the node
     /// </summary>
-    public byte NodeMicro { get; set; }
+	public byte NodeMicro { get; set; }
 
     /// <summary>
     /// The value of PHY on the node
     /// </summary>
-    public byte NodePhy { get; set; }
+	public byte NodePhy { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

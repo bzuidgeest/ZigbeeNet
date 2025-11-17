@@ -26,7 +26,7 @@ public class ClearTemporaryDataMaybeStoreLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.
     /// </summary>
-    public bool storeLinkKey { get; set; }
+	public bool storeLinkKey { get; set; }
 
 }
 

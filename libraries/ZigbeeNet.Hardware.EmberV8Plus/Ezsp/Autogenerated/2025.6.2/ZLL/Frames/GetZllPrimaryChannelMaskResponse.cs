@@ -26,7 +26,7 @@ public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>
-    public uint ZllPrimaryChannelMask { get; set; }
+	public uint ZllPrimaryChannelMask { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

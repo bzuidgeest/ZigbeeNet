@@ -26,7 +26,7 @@ public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Description of this endpoint.
     /// </summary>
-    public ZigbeeEndpointDescription Result { get; set; }
+	public ZigbeeEndpointDescription Result { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

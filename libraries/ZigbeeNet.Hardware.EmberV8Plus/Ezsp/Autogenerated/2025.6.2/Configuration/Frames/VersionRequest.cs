@@ -26,7 +26,7 @@ public class VersionRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The EZSP version the Host wishes to use. To successfully set the version and allow other commands, this must be same as EZSP_PROTOCOL_VERSION.
     /// </summary>
-    public byte desiredProtocolVersion { get; set; }
+	public byte desiredProtocolVersion { get; set; }
 
 }
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,7 +27,7 @@ public class GpProxyTableRemoveEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the requested proxy table entry.
     /// </summary>
-    public byte proxyIndex { get; set; }
+	public byte proxyIndex { get; set; }
 
 }
 

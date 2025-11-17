@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
@@ -26,12 +27,12 @@ public class TokenFactoryResetRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Exclude network and APS outgoing frame counter tokens.
     /// </summary>
-    public bool excludeOutgoingFC { get; set; }
+	public bool excludeOutgoingFC { get; set; }
 
     /// <summary>
     /// Exclude stack boot counter token.
     /// </summary>
-    public bool excludeBootCounter { get; set; }
+	public bool excludeBootCounter { get; set; }
 
 }
 

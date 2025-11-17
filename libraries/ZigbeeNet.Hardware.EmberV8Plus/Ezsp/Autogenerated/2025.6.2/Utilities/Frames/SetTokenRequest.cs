@@ -26,7 +26,7 @@ public class SetTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which token to set
     /// </summary>
-    public byte tokenId { get; set; }
+	public byte tokenId { get; set; }
 
     /// <summary>
     /// The data to write to the token.

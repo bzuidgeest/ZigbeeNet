@@ -26,7 +26,7 @@ public class OkToHibernateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the application may sleep for as long as it wishes.
     /// </summary>
-    public bool Indicator { get; set; }
+	public bool Indicator { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

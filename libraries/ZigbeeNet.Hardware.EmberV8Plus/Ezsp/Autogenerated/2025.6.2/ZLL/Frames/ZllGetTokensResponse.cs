@@ -26,12 +26,12 @@ public class ZllGetTokensResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Data token return value.
     /// </summary>
-    public ZigbeeTokTypeStackZllData Data { get; set; }
+	public ZigbeeTokTypeStackZllData Data { get; set; }
 
     /// <summary>
     /// Security token return value.
     /// </summary>
-    public ZigbeeTokTypeStackZllSecurity Security { get; set; }
+	public ZigbeeTokTypeStackZllSecurity Security { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

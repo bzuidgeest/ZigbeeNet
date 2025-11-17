@@ -26,7 +26,7 @@ public class GetSourceRouteTableFilledSizeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of filled entries in source route table.
     /// </summary>
-    public byte SourceRouteTableFilledSize { get; set; }
+	public byte SourceRouteTableFilledSize { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

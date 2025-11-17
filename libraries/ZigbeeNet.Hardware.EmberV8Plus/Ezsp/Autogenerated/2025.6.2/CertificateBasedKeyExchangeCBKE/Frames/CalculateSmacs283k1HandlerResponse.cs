@@ -26,17 +26,17 @@ public class CalculateSmacs283k1HandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The Result of the CBKE operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The calculated value of the initiator&apos;s SMAC
     /// </summary>
-    public ZigbeeSmacData InitiatorSmac { get; set; }
+	public ZigbeeSmacData InitiatorSmac { get; set; }
 
     /// <summary>
     /// The calculated value of the responder&apos;s SMAC
     /// </summary>
-    public ZigbeeSmacData ResponderSmac { get; set; }
+	public ZigbeeSmacData ResponderSmac { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

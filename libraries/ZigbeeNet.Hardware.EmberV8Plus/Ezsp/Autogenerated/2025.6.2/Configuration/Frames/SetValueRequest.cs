@@ -26,12 +26,12 @@ public class SetValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which value to change.
     /// </summary>
-    public ZigbeeEzspValueId valueId { get; set; }
+	public ZigbeeEzspValueId valueId { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;value&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte valueLength { get; set; }
+	public byte valueLength { get; set; }
 
     /// <summary>
     /// The new value.

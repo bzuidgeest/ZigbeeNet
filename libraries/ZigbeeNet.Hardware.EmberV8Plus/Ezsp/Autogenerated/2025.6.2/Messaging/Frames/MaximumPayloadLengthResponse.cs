@@ -26,7 +26,7 @@ public class MaximumPayloadLengthResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum APS payload length.
     /// </summary>
-    public byte ApsLength { get; set; }
+	public byte ApsLength { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

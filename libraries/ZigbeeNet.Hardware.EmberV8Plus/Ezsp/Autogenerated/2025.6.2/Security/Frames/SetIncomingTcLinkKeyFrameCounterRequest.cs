@@ -26,7 +26,7 @@ public class SetIncomingTcLinkKeyFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value to set the frame counter to.
     /// </summary>
-    public uint frameCounter { get; set; }
+	public uint frameCounter { get; set; }
 
 }
 

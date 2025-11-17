@@ -13,7 +13,9 @@
 /// The parameters of a ZLL network.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,18 +26,18 @@ public struct ZigbeeZllNetwork
 	/// <summary>
 	/// The parameters of a ZigBee network.
 	/// </summary>
-	public Zigbeezigbeenetwork zigbeeNetwork;
+	public ZigbeeZigbeeNetwork zigbeeNetwork;
 
 	/// <summary>
 	/// Data associated with the ZLL security algorithm.
 	/// </summary>
-	public Zigbeezllsecurityalgorithmdata securityAlgorithm;
+	public ZigbeeZllSecurityAlgorithmData securityAlgorithm;
 
 	/// <summary>
 	/// Associated EUI64.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] eui64;
+	public byte[] eui64;
 
 	/// <summary>
 	/// The node id.
@@ -45,12 +47,12 @@ public struct ZigbeeZllNetwork
 	/// <summary>
 	/// The ZLL state.
 	/// </summary>
-	public Zigbeezllstate state;
+	public ZigbeeZllState state;
 
 	/// <summary>
 	/// The node type.
 	/// </summary>
-	public Zigbeenodetype nodeType;
+	public ZigbeeNodeType nodeType;
 
 	/// <summary>
 	/// The number of sub devices.

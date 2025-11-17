@@ -26,7 +26,7 @@ public class MfgTestSetPacketModeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Determines the new mode of operation. true causes the node to enter manufacturing configuration. false causes the node to return to normal network operation.
     /// </summary>
-    public bool beginConfiguration { get; set; }
+	public bool beginConfiguration { get; set; }
 
 }
 

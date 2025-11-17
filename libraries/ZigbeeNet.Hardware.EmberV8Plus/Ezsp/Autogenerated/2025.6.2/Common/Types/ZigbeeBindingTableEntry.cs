@@ -13,7 +13,9 @@
 /// An entry in the binding table.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,7 +26,7 @@ public struct ZigbeeBindingTableEntry
 	/// <summary>
 	/// The type of binding.
 	/// </summary>
-	public Zigbeebindingtype type;
+	public ZigbeeBindingType type;
 
 	/// <summary>
 	/// The endpoint on the local node.
@@ -45,7 +47,7 @@ public struct ZigbeeBindingTableEntry
 	/// A 64-bit identifier. This is either the destination EUI64 (for unicasts) or the 64-bit group address (for multicasts).
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] identifier;
+	public byte[] identifier;
 
 	/// <summary>
 	/// The index of the network the binding belongs to.

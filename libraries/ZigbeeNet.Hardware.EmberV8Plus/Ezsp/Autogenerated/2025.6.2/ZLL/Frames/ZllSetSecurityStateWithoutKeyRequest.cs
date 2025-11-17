@@ -26,7 +26,7 @@ public class ZllSetSecurityStateWithoutKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Security state of the network.
     /// </summary>
-    public ZigbeeZllInitialSecurityState securityState { get; set; }
+	public ZigbeeZllInitialSecurityState securityState { get; set; }
 
 }
 

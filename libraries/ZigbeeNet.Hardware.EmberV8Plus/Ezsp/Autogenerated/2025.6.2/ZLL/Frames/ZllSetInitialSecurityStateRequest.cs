@@ -26,12 +26,12 @@ public class ZllSetInitialSecurityStateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// ZLL Network key.
     /// </summary>
-    public ZigbeeKeyData networkKey { get; set; }
+	public ZigbeeKeyData networkKey { get; set; }
 
     /// <summary>
     /// Initial security state of the network.
     /// </summary>
-    public ZigbeeZllInitialSecurityState securityState { get; set; }
+	public ZigbeeZllInitialSecurityState securityState { get; set; }
 
 }
 

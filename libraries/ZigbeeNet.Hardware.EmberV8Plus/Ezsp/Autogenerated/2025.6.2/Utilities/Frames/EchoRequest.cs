@@ -26,7 +26,7 @@ public class EchoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;data&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte dataLength { get; set; }
+	public byte dataLength { get; set; }
 
     /// <summary>
     /// The data to be echoed back.

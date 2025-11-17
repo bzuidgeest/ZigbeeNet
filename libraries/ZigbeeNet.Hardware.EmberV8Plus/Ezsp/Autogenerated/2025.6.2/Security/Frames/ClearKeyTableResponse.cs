@@ -26,7 +26,7 @@ public class ClearKeyTableResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The success or failure of the operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

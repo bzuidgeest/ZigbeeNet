@@ -23,12 +23,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class GetCertificateResponse : EzspFrameResponseV8Plus
 {
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The locally installed certificate.
     /// </summary>
-    public ZigbeeCertificateData LocalCert { get; set; }
+	public ZigbeeCertificateData LocalCert { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

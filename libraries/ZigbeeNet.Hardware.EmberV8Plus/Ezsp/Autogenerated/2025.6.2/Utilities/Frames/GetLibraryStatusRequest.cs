@@ -26,7 +26,7 @@ public class GetLibraryStatusRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The ID of the library being queried.
     /// </summary>
-    public ZigbeeLibraryId libraryId { get; set; }
+	public byte libraryId { get; set; }
 
 }
 

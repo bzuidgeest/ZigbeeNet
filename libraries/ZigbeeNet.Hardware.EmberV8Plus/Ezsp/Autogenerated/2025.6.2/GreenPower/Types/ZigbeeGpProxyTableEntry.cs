@@ -13,7 +13,9 @@
 /// The internal representation of a proxy table entry.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
@@ -35,7 +37,7 @@ public struct ZigbeeGpProxyTableEntry
 	/// <summary>
 	/// The addressing info of the GPD.
 	/// </summary>
-	public Zigbeegpaddress gpd;
+	public ZigbeeGpAddress gpd;
 
 	/// <summary>
 	/// The assigned alias for the GPD.
@@ -55,14 +57,14 @@ public struct ZigbeeGpProxyTableEntry
 	/// <summary>
 	/// The key to use for GPD.
 	/// </summary>
-	public Zigbeekeydata gpdKey;
+	public ZigbeeKeyData gpdKey;
 
 	/// <summary>
 	/// The list of sinks (hardcoded to 2 which is the spec minimum).
 	/// </summary>
 	// Array field with symbolic size: GP_SINK_LIST_ENTRIES
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-	public Zigbeegpsinklistentry[] sinkList;
+	public ZigbeeGpSinkListEntry[] sinkList;
 	/// <summary>
 	/// The groupcast radius.
 	/// </summary>

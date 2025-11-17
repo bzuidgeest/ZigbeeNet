@@ -26,17 +26,17 @@ public class ReadAttributeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure, handled by the EZSP layer as a uint8_t. 255 indicates an EZSP-specific error.
     /// </summary>
-    public ZigbeeAfStatus AfStatus { get; set; }
+	public ZigbeeAfStatus AfStatus { get; set; }
 
     /// <summary>
     /// Attribute data type.
     /// </summary>
-    public byte DataType { get; set; }
+	public byte DataType { get; set; }
 
     /// <summary>
     /// Length of attribute data.
     /// </summary>
-    public byte ReadLength { get; set; }
+	public byte ReadLength { get; set; }
 
     /// <summary>
     /// Attribute data.

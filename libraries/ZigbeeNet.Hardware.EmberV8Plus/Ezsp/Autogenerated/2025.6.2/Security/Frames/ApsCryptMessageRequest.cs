@@ -26,12 +26,12 @@ public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Encrypt (true) or decrypt (false) the message.
     /// </summary>
-    public bool encrypt { get; set; }
+	public bool encrypt { get; set; }
 
     /// <summary>
     /// Length of the array containing message, needs to be long enough to include the auxiliary header and MIC.
     /// </summary>
-    public byte length_combined_arg { get; set; }
+	public byte length_combined_arg { get; set; }
 
     /// <summary>
     /// The message to be en/de-crypted.
@@ -41,12 +41,13 @@ public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index just past the APS frame.
     /// </summary>
-    public byte apsHeaderEndIndex { get; set; }
+	public byte apsHeaderEndIndex { get; set; }
 
     /// <summary>
     /// IEEE address of the device this message is associated with.
     /// </summary>
-    public _802154LongAddr remoteEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] remoteEui64;
 
 }
 

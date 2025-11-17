@@ -23,9 +23,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class Mux_invalid_rx_handlerResponse : EzspFrameResponseV8Plus
 {
-    public byte NewRxChannel { get; set; }
+	public byte NewRxChannel { get; set; }
 
-    public byte OldRxChannel { get; set; }
+	public byte OldRxChannel { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

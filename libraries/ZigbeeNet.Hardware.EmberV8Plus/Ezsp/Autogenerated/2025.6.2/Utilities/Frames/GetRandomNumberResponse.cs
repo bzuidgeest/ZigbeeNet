@@ -26,12 +26,12 @@ public class GetRandomNumberResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Always returns SL_STATUS_OK.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// A pseudorandom number.
     /// </summary>
-    public ushort Value { get; set; }
+	public ushort Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

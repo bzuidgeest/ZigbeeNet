@@ -26,7 +26,7 @@ public class ParentTokenSetResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the parent token has been set.
     /// </summary>
-    public bool Indicator { get; set; }
+	public bool Indicator { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

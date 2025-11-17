@@ -27,7 +27,7 @@ public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Pl
     /// <summary>
     /// Number of active entries in sink table.
     /// </summary>
-    public byte NumberOfEntries { get; set; }
+	public byte NumberOfEntries { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

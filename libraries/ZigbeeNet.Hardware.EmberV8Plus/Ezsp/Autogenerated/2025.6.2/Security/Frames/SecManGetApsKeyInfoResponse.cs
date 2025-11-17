@@ -26,12 +26,12 @@ public class SecManGetApsKeyInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status of metadata retrieval operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// Metadata about the referenced key.
     /// </summary>
-    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
+	public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

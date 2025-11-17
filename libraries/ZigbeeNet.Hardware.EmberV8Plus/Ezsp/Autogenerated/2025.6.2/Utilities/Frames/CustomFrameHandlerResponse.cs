@@ -26,7 +26,7 @@ public class CustomFrameHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The length of the custom frame payload.
     /// </summary>
-    public byte PayloadLength { get; set; }
+	public byte PayloadLength { get; set; }
 
     /// <summary>
     /// The payload of the custom frame.

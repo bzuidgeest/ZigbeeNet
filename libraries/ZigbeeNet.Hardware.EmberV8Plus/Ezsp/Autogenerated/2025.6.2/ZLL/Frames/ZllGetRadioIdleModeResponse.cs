@@ -26,7 +26,7 @@ public class ZllGetRadioIdleModeResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The current power mode.
     /// </summary>
-    public byte RadioIdleMode { get; set; }
+	public byte RadioIdleMode { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

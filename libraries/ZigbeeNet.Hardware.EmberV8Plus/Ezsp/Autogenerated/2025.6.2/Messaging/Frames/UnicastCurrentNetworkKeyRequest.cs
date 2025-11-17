@@ -26,17 +26,18 @@ public class UnicastCurrentNetworkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The destination node of the key.
     /// </summary>
-    public _802154ShortAddr targetShort { get; set; }
+	public ushort targetShort { get; set; }
 
     /// <summary>
     /// The long address of the destination node.
     /// </summary>
-    public _802154LongAddr targetLong { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] targetLong;
 
     /// <summary>
     /// The parent node of the destination node.
     /// </summary>
-    public _802154ShortAddr parentShortId { get; set; }
+	public ushort parentShortId { get; set; }
 
 }
 

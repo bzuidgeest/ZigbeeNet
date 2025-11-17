@@ -26,7 +26,7 @@ public class BindingIsActiveRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of a binding table entry.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

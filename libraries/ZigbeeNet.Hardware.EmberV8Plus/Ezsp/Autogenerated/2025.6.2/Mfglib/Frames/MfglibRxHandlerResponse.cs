@@ -26,17 +26,17 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The link quality observed during the reception
     /// </summary>
-    public byte LinkQuality { get; set; }
+	public byte LinkQuality { get; set; }
 
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-    public sbyte Rssi { get; set; }
+	public sbyte Rssi { get; set; }
 
     /// <summary>
     /// The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
     /// </summary>
-    public byte PacketLength { get; set; }
+	public byte PacketLength { get; set; }
 
     /// <summary>
     /// The received packet (last 2 bytes are not FCS / CRC and may be discarded)

@@ -26,7 +26,7 @@ public class SetRadioPowerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Desired radio output power, in dBm.
     /// </summary>
-    public sbyte power { get; set; }
+	public sbyte power { get; set; }
 
 }
 

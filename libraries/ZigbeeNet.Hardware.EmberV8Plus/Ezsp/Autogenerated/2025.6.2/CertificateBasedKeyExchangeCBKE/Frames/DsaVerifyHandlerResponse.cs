@@ -26,7 +26,7 @@ public class DsaVerifyHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the DSA verification operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

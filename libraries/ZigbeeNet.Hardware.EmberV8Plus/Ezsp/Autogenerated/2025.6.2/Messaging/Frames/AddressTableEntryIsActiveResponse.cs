@@ -26,7 +26,7 @@ public class AddressTableEntryIsActiveResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// True if the address table entry is active, false otherwise.
     /// </summary>
-    public bool Active { get; set; }
+	public bool Active { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,17 +26,17 @@ public class SendReplyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-    public _802154ShortAddr sender { get; set; }
+	public ushort sender { get; set; }
 
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-    public ZigbeeApsFrame apsFrame { get; set; }
+	public ZigbeeApsFrame apsFrame { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+	public byte messageLength { get; set; }
 
     /// <summary>
     /// The reply message.

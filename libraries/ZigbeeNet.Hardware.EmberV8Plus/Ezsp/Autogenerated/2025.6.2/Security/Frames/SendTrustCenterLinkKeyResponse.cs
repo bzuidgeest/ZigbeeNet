@@ -26,7 +26,7 @@ public class SendTrustCenterLinkKeyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success of failure of the operation
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

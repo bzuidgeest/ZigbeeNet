@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,32 +27,32 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The options field of the GP Pairing command.
     /// </summary>
-    public uint options { get; set; }
+	public uint options { get; set; }
 
     /// <summary>
     /// The target GPD.
     /// </summary>
-    public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress addr { get; set; }
 
     /// <summary>
     /// The communication mode of the GP Sink.
     /// </summary>
-    public byte commMode { get; set; }
+	public byte commMode { get; set; }
 
     /// <summary>
     /// The network address of the GP Sink.
     /// </summary>
-    public ushort sinkNetworkAddress { get; set; }
+	public ushort sinkNetworkAddress { get; set; }
 
     /// <summary>
     /// The group ID of the GP Sink.
     /// </summary>
-    public ushort sinkGroupId { get; set; }
+	public ushort sinkGroupId { get; set; }
 
     /// <summary>
     /// The alias assigned to the GPD.
     /// </summary>
-    public ushort assignedAlias { get; set; }
+	public ushort assignedAlias { get; set; }
 
     /// <summary>
     /// The IEEE address of the GP Sink.
@@ -60,17 +61,17 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The key to use for the target GPD.
     /// </summary>
-    public ZigbeeKeyData gpdKey { get; set; }
+	public ZigbeeKeyData gpdKey { get; set; }
 
     /// <summary>
     /// The GPD security frame counter.
     /// </summary>
-    public uint gpdSecurityFrameCounter { get; set; }
+	public uint gpdSecurityFrameCounter { get; set; }
 
     /// <summary>
     /// The forwarding radius.
     /// </summary>
-    public byte forwardingRadius { get; set; }
+	public byte forwardingRadius { get; set; }
 
 }
 

@@ -26,17 +26,17 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The requested binding.
     /// </summary>
-    public ZigbeeBindingTableEntry Entry { get; set; }
+	public ZigbeeBindingTableEntry Entry { get; set; }
 
     /// <summary>
     /// The index at which the binding was added.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// SL_STATUS_OK if the binding was added to the table and any other status if not.
     /// </summary>
-    public Status PolicyDecision { get; set; }
+	public Status PolicyDecision { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -13,7 +13,9 @@
 /// Describes the initial security features and requirements that will be used when forming or joining ZLL networks.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -29,17 +31,17 @@ public struct ZigbeeZllInitialSecurityState
 	/// <summary>
 	/// The key encryption algorithm advertised by the application.
 	/// </summary>
-	public Zigbeezllkeyindex keyIndex;
+	public ZigbeeZllKeyIndex keyIndex;
 
 	/// <summary>
 	/// The encryption key for use by algorithms that require it.
 	/// </summary>
-	public Zigbeekeydata encryptionKey;
+	public ZigbeeKeyData encryptionKey;
 
 	/// <summary>
 	/// The pre-configured link key used during classical ZigBee commissioning.
 	/// </summary>
-	public Zigbeekeydata preconfiguredKey;
+	public ZigbeeKeyData preconfiguredKey;
 
 }
 

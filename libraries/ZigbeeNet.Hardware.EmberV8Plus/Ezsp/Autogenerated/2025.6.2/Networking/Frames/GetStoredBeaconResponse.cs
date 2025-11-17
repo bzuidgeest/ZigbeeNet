@@ -26,12 +26,12 @@ public class GetStoredBeaconResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An appropriate sl_status_t status code.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The beacon to populate upon success.
     /// </summary>
-    public ZigbeeBeaconData Beacon { get; set; }
+	public ZigbeeBeaconData Beacon { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

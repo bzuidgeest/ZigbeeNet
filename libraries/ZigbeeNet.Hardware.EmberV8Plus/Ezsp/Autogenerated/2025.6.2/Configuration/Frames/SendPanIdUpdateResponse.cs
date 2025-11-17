@@ -26,7 +26,7 @@ public class SendPanIdUpdateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// true if the request was successfully handed to the stack, false otherwise
     /// </summary>
-    public bool Status { get; set; }
+	public bool Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

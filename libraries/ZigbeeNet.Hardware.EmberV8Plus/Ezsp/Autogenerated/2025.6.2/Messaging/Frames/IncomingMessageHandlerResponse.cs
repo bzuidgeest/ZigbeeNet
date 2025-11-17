@@ -26,22 +26,22 @@ public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK
     /// </summary>
-    public ZigbeeIncomingMessageType Type { get; set; }
+	public ZigbeeIncomingMessageType Type { get; set; }
 
     /// <summary>
     /// The APS frame from the incoming message.
     /// </summary>
-    public ZigbeeApsFrame ApsFrame { get; set; }
+	public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// Miscellanous message information.
     /// </summary>
-    public ZigbeeRxPacketInfo PacketInfo { get; set; }
+	public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte MessageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The incoming message.

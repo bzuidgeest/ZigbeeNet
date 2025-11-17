@@ -13,7 +13,9 @@
 /// Information about a specific ZLL Device.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -25,7 +27,7 @@ public struct ZigbeeZllDeviceInfoRecord
 	/// EUI64 associated with the device.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] ieeeAddress;
+	public byte[] ieeeAddress;
 
 	/// <summary>
 	/// Endpoint id.

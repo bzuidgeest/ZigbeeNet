@@ -26,12 +26,12 @@ public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The result of the CBKE operation.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The generated ephemeral public key.
     /// </summary>
-    public ZigbeePublicKeyData EphemeralPublicKey { get; set; }
+	public ZigbeePublicKeyData EphemeralPublicKey { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

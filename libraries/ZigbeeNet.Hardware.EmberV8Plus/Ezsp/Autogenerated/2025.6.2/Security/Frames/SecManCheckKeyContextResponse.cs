@@ -26,7 +26,7 @@ public class SecManCheckKeyContextResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Validity of the checked context.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

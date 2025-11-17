@@ -26,12 +26,12 @@ public class SendManyToOneRouteRequestRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Must be either SL_ZIGBEE_HIGH_RAM_CONCENTRATOR or SL_ZIGBEE_LOW_RAM_CONCENTRATOR. The former is used when the caller has enough memory to store source routes for the whole network. In that case, remote nodes stop sending route records once the concentrator has successfully received one. The latter is used when the concentrator has insufficient RAM to store all outbound source routes. In that case, route records are sent to the concentrator prior to every inbound APS unicast.
     /// </summary>
-    public ushort concentratorType { get; set; }
+	public ushort concentratorType { get; set; }
 
     /// <summary>
     /// The maximum number of hops the route request will be relayed. A radius of zero is converted to SL_ZIGBEE_MAX_HOPS
     /// </summary>
-    public byte radius { get; set; }
+	public byte radius { get; set; }
 
 }
 

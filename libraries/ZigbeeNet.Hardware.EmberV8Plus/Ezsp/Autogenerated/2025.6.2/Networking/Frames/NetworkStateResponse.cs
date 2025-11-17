@@ -26,7 +26,7 @@ public class NetworkStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_zigbee_network_status_t value indicating the current join status.
     /// </summary>
-    public ZigbeeNetworkStatus Status { get; set; }
+	public ZigbeeNetworkStatus Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

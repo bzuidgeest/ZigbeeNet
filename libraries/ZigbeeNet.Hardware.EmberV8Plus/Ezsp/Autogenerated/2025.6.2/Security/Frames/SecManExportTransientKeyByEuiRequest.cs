@@ -26,7 +26,8 @@ public class SecManExportTransientKeyByEuiRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to export from.
     /// </summary>
-    public _802154LongAddr eui { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] eui;
 
 }
 

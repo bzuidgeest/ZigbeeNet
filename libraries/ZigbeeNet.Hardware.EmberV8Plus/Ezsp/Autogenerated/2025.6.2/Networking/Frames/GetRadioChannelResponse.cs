@@ -26,7 +26,7 @@ public class GetRadioChannelResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Current radio channel.
     /// </summary>
-    public byte Channel { get; set; }
+	public byte Channel { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

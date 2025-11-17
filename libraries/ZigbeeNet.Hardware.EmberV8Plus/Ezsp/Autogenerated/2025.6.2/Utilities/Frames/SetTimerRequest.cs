@@ -26,22 +26,22 @@ public class SetTimerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which timer to set (0 or 1).
     /// </summary>
-    public byte timerId { get; set; }
+	public byte timerId { get; set; }
 
     /// <summary>
     /// The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated. Note that the timer clock is free running and is not synchronized with this command. This means that the actual delay will be between &lt;i&gt;time&lt;/i&gt; and (&lt;i&gt;time&lt;/i&gt; - 1). The maximum delay is 32767.
     /// </summary>
-    public ushort time { get; set; }
+	public ushort time { get; set; }
 
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-    public ZigbeeEventUnits units { get; set; }
+	public ZigbeeEventUnits units { get; set; }
 
     /// <summary>
     /// If true, a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. If false, only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-    public bool repeat { get; set; }
+	public bool repeat { get; set; }
 
 }
 

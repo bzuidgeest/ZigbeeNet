@@ -26,7 +26,7 @@ public class EraseKeyTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// This indicates the index of entry to erase.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

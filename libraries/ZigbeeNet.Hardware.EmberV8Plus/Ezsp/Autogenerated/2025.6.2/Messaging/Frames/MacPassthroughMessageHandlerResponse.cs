@@ -26,17 +26,17 @@ public class MacPassthroughMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The type of MAC passthrough message received.
     /// </summary>
-    public ZigbeeMacPassthroughType MessageType { get; set; }
+	public ZigbeeMacPassthroughType MessageType { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public ZigbeeRxPacketInfo PacketInfo { get; set; }
+	public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte MessageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The raw message that was received.

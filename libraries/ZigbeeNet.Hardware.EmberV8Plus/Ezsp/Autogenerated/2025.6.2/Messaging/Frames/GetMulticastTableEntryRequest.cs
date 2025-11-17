@@ -26,7 +26,7 @@ public class GetMulticastTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of a multicast table entry.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

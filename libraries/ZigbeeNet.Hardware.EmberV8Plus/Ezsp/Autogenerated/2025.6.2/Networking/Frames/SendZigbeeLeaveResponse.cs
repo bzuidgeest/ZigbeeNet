@@ -26,7 +26,7 @@ public class SendZigbeeLeaveResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Status indicating success or a reason for failure. Call is invalid if destination is on network or is the local node.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

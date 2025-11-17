@@ -13,7 +13,9 @@
 /// Network parameters.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -44,7 +46,7 @@ public struct ZigbeeNetworkParameters
 	/// <summary>
 	/// The method used to initially join the network.
 	/// </summary>
-	public Zigbeejoinmethod joinMethod;
+	public ZigbeeJoinMethod joinMethod;
 
 	/// <summary>
 	/// NWK Manager ID. The ID of the network manager in the current network. This may only be set at joining when using SL_ZIGBEE_USE_CONFIGURED_NWK_STATE as the join method.

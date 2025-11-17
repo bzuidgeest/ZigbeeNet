@@ -26,7 +26,7 @@ public class PermitJoiningRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A value of 0x00 disables joining. A value of 0xFF enables joining. Any other value enables joining for that number of seconds.
     /// </summary>
-    public byte duration { get; set; }
+	public byte duration { get; set; }
 
 }
 

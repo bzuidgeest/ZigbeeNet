@@ -26,7 +26,7 @@ public class CounterRequiresPhyIndexResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether this counter requires a PHY index when operating on a dual-PHY system.
     /// </summary>
-    public bool Requires { get; set; }
+	public bool Requires { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

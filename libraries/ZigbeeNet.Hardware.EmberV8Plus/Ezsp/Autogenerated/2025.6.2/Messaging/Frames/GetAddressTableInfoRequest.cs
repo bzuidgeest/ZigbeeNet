@@ -26,7 +26,7 @@ public class GetAddressTableInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of an address table entry.
     /// </summary>
-    public byte addressTableIndex { get; set; }
+	public byte addressTableIndex { get; set; }
 
 }
 

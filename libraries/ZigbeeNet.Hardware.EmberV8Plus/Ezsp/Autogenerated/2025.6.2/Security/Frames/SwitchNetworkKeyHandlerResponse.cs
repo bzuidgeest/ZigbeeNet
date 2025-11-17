@@ -26,7 +26,7 @@ public class SwitchNetworkKeyHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The sequence number of the new network key.
     /// </summary>
-    public byte SequenceNumber { get; set; }
+	public byte SequenceNumber { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

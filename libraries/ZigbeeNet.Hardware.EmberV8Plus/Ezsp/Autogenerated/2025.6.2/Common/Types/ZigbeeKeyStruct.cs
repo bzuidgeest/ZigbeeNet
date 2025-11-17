@@ -13,7 +13,9 @@
 /// A structure containing a key and its associated data.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
@@ -24,17 +26,17 @@ public struct ZigbeeKeyStruct
 	/// <summary>
 	/// A bitmask indicating the presence of data within the various fields in the structure.
 	/// </summary>
-	public Zigbeekeystructbitmask bitmask;
+	public ZigbeeKeyStructBitmask bitmask;
 
 	/// <summary>
 	/// The type of the key.
 	/// </summary>
-	public Zigbeekeytype type;
+	public ZigbeeKeyType type;
 
 	/// <summary>
 	/// The actual key data.
 	/// </summary>
-	public Zigbeekeydata key;
+	public ZigbeeKeyData key;
 
 	/// <summary>
 	/// The outgoing frame counter associated with the key.
@@ -55,7 +57,7 @@ public struct ZigbeeKeyStruct
 	/// The IEEE address of the partner device also in possession of the key.
 	/// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public _802154longaddr[] partnerEUI64;
+	public byte[] partnerEUI64;
 
 }
 

@@ -26,7 +26,7 @@ public class StackTokenChangedHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The address of the stack token that has changed.
     /// </summary>
-    public ushort TokenAddress { get; set; }
+	public ushort TokenAddress { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

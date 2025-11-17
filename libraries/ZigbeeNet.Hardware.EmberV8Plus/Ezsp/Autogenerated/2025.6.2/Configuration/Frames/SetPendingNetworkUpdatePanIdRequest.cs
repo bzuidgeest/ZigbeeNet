@@ -26,7 +26,7 @@ public class SetPendingNetworkUpdatePanIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// PAN ID to be accepted in a network update.
     /// </summary>
-    public ushort panId { get; set; }
+	public ushort panId { get; set; }
 
 }
 

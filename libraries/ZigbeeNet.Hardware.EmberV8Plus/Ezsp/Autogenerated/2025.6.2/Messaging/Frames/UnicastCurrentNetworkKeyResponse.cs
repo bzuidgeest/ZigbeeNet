@@ -26,7 +26,7 @@ public class UnicastCurrentNetworkKeyResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if send was successful
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

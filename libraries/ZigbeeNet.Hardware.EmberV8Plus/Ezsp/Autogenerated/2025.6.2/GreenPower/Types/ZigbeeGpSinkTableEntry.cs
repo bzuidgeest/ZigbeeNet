@@ -13,7 +13,9 @@
 /// The internal representation of a sink table entry.
 /// </summary>
 
+using System;
 using System.Runtime.InteropServices;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 
@@ -35,7 +37,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// <summary>
 	/// The addressing info of the GPD.
 	/// </summary>
-	public Zigbeegpaddress gpd;
+	public ZigbeeGpAddress gpd;
 
 	/// <summary>
 	/// The device id for the GPD.
@@ -47,7 +49,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// </summary>
 	// Array field with symbolic size: GP_SINK_LIST_ENTRIES
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-	public Zigbeegpsinklistentry[] sinkList;
+	public ZigbeeGpSinkListEntry[] sinkList;
 	/// <summary>
 	/// The assigned alias for the GPD.
 	/// </summary>
@@ -71,7 +73,7 @@ public struct ZigbeeGpSinkTableEntry
 	/// <summary>
 	/// The key to use for GPD.
 	/// </summary>
-	public Zigbeekeydata gpdKey;
+	public ZigbeeKeyData gpdKey;
 
 }
 

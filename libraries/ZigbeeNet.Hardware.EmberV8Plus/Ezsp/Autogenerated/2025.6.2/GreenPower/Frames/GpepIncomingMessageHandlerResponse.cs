@@ -27,7 +27,7 @@ public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// GP parameters list represented as a macro for GP endpoint incoming message handler and callbacks prototypes.
     /// </summary>
-    public ZigbeeGpParams Param { get; set; }
+	public ZigbeeGpParams Param { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

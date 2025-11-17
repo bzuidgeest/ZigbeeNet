@@ -26,7 +26,7 @@ public class UpdateTcLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The maximum number of attempts a node should make when sending the Node Descriptor, Request Key, and Verify Key Confirm messages. The number of attempts resets for each message type sent (e.g., if maxAttempts is 3, up to 3 Node Descriptors are sent, up to 3 Request Keys, and up to 3 Verify Key Confirm messages are sent).
     /// </summary>
-    public byte maxAttempts { get; set; }
+	public byte maxAttempts { get; set; }
 
 }
 

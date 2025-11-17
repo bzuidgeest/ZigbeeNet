@@ -26,7 +26,7 @@ public class GetRouteTableEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the route table entry of interest.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

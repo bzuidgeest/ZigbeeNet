@@ -26,7 +26,7 @@ public class SecManExportLinkKeyByIndexRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index of key to export.
     /// </summary>
-    public byte index { get; set; }
+	public byte index { get; set; }
 
 }
 

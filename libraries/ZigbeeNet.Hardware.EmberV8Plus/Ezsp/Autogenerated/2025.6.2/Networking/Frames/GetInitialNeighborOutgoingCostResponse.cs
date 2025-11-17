@@ -26,7 +26,7 @@ public class GetInitialNeighborOutgoingCostResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The default cost associated with new neighbor&apos;s outgoing links.
     /// </summary>
-    public byte Cost { get; set; }
+	public byte Cost { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

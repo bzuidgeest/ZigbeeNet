@@ -26,7 +26,7 @@ public class SetRadioChannelRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Desired radio channel.
     /// </summary>
-    public byte channel { get; set; }
+	public byte channel { get; set; }
 
 }
 

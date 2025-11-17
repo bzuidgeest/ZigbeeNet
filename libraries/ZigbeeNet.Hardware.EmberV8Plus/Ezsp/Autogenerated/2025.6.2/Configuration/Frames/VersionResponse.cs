@@ -26,17 +26,17 @@ public class VersionResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EZSP version the NCP is using.
     /// </summary>
-    public byte ProtocolVersion { get; set; }
+	public byte ProtocolVersion { get; set; }
 
     /// <summary>
     /// The type of stack running on the NCP (2).
     /// </summary>
-    public byte StackType { get; set; }
+	public byte StackType { get; set; }
 
     /// <summary>
     /// The version number of the stack.
     /// </summary>
-    public ushort StackVersion { get; set; }
+	public ushort StackVersion { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

@@ -26,7 +26,7 @@ public class NeighborCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of active entries in the neighbor table.
     /// </summary>
-    public byte Value { get; set; }
+	public byte Value { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

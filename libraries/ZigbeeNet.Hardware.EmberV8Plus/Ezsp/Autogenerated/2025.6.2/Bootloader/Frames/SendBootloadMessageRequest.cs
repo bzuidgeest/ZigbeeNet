@@ -26,17 +26,18 @@ public class SendBootloadMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// If true, the destination address and pan id are both set to the broadcast address.
     /// </summary>
-    public bool broadcast { get; set; }
+	public bool broadcast { get; set; }
 
     /// <summary>
     /// The EUI64 of the target node. Ignored if the broadcast field is set to true.
     /// </summary>
-    public _802154LongAddr destEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] destEui64;
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte messageLength { get; set; }
+	public byte messageLength { get; set; }
 
     /// <summary>
     /// The multicast message.

@@ -26,7 +26,7 @@ public class MaxRouterChildCountResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The maximum number of router children.
     /// </summary>
-    public byte MaxRouterChildCount { get; set; }
+	public byte MaxRouterChildCount { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

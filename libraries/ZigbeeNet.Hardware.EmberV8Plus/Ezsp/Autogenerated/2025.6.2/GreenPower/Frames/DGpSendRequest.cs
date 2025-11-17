@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -26,27 +27,27 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The action to perform on the GP TX queue (true to add, false to remove).
     /// </summary>
-    public bool action { get; set; }
+	public bool action { get; set; }
 
     /// <summary>
     /// Whether to use ClearChannelAssessment when transmitting the GPDF.
     /// </summary>
-    public bool useCca { get; set; }
+	public bool useCca { get; set; }
 
     /// <summary>
     /// The Address of the destination GPD.
     /// </summary>
-    public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress addr { get; set; }
 
     /// <summary>
     /// The GPD command ID to send.
     /// </summary>
-    public byte gpdCommandId { get; set; }
+	public byte gpdCommandId { get; set; }
 
     /// <summary>
     /// The length of the GP command payload.
     /// </summary>
-    public byte gpdAsduLength { get; set; }
+	public byte gpdAsduLength { get; set; }
 
     /// <summary>
     /// The GP command payload.
@@ -56,12 +57,12 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The handle to refer to the GPDF.
     /// </summary>
-    public byte gpepHandle { get; set; }
+	public byte gpepHandle { get; set; }
 
     /// <summary>
     /// How long to keep the GPDF in the TX Queue.
     /// </summary>
-    public ushort gpTxQueueEntryLifetimeMs { get; set; }
+	public ushort gpTxQueueEntryLifetimeMs { get; set; }
 
 }
 

@@ -26,7 +26,7 @@ public class SetSourceRouteResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the source route was successfully stored, and SL_STATUS_ALLOCATION_FAILED otherwise.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

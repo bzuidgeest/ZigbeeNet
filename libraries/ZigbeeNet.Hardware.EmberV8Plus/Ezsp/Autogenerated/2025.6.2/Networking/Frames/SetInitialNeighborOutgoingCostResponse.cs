@@ -26,7 +26,7 @@ public class SetInitialNeighborOutgoingCostResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Whether or not initial cost was successfully set.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

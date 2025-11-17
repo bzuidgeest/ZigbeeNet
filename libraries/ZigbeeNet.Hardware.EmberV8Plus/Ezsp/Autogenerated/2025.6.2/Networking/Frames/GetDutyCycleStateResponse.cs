@@ -26,12 +26,12 @@ public class GetDutyCycleStateResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating the success or failure of the command.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The current duty cycle state in effect.
     /// </summary>
-    public ZigbeeDutyCycleState ReturnedState { get; set; }
+	public ZigbeeDutyCycleState ReturnedState { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

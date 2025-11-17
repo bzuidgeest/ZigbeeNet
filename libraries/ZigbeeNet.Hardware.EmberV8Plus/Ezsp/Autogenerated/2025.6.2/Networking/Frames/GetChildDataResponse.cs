@@ -26,12 +26,12 @@ public class GetChildDataResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if there is a child at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_JOINED if there is no child at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The data of the child.
     /// </summary>
-    public ZigbeeChildData ChildData { get; set; }
+	public ZigbeeChildData ChildData { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

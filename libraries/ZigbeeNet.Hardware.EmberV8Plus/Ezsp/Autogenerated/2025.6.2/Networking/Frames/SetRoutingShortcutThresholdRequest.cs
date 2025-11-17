@@ -26,7 +26,7 @@ public class SetRoutingShortcutThresholdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The routing shortcut threshold to configure.
     /// </summary>
-    public byte costThresh { get; set; }
+	public byte costThresh { get; set; }
 
 }
 

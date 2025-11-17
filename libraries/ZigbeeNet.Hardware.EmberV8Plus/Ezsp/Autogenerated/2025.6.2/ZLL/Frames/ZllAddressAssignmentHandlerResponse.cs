@@ -26,12 +26,12 @@ public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// Address assignment information.
     /// </summary>
-    public ZigbeeZllAddressAssignment AddressInfo { get; set; }
+	public ZigbeeZllAddressAssignment AddressInfo { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public ZigbeeRxPacketInfo PacketInfo { get; set; }
+	public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

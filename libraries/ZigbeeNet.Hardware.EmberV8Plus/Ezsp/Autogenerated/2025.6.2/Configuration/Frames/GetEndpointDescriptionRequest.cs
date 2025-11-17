@@ -26,7 +26,7 @@ public class GetEndpointDescriptionRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Endpoint number to get the description of.
     /// </summary>
-    public byte endpoint { get; set; }
+	public byte endpoint { get; set; }
 
 }
 

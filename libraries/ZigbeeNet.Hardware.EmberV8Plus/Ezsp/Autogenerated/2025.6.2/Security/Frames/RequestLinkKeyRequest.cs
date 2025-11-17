@@ -26,7 +26,8 @@ public class RequestLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// This is the IEEE address of the partner device that will share the link key.
     /// </summary>
-    public _802154LongAddr partner { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] partner;
 
 }
 
