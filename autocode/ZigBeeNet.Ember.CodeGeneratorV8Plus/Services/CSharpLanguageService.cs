@@ -1,0 +1,58 @@
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Models.TypeMapper;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Parser;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
+
+namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
+{
+    internal class CSharpLanguageService
+    {
+        private readonly ILogger<CSharpLanguageService> _logger;
+        private readonly TypeMapperService _typeMapper;
+
+        public CSharpLanguageService(ILoggerFactory _loggerFactory, TypeMapperService typeMapper)
+        {
+            _logger = _loggerFactory.CreateLogger<CSharpLanguageService>();
+            _typeMapper = typeMapper;
+        }
+
+        internal string GenerateVariableDeclaration(FrameArgument frameArgument, bool addSemicolon = false)
+        {
+            if (frameArgument.Type.IndexOf('[') > -1 && frameArgument.Type.IndexOf(']') > -1 && frameArgument.Type.IndexOf('[') < frameArgument.Type.IndexOf(']'))
+            {
+                string baseType = frameArgument.Type.Substring(0, frameArgument.Type.IndexOf('['));
+                TypeMapping? argType = _typeMapper.GetTypeMapping(baseType);
+                
+                return $"{argType?.CSharpType.Name}[] {frameArgument.Name}{(addSemicolon ? ";" : String.Empty)}";
+            }
+            else
+            {
+                TypeMapping? argType = _typeMapper.GetTypeMapping(frameArgument.Type);
+                return $"{argType?.CSharpType.Name} {frameArgument.Name}{(addSemicolon ? ";" : String.Empty)}";
+            }
+        }
+
+        internal string GenerateVariableType(FrameArgument frameArgument)
+        {
+            if (frameArgument.Type.IndexOf('[') > -1 && frameArgument.Type.IndexOf(']') > -1 && frameArgument.Type.IndexOf('[') < frameArgument.Type.IndexOf(']'))
+            {
+                string baseType = frameArgument.Type.Substring(0, frameArgument.Type.IndexOf('['));
+                TypeMapping? argType = _typeMapper.GetTypeMapping(baseType);
+
+                return $"{argType?.CSharpType.Name}[]";
+            }
+            else
+            {
+                TypeMapping? argType = _typeMapper.GetTypeMapping(frameArgument.Type);
+                return $"{argType?.CSharpType.Name}";
+            }
+        }
+    }
+}

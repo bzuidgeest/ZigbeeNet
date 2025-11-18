@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
@@ -28,7 +29,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
                 string indent = new string('\t', indentation);
 
                 sb.AppendLine($"{indent}/// <summary>");
-                sb.AppendLine($"{indent}/// {description.XmlEscape()}");
+                sb.AppendLine($"{indent}/// {Regex.Replace(description.XmlEscape(), @"\r\n|[\r\n]", $"\r\n{indent}/// ")}");
                 sb.AppendLine($"{indent}/// </summary>");
             }
         }
