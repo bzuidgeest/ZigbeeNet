@@ -104,7 +104,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Read attribute data on NCP endpoints.
 	/// </summary>
-	public (ZigbeeAfStatus af_status, byte dataType, byte readLength, byte[] dataPtr) ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
+	public (ZigbeeAfStatus afStatus, byte dataType, byte readLength, byte[] dataPtr) ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
 	{
 		ReadAttributeRequest request = new ReadAttributeRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -500,7 +500,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// This call is fired when mux detects an invalid rx case, which would be different rx channels for different protocol contexts, when fast cahnnel switching is not enabled
 	/// </summary>
-	public (byte new_rx_channel, byte old_rx_channel) MuxInvalidRxHandler()
+	public (byte newRxChannel, byte oldRxChannel) MuxInvalidRxHandler()
 	{
 		MuxInvalidRxHandlerRequest request = new MuxInvalidRxHandlerRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -1563,7 +1563,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Fetches the specified beacon in the cache. Beacons are stored in cache after issuing an active scan.
 	/// </summary>
-	public (Status status, ZigbeeBeaconData beacon) GetStoredBeacon(byte beacon_number)
+	public (Status status, ZigbeeBeaconData beacon) GetStoredBeacon(byte beaconNumber)
 	{
 		GetStoredBeaconRequest request = new GetStoredBeaconRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2379,7 +2379,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Set the network update ID to the desired value. Must be called before joining or forming the network.
 	/// </summary>
-	public Status SetNwkUpdateId(byte nwkUpdateId, bool set_when_on_network)
+	public Status SetNwkUpdateId(byte nwkUpdateId, bool setWhenOnNetwork)
 	{
 		SetNwkUpdateIdRequest request = new SetNwkUpdateIdRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2547,7 +2547,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Retrieve information about the current and alternate network key, excluding their contents.
 	/// </summary>
-	public (Status status, ZigbeeSecManNetworkKeyInfo network_key_info) SecManGetNetworkKeyInfo()
+	public (Status status, ZigbeeSecManNetworkKeyInfo networkKeyInfo) SecManGetNetworkKeyInfo()
 	{
 		SecManGetNetworkKeyInfoRequest request = new SecManGetNetworkKeyInfoRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2559,7 +2559,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Retrieve metadata about an APS link key.  Does not retrieve contents.
 	/// </summary>
-	public (Status status, ZigbeeSecManApsKeyMetadata key_data) SecManGetApsKeyInfo(ZigbeeSecManContext context)
+	public (Status status, ZigbeeSecManApsKeyMetadata keyData) SecManGetApsKeyInfo(ZigbeeSecManContext context)
 	{
 		SecManGetApsKeyInfoRequest request = new SecManGetApsKeyInfoRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2571,7 +2571,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Import an application link key into the key table.
 	/// </summary>
-	public Status SecManImportLinkKey(byte index, byte address, ZigbeeSecManKey plaintext_key)
+	public Status SecManImportLinkKey(byte index, byte address, ZigbeeSecManKey plaintextKey)
 	{
 		SecManImportLinkKeyRequest request = new SecManImportLinkKeyRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2583,7 +2583,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Export the link key at given index from the key table.
 	/// </summary>
-	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintext_key, ZigbeeSecManApsKeyMetadata key_data) SecManExportLinkKeyByIndex(byte index)
+	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintextKey, ZigbeeSecManApsKeyMetadata keyData) SecManExportLinkKeyByIndex(byte index)
 	{
 		SecManExportLinkKeyByIndexRequest request = new SecManExportLinkKeyByIndexRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2595,7 +2595,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Export the link key associated with the given EUI from the key table.
 	/// </summary>
-	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintext_key, ZigbeeSecManApsKeyMetadata key_data) SecManExportLinkKeyByEui(byte eui)
+	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintextKey, ZigbeeSecManApsKeyMetadata keyData) SecManExportLinkKeyByEui(byte eui)
 	{
 		SecManExportLinkKeyByEuiRequest request = new SecManExportLinkKeyByEuiRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2619,7 +2619,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Import a transient link key.
 	/// </summary>
-	public Status SecManImportTransientKey(byte eui64, ZigbeeSecManKey plaintext_key)
+	public Status SecManImportTransientKey(byte eui64, ZigbeeSecManKey plaintextKey)
 	{
 		SecManImportTransientKeyRequest request = new SecManImportTransientKeyRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2631,7 +2631,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Export a transient link key from a given table index.
 	/// </summary>
-	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintext_key, ZigbeeSecManApsKeyMetadata key_data) SecManExportTransientKeyByIndex(byte index)
+	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintextKey, ZigbeeSecManApsKeyMetadata keyData) SecManExportTransientKeyByIndex(byte index)
 	{
 		SecManExportTransientKeyByIndexRequest request = new SecManExportTransientKeyByIndexRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2643,7 +2643,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Export a transient link key associated with a given EUI64
 	/// </summary>
-	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintext_key, ZigbeeSecManApsKeyMetadata key_data) SecManExportTransientKeyByEui(byte eui)
+	public (Status status, ZigbeeSecManContext context, ZigbeeSecManKey plaintextKey, ZigbeeSecManApsKeyMetadata keyData) SecManExportTransientKeyByEui(byte eui)
 	{
 		SecManExportTransientKeyByEuiRequest request = new SecManExportTransientKeyByEuiRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -2667,7 +2667,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Encrypt/decrypt a message in-place using APS.
 	/// </summary>
-	public Status ApsCryptMessage(bool encrypt, byte length_combined_arg, byte[] message, byte apsHeaderEndIndex, byte remoteEui64)
+	public Status ApsCryptMessage(bool encrypt, byte lengthCombinedArg, byte[] message, byte apsHeaderEndIndex, byte remoteEui64)
 	{
 		ApsCryptMessageRequest request = new ApsCryptMessageRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
@@ -3147,7 +3147,7 @@ public partial class EmberNcp
 	/// <summary>
 	/// Detects if the standalone bootloader is installed, and if so returns the installed version. If not return 0xffff. A returned version of 0x1234 would indicate version 1.2 build 34. Also return the node&apos;s version of PLAT, MICRO and PHY.
 	/// </summary>
-	public (ushort bootloader_version, byte nodePlat, byte nodeMicro, byte nodePhy) GetStandaloneBootloaderVersionPlatMicroPhy()
+	public (ushort bootloaderVersion, byte nodePlat, byte nodeMicro, byte nodePhy) GetStandaloneBootloaderVersionPlatMicroPhy()
 	{
 		GetStandaloneBootloaderVersionPlatMicroPhyRequest request = new GetStandaloneBootloaderVersionPlatMicroPhyRequest();
 		IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));

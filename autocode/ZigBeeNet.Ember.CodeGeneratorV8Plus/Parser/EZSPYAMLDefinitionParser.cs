@@ -168,23 +168,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     frameDefinition.CommandArguments?.Count ?? 0,
                                     frameDefinition.ResponseArguments?.Count ?? 0);
 
-                                string frameRequestContent = frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
-                                string frameResponseContent = frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
+                                frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
+                                frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
 
-                                string className = char.ToUpper(frameDefinition.CommandName[0]) + frameDefinition.CommandName[1..];
-                                string classNameResponse = className + "Response";
-
-                                if (string.IsNullOrWhiteSpace(frameRequestContent) == false)
-                                {
-                                    SaveFrameFile(section.Name, $"{className}Request", frameRequestContent);
-                                }
-
-                                if (string.IsNullOrWhiteSpace(frameResponseContent) == false)
-                                {
-                                    SaveFrameFile(section.Name, classNameResponse, frameResponseContent);
-                                }
-
-                                frameNumberResponses.Add(frameDefinition.Value, classNameResponse);
+                                frameNumberResponses.Add(frameDefinition.Value, $"{Sanitize.FunctionName(frameDefinition.CommandName)}Response");
                             }
                         }
                         #endregion

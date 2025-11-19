@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// This call is fired when mux detects an invalid rx case, which would be different rx channels for different protocol contexts, when fast cahnnel switching is not enabled
 /// Frame value: 0x0062
 /// </summary>
-public class Mux_invalid_rx_handlerResponse : EzspFrameResponseV8Plus
+public class MuxInvalidRxHandlerResponse : EzspFrameResponseV8Plus
 {
 	public byte NewRxChannel { get; set; }
 
@@ -29,7 +30,7 @@ public class Mux_invalid_rx_handlerResponse : EzspFrameResponseV8Plus
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
-		Mux_invalid_rx_handlerResponse frame = new Mux_invalid_rx_handlerResponse();
+		MuxInvalidRxHandlerResponse frame = new MuxInvalidRxHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
 		frame.NewRxChannel = frameBytes[index];

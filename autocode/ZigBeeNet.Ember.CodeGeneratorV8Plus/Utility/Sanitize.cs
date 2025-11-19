@@ -217,5 +217,37 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
                 "\r\n" + indentation + "/// "
             );
         }
+
+
+        public static string AsFieldName(this string text, bool addUnderscorePrefix = false)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            // Remove sl_ prefix if present
+            if (text.StartsWith("sl_", StringComparison.OrdinalIgnoreCase))
+                text = text[3..];
+
+            // Remove _t suffix if present
+            if (text.EndsWith("_t", StringComparison.OrdinalIgnoreCase))
+                text = text[..^2];
+
+            // Split by underscores and non-alphanumeric characters
+            var parts = System.Text.RegularExpressions.Regex.Split(text, @"[_\W]+");
+
+            // CamelCase: capitalize first letter of every part after the first
+            var camelCased = parts[0] + string.Concat(parts.Skip(1).Select(part =>
+                part.Length > 0 ? char.ToUpper(part[0]) + part[1..] : ""));
+
+            // Check if reserved keyword and prefix with @ if needed
+            if (IsReservedKeyword(camelCased))
+            {
+                camelCased = "@" + camelCased;
+            }
+
+            // Convert the first character to lowercase and prefix with underscore
+            return (addUnderscorePrefix ? "_" : "") + camelCased;
+        }
     }
 }
+    

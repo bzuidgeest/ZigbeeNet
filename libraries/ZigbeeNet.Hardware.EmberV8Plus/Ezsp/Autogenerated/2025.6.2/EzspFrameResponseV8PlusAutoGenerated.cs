@@ -125,7 +125,7 @@ public abstract partial class EzspFrameResponseV8Plus
 		{ 0x005F, (frameBytes) => GpClearProxyTableResponse.Parse(frameBytes) },
 		{ 0x0060, (frameBytes) => LookupNodeIdByEui64Response.Parse(frameBytes) },
 		{ 0x0061, (frameBytes) => LookupEui64ByNodeIdResponse.Parse(frameBytes) },
-		{ 0x0062, (frameBytes) => Mux_invalid_rx_handlerResponse.Parse(frameBytes) },
+		{ 0x0062, (frameBytes) => MuxInvalidRxHandlerResponse.Parse(frameBytes) },
 		{ 0x0063, (frameBytes) => GetMulticastTableEntryResponse.Parse(frameBytes) },
 		{ 0x0064, (frameBytes) => SetMulticastTableEntryResponse.Parse(frameBytes) },
 		{ 0x0065, (frameBytes) => ReadAndClearCountersResponse.Parse(frameBytes) },
