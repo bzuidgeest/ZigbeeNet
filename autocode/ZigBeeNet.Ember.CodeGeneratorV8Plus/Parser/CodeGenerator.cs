@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -14,12 +15,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
     /// Generates EmberNCP class methods using Roslyn syntax trees instead of StringBuilder.
     /// This provides better type safety and easier manipulation of generated code.
     /// </summary>
-    internal class RoslynEmberNCPGenerator
+    internal class CodeGenerator
     {
         private readonly CSharpLanguageService _textService;
         private readonly TypeMapperService _typeMapperService;
 
-        public RoslynEmberNCPGenerator(CSharpLanguageService textService, TypeMapperService typeMapperService)
+        public CodeGenerator(CSharpLanguageService textService, TypeMapperService typeMapperService)
         {
             _textService = textService;
             _typeMapperService = typeMapperService;
@@ -91,8 +92,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             statements.Add(LocalDeclarationStatement(
                 VariableDeclaration(ParseTypeName($"{sanitizedCommandName}Request"))
                     .AddVariables(VariableDeclarator(Identifier("request"))
-                        .WithInitializer(EqualsValueClause(
-                            ObjectCreationExpression(ParseTypeName($"{sanitizedCommandName}Request")))))));
+                        .WithInitializer(EqualsValueClause(ObjectCreationExpression(ParseTypeName($"{sanitizedCommandName}Request"))
+                            .WithArgumentList(ArgumentList()))))));
 
             // Create transaction
             statements.Add(LocalDeclarationStatement(
@@ -107,7 +108,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 Argument(ObjectCreationExpression(ParseTypeName("EzspSingleResponseTransaction"))
                                     .AddArgumentListArguments(
                                         Argument(IdentifierName("request")),
-                                        Argument(TypeOfExpression(ParseTypeName($"{sanitizedCommandName}Response"))))))))));
+                                        Argument(TypeOfExpression(ParseTypeName($"{sanitizedCommandName}Response")))))))))));
 
             // Get response
             statements.Add(LocalDeclarationStatement(

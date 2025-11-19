@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -5,23 +6,23 @@ using System.Collections.Generic;
 using System.Linq;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
+using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 {
     /// <summary>
-    /// Example showing how to use RoslynEmberNCPGenerator to generate the EmberNCP class.
-    /// This replaces the StringBuilder-based approach with Roslyn syntax trees.
+    /// Using RoslynEmberNCPGenerator to generate the EmberNCP class.
     /// </summary>
-    internal class RoslynEmberNCPGeneratorUsageExample
+    internal class EmberNCPGenerator
     {
-        private readonly RoslynEmberNCPGenerator _generator;
+        private readonly CodeGenerator _generator;
         private readonly CSharpLanguageService _textService;
 
-        public RoslynEmberNCPGeneratorUsageExample(CSharpLanguageService textService, TypeMapperService typeMapperService)
+        public EmberNCPGenerator(CSharpLanguageService textService, TypeMapperService typeMapperService)
         {
             _textService = textService;
-            _generator = new RoslynEmberNCPGenerator(textService, typeMapperService);
+            _generator = new CodeGenerator(textService, typeMapperService);
         }
 
         /// <summary>
@@ -31,17 +32,34 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         public CompilationUnitSyntax GenerateEmberNCPClass(List<EzspSection> sections)
         {
             // Create using statements
-            var usings = new[]
+            List<UsingDirectiveSyntax> usings = new()
             {
                 UsingDirective(ParseName("System")),
                 UsingDirective(ParseName("System.Collections.Generic")),
                 UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Transaction")),
                 UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Internal")),
-                UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations")),
-                UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types")),
                 UsingDirective(ParseName("Microsoft.Extensions.Logging")),
                 UsingDirective(ParseName("ZigBeeNet.Util")),
             };
+
+            foreach (EzspSection section in sections)
+            {
+                if (section.Frames is not null && section.Frames.Count > 0)
+                {
+                    usings.Add(UsingDirective(ParseName($"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{Sanitize.SectionName(section.Name)}.Frames")));
+                }
+
+                if (section.Enums is not null && section.Enums.Count > 0)
+                {
+                    usings.Add(UsingDirective(ParseName($"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{Sanitize.SectionName(section.Name)}.Enumerations")));
+                }
+
+                if (section.Typedefs is not null && section.Typedefs.Where(x => x.IsComplex == true).Count() > 0)
+                {
+                    usings.Add(UsingDirective(ParseName($"ZigBeeNet.Hardware.EmberV8Plus.Ezsp.{Sanitize.SectionName(section.Name)}.Types")));
+                }
+            }
+
 
             // Create class members
             var classMembers = new List<MemberDeclarationSyntax>();
@@ -68,7 +86,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             classMembers.Add(FieldDeclaration(
                 VariableDeclaration(ParseTypeName("ZigbeeEzspStatus"))
                     .AddVariables(VariableDeclarator(Identifier("_lastStatus"))))
-                .AddModifiers(Token(SyntaxKind.PrivateKeyword)));
+                .AddModifiers(Token(SyntaxKind.PrivateKeyword))
+                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
+                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed));
 
             // Add constructor
             classMembers.Add(GenerateConstructor());
@@ -93,7 +113,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
             // Create compilation unit
             return CompilationUnit()
-                .AddUsings(usings)
+                .AddUsings(usings.ToArray())
                 .AddMembers(namespaceDeclaration)
                 .NormalizeWhitespace();
         }
