@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,29 +27,29 @@ public class GetAddressTableInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// One of the following: The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index. SL_ZIGBEE_UNKNOWN_NODE_ID - Indicates that the EUI64 stored in the address table at the given index is valid but the short ID is currently unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID - Indicates that the EUI64 stored in the address table at the given location is valid and network address discovery is underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID - Indicates that the entry stored in the address table at the given index is not in use.
     /// </summary>
-    public ushort Nodeid { get; set; }
+	public ushort NodeId { get; set; }
 
     /// <summary>
     /// The EUI64 of the address table entry is copied to this location.
     /// </summary>
-    public byte Eui64 { get; set; }
+	public byte Eui64 { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetAddressTableInfoResponse frame = new GetAddressTableInfoResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Nodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.NodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 		frame.Eui64 = frameBytes[index];
-		index += 1;
+		index += 8;
 
 		return frame;
 	}

@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,33 +27,33 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The source of the route record.
     /// </summary>
-    public ushort Source { get; set; }
+	public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the source.
     /// </summary>
-    public byte Sourceeui { get; set; }
+	public byte SourceEui { get; set; }
 
     /// <summary>
     /// The link quality from the node that last relayed the route record.
     /// </summary>
-    public byte Lasthoplqi { get; set; }
+	public byte LastHopLqi { get; set; }
 
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-    public sbyte Lasthoprssi { get; set; }
+	public sbyte LastHopRssi { get; set; }
 
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
     /// </summary>
-    public byte Relaycount { get; set; }
+	public byte RelayCount { get; set; }
 
     /// <summary>
     /// The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
     /// </summary>
 	// Array field with symbolic size: relayCount*2
-	public byte[] relayList;
+	public byte[] RelayList;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
@@ -60,16 +61,16 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Sourceeui = frameBytes[index];
+		frame.SourceEui = frameBytes[index];
+		index += 8;
+		frame.LastHopLqi = frameBytes[index];
 		index += 1;
-		frame.Lasthoplqi = frameBytes[index];
+		frame.LastHopRssi = (sbyte)frameBytes[index];
 		index += 1;
-		frame.Lasthoprssi = frameBytes[index];
+		frame.RelayCount = frameBytes[index];
 		index += 1;
-		frame.Relaycount = frameBytes[index];
-		index += 1;
-		frame.Relaylist = /* TODO: Implement parsing for type uint8_t[relayCount*2] */ null;
-		index += 0;
+		frame.RelayList = frameBytes.Slice(index, frame.RelayCount2).ToArray();
+		index += frame.RelayCount2;
 
 		return frame;
 	}

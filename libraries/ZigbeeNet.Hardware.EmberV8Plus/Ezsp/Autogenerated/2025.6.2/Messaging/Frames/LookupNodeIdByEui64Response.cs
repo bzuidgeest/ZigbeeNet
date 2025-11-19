@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,21 +27,21 @@ public class LookupNodeIdByEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the short ID was found, SL_STATUS_FAIL if the short ID is not known.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The short ID of the node or SL_ZIGBEE_NULL_NODE_ID if the short ID is not known.
     /// </summary>
-    public ushort Nodeid { get; set; }
+	public ushort NodeId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		LookupNodeIdByEui64Response frame = new LookupNodeIdByEui64Response();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Nodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.NodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

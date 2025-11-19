@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,19 +27,19 @@ public class IncomingNetworkStatusHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// One byte over-the-air error code from network status message
     /// </summary>
-    public byte Errorcode { get; set; }
+	public byte ErrorCode { get; set; }
 
     /// <summary>
     /// The short ID of the remote node
     /// </summary>
-    public ushort Target { get; set; }
+	public ushort Target { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingNetworkStatusHandlerResponse frame = new IncomingNetworkStatusHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Errorcode = frameBytes[index];
+		frame.ErrorCode = frameBytes[index];
 		index += 1;
 		frame.Target = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;

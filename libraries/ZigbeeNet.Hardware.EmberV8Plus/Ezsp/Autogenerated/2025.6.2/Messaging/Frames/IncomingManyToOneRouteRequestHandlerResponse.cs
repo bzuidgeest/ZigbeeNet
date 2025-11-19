@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,17 +27,17 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
     /// <summary>
     /// The short id of the concentrator.
     /// </summary>
-    public ushort Source { get; set; }
+	public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the concentrator.
     /// </summary>
-    public byte Longid { get; set; }
+	public byte LongId { get; set; }
 
     /// <summary>
     /// The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
     /// </summary>
-    public byte Cost { get; set; }
+	public byte Cost { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -45,8 +46,8 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
 
 		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Longid = frameBytes[index];
-		index += 1;
+		frame.LongId = frameBytes[index];
+		index += 8;
 		frame.Cost = frameBytes[index];
 		index += 1;
 

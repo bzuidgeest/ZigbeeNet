@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -28,28 +29,28 @@ public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
 	/// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
 	/// source route at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The node ID of the destination in that entry.
     /// </summary>
-    public ushort Destination { get; set; }
+	public ushort Destination { get; set; }
 
     /// <summary>
     /// The closer node index for this source route table entry
     /// </summary>
-    public byte Closerindex { get; set; }
+	public byte CloserIndex { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetSourceRouteTableEntryResponse frame = new GetSourceRouteTableEntryResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 		frame.Destination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Closerindex = frameBytes[index];
+		frame.CloserIndex = frameBytes[index];
 		index += 1;
 
 		return frame;

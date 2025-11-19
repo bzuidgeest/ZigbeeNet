@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,14 +27,14 @@ public class ChildIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child or SL_ZIGBEE_NULL_NODE_ID if there isn&apos;t a child at the childIndex specified
     /// </summary>
-    public ushort Childid { get; set; }
+	public ushort ChildId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ChildIdResponse frame = new ChildIdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ChildId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

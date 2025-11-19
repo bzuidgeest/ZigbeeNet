@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,12 +27,12 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>
-    public byte Partner { get; set; }
+	public byte Partner { get; set; }
 
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
     /// </summary>
-    public ZigbeeKeyStatus Status { get; set; }
+	public ZigbeeKeyStatus Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -39,9 +40,9 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
 		int index = frame.ParseHeader(frameBytes);
 
 		frame.Partner = frameBytes[index];
+		index += 8;
+		frame.Status = (ZigbeeKeyStatus)frameBytes[index];
 		index += 1;
-		frame.Status = /* TODO: Implement parsing for type sl_zigbee_key_status_t */ null;
-		index += 0;
 
 		return frame;
 	}

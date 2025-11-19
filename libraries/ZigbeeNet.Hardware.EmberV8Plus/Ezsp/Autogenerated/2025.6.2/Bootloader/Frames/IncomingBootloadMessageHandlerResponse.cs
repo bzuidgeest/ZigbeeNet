@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,36 +27,36 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the sending node.
     /// </summary>
-    public byte Longid { get; set; }
+	public byte LongId { get; set; }
 
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-    public ZigbeeRxPacketInfo Packetinfo { get; set; }
+	public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-    public byte Messagelength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The bootload message that was sent.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingBootloadMessageHandlerResponse frame = new IncomingBootloadMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Longid = frameBytes[index];
+		frame.LongId = frameBytes[index];
+		index += 8;
+		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+		index += 18;
+		frame.MessageLength = frameBytes[index];
 		index += 1;
-		frame.Packetinfo = /* TODO: Implement parsing for type sl_zigbee_rx_packet_info_t */ null;
-		index += 0;
-		frame.Messagelength = frameBytes[index];
-		index += 1;
-		frame.Messagecontents = /* TODO: Implement parsing for type uint8_t[messageLength] */ null;
-		index += 0;
+		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+		index += frame.MessageLength;
 
 		return frame;
 	}

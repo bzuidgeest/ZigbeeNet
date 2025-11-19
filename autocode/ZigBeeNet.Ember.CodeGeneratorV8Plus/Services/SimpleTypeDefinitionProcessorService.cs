@@ -98,6 +98,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
                         IsEnum = typeDefinition.IsEnumInDisguise,
                         SizeInBytes = typeSizeInBytes,
                         ArrayLength = simpleTypedefDefinition.Type.IsArrayTypeDefinition() ? simpleTypedefDefinition.Type.GetArrayDefinitionSize() : 0,
+                        UnderlyingTypeName = simpleTypedefDefinition.Type
                     },
                     new CSharpType(cSharpTypeName)
                     {

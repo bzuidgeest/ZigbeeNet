@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public class GetEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// The 64-bit ID.
     /// </summary>
-    public byte Eui64 { get; set; }
+	public byte Eui64 { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -34,7 +35,7 @@ public class GetEui64Response : EzspFrameResponseV8Plus
 		int index = frame.ParseHeader(frameBytes);
 
 		frame.Eui64 = frameBytes[index];
-		index += 1;
+		index += 8;
 
 		return frame;
 	}

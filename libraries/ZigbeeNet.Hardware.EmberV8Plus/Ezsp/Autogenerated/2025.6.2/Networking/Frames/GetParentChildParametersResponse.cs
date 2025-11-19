@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,28 +27,28 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The number of children the node currently has.
     /// </summary>
-    public byte Childcount { get; set; }
+	public byte ChildCount { get; set; }
 
     /// <summary>
     /// The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public byte Parenteui64 { get; set; }
+	public byte ParentEui64 { get; set; }
 
     /// <summary>
     /// The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-    public ushort Parentnodeid { get; set; }
+	public ushort ParentNodeId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetParentChildParametersResponse frame = new GetParentChildParametersResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Childcount = frameBytes[index];
+		frame.ChildCount = frameBytes[index];
 		index += 1;
-		frame.Parenteui64 = frameBytes[index];
-		index += 1;
-		frame.Parentnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ParentEui64 = frameBytes[index];
+		index += 8;
+		frame.ParentNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

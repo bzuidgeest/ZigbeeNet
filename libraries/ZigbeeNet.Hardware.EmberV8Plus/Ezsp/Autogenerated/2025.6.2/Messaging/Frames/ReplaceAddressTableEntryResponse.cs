@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,35 +27,35 @@ public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_OK if the EUI64, short ID and extended timeout setting were successfully modified, and SL_STATUS_ZIGBEE_ADDRESS_TABLE_ENTRY_IS_ACTIVE otherwise.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The EUI64 of the address table entry before it was modified.
     /// </summary>
-    public byte Oldeui64 { get; set; }
+	public byte OldEui64 { get; set; }
 
     /// <summary>
     /// One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
     /// </summary>
-    public ushort Oldid { get; set; }
+	public ushort OldId { get; set; }
 
     /// <summary>
     /// true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
     /// </summary>
-    public bool Oldextendedtimeout { get; set; }
+	public bool OldExtendedTimeout { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ReplaceAddressTableEntryResponse frame = new ReplaceAddressTableEntryResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
-		frame.Oldeui64 = frameBytes[index];
-		index += 1;
-		frame.Oldid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
+		frame.OldEui64 = frameBytes[index];
+		index += 8;
+		frame.OldId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Oldextendedtimeout = frameBytes[index];
+		frame.OldExtendedTimeout = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

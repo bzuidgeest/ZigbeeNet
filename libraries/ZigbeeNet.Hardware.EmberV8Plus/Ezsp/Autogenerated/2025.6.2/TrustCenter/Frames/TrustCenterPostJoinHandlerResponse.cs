@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,42 +27,42 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The Node Id of the node whose status changed
     /// </summary>
-    public ushort Newnodeid { get; set; }
+	public ushort NewNodeId { get; set; }
 
     /// <summary>
     /// The EUI64 of the node whose status changed.
     /// </summary>
-    public byte Newnodeeui64 { get; set; }
+	public byte NewNodeEui64 { get; set; }
 
     /// <summary>
     /// The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.
     /// </summary>
-    public ZigbeeDeviceUpdate Status { get; set; }
+	public ZigbeeDeviceUpdate Status { get; set; }
 
     /// <summary>
     /// An sl_zigbee_join_decision_t reflecting the decision made.
     /// </summary>
-    public ZigbeeJoinDecision Policydecision { get; set; }
+	public ZigbeeJoinDecision PolicyDecision { get; set; }
 
     /// <summary>
     /// The parent of the node whose status has changed.
     /// </summary>
-    public ushort Parentofnewnodeid { get; set; }
+	public ushort ParentOfNewNodeId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		TrustCenterPostJoinHandlerResponse frame = new TrustCenterPostJoinHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Newnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.NewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Newnodeeui64 = frameBytes[index];
+		frame.NewNodeEui64 = frameBytes[index];
+		index += 8;
+		frame.Status = (ZigbeeDeviceUpdate)frameBytes[index];
 		index += 1;
-		frame.Status = /* TODO: Implement parsing for type sl_zigbee_device_update_t */ null;
-		index += 0;
-		frame.Policydecision = /* TODO: Implement parsing for type sl_zigbee_join_decision_t */ null;
-		index += 0;
-		frame.Parentofnewnodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.PolicyDecision = (ZigbeeJoinDecision)frameBytes[index];
+		index += 1;
+		frame.ParentOfNewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;

@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public class IdConflictHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The short id for which a conflict was detected
     /// </summary>
-    public ushort Id { get; set; }
+	public ushort Id { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

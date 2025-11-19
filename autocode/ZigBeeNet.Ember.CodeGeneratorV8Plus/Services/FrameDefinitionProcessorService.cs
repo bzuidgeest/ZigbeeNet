@@ -391,7 +391,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 }
                                 else
                                 {
-                                    sb.AppendLine(ReadPrimitiveTypeString(typeMapping.Value.CType.Name));
+                                    sb.AppendLine(ReadPrimitiveTypeString(typeMapping.Value.CSharpType.Name));
                                 }
                             }
                             else
@@ -441,6 +441,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 "uint8_t" => "frameBytes[index];",
                 "int8_t" => "(sbyte)frameBytes[index];",
                 "bool" => "((frameBytes[index] & 1) == 1);",
+                "int" => "BinaryPrimitives.ReadInt32LittleEndian(frameBytes.Slice(index, 4));",
+                "uint" => "BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));",
+                "short" => "BinaryPrimitives.ReadInt16LittleEndian(frameBytes.Slice(index, 2));",
+                "ushort" => "BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));",
+                "long" => "BinaryPrimitives.ReadInt64LittleEndian(frameBytes.Slice(index, 8));",
+                "ulong" => "BinaryPrimitives.ReadUInt64LittleEndian(frameBytes.Slice(index, 8));",
+                "byte" => "frameBytes[index];",
+                "sbyte" => "(sbyte)frameBytes[index];",
                 _ => throw new Exception($"Not a primitive type: {cPrimitveName}"),
             };
         }

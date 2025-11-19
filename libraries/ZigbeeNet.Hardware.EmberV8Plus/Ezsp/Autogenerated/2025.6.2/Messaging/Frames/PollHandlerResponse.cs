@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,21 +27,21 @@ public class PollHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The node ID of the child that is requesting data.
     /// </summary>
-    public ushort Childid { get; set; }
+	public ushort ChildId { get; set; }
 
     /// <summary>
     /// True if transmit is expected, false otherwise.
     /// </summary>
-    public bool Transmitexpected { get; set; }
+	public bool TransmitExpected { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		PollHandlerResponse frame = new PollHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ChildId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Transmitexpected = frameBytes[index];
+		frame.TransmitExpected = ((frameBytes[index] & 1) == 1);
 		index += 1;
 
 		return frame;

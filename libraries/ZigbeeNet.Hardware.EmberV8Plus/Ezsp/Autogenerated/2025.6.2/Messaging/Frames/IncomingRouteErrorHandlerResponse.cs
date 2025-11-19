@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,20 +27,20 @@ public class IncomingRouteErrorHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// SL_STATUS_ZIGBEE_SOURCE_ROUTE_FAILURE or SL_STATUS_ZIGBEE_MANY_TO_ONE_ROUTE_FAILURE.
     /// </summary>
-    public Status Status { get; set; }
+	public Status Status { get; set; }
 
     /// <summary>
     /// The short id of the remote node.
     /// </summary>
-    public ushort Target { get; set; }
+	public ushort Target { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		IncomingRouteErrorHandlerResponse frame = new IncomingRouteErrorHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Status = /* TODO: Implement parsing for type sl_status_t */ null;
-		index += 0;
+		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+		index += 4;
 		frame.Target = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 

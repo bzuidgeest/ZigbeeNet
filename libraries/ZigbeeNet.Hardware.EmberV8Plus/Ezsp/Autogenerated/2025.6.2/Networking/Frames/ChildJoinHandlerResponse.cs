@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,27 +27,27 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The index of the child of interest.
     /// </summary>
-    public byte Index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// True if the child is joining. False the child is leaving.
     /// </summary>
-    public bool Joining { get; set; }
+	public bool Joining { get; set; }
 
     /// <summary>
     /// The node ID of the child.
     /// </summary>
-    public ushort Childid { get; set; }
+	public ushort ChildId { get; set; }
 
     /// <summary>
     /// The EUI64 of the child.
     /// </summary>
-    public byte Childeui64 { get; set; }
+	public byte ChildEui64 { get; set; }
 
     /// <summary>
     /// The node type of the child.
     /// </summary>
-    public ZigbeeNodeType Childtype { get; set; }
+	public ZigbeeNodeType ChildType { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -55,14 +56,14 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Index = frameBytes[index];
 		index += 1;
-		frame.Joining = frameBytes[index];
+		frame.Joining = ((frameBytes[index] & 1) == 1);
 		index += 1;
-		frame.Childid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.ChildId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Childeui64 = frameBytes[index];
+		frame.ChildEui64 = frameBytes[index];
+		index += 8;
+		frame.ChildType = (ZigbeeNodeType)frameBytes[index];
 		index += 1;
-		frame.Childtype = /* TODO: Implement parsing for type sl_zigbee_node_type_t */ null;
-		index += 0;
 
 		return frame;
 	}

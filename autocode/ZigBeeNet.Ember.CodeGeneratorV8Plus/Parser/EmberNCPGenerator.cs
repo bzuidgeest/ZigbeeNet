@@ -29,7 +29,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         /// Generates the EmberNCP class with all frame methods using Roslyn.
         /// This is equivalent to the StringBuilder approach but with better type safety.
         /// </summary>
-        public CompilationUnitSyntax GenerateEmberNCPClass(List<EzspSection> sections)
+        public string GenerateEmberNCPClass(List<EzspSection> sections)
         {
             // Create using statements
             List<UsingDirectiveSyntax> usings = new()
@@ -115,7 +115,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             return CompilationUnit()
                 .AddUsings(usings.ToArray())
                 .AddMembers(namespaceDeclaration)
-                .NormalizeWhitespace();
+                .NormalizeWhitespace()
+                .ToFullString();
         }
 
         private ConstructorDeclarationSyntax GenerateConstructor()
@@ -145,14 +146,6 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     Comment("/// <returns>The last status value</returns>")));
         }
 
-        /// <summary>
-        /// Converts the generated syntax tree to a string representation.
-        /// </summary>
-        public string GenerateCode(List<EzspSection> sections)
-        {
-            var compilationUnit = GenerateEmberNCPClass(sections);
-            return compilationUnit.ToFullString();
-        }
     }
 }
 

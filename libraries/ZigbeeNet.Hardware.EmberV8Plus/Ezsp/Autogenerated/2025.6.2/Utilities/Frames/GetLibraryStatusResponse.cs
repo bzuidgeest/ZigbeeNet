@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public class GetLibraryStatusResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The status of the library being queried.
     /// </summary>
-    public byte Status { get; set; }
+	public byte Status { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{

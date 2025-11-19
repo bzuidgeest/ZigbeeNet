@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,19 +27,19 @@ public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The unused panID which has been found.
     /// </summary>
-    public ushort Panid { get; set; }
+	public ushort PanId { get; set; }
 
     /// <summary>
     /// The channel that the unused panID was found on.
     /// </summary>
-    public byte Channel { get; set; }
+	public byte Channel { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Panid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.PanId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 		frame.Channel = frameBytes[index];
 		index += 1;

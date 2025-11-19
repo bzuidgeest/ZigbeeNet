@@ -7,6 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -26,14 +27,14 @@ public class GetBindingRemoteNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The short ID of the destination node or SL_ZIGBEE_NULL_NODE_ID if no destination is known.
     /// </summary>
-    public ushort Nodeid { get; set; }
+	public ushort NodeId { get; set; }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetBindingRemoteNodeIdResponse frame = new GetBindingRemoteNodeIdResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Nodeid = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+		frame.NodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
 
 		return frame;
