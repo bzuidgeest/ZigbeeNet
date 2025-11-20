@@ -27,17 +27,17 @@ public class CalculateSmacs283k1Request : EzspFrameRequestV8Plus
     /// <summary>
     /// The role of this device in the Key Establishment protocol.
     /// </summary>
-	public bool amInitiator { get; set; }
+	public bool AmInitiator { get; set; }
 
     /// <summary>
     /// The key establishment partner&apos;s implicit certificate.
     /// </summary>
-	public ZigbeeCertificate283k1Data partnerCertificate { get; set; }
+	public ZigbeeCertificate283k1Data PartnerCertificate { get; set; }
 
     /// <summary>
     /// The key establishment partner&apos;s ephemeral public key
     /// </summary>
-	public ZigbeePublicKey283k1Data partnerEphemeralPublicKey { get; set; }
+	public ZigbeePublicKey283k1Data PartnerEphemeralPublicKey { get; set; }
 
 }
 

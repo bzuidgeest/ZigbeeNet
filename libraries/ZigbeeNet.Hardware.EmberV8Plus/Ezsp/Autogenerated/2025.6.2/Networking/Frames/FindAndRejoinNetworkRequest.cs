@@ -27,22 +27,22 @@ public class FindAndRejoinNetworkRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// This parameter tells the stack whether to try to use the current network key. If it has the current network key it will perform a secure rejoin (encrypted). If this fails the device should try an unsecure rejoin. If the Trust Center allows the rejoin then the current Network Key will be sent encrypted using the device&apos;s Link Key.
     /// </summary>
-	public bool haveCurrentNetworkKey { get; set; }
+	public bool HaveCurrentNetworkKey { get; set; }
 
     /// <summary>
     /// A mask indicating the channels to be scanned. See &lt;i&gt;sli_zigbee_stack_start_scan&lt;/i&gt; for format details. A value of 0 is reinterpreted as the mask for the current channel.
     /// </summary>
-	public uint channelMask { get; set; }
+	public uint ChannelMask { get; set; }
 
     /// <summary>
     /// A sl_zigbee_rejoin_reason_t variable which could be passed in if there is actually a reason for rejoin, or could be left at 0xFF
     /// </summary>
-	public byte reason { get; set; }
+	public byte Reason { get; set; }
 
     /// <summary>
     /// The rejoin could be triggered with a different nodeType. This value could be set to 0 or SL_ZIGBEE_DEVICE_TYPE_UNCHANGED if not needed.
     /// </summary>
-	public byte nodeType { get; set; }
+	public byte NodeType { get; set; }
 
 }
 

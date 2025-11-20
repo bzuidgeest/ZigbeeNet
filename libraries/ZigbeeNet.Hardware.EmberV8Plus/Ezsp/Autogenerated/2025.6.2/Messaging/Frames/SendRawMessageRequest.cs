@@ -27,22 +27,22 @@ public class SendRawMessageRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte messageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The raw message.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
     /// <summary>
     /// transmit priority.
     /// </summary>
-	public byte priority { get; set; }
+	public byte Priority { get; set; }
 
     /// <summary>
     /// Should we enable CCA or not.
     /// </summary>
-	public bool useCca { get; set; }
+	public bool UseCca { get; set; }
 
 }
 

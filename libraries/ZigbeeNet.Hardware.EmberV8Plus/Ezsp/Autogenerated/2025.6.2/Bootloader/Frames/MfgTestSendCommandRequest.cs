@@ -27,7 +27,7 @@ public class MfgTestSendCommandRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A pointer to the outgoing command string.
     /// </summary>
-	public byte[] command;
+	public byte[] Command;
 }
 
 #endif

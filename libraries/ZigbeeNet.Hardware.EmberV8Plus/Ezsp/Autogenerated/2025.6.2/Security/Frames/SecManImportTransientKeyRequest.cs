@@ -28,12 +28,12 @@ public class SecManImportTransientKeyRequest : EzspFrameRequestV8Plus
     /// EUI64 associated with this transient key.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public byte[] Eui64;
 
     /// <summary>
     /// The key to import.
     /// </summary>
-	public ZigbeeSecManKey plaintext_key { get; set; }
+	public ZigbeeSecManKey PlaintextKey { get; set; }
 
 }
 

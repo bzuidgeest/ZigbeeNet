@@ -28,12 +28,12 @@ public class TokenFactoryResetRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Exclude network and APS outgoing frame counter tokens.
     /// </summary>
-	public bool excludeOutgoingFC { get; set; }
+	public bool ExcludeOutgoingFC { get; set; }
 
     /// <summary>
     /// Exclude stack boot counter token.
     /// </summary>
-	public bool excludeBootCounter { get; set; }
+	public bool ExcludeBootCounter { get; set; }
 
 }
 

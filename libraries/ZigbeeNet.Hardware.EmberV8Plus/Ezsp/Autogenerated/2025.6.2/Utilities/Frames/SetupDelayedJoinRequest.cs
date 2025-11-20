@@ -27,7 +27,7 @@ public class SetupDelayedJoinRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Network key timeout
     /// </summary>
-	public byte networkKeyTimeoutS { get; set; }
+	public byte NetworkKeyTimeoutS { get; set; }
 
 }
 

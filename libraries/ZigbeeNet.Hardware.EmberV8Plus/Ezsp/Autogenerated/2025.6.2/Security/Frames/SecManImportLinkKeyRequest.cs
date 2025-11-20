@@ -27,18 +27,18 @@ public class SecManImportLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index where this key is to be imported to.
     /// </summary>
-	public byte index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// EUI64 this key is associated with.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] address;
+	public byte[] Address;
 
     /// <summary>
     /// The key data to be imported.
     /// </summary>
-	public ZigbeeSecManKey plaintext_key { get; set; }
+	public ZigbeeSecManKey PlaintextKey { get; set; }
 
 }
 

@@ -28,7 +28,7 @@ public class GetNeighborFrameCounterRequest : EzspFrameRequestV8Plus
     /// eui64 of the node
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public byte[] Eui64;
 
 }
 

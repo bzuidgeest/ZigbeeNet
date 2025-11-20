@@ -27,7 +27,7 @@ public class SetDutyCycleLimitsInStackRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The duty cycle limits configuration to utilize.
     /// </summary>
-	public ZigbeeDutyCycleLimits limits { get; set; }
+	public ZigbeeDutyCycleLimits Limits { get; set; }
 
 }
 

@@ -27,7 +27,7 @@ public class SetSourceRouteDiscoveryModeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Source route discovery mode: off:0, on:1, reschedule:2
     /// </summary>
-	public byte mode { get; set; }
+	public byte Mode { get; set; }
 
 }
 

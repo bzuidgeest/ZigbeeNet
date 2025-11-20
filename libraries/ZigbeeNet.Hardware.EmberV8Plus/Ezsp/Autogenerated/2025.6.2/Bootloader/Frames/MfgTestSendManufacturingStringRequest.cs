@@ -28,7 +28,7 @@ public class MfgTestSendManufacturingStringRequest : EzspFrameRequestV8Plus
     /// The 16-byte manufacturing string.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-	public byte[] newString;
+	public byte[] NewString;
 
 }
 

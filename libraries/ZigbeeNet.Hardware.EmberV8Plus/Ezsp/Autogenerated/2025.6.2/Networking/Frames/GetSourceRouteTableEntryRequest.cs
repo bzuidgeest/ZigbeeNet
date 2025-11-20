@@ -29,7 +29,7 @@ public class GetSourceRouteTableEntryRequest : EzspFrameRequestV8Plus
 	/// source route table. Possible indexes range from zero to
 	/// SOURCE_ROUTE_TABLE_FILLED_SIZE.
     /// </summary>
-	public byte index { get; set; }
+	public byte Index { get; set; }
 
 }
 

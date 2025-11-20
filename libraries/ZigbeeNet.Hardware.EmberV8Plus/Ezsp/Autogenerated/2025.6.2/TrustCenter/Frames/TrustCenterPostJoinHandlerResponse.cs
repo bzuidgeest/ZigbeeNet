@@ -32,7 +32,8 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the node whose status changed.
     /// </summary>
-	public byte NewNodeEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] NewNodeEui64;
 
     /// <summary>
     /// The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.
@@ -56,7 +57,7 @@ public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.NewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.NewNodeEui64 = frameBytes[index];
+		frame.NewNodeEui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.Status = (ZigbeeDeviceUpdate)frameBytes[index];
 		index += 1;

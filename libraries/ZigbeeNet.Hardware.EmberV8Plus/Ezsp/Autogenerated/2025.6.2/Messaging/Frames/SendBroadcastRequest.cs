@@ -27,43 +27,43 @@ public class SendBroadcastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The aliased source from which we send the broadcast. This must be SL_ZIGBEE_NULL_NODE_ID if we do not need an aliased source
     /// </summary>
-	public ushort alias { get; set; }
+	public ushort Alias { get; set; }
 
     /// <summary>
     /// The destination to which to send the broadcast. This must be one of the three ZigBee broadcast addresses.
     /// </summary>
-	public ushort destination { get; set; }
+	public ushort Destination { get; set; }
 
     /// <summary>
     /// The alias nwk sequence number. this won&apos;t be used if there is no aliased source.
     /// </summary>
-	public byte nwkSequence { get; set; }
+	public byte NwkSequence { get; set; }
 
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-	public ZigbeeApsFrame apsFrame { get; set; }
+	public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// The message will be delivered to all nodes within &lt;i&gt;radius&lt;/i&gt; hops of the sender. A radius of zero is converted to SL_ZIGBEE_MAX_HOPS.
     /// </summary>
-	public byte radius { get; set; }
+	public byte Radius { get; set; }
 
     /// <summary>
     /// A value chosen by the Host. This value is used in the &lt;i&gt;sl_zigbee_ezsp_message_sent_handler&lt;/i&gt; response to refer to this message.
     /// </summary>
-	public ushort messageTag { get; set; }
+	public ushort MessageTag { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte messageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The broadcast message.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 }
 
 #endif

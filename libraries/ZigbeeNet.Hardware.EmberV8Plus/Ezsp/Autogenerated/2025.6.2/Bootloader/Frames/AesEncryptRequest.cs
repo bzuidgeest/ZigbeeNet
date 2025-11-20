@@ -27,11 +27,11 @@ public class AesEncryptRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// 16 bytes of plaintext.
     /// </summary>
-	public byte[] plaintext;
+	public byte[] Plaintext;
     /// <summary>
     /// The 16-byte encryption key to use.
     /// </summary>
-	public byte[] key;
+	public byte[] Key;
 }
 
 #endif

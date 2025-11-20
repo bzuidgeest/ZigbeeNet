@@ -27,17 +27,17 @@ public class StartScanRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Indicates the type of scan to be performed. Possible values are: SL_ZIGBEE_EZSP_ENERGY_SCAN and SL_ZIGBEE_EZSP_ACTIVE_SCAN. For each type, the respective callback for reporting results is: energyScanResultHandler and networkFoundHandler. The energy scan and active scan report errors and completion via the scanCompleteHandler.
     /// </summary>
-	public ZigbeeEzspNetworkScanType scanType { get; set; }
+	public ZigbeeEzspNetworkScanType ScanType { get; set; }
 
     /// <summary>
     /// Bits set as 1 indicate that this particular channel should be scanned. Bits set to 0 indicate that this particular channel should not be scanned. For example, a channelMask value of 0x00000001 would indicate that only channel 0 should be scanned. Valid channels range from 11 to 26 inclusive. This translates to a channel mask value of 0x07FFF800. As a convenience, a value of 0 is reinterpreted as the mask for the current channel.
     /// </summary>
-	public uint channelMask { get; set; }
+	public uint ChannelMask { get; set; }
 
     /// <summary>
     /// Sets the exponent of the number of scan periods, where a scan period is 960 symbols. The scan will occur for ((2^duration) + 1) scan periods.
     /// </summary>
-	public byte duration { get; set; }
+	public byte Duration { get; set; }
 
 }
 

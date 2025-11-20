@@ -24,9 +24,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ConcentratorNoteRouteErrorRequest : EzspFrameRequestV8Plus
 {
-	public Status status { get; set; }
+	public Status Status { get; set; }
 
-	public ushort nodeId { get; set; }
+	public ushort NodeId { get; set; }
 
 }
 

@@ -27,7 +27,7 @@ public class DelayTestRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Data will not be read from the host for this many milliseconds.
     /// </summary>
-	public ushort delay { get; set; }
+	public ushort Delay { get; set; }
 
 }
 

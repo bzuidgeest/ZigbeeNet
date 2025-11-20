@@ -28,7 +28,7 @@ public class GpSinkTableFindOrAllocateEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// An sl_zigbee_gp_address_t struct containing a copy of the gpd address to be found.
     /// </summary>
-	public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress Addr { get; set; }
 
 }
 

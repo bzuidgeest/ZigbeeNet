@@ -27,7 +27,7 @@ public class ChildPowerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.
     /// </summary>
-	public byte childIndex { get; set; }
+	public byte ChildIndex { get; set; }
 
 }
 

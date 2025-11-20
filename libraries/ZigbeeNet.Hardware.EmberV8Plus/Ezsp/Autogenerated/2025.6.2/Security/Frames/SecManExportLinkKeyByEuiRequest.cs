@@ -28,7 +28,7 @@ public class SecManExportLinkKeyByEuiRequest : EzspFrameRequestV8Plus
     /// EUI64 associated with the key to export.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui;
+	public byte[] Eui;
 
 }
 

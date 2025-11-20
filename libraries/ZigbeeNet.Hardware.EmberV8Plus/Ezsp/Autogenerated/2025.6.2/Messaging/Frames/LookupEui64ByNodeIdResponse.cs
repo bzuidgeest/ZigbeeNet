@@ -32,7 +32,8 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the node.
     /// </summary>
-	public byte Eui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] Eui64;
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -41,7 +42,7 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.Eui64 = frameBytes[index];
+		frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 
 		return frame;

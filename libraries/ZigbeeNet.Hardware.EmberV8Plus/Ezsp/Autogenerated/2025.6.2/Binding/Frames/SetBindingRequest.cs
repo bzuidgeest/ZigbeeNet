@@ -27,12 +27,12 @@ public class SetBindingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of a binding table entry.
     /// </summary>
-	public byte index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// The contents of the binding entry.
     /// </summary>
-	public ZigbeeBindingTableEntry value { get; set; }
+	public ZigbeeBindingTableEntry Value { get; set; }
 
 }
 

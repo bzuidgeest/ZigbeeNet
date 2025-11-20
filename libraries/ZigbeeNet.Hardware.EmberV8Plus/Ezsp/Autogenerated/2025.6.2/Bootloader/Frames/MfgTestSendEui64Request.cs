@@ -28,7 +28,7 @@ public class MfgTestSendEui64Request : EzspFrameRequestV8Plus
     /// The 8-byte EUID for the DUT.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] newId;
+	public byte[] NewId;
 
 }
 

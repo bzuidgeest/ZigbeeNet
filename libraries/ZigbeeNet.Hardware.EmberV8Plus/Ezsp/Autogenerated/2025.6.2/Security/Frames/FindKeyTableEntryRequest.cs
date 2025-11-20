@@ -28,12 +28,12 @@ public class FindKeyTableEntryRequest : EzspFrameRequestV8Plus
     /// The address to search for. Alternatively, all zeros may be passed in to search for the first empty entry.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] address;
+	public byte[] Address;
 
     /// <summary>
     /// This indicates whether to search for an entry that contains a link key or a master key. true means to search for an entry with a Link Key.
     /// </summary>
-	public bool linkKey { get; set; }
+	public bool LinkKey { get; set; }
 
 }
 

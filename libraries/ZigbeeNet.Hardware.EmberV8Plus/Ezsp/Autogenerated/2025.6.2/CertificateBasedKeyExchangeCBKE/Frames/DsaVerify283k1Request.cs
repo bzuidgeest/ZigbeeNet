@@ -27,17 +27,17 @@ public class DsaVerify283k1Request : EzspFrameRequestV8Plus
     /// <summary>
     /// The AES-MMO message digest of the signed data. If dsaSign command was used to generate the signature for this data, the final byte (replaced by signature type of 0x01) in the messageContents array passed to dsaSign is included in the hash context used for the digest calculation.
     /// </summary>
-	public ZigbeeMessageDigest digest { get; set; }
+	public ZigbeeMessageDigest Digest { get; set; }
 
     /// <summary>
     /// The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.
     /// </summary>
-	public ZigbeeCertificate283k1Data signerCertificate { get; set; }
+	public ZigbeeCertificate283k1Data SignerCertificate { get; set; }
 
     /// <summary>
     /// The signature of the signed data.
     /// </summary>
-	public ZigbeeSignature283k1Data receivedSig { get; set; }
+	public ZigbeeSignature283k1Data ReceivedSig { get; set; }
 
 }
 

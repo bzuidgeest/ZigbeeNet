@@ -27,53 +27,53 @@ public class WriteAttributeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Endpoint
     /// </summary>
-	public byte endpoint { get; set; }
+	public byte Endpoint { get; set; }
 
     /// <summary>
     /// Cluster.
     /// </summary>
-	public ushort cluster { get; set; }
+	public ushort Cluster { get; set; }
 
     /// <summary>
     /// Attribute ID.
     /// </summary>
-	public ushort attributeId { get; set; }
+	public ushort AttributeId { get; set; }
 
     /// <summary>
     /// Mask.
     /// </summary>
-	public byte mask { get; set; }
+	public byte Mask { get; set; }
 
     /// <summary>
     /// Manufacturer code.
     /// </summary>
-	public ushort manufacturerCode { get; set; }
+	public ushort ManufacturerCode { get; set; }
 
     /// <summary>
     /// Override read only and data type.
     /// </summary>
-	public bool overrideReadOnlyAndDataType { get; set; }
+	public bool OverrideReadOnlyAndDataType { get; set; }
 
     /// <summary>
     /// Override read only and data type.
     /// </summary>
-	public bool justTest { get; set; }
+	public bool JustTest { get; set; }
 
     /// <summary>
     /// Attribute data type.
     /// </summary>
-	public byte dataType { get; set; }
+	public byte DataType { get; set; }
 
     /// <summary>
     /// Attribute data length.
     /// </summary>
-	public byte dataLength { get; set; }
+	public byte DataLength { get; set; }
 
     /// <summary>
     /// Attribute data.
     /// </summary>
 	// Array field with symbolic size: dataLength
-	public byte[] data;
+	public byte[] Data;
 }
 
 #endif

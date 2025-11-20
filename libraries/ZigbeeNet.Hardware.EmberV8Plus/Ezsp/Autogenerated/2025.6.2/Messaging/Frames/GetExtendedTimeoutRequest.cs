@@ -28,7 +28,7 @@ public class GetExtendedTimeoutRequest : EzspFrameRequestV8Plus
     /// The address of the node for which the timeout is to be returned.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] remoteEui64;
+	public byte[] RemoteEui64;
 
 }
 

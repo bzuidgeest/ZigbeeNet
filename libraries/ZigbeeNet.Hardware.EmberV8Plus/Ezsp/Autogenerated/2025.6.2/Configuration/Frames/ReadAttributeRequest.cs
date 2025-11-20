@@ -27,27 +27,27 @@ public class ReadAttributeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Endpoint
     /// </summary>
-	public byte endpoint { get; set; }
+	public byte Endpoint { get; set; }
 
     /// <summary>
     /// Cluster.
     /// </summary>
-	public ushort cluster { get; set; }
+	public ushort Cluster { get; set; }
 
     /// <summary>
     /// Attribute ID.
     /// </summary>
-	public ushort attributeId { get; set; }
+	public ushort AttributeId { get; set; }
 
     /// <summary>
     /// Mask.
     /// </summary>
-	public byte mask { get; set; }
+	public byte Mask { get; set; }
 
     /// <summary>
     /// Manufacturer code.
     /// </summary>
-	public ushort manufacturerCode { get; set; }
+	public ushort ManufacturerCode { get; set; }
 
 }
 

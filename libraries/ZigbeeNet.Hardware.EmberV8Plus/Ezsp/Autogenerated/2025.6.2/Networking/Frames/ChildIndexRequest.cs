@@ -27,7 +27,7 @@ public class ChildIndexRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node ID of the child
     /// </summary>
-	public ushort childId { get; set; }
+	public ushort ChildId { get; set; }
 
 }
 

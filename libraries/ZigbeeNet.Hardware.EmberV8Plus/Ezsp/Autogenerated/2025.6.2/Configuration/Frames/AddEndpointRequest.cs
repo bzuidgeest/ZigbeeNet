@@ -27,43 +27,43 @@ public class AddEndpointRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The application endpoint to be added.
     /// </summary>
-	public byte endpoint { get; set; }
+	public byte Endpoint { get; set; }
 
     /// <summary>
     /// The endpoint&apos;s application profile.
     /// </summary>
-	public ushort profileId { get; set; }
+	public ushort ProfileId { get; set; }
 
     /// <summary>
     /// The endpoint&apos;s device ID within the application profile.
     /// </summary>
-	public ushort deviceId { get; set; }
+	public ushort DeviceId { get; set; }
 
     /// <summary>
     /// The endpoint&apos;s device version.
     /// </summary>
-	public byte deviceVersion { get; set; }
+	public byte DeviceVersion { get; set; }
 
     /// <summary>
     /// The number of cluster IDs in &lt;i&gt;inputClusterList&lt;/i&gt;.
     /// </summary>
-	public byte inputClusterCount { get; set; }
+	public byte InputClusterCount { get; set; }
 
     /// <summary>
     /// The number of cluster IDs in &lt;i&gt;outputClusterList&lt;/i&gt;.
     /// </summary>
-	public byte outputClusterCount { get; set; }
+	public byte OutputClusterCount { get; set; }
 
     /// <summary>
     /// Input cluster IDs the endpoint will accept.
     /// </summary>
 	// Array field with symbolic size: inputClusterCount
-	public ushort[] inputClusterList;
+	public ushort[] InputClusterList;
     /// <summary>
     /// Output cluster IDs the endpoint may send.
     /// </summary>
 	// Array field with symbolic size: outputClusterCount
-	public ushort[] outputClusterList;
+	public ushort[] OutputClusterList;
 }
 
 #endif

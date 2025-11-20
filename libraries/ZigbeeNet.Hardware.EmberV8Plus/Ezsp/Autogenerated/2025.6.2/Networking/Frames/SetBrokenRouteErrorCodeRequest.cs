@@ -27,7 +27,7 @@ public class SetBrokenRouteErrorCodeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Desired error code.
     /// </summary>
-	public byte errorCode { get; set; }
+	public byte ErrorCode { get; set; }
 
 }
 

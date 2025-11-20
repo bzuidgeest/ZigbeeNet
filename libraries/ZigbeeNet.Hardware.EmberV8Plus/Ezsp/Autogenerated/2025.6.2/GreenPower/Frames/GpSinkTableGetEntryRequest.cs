@@ -28,7 +28,7 @@ public class GpSinkTableGetEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the requested sink table entry.
     /// </summary>
-	public byte sinkIndex { get; set; }
+	public byte SinkIndex { get; set; }
 
 }
 

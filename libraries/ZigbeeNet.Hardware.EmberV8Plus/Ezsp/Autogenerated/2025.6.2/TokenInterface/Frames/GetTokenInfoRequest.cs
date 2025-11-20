@@ -28,7 +28,7 @@ public class GetTokenInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index of the token in the token table for which information is needed.
     /// </summary>
-	public byte index { get; set; }
+	public byte Index { get; set; }
 
 }
 

@@ -27,18 +27,18 @@ public class SetValueRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which value to change.
     /// </summary>
-	public ZigbeeEzspValueId valueId { get; set; }
+	public ZigbeeEzspValueId ValueId { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;value&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte valueLength { get; set; }
+	public byte ValueLength { get; set; }
 
     /// <summary>
     /// The new value.
     /// </summary>
 	// Array field with symbolic size: valueLength
-	public byte[] value;
+	public byte[] Value;
 }
 
 #endif

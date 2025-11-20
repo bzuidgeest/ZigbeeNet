@@ -28,7 +28,7 @@ public class GpProxyTableLookupRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The address to search for
     /// </summary>
-	public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress Addr { get; set; }
 
 }
 

@@ -59,7 +59,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Services
             else
             {
                 TypeMapping? argType = _typeMapper.GetTypeMapping(frameArgument.Type);
-                return $"{argType?.CSharpType.Name}";
+                if (argType?.CSharpType.IsArray == true)
+                {
+                    return $"{argType?.CSharpType.Name}[]";
+                }
+                else
+                {
+                    return $"{argType?.CSharpType.Name}";
+                }
             }
         }
 

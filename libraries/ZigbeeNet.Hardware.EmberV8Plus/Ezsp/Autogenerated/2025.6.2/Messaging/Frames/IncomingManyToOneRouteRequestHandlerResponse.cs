@@ -32,7 +32,8 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
     /// <summary>
     /// The EUI64 of the concentrator.
     /// </summary>
-	public byte LongId { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] LongId;
 
     /// <summary>
     /// The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
@@ -46,7 +47,7 @@ public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8P
 
 		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.LongId = frameBytes[index];
+		frame.LongId = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.Cost = frameBytes[index];
 		index += 1;

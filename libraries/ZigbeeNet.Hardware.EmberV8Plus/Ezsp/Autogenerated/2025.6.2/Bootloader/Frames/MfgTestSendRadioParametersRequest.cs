@@ -27,12 +27,12 @@ public class MfgTestSendRadioParametersRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Sets the radio band for the DUT. See ember-common.h for possible values.
     /// </summary>
-	public byte supportedBands { get; set; }
+	public byte SupportedBands { get; set; }
 
     /// <summary>
     /// Sets the CC1020 crystal offset. This parameter has no effect on the EM2420, and it may safely be set to 0 for this RFIC.
     /// </summary>
-	public sbyte crystalOffset { get; set; }
+	public sbyte CrystalOffset { get; set; }
 
 }
 

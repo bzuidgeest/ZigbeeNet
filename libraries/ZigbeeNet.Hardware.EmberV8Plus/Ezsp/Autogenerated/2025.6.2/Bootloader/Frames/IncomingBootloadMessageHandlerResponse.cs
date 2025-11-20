@@ -27,7 +27,8 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the sending node.
     /// </summary>
-	public byte LongId { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] LongId;
 
     /// <summary>
     /// Information about the incoming packet.
@@ -49,7 +50,7 @@ public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
 		IncomingBootloadMessageHandlerResponse frame = new IncomingBootloadMessageHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.LongId = frameBytes[index];
+		frame.LongId = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
 		index += 18;

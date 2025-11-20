@@ -27,7 +27,7 @@ public class MfglibInternalStartRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// true to generate a mfglibRxHandler callback when a packet is received.
     /// </summary>
-	public bool rxCallback { get; set; }
+	public bool RxCallback { get; set; }
 
 }
 

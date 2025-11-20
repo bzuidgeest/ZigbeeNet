@@ -27,13 +27,13 @@ public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the packetContents parameter in bytes. Must be greater than 3 and less than 123.
     /// </summary>
-	public byte packetLength { get; set; }
+	public byte PacketLength { get; set; }
 
     /// <summary>
     /// The packet to send. The last two bytes will be replaced with the 16-bit CRC.
     /// </summary>
 	// Array field with symbolic size: packetLength
-	public byte[] packetContents;
+	public byte[] PacketContents;
 }
 
 #endif

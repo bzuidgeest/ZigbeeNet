@@ -27,7 +27,7 @@ public class ZllSetRadioIdleModeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The power mode to be set.
     /// </summary>
-	public ZigbeeRadioPowerMode mode { get; set; }
+	public ZigbeeRadioPowerMode Mode { get; set; }
 
 }
 

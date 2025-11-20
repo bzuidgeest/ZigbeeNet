@@ -27,7 +27,7 @@ public class SecManExportKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Metadata to identify the requested key.
     /// </summary>
-	public ZigbeeSecManContext context { get; set; }
+	public ZigbeeSecManContext Context { get; set; }
 
 }
 

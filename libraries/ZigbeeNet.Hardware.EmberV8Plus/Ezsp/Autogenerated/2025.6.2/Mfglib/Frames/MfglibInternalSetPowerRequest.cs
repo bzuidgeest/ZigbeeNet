@@ -27,12 +27,12 @@ public class MfglibInternalSetPowerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Power mode. Refer to txPowerModes in stack/include/sl_zigbee_types.h for possible values.
     /// </summary>
-	public ushort txPowerMode { get; set; }
+	public ushort TxPowerMode { get; set; }
 
     /// <summary>
     /// Power in units of dBm. Refer to radio data sheet for valid range.
     /// </summary>
-	public sbyte power { get; set; }
+	public sbyte Power { get; set; }
 
 }
 

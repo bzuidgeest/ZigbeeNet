@@ -27,13 +27,13 @@ public class RemoveNeighborRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short ID of the neighbor.
     /// </summary>
-	public ushort shortId { get; set; }
+	public ushort ShortId { get; set; }
 
     /// <summary>
     /// The long ID of the neighbor.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] longId;
+	public byte[] LongId;
 
 }
 

@@ -27,13 +27,13 @@ public class SendTrustCenterLinkKeyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The short address of the node to which this command will be sent
     /// </summary>
-	public ushort destinationNodeId { get; set; }
+	public ushort DestinationNodeId { get; set; }
 
     /// <summary>
     /// The long address of the node to which this command will be sent
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] destinationEui64;
+	public byte[] DestinationEui64;
 
 }
 

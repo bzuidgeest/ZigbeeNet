@@ -27,7 +27,7 @@ public class GetPolicyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which policy to read.
     /// </summary>
-	public ZigbeeEzspPolicyId policyId { get; set; }
+	public ZigbeeEzspPolicyId PolicyId { get; set; }
 
 }
 

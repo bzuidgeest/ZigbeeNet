@@ -115,13 +115,13 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             // Check if array size is numeric (compile-time constant)
                             if (int.TryParse(arraySize, out _))
                             {
-                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name.AsPropertyName()};");
                             }
                             else
                             {
                                 // Array size is a symbolic constant 
                                 sb.AppendLine($"\t// Array field with symbolic size: {arraySize}");
-                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {arg.Name.AsPropertyName()};");
                             }
                         }
                         else
@@ -130,11 +130,11 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             if (typeMapping?.CSharpType.IsArray == true)
                             {
                                 sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {typeMapping?.CSharpType.ArrayLength})]");
-                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name}[] {arg.Name};");
+                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name}[] {arg.Name.AsPropertyName()};");
                             }
                             else
                             {
-                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name} {arg.Name} {{ get; set; }}");
+                                sb.AppendLine($"\tpublic {typeMapping?.CSharpType.Name} {arg.Name.AsPropertyName()} {{ get; set; }}");
                             }
                             
                             sb.AppendLine();
@@ -249,7 +249,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             if (int.TryParse(arraySize, out _))
                             {
                                 sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {arraySize})]");
-                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.PropertyName(arg.Name)};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.AsPropertyName(arg.Name)};");
                             }
                             else
                             {
@@ -263,14 +263,23 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                 {
                                     sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {MapCConstants.MapConstant(arraySize)})]");
                                 }
-                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.PropertyName(arg.Name)};");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.AsPropertyName(arg.Name)};");
                             }
                         }
                         else
                         {
                             TypeMapping? csharpBaseType = _typeMapper.GetTypeMapping(arg.Type);
-                            sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name} {Sanitize.PropertyName(arg.Name)} {{ get; set; }}");
-                            sb.AppendLine();
+                            if (csharpBaseType?.CSharpType.IsArray == true)
+                            {
+                                sb.AppendLine($"\t[MarshalAs(UnmanagedType.ByValArray, SizeConst = {csharpBaseType?.CSharpType.ArrayLength})]");
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name}[] {Sanitize.AsPropertyName(arg.Name)};");
+                                sb.AppendLine();
+                            }
+                            else
+                            {
+                                sb.AppendLine($"\tpublic {csharpBaseType?.CSharpType.Name} {Sanitize.AsPropertyName(arg.Name)} {{ get; set; }}");
+                                sb.AppendLine();
+                            }
                         }
                     }
                 }
@@ -292,7 +301,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         //    sb.AppendLine("    /// </summary>");
                         //}
 
-                        sb.Append($"\t\tframe.{Sanitize.PropertyName(arg.Name)} = ");
+                        sb.Append($"\t\tframe.{Sanitize.AsPropertyName(arg.Name)} = ");
 
                         TypeMapping? typeMapping = null;
                         if (arg.Type.IsArrayTypeDefinition() == true)
@@ -338,8 +347,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                             if (typeMapping?.CSharpType.Name == "byte" && isVariableLengthArray == true)
                             {
-                                sb.AppendLine($"frameBytes.Slice(index, frame.{Sanitize.PropertyName(arrayLengthSymbolicSize)}).ToArray();");
-                                sb.AppendLine($"\t\tindex += frame.{Sanitize.PropertyName(arrayLengthSymbolicSize)};");
+                                sb.AppendLine($"frameBytes.Slice(index, frame.{Sanitize.AsPropertyName(arrayLengthSymbolicSize)}).ToArray();");
+                                sb.AppendLine($"\t\tindex += frame.{Sanitize.AsPropertyName(arrayLengthSymbolicSize)};");
                             }
                             else if (isVariableLengthArray == true)
                             {
@@ -388,6 +397,10 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     {
                                         sb.AppendLine($"MemoryMarshal.Read<{typeMapping?.CSharpType.Name}>(frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes}));");
                                     }
+                                }
+                                else if (typeMapping?.CSharpType.IsArray == true)
+                                {
+                                    sb.AppendLine($"frameBytes.Slice(index, {typeMapping?.CType.SizeInBytes}).ToArray();");
                                 }
                                 else
                                 {

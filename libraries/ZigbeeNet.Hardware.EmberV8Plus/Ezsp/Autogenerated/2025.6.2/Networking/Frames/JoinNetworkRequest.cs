@@ -27,12 +27,12 @@ public class JoinNetworkRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Specification of the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.
     /// </summary>
-	public ZigbeeNodeType nodeType { get; set; }
+	public ZigbeeNodeType NodeType { get; set; }
 
     /// <summary>
     /// Specification of the network with which the node should associate.
     /// </summary>
-	public ZigbeeNetworkParameters parameters { get; set; }
+	public ZigbeeNetworkParameters Parameters { get; set; }
 
 }
 

@@ -27,43 +27,43 @@ public class SendMulticastRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The APS frame for the message. The multicast will be sent to the groupId in this frame.
     /// </summary>
-	public ZigbeeApsFrame apsFrame { get; set; }
+	public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// The message will be delivered to all nodes within this number of hops of the sender. A value of zero is converted to SL_ZIGBEE_MAX_HOPS.
     /// </summary>
-	public byte hops { get; set; }
+	public byte Hops { get; set; }
 
     /// <summary>
     /// The number of hops that the message will be forwarded by devices that are not members of the group. A value of 7 or greater is treated as infinite.
     /// </summary>
-	public ushort broadcastAddr { get; set; }
+	public ushort BroadcastAddr { get; set; }
 
     /// <summary>
     /// The alias source address
     /// </summary>
-	public ushort alias { get; set; }
+	public ushort Alias { get; set; }
 
     /// <summary>
     /// the alias sequence number
     /// </summary>
-	public byte nwkSequence { get; set; }
+	public byte NwkSequence { get; set; }
 
     /// <summary>
     /// A value chosen by the Host. This value is used in the &lt;i&gt;sl_zigbee_ezsp_message_sent_handler&lt;/i&gt; response to refer to this message.
     /// </summary>
-	public ushort messageTag { get; set; }
+	public ushort MessageTag { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte messageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The multicast message.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 }
 
 #endif

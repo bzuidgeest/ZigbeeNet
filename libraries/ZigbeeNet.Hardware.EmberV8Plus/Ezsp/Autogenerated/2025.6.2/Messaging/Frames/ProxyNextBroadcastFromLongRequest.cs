@@ -27,7 +27,7 @@ public class ProxyNextBroadcastFromLongRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The long source from which to send the broadcast
     /// </summary>
-	public byte[] euiSource;
+	public byte[] EuiSource;
 }
 
 #endif

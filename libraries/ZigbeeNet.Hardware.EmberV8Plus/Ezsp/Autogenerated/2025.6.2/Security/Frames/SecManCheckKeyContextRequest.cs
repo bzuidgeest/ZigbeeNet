@@ -27,7 +27,7 @@ public class SecManCheckKeyContextRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Context struct to check the validity of.
     /// </summary>
-	public ZigbeeSecManContext context { get; set; }
+	public ZigbeeSecManContext Context { get; set; }
 
 }
 

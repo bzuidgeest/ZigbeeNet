@@ -32,7 +32,8 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-	public byte ParentEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] ParentEui64;
 
     /// <summary>
     /// The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
@@ -46,7 +47,7 @@ public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
 
 		frame.ChildCount = frameBytes[index];
 		index += 1;
-		frame.ParentEui64 = frameBytes[index];
+		frame.ParentEui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.ParentNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;

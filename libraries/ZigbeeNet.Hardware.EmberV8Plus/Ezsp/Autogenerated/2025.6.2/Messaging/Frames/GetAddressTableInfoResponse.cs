@@ -37,7 +37,8 @@ public class GetAddressTableInfoResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the address table entry is copied to this location.
     /// </summary>
-	public byte Eui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] Eui64;
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
@@ -48,7 +49,7 @@ public class GetAddressTableInfoResponse : EzspFrameResponseV8Plus
 		index += 4;
 		frame.NodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.Eui64 = frameBytes[index];
+		frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 
 		return frame;

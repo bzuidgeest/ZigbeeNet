@@ -27,12 +27,12 @@ public class SetNwkUpdateIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Desired value of the network update ID.
     /// </summary>
-	public byte nwkUpdateId { get; set; }
+	public byte NwkUpdateId { get; set; }
 
     /// <summary>
     /// Set to true in case change should also apply when on network.
     /// </summary>
-	public bool set_when_on_network { get; set; }
+	public bool SetWhenOnNetwork { get; set; }
 
 }
 

@@ -28,12 +28,12 @@ public class GetTokenDataRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Key of the token in the token table for which data is needed.
     /// </summary>
-	public uint token { get; set; }
+	public uint Token { get; set; }
 
     /// <summary>
     /// Index in case of the indexed token.
     /// </summary>
-	public uint index { get; set; }
+	public uint Index { get; set; }
 
 }
 

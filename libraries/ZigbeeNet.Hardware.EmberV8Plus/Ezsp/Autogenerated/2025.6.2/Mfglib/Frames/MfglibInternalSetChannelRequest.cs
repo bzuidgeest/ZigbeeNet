@@ -27,7 +27,7 @@ public class MfglibInternalSetChannelRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The channel to switch to. Valid values are 11 to 26.
     /// </summary>
-	public byte channel { get; set; }
+	public byte Channel { get; set; }
 
 }
 

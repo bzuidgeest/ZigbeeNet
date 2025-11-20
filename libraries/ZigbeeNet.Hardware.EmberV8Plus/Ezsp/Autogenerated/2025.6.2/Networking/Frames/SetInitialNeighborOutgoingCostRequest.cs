@@ -27,7 +27,7 @@ public class SetInitialNeighborOutgoingCostRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The new default cost. Valid values are 0, 1, 3, 5, and 7.
     /// </summary>
-	public byte cost { get; set; }
+	public byte Cost { get; set; }
 
 }
 

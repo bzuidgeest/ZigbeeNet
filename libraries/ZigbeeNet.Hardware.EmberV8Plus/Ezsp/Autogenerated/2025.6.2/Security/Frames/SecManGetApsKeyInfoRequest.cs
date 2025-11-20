@@ -27,7 +27,7 @@ public class SecManGetApsKeyInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Context used to input information about key.
     /// </summary>
-	public ZigbeeSecManContext context { get; set; }
+	public ZigbeeSecManContext Context { get; set; }
 
 }
 

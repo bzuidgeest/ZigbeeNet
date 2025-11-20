@@ -32,7 +32,8 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the source.
     /// </summary>
-	public byte SourceEui { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] SourceEui;
 
     /// <summary>
     /// The link quality from the node that last relayed the route record.
@@ -61,7 +62,7 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
 
 		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.SourceEui = frameBytes[index];
+		frame.SourceEui = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.LastHopLqi = frameBytes[index];
 		index += 1;

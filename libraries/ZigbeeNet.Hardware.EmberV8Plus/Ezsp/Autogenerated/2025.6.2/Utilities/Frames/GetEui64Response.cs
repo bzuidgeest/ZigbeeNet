@@ -27,14 +27,15 @@ public class GetEui64Response : EzspFrameResponseV8Plus
     /// <summary>
     /// The 64-bit ID.
     /// </summary>
-	public byte Eui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] Eui64;
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GetEui64Response frame = new GetEui64Response();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Eui64 = frameBytes[index];
+		frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 
 		return frame;

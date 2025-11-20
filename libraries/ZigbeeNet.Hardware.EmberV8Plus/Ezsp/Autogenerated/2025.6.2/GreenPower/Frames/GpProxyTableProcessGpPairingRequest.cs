@@ -28,51 +28,51 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The options field of the GP Pairing command.
     /// </summary>
-	public uint options { get; set; }
+	public uint Options { get; set; }
 
     /// <summary>
     /// The target GPD.
     /// </summary>
-	public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress Addr { get; set; }
 
     /// <summary>
     /// The communication mode of the GP Sink.
     /// </summary>
-	public byte commMode { get; set; }
+	public byte CommMode { get; set; }
 
     /// <summary>
     /// The network address of the GP Sink.
     /// </summary>
-	public ushort sinkNetworkAddress { get; set; }
+	public ushort SinkNetworkAddress { get; set; }
 
     /// <summary>
     /// The group ID of the GP Sink.
     /// </summary>
-	public ushort sinkGroupId { get; set; }
+	public ushort SinkGroupId { get; set; }
 
     /// <summary>
     /// The alias assigned to the GPD.
     /// </summary>
-	public ushort assignedAlias { get; set; }
+	public ushort AssignedAlias { get; set; }
 
     /// <summary>
     /// The IEEE address of the GP Sink.
     /// </summary>
-	public byte[] sinkIeeeAddress;
+	public byte[] SinkIeeeAddress;
     /// <summary>
     /// The key to use for the target GPD.
     /// </summary>
-	public ZigbeeKeyData gpdKey { get; set; }
+	public ZigbeeKeyData GpdKey { get; set; }
 
     /// <summary>
     /// The GPD security frame counter.
     /// </summary>
-	public uint gpdSecurityFrameCounter { get; set; }
+	public uint GpdSecurityFrameCounter { get; set; }
 
     /// <summary>
     /// The forwarding radius.
     /// </summary>
-	public byte forwardingRadius { get; set; }
+	public byte ForwardingRadius { get; set; }
 
 }
 

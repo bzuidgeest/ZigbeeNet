@@ -28,22 +28,22 @@ public class GpSinkCommissionRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// commissioning options
     /// </summary>
-	public byte options { get; set; }
+	public byte Options { get; set; }
 
     /// <summary>
     /// gpm address for security.
     /// </summary>
-	public ushort gpmAddrForSecurity { get; set; }
+	public ushort GpmAddrForSecurity { get; set; }
 
     /// <summary>
     /// gpm address for pairing.
     /// </summary>
-	public ushort gpmAddrForPairing { get; set; }
+	public ushort GpmAddrForPairing { get; set; }
 
     /// <summary>
     /// sink endpoint.
     /// </summary>
-	public byte sinkEndpoint { get; set; }
+	public byte SinkEndpoint { get; set; }
 
 }
 

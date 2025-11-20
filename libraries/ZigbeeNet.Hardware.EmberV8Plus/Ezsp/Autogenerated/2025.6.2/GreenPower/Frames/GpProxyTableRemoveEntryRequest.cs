@@ -28,7 +28,7 @@ public class GpProxyTableRemoveEntryRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of the requested proxy table entry.
     /// </summary>
-	public byte proxyIndex { get; set; }
+	public byte ProxyIndex { get; set; }
 
 }
 

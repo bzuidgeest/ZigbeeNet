@@ -27,7 +27,7 @@ public class GetTokenRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which token to read
     /// </summary>
-	public byte tokenId { get; set; }
+	public byte TokenId { get; set; }
 
 }
 

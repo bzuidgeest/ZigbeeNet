@@ -27,12 +27,12 @@ public class SetPolicyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Identifies which policy to modify.
     /// </summary>
-	public ZigbeeEzspPolicyId policyId { get; set; }
+	public ZigbeeEzspPolicyId PolicyId { get; set; }
 
     /// <summary>
     /// The new decision for the specified policy.
     /// </summary>
-	public ZigbeeEzspDecisionId decisionId { get; set; }
+	public ZigbeeEzspDecisionId DecisionId { get; set; }
 
 }
 

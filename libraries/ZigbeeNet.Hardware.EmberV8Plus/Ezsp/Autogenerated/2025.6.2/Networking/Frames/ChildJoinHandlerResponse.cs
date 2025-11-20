@@ -42,7 +42,8 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the child.
     /// </summary>
-	public byte ChildEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] ChildEui64;
 
     /// <summary>
     /// The node type of the child.
@@ -60,7 +61,7 @@ public class ChildJoinHandlerResponse : EzspFrameResponseV8Plus
 		index += 1;
 		frame.ChildId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;
-		frame.ChildEui64 = frameBytes[index];
+		frame.ChildEui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.ChildType = (ZigbeeNodeType)frameBytes[index];
 		index += 1;

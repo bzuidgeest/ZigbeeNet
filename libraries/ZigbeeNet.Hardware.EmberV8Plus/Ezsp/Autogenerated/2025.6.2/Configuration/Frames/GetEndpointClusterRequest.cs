@@ -27,17 +27,17 @@ public class GetEndpointClusterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Endpoint number to get a cluster ID for.
     /// </summary>
-	public byte endpoint { get; set; }
+	public byte Endpoint { get; set; }
 
     /// <summary>
     /// Which list to get the cluster ID from.  (0 for input, 1 for output).
     /// </summary>
-	public byte listId { get; set; }
+	public byte ListId { get; set; }
 
     /// <summary>
     /// Index from requested list to look at the cluster ID of.
     /// </summary>
-	public byte listIndex { get; set; }
+	public byte ListIndex { get; set; }
 
 }
 

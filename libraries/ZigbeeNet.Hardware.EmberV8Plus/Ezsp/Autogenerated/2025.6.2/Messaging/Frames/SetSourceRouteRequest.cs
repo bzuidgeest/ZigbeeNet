@@ -27,18 +27,18 @@ public class SetSourceRouteRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The destination of the source route.
     /// </summary>
-	public ushort destination { get; set; }
+	public ushort Destination { get; set; }
 
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
     /// </summary>
-	public byte relayCount { get; set; }
+	public byte RelayCount { get; set; }
 
     /// <summary>
     /// The source route.
     /// </summary>
 	// Array field with symbolic size: relayCount
-	public ushort[] relayList;
+	public ushort[] RelayList;
 }
 
 #endif

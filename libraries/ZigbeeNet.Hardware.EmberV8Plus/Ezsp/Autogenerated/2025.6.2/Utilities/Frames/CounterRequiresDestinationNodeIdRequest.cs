@@ -27,7 +27,7 @@ public class CounterRequiresDestinationNodeIdRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The counter to be checked.
     /// </summary>
-	public ZigbeeCounterType counter { get; set; }
+	public ZigbeeCounterType Counter { get; set; }
 
 }
 

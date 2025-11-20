@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Utility;
@@ -47,7 +48,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddParameterListParameters(parameters.ToArray())
                 .WithBody(methodBody)
-                .WithLeadingTrivia(GenerateXmlDocumentation(frameDefinition, sanitizedCommandName));
+                .WithLeadingTrivia(GenerateFunctionXmlDocumentation(frameDefinition, sanitizedCommandName));
 
             return method;
         }
@@ -60,7 +61,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 var tupleElements = frameDefinition.ResponseArguments
                     .Select(arg => TupleElement(
                         ParseTypeName(_textService.GenerateVariableType(arg)),
-                        Identifier(Sanitize.PropertyName(arg.Name))))
+                        Identifier(Sanitize.AsPropertyName(arg.Name))))
                     .ToArray();
                 return TupleType(SeparatedList(tupleElements));
             }
@@ -79,7 +80,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         private List<ParameterSyntax> GenerateParameters(FrameDefinition frameDefinition)
         {
             return frameDefinition.CommandArguments
-                .Select(arg => Parameter(Identifier(Sanitize.PropertyName(arg.Name)))
+                .Select(arg => Parameter(Identifier(arg.Name.AsFieldName()))
                     .WithType(ParseTypeName(_textService.GenerateVariableType(arg))))
                 .ToList();
         }
@@ -94,6 +95,17 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                     .AddVariables(VariableDeclarator(Identifier("request"))
                         .WithInitializer(EqualsValueClause(ObjectCreationExpression(ParseTypeName($"{sanitizedCommandName}Request"))
                             .WithArgumentList(ArgumentList()))))));
+
+            // Set request properties
+            foreach (var commandArgument in frameDefinition.CommandArguments)
+            {
+                statements.Add(ExpressionStatement(
+                    AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("request"),
+                            IdentifierName(Sanitize.AsPropertyName(commandArgument.Name))),
+                        IdentifierName(commandArgument.Name.AsFieldName()))));
+            }
 
             // Create transaction
             statements.Add(LocalDeclarationStatement(
@@ -147,7 +159,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 var tupleElements = frameDefinition.ResponseArguments
                     .Select(arg => Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                         IdentifierName("response"),
-                        IdentifierName(Sanitize.PropertyName(arg.Name)))))
+                        IdentifierName(Sanitize.AsPropertyName(arg.Name)))))
                     .ToArray();
                 return ReturnStatement(TupleExpression(SeparatedList(tupleElements)));
             }
@@ -156,7 +168,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 // Return single property
                 return ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                     IdentifierName("response"),
-                    IdentifierName(Sanitize.PropertyName(frameDefinition.ResponseArguments[0].Name))));
+                    IdentifierName(Sanitize.AsPropertyName(frameDefinition.ResponseArguments[0].Name))));
             }
             else
             {
@@ -165,20 +177,36 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             }
         }
 
-        private SyntaxTriviaList GenerateXmlDocumentation(FrameDefinition frameDefinition, string methodName)
+        private SyntaxTriviaList GenerateFunctionXmlDocumentation(FrameDefinition frameDefinition, string methodName)
         {
             var trivia = new List<SyntaxTrivia>();
 
             if (!string.IsNullOrWhiteSpace(frameDefinition.Description))
             {
                 trivia.Add(Comment("/// <summary>"));
-                trivia.Add(Comment($"/// {frameDefinition.Description.XmlEscape()}"));
+                Regex.Split(frameDefinition.Description, @"\r\n|[\r\n]").ToList().ForEach(line =>
+                {
+                    trivia.Add(Comment($"/// {line.XmlEscape()}"));
+                });
                 trivia.Add(Comment("/// </summary>"));
 
                 // Add parameter documentation
-                foreach (var param in frameDefinition.CommandArguments)
+                foreach (var commandArgument in frameDefinition.CommandArguments)
                 {
-                    trivia.Add(Comment($"/// <param name=\"{Sanitize.PropertyName(param.Name)}\">{param.Description?.XmlEscape() ?? "Parameter"}</param>"));
+                    IEnumerable<string> lines = Regex.Split(commandArgument.Description ?? "", @"\r\n|[\r\n]").Where(x => string.IsNullOrWhiteSpace(x) == false);
+                    if (lines.Count() == 1)
+                    {
+                        trivia.Add(Comment($"/// <param name=\"{Sanitize.AsPropertyName(commandArgument.Name)}\">{lines.First().XmlEscape() ?? "Parameter"}</param>"));
+                    }
+                    else
+                    {
+                        trivia.Add(Comment($"/// <param name=\"{Sanitize.AsPropertyName(commandArgument.Name)}\">"));
+                        foreach (string line in lines)
+                        {
+                            trivia.Add(Comment($"/// {line.XmlEscape()}"));
+                        }
+                        trivia.Add(Comment($"/// </param>"));
+                    }
                 }
 
                 // Add return documentation based on return type
@@ -186,11 +214,23 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 {
                     // Multiple return values - document as tuple
                     trivia.Add(Comment("/// <returns>A tuple containing:"));
-                    foreach (var arg in frameDefinition.ResponseArguments)
+                    foreach (var responseArgument in frameDefinition.ResponseArguments)
                     {
-                        var argName = Sanitize.PropertyName(arg.Name);
-                        var argDescription = arg.Description?.XmlEscape() ?? argName;
-                        trivia.Add(Comment($"/// - {argName}: {argDescription}"));
+                        string argName = Sanitize.AsPropertyName(responseArgument.Name);
+                        string argDescription = argName;
+                        IEnumerable<string> lines = Regex.Split(responseArgument.Description ?? "", @"\r\n|[\r\n]").Where(x => string.IsNullOrWhiteSpace(x) == false);
+                        if (lines.Count() <= 1)
+                        {
+                            trivia.Add(Comment($"/// - {argName}: {lines.FirstOrDefault() ?? ""}"));
+                        }
+                        else 
+                        {
+                            trivia.Add(Comment($"/// - {argName}: {lines.First()}"));
+                            foreach (string line in lines.Skip(1))
+                            {
+                                trivia.Add(Comment($"/// {line}"));
+                            }
+                        }
                     }
                     trivia.Add(Comment("/// </returns>"));
                 }

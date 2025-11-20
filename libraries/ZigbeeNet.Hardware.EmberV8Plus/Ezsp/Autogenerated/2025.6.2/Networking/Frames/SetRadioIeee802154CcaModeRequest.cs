@@ -27,7 +27,7 @@ public class SetRadioIeee802154CcaModeRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A RAIL_IEEE802154_CcaMode_t value.
     /// </summary>
-	public byte ccaMode { get; set; }
+	public byte CcaMode { get; set; }
 
 }
 

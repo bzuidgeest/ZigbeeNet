@@ -27,13 +27,13 @@ public class EchoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The length of the &lt;i&gt;data&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte dataLength { get; set; }
+	public byte DataLength { get; set; }
 
     /// <summary>
     /// The data to be echoed back.
     /// </summary>
 	// Array field with symbolic size: dataLength
-	public byte[] data;
+	public byte[] Data;
 }
 
 #endif

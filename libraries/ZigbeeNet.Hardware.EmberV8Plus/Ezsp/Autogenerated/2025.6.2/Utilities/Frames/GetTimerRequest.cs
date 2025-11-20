@@ -27,7 +27,7 @@ public class GetTimerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Which timer to get information about (0 or 1).
     /// </summary>
-	public byte timerId { get; set; }
+	public byte TimerId { get; set; }
 
 }
 

@@ -32,7 +32,8 @@ public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// The EUI64 of the address table entry before it was modified.
     /// </summary>
-	public byte OldEui64 { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] OldEui64;
 
     /// <summary>
     /// One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
@@ -51,7 +52,7 @@ public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
 
 		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
 		index += 4;
-		frame.OldEui64 = frameBytes[index];
+		frame.OldEui64 = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.OldId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
 		index += 2;

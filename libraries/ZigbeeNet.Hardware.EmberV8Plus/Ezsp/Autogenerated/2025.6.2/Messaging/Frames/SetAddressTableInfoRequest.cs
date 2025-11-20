@@ -27,18 +27,18 @@ public class SetAddressTableInfoRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index of an address table entry.
     /// </summary>
-	public byte addressTableIndex { get; set; }
+	public byte AddressTableIndex { get; set; }
 
     /// <summary>
     /// The EUI64 to use for the address table entry.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public byte[] Eui64;
 
     /// <summary>
     /// The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index or SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID which indicates that the entry stored in the address table at the given index is not in use.
     /// </summary>
-	public ushort id { get; set; }
+	public ushort Id { get; set; }
 
 }
 

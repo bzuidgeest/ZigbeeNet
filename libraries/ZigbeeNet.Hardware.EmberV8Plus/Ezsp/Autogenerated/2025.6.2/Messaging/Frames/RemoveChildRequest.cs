@@ -28,7 +28,7 @@ public class RemoveChildRequest : EzspFrameRequestV8Plus
     /// The long ID of the node.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] childEui64;
+	public byte[] ChildEui64;
 
 }
 

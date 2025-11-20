@@ -27,23 +27,23 @@ public class SendReplyRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-	public ushort sender { get; set; }
+	public ushort Sender { get; set; }
 
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-	public ZigbeeApsFrame apsFrame { get; set; }
+	public ZigbeeApsFrame ApsFrame { get; set; }
 
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte messageLength { get; set; }
+	public byte MessageLength { get; set; }
 
     /// <summary>
     /// The reply message.
     /// </summary>
 	// Array field with symbolic size: messageLength
-	public byte[] messageContents;
+	public byte[] MessageContents;
 }
 
 #endif

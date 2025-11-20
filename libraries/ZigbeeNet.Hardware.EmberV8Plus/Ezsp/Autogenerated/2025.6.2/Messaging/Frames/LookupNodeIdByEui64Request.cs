@@ -28,7 +28,7 @@ public class LookupNodeIdByEui64Request : EzspFrameRequestV8Plus
     /// The EUI64 of the node to look up.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] eui64;
+	public byte[] Eui64;
 
 }
 

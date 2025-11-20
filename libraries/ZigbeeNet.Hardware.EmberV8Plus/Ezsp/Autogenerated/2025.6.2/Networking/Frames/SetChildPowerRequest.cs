@@ -27,12 +27,12 @@ public class SetChildPowerRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The index.
     /// </summary>
-	public byte childIndex { get; set; }
+	public byte ChildIndex { get; set; }
 
     /// <summary>
     /// The new power value.
     /// </summary>
-	public sbyte newPower { get; set; }
+	public sbyte NewPower { get; set; }
 
 }
 

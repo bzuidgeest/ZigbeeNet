@@ -27,23 +27,23 @@ public class AesMmoHashRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The hash context to update.
     /// </summary>
-	public ZigbeeAesMmoHashContext context { get; set; }
+	public ZigbeeAesMmoHashContext Context { get; set; }
 
     /// <summary>
     /// This indicates whether the final hash value should be calculated
     /// </summary>
-	public bool finalize { get; set; }
+	public bool Finalize { get; set; }
 
     /// <summary>
     /// The length of the data to hash.
     /// </summary>
-	public byte length { get; set; }
+	public byte Length { get; set; }
 
     /// <summary>
     /// The data to hash.
     /// </summary>
 	// Array field with symbolic size: length
-	public byte[] data;
+	public byte[] Data;
 }
 
 #endif

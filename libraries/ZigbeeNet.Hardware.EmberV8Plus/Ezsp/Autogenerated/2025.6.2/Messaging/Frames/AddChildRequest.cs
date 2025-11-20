@@ -27,18 +27,18 @@ public class AddChildRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The preferred short ID of the node.
     /// </summary>
-	public ushort shortId { get; set; }
+	public ushort ShortId { get; set; }
 
     /// <summary>
     /// The long ID of the node.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] longId;
+	public byte[] LongId;
 
     /// <summary>
     /// The nodetype e.g., SL_ZIGBEE_ROUTER defining, if this would be added to the child table or neighbor table.
     /// </summary>
-	public ZigbeeNodeType nodeType { get; set; }
+	public ZigbeeNodeType NodeType { get; set; }
 
 }
 

@@ -27,7 +27,7 @@ public class ClearMessageFlagRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The ID of the child that no longer has pending messages.
     /// </summary>
-	public ushort childId { get; set; }
+	public ushort ChildId { get; set; }
 
 }
 

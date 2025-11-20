@@ -27,7 +27,8 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>
-	public byte Partner { get; set; }
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+	public byte[] Partner;
 
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
@@ -39,7 +40,7 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
 		ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
 		int index = frame.ParseHeader(frameBytes);
 
-		frame.Partner = frameBytes[index];
+		frame.Partner = frameBytes.Slice(index, 8).ToArray();
 		index += 8;
 		frame.Status = (ZigbeeKeyStatus)frameBytes[index];
 		index += 1;

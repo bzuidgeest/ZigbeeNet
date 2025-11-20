@@ -28,12 +28,12 @@ public class GpSinkTableSetSecurityFrameCounterRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Index to the Sink table
     /// </summary>
-	public byte index { get; set; }
+	public byte Index { get; set; }
 
     /// <summary>
     /// Security Frame Counter
     /// </summary>
-	public uint sfc { get; set; }
+	public uint Sfc { get; set; }
 
 }
 

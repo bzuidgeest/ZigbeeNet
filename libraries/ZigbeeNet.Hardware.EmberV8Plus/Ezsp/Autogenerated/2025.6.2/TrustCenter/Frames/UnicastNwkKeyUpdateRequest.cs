@@ -27,18 +27,18 @@ public class UnicastNwkKeyUpdateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The node ID of the device that will receive the message
     /// </summary>
-	public ushort destShort { get; set; }
+	public ushort DestShort { get; set; }
 
     /// <summary>
     /// The long address (EUI64) of the device that will receive the message.
     /// </summary>
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] destLong;
+	public byte[] DestLong;
 
     /// <summary>
     /// The NWK key to send to the new device.
     /// </summary>
-	public ZigbeeKeyData key { get; set; }
+	public ZigbeeKeyData Key { get; set; }
 
 }
 

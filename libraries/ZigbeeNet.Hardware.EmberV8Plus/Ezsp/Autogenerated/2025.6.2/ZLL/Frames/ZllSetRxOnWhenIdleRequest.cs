@@ -27,7 +27,7 @@ public class ZllSetRxOnWhenIdleRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The duration in milliseconds to leave the radio on.
     /// </summary>
-	public uint durationMs { get; set; }
+	public uint DurationMs { get; set; }
 
 }
 

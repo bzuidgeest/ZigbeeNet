@@ -27,7 +27,7 @@ public class SetZllAdditionalStateRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// A mask with the bits to be set or cleared.
     /// </summary>
-	public ushort state { get; set; }
+	public ushort State { get; set; }
 
 }
 

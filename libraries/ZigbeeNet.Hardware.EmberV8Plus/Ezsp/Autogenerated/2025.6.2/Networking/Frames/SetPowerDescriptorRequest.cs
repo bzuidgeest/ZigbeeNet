@@ -27,7 +27,7 @@ public class SetPowerDescriptorRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The new power descriptor for the local node.
     /// </summary>
-	public ushort descriptor { get; set; }
+	public ushort Descriptor { get; set; }
 
 }
 

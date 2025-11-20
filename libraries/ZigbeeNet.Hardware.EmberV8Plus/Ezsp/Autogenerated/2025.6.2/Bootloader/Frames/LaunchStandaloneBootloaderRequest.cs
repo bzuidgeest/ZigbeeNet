@@ -27,7 +27,7 @@ public class LaunchStandaloneBootloaderRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// If true, launch the standalone bootloader. If false, do nothing.
     /// </summary>
-	public bool enabled { get; set; }
+	public bool Enabled { get; set; }
 
 }
 

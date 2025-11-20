@@ -28,42 +28,42 @@ public class DGpSendRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// The action to perform on the GP TX queue (true to add, false to remove).
     /// </summary>
-	public bool action { get; set; }
+	public bool Action { get; set; }
 
     /// <summary>
     /// Whether to use ClearChannelAssessment when transmitting the GPDF.
     /// </summary>
-	public bool useCca { get; set; }
+	public bool UseCca { get; set; }
 
     /// <summary>
     /// The Address of the destination GPD.
     /// </summary>
-	public ZigbeeGpAddress addr { get; set; }
+	public ZigbeeGpAddress Addr { get; set; }
 
     /// <summary>
     /// The GPD command ID to send.
     /// </summary>
-	public byte gpdCommandId { get; set; }
+	public byte GpdCommandId { get; set; }
 
     /// <summary>
     /// The length of the GP command payload.
     /// </summary>
-	public byte gpdAsduLength { get; set; }
+	public byte GpdAsduLength { get; set; }
 
     /// <summary>
     /// The GP command payload.
     /// </summary>
 	// Array field with symbolic size: gpdAsduLength
-	public byte[] gpdAsdu;
+	public byte[] GpdAsdu;
     /// <summary>
     /// The handle to refer to the GPDF.
     /// </summary>
-	public byte gpepHandle { get; set; }
+	public byte GpepHandle { get; set; }
 
     /// <summary>
     /// How long to keep the GPDF in the TX Queue.
     /// </summary>
-	public ushort gpTxQueueEntryLifetimeMs { get; set; }
+	public ushort GpTxQueueEntryLifetimeMs { get; set; }
 
 }
 

@@ -117,7 +117,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
             }
         }
 
-        public static string PropertyName(string propertyName)
+        public static string AsPropertyName(this string propertyName)
         {
             // Remove spaces and special characters, convert to PascalCase
             if (string.IsNullOrWhiteSpace(propertyName))

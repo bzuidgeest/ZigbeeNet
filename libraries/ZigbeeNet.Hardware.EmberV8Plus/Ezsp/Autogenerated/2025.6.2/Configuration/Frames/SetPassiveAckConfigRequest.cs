@@ -27,12 +27,12 @@ public class SetPassiveAckConfigRequest : EzspFrameRequestV8Plus
     /// <summary>
     /// Passive ack config enum.
     /// </summary>
-	public byte config { get; set; }
+	public byte Config { get; set; }
 
     /// <summary>
     /// The minimum number of acknowledgments (re-broadcasts) to wait for until deeming the broadcast transmission complete.
     /// </summary>
-	public byte minAcksNeeded { get; set; }
+	public byte MinAcksNeeded { get; set; }
 
 }
 

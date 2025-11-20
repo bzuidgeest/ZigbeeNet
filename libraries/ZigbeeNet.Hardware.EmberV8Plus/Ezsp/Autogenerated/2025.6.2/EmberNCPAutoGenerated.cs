@@ -53,9 +53,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - StackType: The type of stack running on the NCP (2).
         /// - StackVersion: The version number of the stack.
         /// </returns>
-        public (byte ProtocolVersion, byte StackType, ushort StackVersion) Version(byte DesiredProtocolVersion)
+        public (byte ProtocolVersion, byte StackType, ushort StackVersion) Version(byte desiredProtocolVersion)
         {
             VersionRequest request = new VersionRequest();
+            request.DesiredProtocolVersion = desiredProtocolVersion;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(VersionResponse)));
             VersionResponse response = (VersionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -67,12 +68,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ConfigId">Identifies which configuration value to read.</param>
         /// <returns>A tuple containing:
-        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;configId&lt;/i&gt;.
+        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize <i>configId</i>.
         /// - Value: The configuration value.
         /// </returns>
-        public (Status Status, ushort Value) GetConfigurationValue(ZigbeeEzspConfigId ConfigId)
+        public (Status Status, ushort Value) GetConfigurationValue(ZigbeeEzspConfigId configId)
         {
             GetConfigurationValueRequest request = new GetConfigurationValueRequest();
+            request.ConfigId = configId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetConfigurationValueResponse)));
             GetConfigurationValueResponse response = (GetConfigurationValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -85,9 +87,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ConfigId">Identifies which configuration value to change.</param>
         /// <param name="Value">The new configuration value.</param>
         /// <returns>SL_STATUS_OK if the configuration value was changed, SL_STATUS_ZIGBEE_EZSP_ERROR if there was an error. Retrievable EZSP errors can be SL_ZIGBEE_EZSP_ERROR_OUT_OF_MEMORY if the new value exceeded the available memory, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the new value was out of bounds, SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;configId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if configuration values can no longer be modified.</returns>
-        public Status SetConfigurationValue(ZigbeeEzspConfigId ConfigId, ushort Value)
+        public Status SetConfigurationValue(ZigbeeEzspConfigId configId, ushort value)
         {
             SetConfigurationValueRequest request = new SetConfigurationValueRequest();
+            request.ConfigId = configId;
+            request.Value = value;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetConfigurationValueResponse)));
             SetConfigurationValueResponse response = (SetConfigurationValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -108,9 +112,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReadLength: Length of attribute data.
         /// - DataPtr: Attribute data.
         /// </returns>
-        public (ZigbeeAfStatus AfStatus, byte DataType, byte ReadLength, byte[] DataPtr) ReadAttribute(byte Endpoint, ushort Cluster, ushort AttributeId, byte Mask, ushort ManufacturerCode)
+        public (ZigbeeAfStatus AfStatus, byte DataType, byte ReadLength, byte[] DataPtr) ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
         {
             ReadAttributeRequest request = new ReadAttributeRequest();
+            request.Endpoint = endpoint;
+            request.Cluster = cluster;
+            request.AttributeId = attributeId;
+            request.Mask = mask;
+            request.ManufacturerCode = manufacturerCode;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReadAttributeResponse)));
             ReadAttributeResponse response = (ReadAttributeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -131,9 +140,19 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DataLength">Attribute data length.</param>
         /// <param name="Data">Attribute data.</param>
         /// <returns>An sl_zigbee_af_status_t value indicating success or the reason for failure.</returns>
-        public ZigbeeAfStatus WriteAttribute(byte Endpoint, ushort Cluster, ushort AttributeId, byte Mask, ushort ManufacturerCode, bool OverrideReadOnlyAndDataType, bool JustTest, byte DataType, byte DataLength, byte[] Data)
+        public ZigbeeAfStatus WriteAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode, bool overrideReadOnlyAndDataType, bool justTest, byte dataType, byte dataLength, byte[] data)
         {
             WriteAttributeRequest request = new WriteAttributeRequest();
+            request.Endpoint = endpoint;
+            request.Cluster = cluster;
+            request.AttributeId = attributeId;
+            request.Mask = mask;
+            request.ManufacturerCode = manufacturerCode;
+            request.OverrideReadOnlyAndDataType = overrideReadOnlyAndDataType;
+            request.JustTest = justTest;
+            request.DataType = dataType;
+            request.DataLength = dataLength;
+            request.Data = data;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(WriteAttributeResponse)));
             WriteAttributeResponse response = (WriteAttributeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -152,9 +171,17 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="InputClusterList">Input cluster IDs the endpoint will accept.</param>
         /// <param name="OutputClusterList">Output cluster IDs the endpoint may send.</param>
         /// <returns>SL_STATUS_OK if the endpoint was added, SL_STATUS_ZIGBEE_EZSP_ERROR if there was an error. Errors could be SL_ZIGBEE_EZSP_ERROR_OUT_OF_MEMORY if there is not enough memory available to add the endpoint, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the endpoint already exists, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if endpoints can no longer be added.</returns>
-        public Status AddEndpoint(byte Endpoint, ushort ProfileId, ushort DeviceId, byte DeviceVersion, byte InputClusterCount, byte OutputClusterCount, ushort[] InputClusterList, ushort[] OutputClusterList)
+        public Status AddEndpoint(byte endpoint, ushort profileId, ushort deviceId, byte deviceVersion, byte inputClusterCount, byte outputClusterCount, ushort[] inputClusterList, ushort[] outputClusterList)
         {
             AddEndpointRequest request = new AddEndpointRequest();
+            request.Endpoint = endpoint;
+            request.ProfileId = profileId;
+            request.DeviceId = deviceId;
+            request.DeviceVersion = deviceVersion;
+            request.InputClusterCount = inputClusterCount;
+            request.OutputClusterCount = outputClusterCount;
+            request.InputClusterList = inputClusterList;
+            request.OutputClusterList = outputClusterList;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddEndpointResponse)));
             AddEndpointResponse response = (AddEndpointResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -167,9 +194,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PolicyId">Identifies which policy to modify.</param>
         /// <param name="DecisionId">The new decision for the specified policy.</param>
         /// <returns>SL_STATUS_OK if the policy was changed, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;policyId&lt;/i&gt;.</returns>
-        public Status SetPolicy(ZigbeeEzspPolicyId PolicyId, ZigbeeEzspDecisionId DecisionId)
+        public Status SetPolicy(ZigbeeEzspPolicyId policyId, ZigbeeEzspDecisionId decisionId)
         {
             SetPolicyRequest request = new SetPolicyRequest();
+            request.PolicyId = policyId;
+            request.DecisionId = decisionId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPolicyResponse)));
             SetPolicyResponse response = (SetPolicyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -181,12 +210,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="PolicyId">Identifies which policy to read.</param>
         /// <returns>A tuple containing:
-        /// - Status: SL_STATUS_OK if the policy was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;policyId&lt;/i&gt;.
+        /// - Status: SL_STATUS_OK if the policy was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize <i>policyId</i>.
         /// - DecisionId: The current decision for the specified policy.
         /// </returns>
-        public (Status Status, ZigbeeEzspDecisionId DecisionId) GetPolicy(ZigbeeEzspPolicyId PolicyId)
+        public (Status Status, ZigbeeEzspDecisionId DecisionId) GetPolicy(ZigbeeEzspPolicyId policyId)
         {
             GetPolicyRequest request = new GetPolicyRequest();
+            request.PolicyId = policyId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetPolicyResponse)));
             GetPolicyResponse response = (GetPolicyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -198,9 +228,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NewPan">The new Pan Id</param>
         /// <returns>true if the request was successfully handed to the stack, false otherwise</returns>
-        public bool SendPanIdUpdate(ushort NewPan)
+        public bool SendPanIdUpdate(ushort newPan)
         {
             SendPanIdUpdateRequest request = new SendPanIdUpdateRequest();
+            request.NewPan = newPan;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendPanIdUpdateResponse)));
             SendPanIdUpdateResponse response = (SendPanIdUpdateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -212,13 +243,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ValueId">Identifies which value to read.</param>
         /// <returns>A tuple containing:
-        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
-        /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
+        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize <i>valueId</i>, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned <i>value</i> exceeds the size of local storage allocated to receive it.
+        /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, byte ValueLength, byte[] Value) GetValue(ZigbeeEzspValueId ValueId)
+        public (Status Status, byte ValueLength, byte[] Value) GetValue(ZigbeeEzspValueId valueId)
         {
             GetValueRequest request = new GetValueRequest();
+            request.ValueId = valueId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetValueResponse)));
             GetValueResponse response = (GetValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -231,13 +263,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ValueId">Identifies which extended value ID to read.</param>
         /// <param name="Characteristics">Identifies which characteristics of the extended value ID to read. These are specific to the value being read.</param>
         /// <returns>A tuple containing:
-        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
-        /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
+        /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize <i>valueId</i>, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned <i>value</i> exceeds the size of local storage allocated to receive it.
+        /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, byte ValueLength, byte[] Value) GetExtendedValue(ZigbeeEzspExtendedValueId ValueId, uint Characteristics)
+        public (Status Status, byte ValueLength, byte[] Value) GetExtendedValue(ZigbeeEzspExtendedValueId valueId, uint characteristics)
         {
             GetExtendedValueRequest request = new GetExtendedValueRequest();
+            request.ValueId = valueId;
+            request.Characteristics = characteristics;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetExtendedValueResponse)));
             GetExtendedValueResponse response = (GetExtendedValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -251,9 +285,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ValueLength">The length of the &lt;i&gt;value&lt;/i&gt; parameter in bytes.</param>
         /// <param name="Value">The new value.</param>
         /// <returns>SL_STATUS_OK if the value was changed, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the new value was out of bounds, SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if the value could not be modified.</returns>
-        public Status SetValue(ZigbeeEzspValueId ValueId, byte ValueLength, byte[] Value)
+        public Status SetValue(ZigbeeEzspValueId valueId, byte valueLength, byte[] value)
         {
             SetValueRequest request = new SetValueRequest();
+            request.ValueId = valueId;
+            request.ValueLength = valueLength;
+            request.Value = value;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetValueResponse)));
             SetValueResponse response = (SetValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -266,9 +303,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Config">Passive ack config enum.</param>
         /// <param name="MinAcksNeeded">The minimum number of acknowledgments (re-broadcasts) to wait for until deeming the broadcast transmission complete.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetPassiveAckConfig(byte Config, byte MinAcksNeeded)
+        public Status SetPassiveAckConfig(byte config, byte minAcksNeeded)
         {
             SetPassiveAckConfigRequest request = new SetPassiveAckConfigRequest();
+            request.Config = config;
+            request.MinAcksNeeded = minAcksNeeded;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPassiveAckConfigResponse)));
             SetPassiveAckConfigResponse response = (SetPassiveAckConfigResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -280,9 +319,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="PanId">PAN ID to be accepted in a network update.</param>
         /// <returns>The SetPendingNetworkUpdatePanIdResponse object from the NCP</returns>
-        public SetPendingNetworkUpdatePanIdResponse SetPendingNetworkUpdatePanId(ushort PanId)
+        public SetPendingNetworkUpdatePanIdResponse SetPendingNetworkUpdatePanId(ushort panId)
         {
             SetPendingNetworkUpdatePanIdRequest request = new SetPendingNetworkUpdatePanIdRequest();
+            request.PanId = panId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPendingNetworkUpdatePanIdResponse)));
             SetPendingNetworkUpdatePanIdResponse response = (SetPendingNetworkUpdatePanIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -294,9 +334,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">Index to retrieve the endpoint number for.</param>
         /// <returns>Endpoint number at the index.</returns>
-        public byte GetEndpoint(byte Index)
+        public byte GetEndpoint(byte index)
         {
             GetEndpointRequest request = new GetEndpointRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointResponse)));
             GetEndpointResponse response = (GetEndpointResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -321,9 +362,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Endpoint">Endpoint number to get the description of.</param>
         /// <returns>Description of this endpoint.</returns>
-        public ZigbeeEndpointDescription GetEndpointDescription(byte Endpoint)
+        public ZigbeeEndpointDescription GetEndpointDescription(byte endpoint)
         {
             GetEndpointDescriptionRequest request = new GetEndpointDescriptionRequest();
+            request.Endpoint = endpoint;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointDescriptionResponse)));
             GetEndpointDescriptionResponse response = (GetEndpointDescriptionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -337,9 +379,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ListId">Which list to get the cluster ID from.  (0 for input, 1 for output).</param>
         /// <param name="ListIndex">Index from requested list to look at the cluster ID of.</param>
         /// <returns>ID of the requested cluster.</returns>
-        public ushort GetEndpointCluster(byte Endpoint, byte ListId, byte ListIndex)
+        public ushort GetEndpointCluster(byte endpoint, byte listId, byte listIndex)
         {
             GetEndpointClusterRequest request = new GetEndpointClusterRequest();
+            request.Endpoint = endpoint;
+            request.ListId = listId;
+            request.ListIndex = listIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointClusterResponse)));
             GetEndpointClusterResponse response = (GetEndpointClusterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -365,12 +410,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DataLength">The length of the &lt;i&gt;data&lt;/i&gt; parameter in bytes.</param>
         /// <param name="Data">The data to be echoed back.</param>
         /// <returns>A tuple containing:
-        /// - EchoLength: The length of the &lt;i&gt;echo&lt;/i&gt; parameter in bytes.
+        /// - EchoLength: The length of the <i>echo</i> parameter in bytes.
         /// - Echo: The echo of the data.
         /// </returns>
-        public (byte EchoLength, byte[] Echo) Echo(byte DataLength, byte[] Data)
+        public (byte EchoLength, byte[] Echo) Echo(byte dataLength, byte[] data)
         {
             EchoRequest request = new EchoRequest();
+            request.DataLength = dataLength;
+            request.Data = data;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EchoResponse)));
             EchoResponse response = (EchoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -422,9 +469,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TokenId">Which token to set</param>
         /// <param name="TokenData">The data to write to the token.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetToken(byte TokenId, byte[] TokenData)
+        public Status SetToken(byte tokenId, byte[] tokenData)
         {
             SetTokenRequest request = new SetTokenRequest();
+            request.TokenId = tokenId;
+            request.TokenData = tokenData;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTokenResponse)));
             SetTokenResponse response = (SetTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -439,9 +488,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenData: The contents of the token.
         /// </returns>
-        public (Status Status, byte[] TokenData) GetToken(byte TokenId)
+        public (Status Status, byte[] TokenData) GetToken(byte tokenId)
         {
             GetTokenRequest request = new GetTokenRequest();
+            request.TokenId = tokenId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenResponse)));
             GetTokenResponse response = (GetTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -453,12 +503,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="TokenId">Which manufacturing token to read.</param>
         /// <returns>A tuple containing:
-        /// - TokenDataLength: The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
+        /// - TokenDataLength: The length of the <i>tokenData</i> parameter in bytes.
         /// - TokenData: The manufacturing token data.
         /// </returns>
-        public (byte TokenDataLength, byte[] TokenData) GetMfgToken(ZigbeeEzspMfgTokenId TokenId)
+        public (byte TokenDataLength, byte[] TokenData) GetMfgToken(ZigbeeEzspMfgTokenId tokenId)
         {
             GetMfgTokenRequest request = new GetMfgTokenRequest();
+            request.TokenId = tokenId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetMfgTokenResponse)));
             GetMfgTokenResponse response = (GetMfgTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -472,9 +523,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TokenDataLength">The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.</param>
         /// <param name="TokenData">The manufacturing token data.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetMfgToken(ZigbeeEzspMfgTokenId TokenId, byte TokenDataLength, byte[] TokenData)
+        public Status SetMfgToken(ZigbeeEzspMfgTokenId tokenId, byte tokenDataLength, byte[] tokenData)
         {
             SetMfgTokenRequest request = new SetMfgTokenRequest();
+            request.TokenId = tokenId;
+            request.TokenDataLength = tokenDataLength;
+            request.TokenData = tokenData;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMfgTokenResponse)));
             SetMfgTokenResponse response = (SetMfgTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -518,9 +572,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Units">The units for &lt;i&gt;time&lt;/i&gt;.</param>
         /// <param name="Repeat">If true, a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. If false, only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetTimer(byte TimerId, ushort Time, ZigbeeEventUnits Units, bool Repeat)
+        public Status SetTimer(byte timerId, ushort time, ZigbeeEventUnits units, bool repeat)
         {
             SetTimerRequest request = new SetTimerRequest();
+            request.TimerId = timerId;
+            request.Time = time;
+            request.Units = units;
+            request.Repeat = repeat;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTimerResponse)));
             SetTimerResponse response = (SetTimerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -532,13 +590,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="TimerId">Which timer to get information about (0 or 1).</param>
         /// <returns>A tuple containing:
-        /// - Time: The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
-        /// - Units: The units for &lt;i&gt;time&lt;/i&gt;.
-        /// - Repeat: True if a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. False if only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
+        /// - Time: The delay before the <i>timerHandler</i> callback will be generated.
+        /// - Units: The units for <i>time</i>.
+        /// - Repeat: True if a <i>timerHandler</i> callback will be generated repeatedly. False if only a single <i>timerHandler</i> callback will be generated.
         /// </returns>
-        public (ushort Time, ZigbeeEventUnits Units, bool Repeat) GetTimer(byte TimerId)
+        public (ushort Time, ZigbeeEventUnits Units, bool Repeat) GetTimer(byte timerId)
         {
             GetTimerRequest request = new GetTimerRequest();
+            request.TimerId = timerId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTimerResponse)));
             GetTimerResponse response = (GetTimerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -565,9 +624,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The binary message.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DebugWrite(bool BinaryMessage, byte MessageLength, byte[] MessageContents)
+        public Status DebugWrite(bool binaryMessage, byte messageLength, byte[] messageContents)
         {
             DebugWriteRequest request = new DebugWriteRequest();
+            request.BinaryMessage = binaryMessage;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DebugWriteResponse)));
             DebugWriteResponse response = (DebugWriteResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -634,9 +696,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Delay">Data will not be read from the host for this many milliseconds.</param>
         /// <returns>The DelayTestResponse object from the NCP</returns>
-        public DelayTestResponse DelayTest(ushort Delay)
+        public DelayTestResponse DelayTest(ushort delay)
         {
             DelayTestRequest request = new DelayTestRequest();
+            request.Delay = delay;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DelayTestResponse)));
             DelayTestResponse response = (DelayTestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -648,9 +711,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="LibraryId">The ID of the library being queried.</param>
         /// <returns>The status of the library being queried.</returns>
-        public byte GetLibraryStatus(byte LibraryId)
+        public byte GetLibraryStatus(byte libraryId)
         {
             GetLibraryStatusRequest request = new GetLibraryStatusRequest();
+            request.LibraryId = libraryId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetLibraryStatusResponse)));
             GetLibraryStatusResponse response = (GetLibraryStatusResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -684,9 +748,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReplyLength: The length of the response.
         /// - Reply: The response.
         /// </returns>
-        public (Status Status, byte ReplyLength, byte[] Reply) CustomFrame(byte PayloadLength, byte[] Payload)
+        public (Status Status, byte ReplyLength, byte[] Reply) CustomFrame(byte payloadLength, byte[] payload)
         {
             CustomFrameRequest request = new CustomFrameRequest();
+            request.PayloadLength = payloadLength;
+            request.Payload = payload;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CustomFrameResponse)));
             CustomFrameResponse response = (CustomFrameResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -713,7 +779,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the EUI64 ID of the local node.
         /// </summary>
         /// <returns>The 64-bit ID.</returns>
-        public byte GetEui64()
+        public byte[] GetEui64()
         {
             GetEui64Request request = new GetEui64Request();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEui64Response)));
@@ -766,9 +832,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NetworkKeyTimeoutS">Network key timeout</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetupDelayedJoin(byte NetworkKeyTimeoutS)
+        public Status SetupDelayedJoin(byte networkKeyTimeoutS)
         {
             SetupDelayedJoinRequest request = new SetupDelayedJoinRequest();
+            request.NetworkKeyTimeoutS = networkKeyTimeoutS;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetupDelayedJoinResponse)));
             SetupDelayedJoinResponse response = (SetupDelayedJoinResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -793,9 +860,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Priorities">The current priorities.</param>
         /// <returns>The RadioSetSchedulerPrioritiesResponse object from the NCP</returns>
-        public RadioSetSchedulerPrioritiesResponse RadioSetSchedulerPriorities(_802154RadioPriorities Priorities)
+        public RadioSetSchedulerPrioritiesResponse RadioSetSchedulerPriorities(_802154RadioPriorities priorities)
         {
             RadioSetSchedulerPrioritiesRequest request = new RadioSetSchedulerPrioritiesRequest();
+            request.Priorities = priorities;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioSetSchedulerPrioritiesResponse)));
             RadioSetSchedulerPrioritiesResponse response = (RadioSetSchedulerPrioritiesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -820,9 +888,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="SlipTime">Value of the current slip time.</param>
         /// <returns>The RadioSetSchedulerSliptimeResponse object from the NCP</returns>
-        public RadioSetSchedulerSliptimeResponse RadioSetSchedulerSliptime(uint SlipTime)
+        public RadioSetSchedulerSliptimeResponse RadioSetSchedulerSliptime(uint slipTime)
         {
             RadioSetSchedulerSliptimeRequest request = new RadioSetSchedulerSliptimeRequest();
+            request.SlipTime = slipTime;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioSetSchedulerSliptimeResponse)));
             RadioSetSchedulerSliptimeResponse response = (RadioSetSchedulerSliptimeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -834,9 +903,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Counter">The counter to be checked.</param>
         /// <returns>Whether this counter requires a PHY index when operating on a dual-PHY system.</returns>
-        public bool CounterRequiresPhyIndex(ZigbeeCounterType Counter)
+        public bool CounterRequiresPhyIndex(ZigbeeCounterType counter)
         {
             CounterRequiresPhyIndexRequest request = new CounterRequiresPhyIndexRequest();
+            request.Counter = counter;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CounterRequiresPhyIndexResponse)));
             CounterRequiresPhyIndexResponse response = (CounterRequiresPhyIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -848,9 +918,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Counter">The counter to be checked.</param>
         /// <returns>Whether this counter requires the destination node ID.</returns>
-        public bool CounterRequiresDestinationNodeId(ZigbeeCounterType Counter)
+        public bool CounterRequiresDestinationNodeId(ZigbeeCounterType counter)
         {
             CounterRequiresDestinationNodeIdRequest request = new CounterRequiresDestinationNodeIdRequest();
+            request.Counter = counter;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CounterRequiresDestinationNodeIdResponse)));
             CounterRequiresDestinationNodeIdResponse response = (CounterRequiresDestinationNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -862,9 +933,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Code">The manufacturer code for the local node.</param>
         /// <returns></returns>
-        public Status SetManufacturerCode(ushort Code)
+        public Status SetManufacturerCode(ushort code)
         {
             SetManufacturerCodeRequest request = new SetManufacturerCodeRequest();
+            request.Code = code;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetManufacturerCodeResponse)));
             SetManufacturerCodeResponse response = (SetManufacturerCodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -889,9 +961,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Descriptor">The new power descriptor for the local node.</param>
         /// <returns></returns>
-        public Status SetPowerDescriptor(ushort Descriptor)
+        public Status SetPowerDescriptor(ushort descriptor)
         {
             SetPowerDescriptorRequest request = new SetPowerDescriptorRequest();
+            request.Descriptor = descriptor;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPowerDescriptorResponse)));
             SetPowerDescriptorResponse response = (SetPowerDescriptorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -903,9 +976,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NetworkInitStruct">An sl_zigbee_network_init_struct_t containing the options for initialization.</param>
         /// <returns>An sl_status_t value that indicates one of the following: successful initialization, SL_STATUS_NOT_JOINED if the node is not part of a network, or the reason for failure.</returns>
-        public Status NetworkInit(ZigbeeNetworkInitStruct NetworkInitStruct)
+        public Status NetworkInit(ZigbeeNetworkInitStruct networkInitStruct)
         {
             NetworkInitRequest request = new NetworkInitRequest();
+            request.NetworkInitStruct = networkInitStruct;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
             NetworkInitResponse response = (NetworkInitResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -945,9 +1019,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ChannelMask">Bits set as 1 indicate that this particular channel should be scanned. Bits set to 0 indicate that this particular channel should not be scanned. For example, a channelMask value of 0x00000001 would indicate that only channel 0 should be scanned. Valid channels range from 11 to 26 inclusive. This translates to a channel mask value of 0x07FFF800. As a convenience, a value of 0 is reinterpreted as the mask for the current channel.</param>
         /// <param name="Duration">Sets the exponent of the number of scan periods, where a scan period is 960 symbols. The scan will occur for ((2^duration) + 1) scan periods.</param>
         /// <returns>SL_STATUS_OK signals that the scan successfully started. Possible error responses and their meanings: SL_STATUS_MAC_SCANNING, we are already scanning; SL_STATUS_BAD_SCAN_DURATION, we have set a duration value that is not 0..14 inclusive; SL_STATUS_MAC_INCORRECT_SCAN_TYPE, we have requested an undefined scanning type; SL_STATUS_INVALID_CHANNEL_MASK, our channel mask did not specify any valid channels.</returns>
-        public Status StartScan(ZigbeeEzspNetworkScanType ScanType, uint ChannelMask, byte Duration)
+        public Status StartScan(ZigbeeEzspNetworkScanType scanType, uint channelMask, byte duration)
         {
             StartScanRequest request = new StartScanRequest();
+            request.ScanType = scanType;
+            request.ChannelMask = channelMask;
+            request.Duration = duration;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StartScanResponse)));
             StartScanResponse response = (StartScanResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1025,9 +1102,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ChannelMask">The channels that will be scanned for available panIds.</param>
         /// <param name="Duration">The duration of the procedure.</param>
         /// <returns>The error condition that occurred during the scan. Value will be SL_STATUS_OK if there are no errors.</returns>
-        public Status FindUnusedPanId(uint ChannelMask, byte Duration)
+        public Status FindUnusedPanId(uint channelMask, byte duration)
         {
             FindUnusedPanIdRequest request = new FindUnusedPanIdRequest();
+            request.ChannelMask = channelMask;
+            request.Duration = duration;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindUnusedPanIdResponse)));
             FindUnusedPanIdResponse response = (FindUnusedPanIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1052,9 +1131,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Parameters">Specification of the new network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status FormNetwork(ZigbeeNetworkParameters Parameters)
+        public Status FormNetwork(ZigbeeNetworkParameters parameters)
         {
             FormNetworkRequest request = new FormNetworkRequest();
+            request.Parameters = parameters;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FormNetworkResponse)));
             FormNetworkResponse response = (FormNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1067,9 +1147,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="NodeType">Specification of the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.</param>
         /// <param name="Parameters">Specification of the network with which the node should associate.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status JoinNetwork(ZigbeeNodeType NodeType, ZigbeeNetworkParameters Parameters)
+        public Status JoinNetwork(ZigbeeNodeType nodeType, ZigbeeNetworkParameters parameters)
         {
             JoinNetworkRequest request = new JoinNetworkRequest();
+            request.NodeType = nodeType;
+            request.Parameters = parameters;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(JoinNetworkResponse)));
             JoinNetworkResponse response = (JoinNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1084,9 +1166,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="RadioTxPower">The radio transmit power to use, specified in dBm.</param>
         /// <param name="ClearBeaconsAfterNetworkUp">If true, clear beacons in cache upon join success. If join fail, do nothing.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status JoinNetworkDirectly(ZigbeeNodeType LocalNodeType, ZigbeeBeaconData Beacon, sbyte RadioTxPower, bool ClearBeaconsAfterNetworkUp)
+        public Status JoinNetworkDirectly(ZigbeeNodeType localNodeType, ZigbeeBeaconData beacon, sbyte radioTxPower, bool clearBeaconsAfterNetworkUp)
         {
             JoinNetworkDirectlyRequest request = new JoinNetworkDirectlyRequest();
+            request.LocalNodeType = localNodeType;
+            request.Beacon = beacon;
+            request.RadioTxPower = radioTxPower;
+            request.ClearBeaconsAfterNetworkUp = clearBeaconsAfterNetworkUp;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(JoinNetworkDirectlyResponse)));
             JoinNetworkDirectlyResponse response = (JoinNetworkDirectlyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1098,9 +1184,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Options">This parameter gives options when leave network</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status LeaveNetwork(ZigbeeLeaveNetworkOption Options)
+        public Status LeaveNetwork(ZigbeeLeaveNetworkOption options)
         {
             LeaveNetworkRequest request = new LeaveNetworkRequest();
+            request.Options = options;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LeaveNetworkResponse)));
             LeaveNetworkResponse response = (LeaveNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1115,9 +1202,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Reason">A sl_zigbee_rejoin_reason_t variable which could be passed in if there is actually a reason for rejoin, or could be left at 0xFF</param>
         /// <param name="NodeType">The rejoin could be triggered with a different nodeType. This value could be set to 0 or SL_ZIGBEE_DEVICE_TYPE_UNCHANGED if not needed.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status FindAndRejoinNetwork(bool HaveCurrentNetworkKey, uint ChannelMask, byte Reason, byte NodeType)
+        public Status FindAndRejoinNetwork(bool haveCurrentNetworkKey, uint channelMask, byte reason, byte nodeType)
         {
             FindAndRejoinNetworkRequest request = new FindAndRejoinNetworkRequest();
+            request.HaveCurrentNetworkKey = haveCurrentNetworkKey;
+            request.ChannelMask = channelMask;
+            request.Reason = reason;
+            request.NodeType = nodeType;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindAndRejoinNetworkResponse)));
             FindAndRejoinNetworkResponse response = (FindAndRejoinNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1129,9 +1220,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Duration">A value of 0x00 disables joining. A value of 0xFF enables joining. Any other value enables joining for that number of seconds.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status PermitJoining(byte Duration)
+        public Status PermitJoining(byte duration)
         {
             PermitJoiningRequest request = new PermitJoiningRequest();
+            request.Duration = duration;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PermitJoiningResponse)));
             PermitJoiningResponse response = (PermitJoiningResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1148,7 +1240,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ChildEui64: The EUI64 of the child.
         /// - ChildType: The node type of the child.
         /// </returns>
-        public (byte Index, bool Joining, ushort ChildId, byte ChildEui64, ZigbeeNodeType ChildType) ChildJoinHandler()
+        public (byte Index, bool Joining, ushort ChildId, byte[] ChildEui64, ZigbeeNodeType ChildType) ChildJoinHandler()
         {
             ChildJoinHandlerRequest request = new ChildJoinHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildJoinHandlerResponse)));
@@ -1165,9 +1257,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ScanDuration">How long to scan on each channel. Allowed values are 0..5, with the scan times as specified by 802.15.4 (0 = 31ms, 1 = 46ms, 2 = 77ms, 3 = 138ms, 4 = 261ms, 5 = 507ms).</param>
         /// <param name="ScanCount">The number of scans to be performed on each channel (1..8).</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status EnergyScanRequest(ushort Target, uint ScanChannels, byte ScanDuration, ushort ScanCount)
+        public Status EnergyScanRequest(ushort target, uint scanChannels, byte scanDuration, ushort scanCount)
         {
             EnergyScanRequestRequest request = new EnergyScanRequestRequest();
+            request.Target = target;
+            request.ScanChannels = scanChannels;
+            request.ScanDuration = scanDuration;
+            request.ScanCount = scanCount;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EnergyScanRequestResponse)));
             EnergyScanRequestResponse response = (EnergyScanRequestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1199,9 +1295,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Parameters: The current radio parameters based on provided phy index.
         /// </returns>
-        public (Status Status, ZigbeeMultiPhyRadioParameters Parameters) GetRadioParameters(byte PhyIndex)
+        public (Status Status, ZigbeeMultiPhyRadioParameters Parameters) GetRadioParameters(byte phyIndex)
         {
             GetRadioParametersRequest request = new GetRadioParametersRequest();
+            request.PhyIndex = phyIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRadioParametersResponse)));
             GetRadioParametersResponse response = (GetRadioParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1213,10 +1310,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <returns>A tuple containing:
         /// - ChildCount: The number of children the node currently has.
-        /// - ParentEui64: The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
-        /// - ParentNodeId: The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
+        /// - ParentEui64: The parent's EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
+        /// - ParentNodeId: The parent's node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
         /// </returns>
-        public (byte ChildCount, byte ParentEui64, ushort ParentNodeId) GetParentChildParameters()
+        public (byte ChildCount, byte[] ParentEui64, ushort ParentNodeId) GetParentChildParameters()
         {
             GetParentChildParametersRequest request = new GetParentChildParametersRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetParentChildParametersResponse)));
@@ -1273,9 +1370,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             return response.ParentIncomingNwkFrameCounter;
         }
 
-        public Status SetParentIncomingNwkFrameCounter(uint Value)
+        public Status SetParentIncomingNwkFrameCounter(uint value)
         {
             SetParentIncomingNwkFrameCounterRequest request = new SetParentIncomingNwkFrameCounterRequest();
+            request.Value = value;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetParentIncomingNwkFrameCounterResponse)));
             SetParentIncomingNwkFrameCounterResponse response = (SetParentIncomingNwkFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1297,7 +1395,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 
         /// <summary>
         /// Indicate whether the stack is currently in a state where there are no high-priority tasks, allowing the device to sleep.
-There may be tasks expecting incoming messages, in which case the device should periodically wake up and call ::emberPollForData() in order to receive messages. This function can only be called when the node type is ::SL_ZIGBEE_SLEEPY_END_DEVICE
+        /// There may be tasks expecting incoming messages, in which case the device should periodically wake up and call ::emberPollForData() in order to receive messages. This function can only be called when the node type is ::SL_ZIGBEE_SLEEPY_END_DEVICE
         /// </summary>
         /// <returns>True if the application may sleep but the stack may be expecting incoming messages.</returns>
         public bool OkToNap()
@@ -1379,12 +1477,13 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// </summary>
         /// <param name="Index">The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.</param>
         /// <returns>A tuple containing:
-        /// - Status: SL_STATUS_OK if there is a child at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_JOINED if there is no child at &lt;i&gt;index&lt;/i&gt;.
+        /// - Status: SL_STATUS_OK if there is a child at <i>index</i>. SL_STATUS_NOT_JOINED if there is no child at <i>index</i>.
         /// - ChildData: The data of the child.
         /// </returns>
-        public (Status Status, ZigbeeChildData ChildData) GetChildData(byte Index)
+        public (Status Status, ZigbeeChildData ChildData) GetChildData(byte index)
         {
             GetChildDataRequest request = new GetChildDataRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetChildDataResponse)));
             GetChildDataResponse response = (GetChildDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1397,9 +1496,11 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// <param name="Index">The index of the child of interest in the child table. Possible indexes range from zero to (SL_ZIGBEE_CHILD_TABLE_SIZE - 1).</param>
         /// <param name="ChildData">The data of the child.</param>
         /// <returns>SL_STATUS_OK if the child data is set successfully at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_INVALID_INDEX if provided &lt;i&gt;index&lt;/i&gt; is out of range.</returns>
-        public Status SetChildData(byte Index, ZigbeeChildData ChildData)
+        public Status SetChildData(byte index, ZigbeeChildData childData)
         {
             SetChildDataRequest request = new SetChildDataRequest();
+            request.Index = index;
+            request.ChildData = childData;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetChildDataResponse)));
             SetChildDataResponse response = (SetChildDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1411,9 +1512,10 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// </summary>
         /// <param name="ChildIndex">The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.</param>
         /// <returns>The node ID of the child or SL_ZIGBEE_NULL_NODE_ID if there isn&apos;t a child at the childIndex specified</returns>
-        public ushort ChildId(byte ChildIndex)
+        public ushort ChildId(byte childIndex)
         {
             ChildIdRequest request = new ChildIdRequest();
+            request.ChildIndex = childIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildIdResponse)));
             ChildIdResponse response = (ChildIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1425,9 +1527,10 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// </summary>
         /// <param name="ChildIndex">The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.</param>
         /// <returns>The power of the child or maximum radio power, which is the power value provided by the user while forming/joining a network if there isn&apos;t a child at the childIndex specified</returns>
-        public sbyte ChildPower(byte ChildIndex)
+        public sbyte ChildPower(byte childIndex)
         {
             ChildPowerRequest request = new ChildPowerRequest();
+            request.ChildIndex = childIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildPowerResponse)));
             ChildPowerResponse response = (ChildPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1440,9 +1543,11 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// <param name="ChildIndex">The index.</param>
         /// <param name="NewPower">The new power value.</param>
         /// <returns>The SetChildPowerResponse object from the NCP</returns>
-        public SetChildPowerResponse SetChildPower(byte ChildIndex, sbyte NewPower)
+        public SetChildPowerResponse SetChildPower(byte childIndex, sbyte newPower)
         {
             SetChildPowerRequest request = new SetChildPowerRequest();
+            request.ChildIndex = childIndex;
+            request.NewPower = newPower;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetChildPowerResponse)));
             SetChildPowerResponse response = (SetChildPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1454,9 +1559,10 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// </summary>
         /// <param name="ChildId">The node ID of the child</param>
         /// <returns>The child index or 0xFF if the node ID doesn&apos;t belong to a child</returns>
-        public byte ChildIndex(ushort ChildId)
+        public byte ChildIndex(ushort childId)
         {
             ChildIndexRequest request = new ChildIndexRequest();
+            request.ChildId = childId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildIndexResponse)));
             ChildIndexResponse response = (ChildIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1492,19 +1598,22 @@ There may be tasks expecting incoming messages, in which case the device should 
         /// <summary>
         /// Returns information about a source route table entry
         /// </summary>
-        /// <param name="Index">The index of the entry of interest in the
-source route table. Possible indexes range from zero to
-SOURCE_ROUTE_TABLE_FILLED_SIZE.</param>
+        /// <param name="Index">
+        /// The index of the entry of interest in the
+        /// source route table. Possible indexes range from zero to
+        /// SOURCE_ROUTE_TABLE_FILLED_SIZE.
+        /// </param>
         /// <returns>A tuple containing:
         /// - Status: SL_STATUS_OK if there is source route entry at
-&lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
-source route at &lt;i&gt;index&lt;/i&gt;.
+        /// <i>index</i>. SL_STATUS_NOT_FOUND if there is no
+        /// source route at <i>index</i>.
         /// - Destination: The node ID of the destination in that entry.
         /// - CloserIndex: The closer node index for this source route table entry
         /// </returns>
-        public (Status Status, ushort Destination, byte CloserIndex) GetSourceRouteTableEntry(byte Index)
+        public (Status Status, ushort Destination, byte CloserIndex) GetSourceRouteTableEntry(byte index)
         {
             GetSourceRouteTableEntryRequest request = new GetSourceRouteTableEntryRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetSourceRouteTableEntryResponse)));
             GetSourceRouteTableEntryResponse response = (GetSourceRouteTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1519,9 +1628,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: SL_STATUS_FAIL if the index is greater or equal to the number of active neighbors, or if the device is an end device. Returns SL_STATUS_OK otherwise.
         /// - Value: The contents of the neighbor table entry.
         /// </returns>
-        public (Status Status, ZigbeeNeighborTableEntry Value) GetNeighbor(byte Index)
+        public (Status Status, ZigbeeNeighborTableEntry Value) GetNeighbor(byte index)
         {
             GetNeighborRequest request = new GetNeighborRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNeighborResponse)));
             GetNeighborResponse response = (GetNeighborResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1536,9 +1646,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise
         /// - ReturnFrameCounter: Return the frame counter of the node from the neighbor or child table
         /// </returns>
-        public (Status Status, uint ReturnFrameCounter) GetNeighborFrameCounter(byte Eui64)
+        public (Status Status, uint ReturnFrameCounter) GetNeighborFrameCounter(byte[] eui64)
         {
             GetNeighborFrameCounterRequest request = new GetNeighborFrameCounterRequest();
+            request.Eui64 = eui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNeighborFrameCounterResponse)));
             GetNeighborFrameCounterResponse response = (GetNeighborFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1551,9 +1662,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Eui64">eui64 of the node</param>
         /// <param name="FrameCounter">Return the frame counter of the node from the neighbor or child table</param>
         /// <returns>Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise</returns>
-        public Status SetNeighborFrameCounter(byte Eui64, uint FrameCounter)
+        public Status SetNeighborFrameCounter(byte[] eui64, uint frameCounter)
         {
             SetNeighborFrameCounterRequest request = new SetNeighborFrameCounterRequest();
+            request.Eui64 = eui64;
+            request.FrameCounter = frameCounter;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNeighborFrameCounterResponse)));
             SetNeighborFrameCounterResponse response = (SetNeighborFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1565,9 +1678,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="CostThresh">The routing shortcut threshold to configure.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetRoutingShortcutThreshold(byte CostThresh)
+        public Status SetRoutingShortcutThreshold(byte costThresh)
         {
             SetRoutingShortcutThresholdRequest request = new SetRoutingShortcutThresholdRequest();
+            request.CostThresh = costThresh;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRoutingShortcutThresholdResponse)));
             SetRoutingShortcutThresholdResponse response = (SetRoutingShortcutThresholdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1608,9 +1722,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: SL_STATUS_FAIL if the index is out of range or the device is an end device, and SL_STATUS_OK otherwise.
         /// - Value: The contents of the route table entry.
         /// </returns>
-        public (Status Status, ZigbeeRouteTableEntry Value) GetRouteTableEntry(byte Index)
+        public (Status Status, ZigbeeRouteTableEntry Value) GetRouteTableEntry(byte index)
         {
             GetRouteTableEntryRequest request = new GetRouteTableEntryRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRouteTableEntryResponse)));
             GetRouteTableEntryResponse response = (GetRouteTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1622,9 +1737,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioPower(sbyte Power)
+        public Status SetRadioPower(sbyte power)
         {
             SetRadioPowerRequest request = new SetRadioPowerRequest();
+            request.Power = power;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioPowerResponse)));
             SetRadioPowerResponse response = (SetRadioPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1636,9 +1752,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Channel">Desired radio channel.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioChannel(byte Channel)
+        public Status SetRadioChannel(byte channel)
         {
             SetRadioChannelRequest request = new SetRadioChannelRequest();
+            request.Channel = channel;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioChannelResponse)));
             SetRadioChannelResponse response = (SetRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1663,9 +1780,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="CcaMode">A RAIL_IEEE802154_CcaMode_t value.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioIeee802154CcaMode(byte CcaMode)
+        public Status SetRadioIeee802154CcaMode(byte ccaMode)
         {
             SetRadioIeee802154CcaModeRequest request = new SetRadioIeee802154CcaModeRequest();
+            request.CcaMode = ccaMode;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioIeee802154CcaModeResponse)));
             SetRadioIeee802154CcaModeResponse response = (SetRadioIeee802154CcaModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1683,9 +1801,16 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="DeliveryFailureThreshold">The number of APS delivery failures that will trigger a re-broadcast of the MTORR.</param>
         /// <param name="MaxHops">The maximum number of hops that the MTORR broadcast will be allowed to have. A value of 0 will be converted to the SL_ZIGBEE_MAX_HOPS value set by the stack.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetConcentrator(bool On, ushort ConcentratorType, ushort MinTime, ushort MaxTime, byte RouteErrorThreshold, byte DeliveryFailureThreshold, byte MaxHops)
+        public Status SetConcentrator(bool on, ushort concentratorType, ushort minTime, ushort maxTime, byte routeErrorThreshold, byte deliveryFailureThreshold, byte maxHops)
         {
             SetConcentratorRequest request = new SetConcentratorRequest();
+            request.On = on;
+            request.ConcentratorType = concentratorType;
+            request.MinTime = minTime;
+            request.MaxTime = maxTime;
+            request.RouteErrorThreshold = routeErrorThreshold;
+            request.DeliveryFailureThreshold = deliveryFailureThreshold;
+            request.MaxHops = maxHops;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetConcentratorResponse)));
             SetConcentratorResponse response = (SetConcentratorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1721,12 +1846,16 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <summary>
         /// Notes when a route error has occurred.
         /// </summary>
-        /// <param name="Status"></param>
-        /// <param name="NodeId"></param>
+        /// <param name="Status">
+        /// </param>
+        /// <param name="NodeId">
+        /// </param>
         /// <returns>The ConcentratorNoteRouteErrorResponse object from the NCP</returns>
-        public ConcentratorNoteRouteErrorResponse ConcentratorNoteRouteError(Status Status, ushort NodeId)
+        public ConcentratorNoteRouteErrorResponse ConcentratorNoteRouteError(Status status, ushort nodeId)
         {
             ConcentratorNoteRouteErrorRequest request = new ConcentratorNoteRouteErrorRequest();
+            request.Status = status;
+            request.NodeId = nodeId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ConcentratorNoteRouteErrorResponse)));
             ConcentratorNoteRouteErrorResponse response = (ConcentratorNoteRouteErrorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1738,9 +1867,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ErrorCode">Desired error code.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetBrokenRouteErrorCode(byte ErrorCode)
+        public Status SetBrokenRouteErrorCode(byte errorCode)
         {
             SetBrokenRouteErrorCodeRequest request = new SetBrokenRouteErrorCodeRequest();
+            request.ErrorCode = errorCode;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBrokenRouteErrorCodeResponse)));
             SetBrokenRouteErrorCodeResponse response = (SetBrokenRouteErrorCodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1756,9 +1886,14 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <param name="Bitmask">Network configuration bitmask.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MultiPhyStart(byte PhyIndex, byte Page, byte Channel, sbyte Power, ZigbeeMultiPhyNwkConfig Bitmask)
+        public Status MultiPhyStart(byte phyIndex, byte page, byte channel, sbyte power, ZigbeeMultiPhyNwkConfig bitmask)
         {
             MultiPhyStartRequest request = new MultiPhyStartRequest();
+            request.PhyIndex = phyIndex;
+            request.Page = page;
+            request.Channel = channel;
+            request.Power = power;
+            request.Bitmask = bitmask;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhyStartResponse)));
             MultiPhyStartResponse response = (MultiPhyStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1770,9 +1905,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="PhyIndex">Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MultiPhyStop(byte PhyIndex)
+        public Status MultiPhyStop(byte phyIndex)
         {
             MultiPhyStopRequest request = new MultiPhyStopRequest();
+            request.PhyIndex = phyIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhyStopResponse)));
             MultiPhyStopResponse response = (MultiPhyStopResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1785,9 +1921,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="PhyIndex">Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.</param>
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status MultiPhySetRadioPower(byte PhyIndex, sbyte Power)
+        public Status MultiPhySetRadioPower(byte phyIndex, sbyte power)
         {
             MultiPhySetRadioPowerRequest request = new MultiPhySetRadioPowerRequest();
+            request.PhyIndex = phyIndex;
+            request.Power = power;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhySetRadioPowerResponse)));
             MultiPhySetRadioPowerResponse response = (MultiPhySetRadioPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1814,9 +1952,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Page">Desired radio channel page.</param>
         /// <param name="Channel">Desired radio channel.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status MultiPhySetRadioChannel(byte PhyIndex, byte Page, byte Channel)
+        public Status MultiPhySetRadioChannel(byte phyIndex, byte page, byte channel)
         {
             MultiPhySetRadioChannelRequest request = new MultiPhySetRadioChannelRequest();
+            request.PhyIndex = phyIndex;
+            request.Page = page;
+            request.Channel = channel;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhySetRadioChannelResponse)));
             MultiPhySetRadioChannelResponse response = (MultiPhySetRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1844,9 +1985,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Limits">The duty cycle limits configuration to utilize.</param>
         /// <returns>SL_STATUS_OK  if the duty cycle limit configurations set successfully, SL_STATUS_INVALID_PARAMETER if set illegal value such as setting only one of the limits to default or violates constraints Susp &gt; Crit &gt; Limi, SL_STATUS_INVALID_STATE if device is operating on 2.4Ghz</returns>
-        public Status SetDutyCycleLimitsInStack(ZigbeeDutyCycleLimits Limits)
+        public Status SetDutyCycleLimitsInStack(ZigbeeDutyCycleLimits limits)
         {
             SetDutyCycleLimitsInStackRequest request = new SetDutyCycleLimitsInStackRequest();
+            request.Limits = limits;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetDutyCycleLimitsInStackResponse)));
             SetDutyCycleLimitsInStackResponse response = (SetDutyCycleLimitsInStackResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1877,9 +2019,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: SL_STATUS_OK  if the duty cycles were read successfully, SL_STATUS_INVALID_PARAMETER maxDevices is greater than SL_ZIGBEE_MAX_END_DEVICE_CHILDREN + 1.
         /// - ArrayOfDeviceDutyCycles: Consumed duty cycles up to maxDevices. When the number of children that are being monitored is less than maxDevices, the sl_802154_short_addr_t element in the sl_zigbee_per_device_duty_cycle_t will be 0xFFFF.
         /// </returns>
-        public (Status Status, byte[] ArrayOfDeviceDutyCycles) GetCurrentDutyCycle(byte MaxDevices)
+        public (Status Status, byte[] ArrayOfDeviceDutyCycles) GetCurrentDutyCycle(byte maxDevices)
         {
             GetCurrentDutyCycleRequest request = new GetCurrentDutyCycleRequest();
+            request.MaxDevices = maxDevices;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCurrentDutyCycleResponse)));
             GetCurrentDutyCycleResponse response = (GetCurrentDutyCycleResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1894,7 +2037,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Channel: The channel number whose duty cycle state has changed.
         /// - State: The current duty cycle state.
         /// - TotalDevices: The total number of connected end devices that are being monitored for duty cycle.
-        /// - ArrayOfDeviceDutyCycles: Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack&apos;s nodeId, and thus the total aggregate duty cycle for the device.
+        /// - ArrayOfDeviceDutyCycles: Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack's nodeId, and thus the total aggregate duty cycle for the device.
         /// </returns>
         public (byte ChannelPage, byte Channel, ZigbeeDutyCycleState State, byte TotalDevices, ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles) DutyCycleHandler()
         {
@@ -1910,9 +2053,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="NumBeacons">The number of beacons to cache when scanning.</param>
         /// <returns>SL_STATUS_INVALID_PARAMETER if numBeacons is greater than SL_ZIGBEE_MAX_BEACONS_TO_STORE, otherwise SL_STATUS_OK</returns>
-        public Status SetNumBeaconsToStore(byte NumBeacons)
+        public Status SetNumBeaconsToStore(byte numBeacons)
         {
             SetNumBeaconsToStoreRequest request = new SetNumBeaconsToStoreRequest();
+            request.NumBeacons = numBeacons;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNumBeaconsToStoreResponse)));
             SetNumBeaconsToStoreResponse response = (SetNumBeaconsToStoreResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1927,9 +2071,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An appropriate sl_status_t status code.
         /// - Beacon: The beacon to populate upon success.
         /// </returns>
-        public (Status Status, ZigbeeBeaconData Beacon) GetStoredBeacon(byte BeaconNumber)
+        public (Status Status, ZigbeeBeaconData Beacon) GetStoredBeacon(byte beaconNumber)
         {
             GetStoredBeaconRequest request = new GetStoredBeaconRequest();
+            request.BeaconNumber = beaconNumber;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetStoredBeaconResponse)));
             GetStoredBeaconResponse response = (GetStoredBeaconResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1967,9 +2112,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="RadioChannel">The radio channel to be set.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetLogicalAndRadioChannel(byte RadioChannel)
+        public Status SetLogicalAndRadioChannel(byte radioChannel)
         {
             SetLogicalAndRadioChannelRequest request = new SetLogicalAndRadioChannelRequest();
+            request.RadioChannel = radioChannel;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetLogicalAndRadioChannelResponse)));
             SetLogicalAndRadioChannelResponse response = (SetLogicalAndRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1982,9 +2128,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Parameters">Specification of the new network.</param>
         /// <param name="Initiator">Whether this device is initiating or joining the network.</param>
         /// <returns>An sl_status_t value indicating success or a reason for failure.</returns>
-        public Status SleepyToSleepyNetworkStart(ZigbeeNetworkParameters Parameters, bool Initiator)
+        public Status SleepyToSleepyNetworkStart(ZigbeeNetworkParameters parameters, bool initiator)
         {
             SleepyToSleepyNetworkStartRequest request = new SleepyToSleepyNetworkStartRequest();
+            request.Parameters = parameters;
+            request.Initiator = initiator;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SleepyToSleepyNetworkStartResponse)));
             SleepyToSleepyNetworkStartResponse response = (SleepyToSleepyNetworkStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -1997,9 +2145,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Destination">Node ID of the device being told to leave.</param>
         /// <param name="Flags">Bitmask indicating additional considerations for the leave request.</param>
         /// <returns>Status indicating success or a reason for failure. Call is invalid if destination is on network or is the local node.</returns>
-        public Status SendZigbeeLeave(ushort Destination, ZigbeeLeaveRequestFlags Flags)
+        public Status SendZigbeeLeave(ushort destination, ZigbeeLeaveRequestFlags flags)
         {
             SendZigbeeLeaveRequest request = new SendZigbeeLeaveRequest();
+            request.Destination = destination;
+            request.Flags = flags;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendZigbeeLeaveResponse)));
             SendZigbeeLeaveResponse response = (SendZigbeeLeaveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2050,9 +2200,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Cost">The new default cost. Valid values are 0, 1, 3, 5, and 7.</param>
         /// <returns>Whether or not initial cost was successfully set.</returns>
-        public Status SetInitialNeighborOutgoingCost(byte Cost)
+        public Status SetInitialNeighborOutgoingCost(byte cost)
         {
             SetInitialNeighborOutgoingCostRequest request = new SetInitialNeighborOutgoingCostRequest();
+            request.Cost = cost;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetInitialNeighborOutgoingCostResponse)));
             SetInitialNeighborOutgoingCostResponse response = (SetInitialNeighborOutgoingCostResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2077,9 +2228,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Reset">Whether or not a neighbor&apos;s incoming FC should be reset upon rejoining (true or false).</param>
         /// <returns>The ResetRejoiningNeighborsFrameCounterResponse object from the NCP</returns>
-        public ResetRejoiningNeighborsFrameCounterResponse ResetRejoiningNeighborsFrameCounter(bool Reset)
+        public ResetRejoiningNeighborsFrameCounterResponse ResetRejoiningNeighborsFrameCounter(bool reset)
         {
             ResetRejoiningNeighborsFrameCounterRequest request = new ResetRejoiningNeighborsFrameCounterRequest();
+            request.Reset = reset;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ResetRejoiningNeighborsFrameCounterResponse)));
             ResetRejoiningNeighborsFrameCounterResponse response = (ResetRejoiningNeighborsFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2118,9 +2270,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Index">The index of a binding table entry.</param>
         /// <param name="Value">The contents of the binding entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetBinding(byte Index, ZigbeeBindingTableEntry Value)
+        public Status SetBinding(byte index, ZigbeeBindingTableEntry value)
         {
             SetBindingRequest request = new SetBindingRequest();
+            request.Index = index;
+            request.Value = value;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBindingResponse)));
             SetBindingResponse response = (SetBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2135,9 +2289,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Value: The contents of the binding entry.
         /// </returns>
-        public (Status Status, ZigbeeBindingTableEntry Value) GetBinding(byte Index)
+        public (Status Status, ZigbeeBindingTableEntry Value) GetBinding(byte index)
         {
             GetBindingRequest request = new GetBindingRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetBindingResponse)));
             GetBindingResponse response = (GetBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2149,9 +2304,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DeleteBinding(byte Index)
+        public Status DeleteBinding(byte index)
         {
             DeleteBindingRequest request = new DeleteBindingRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DeleteBindingResponse)));
             DeleteBindingResponse response = (DeleteBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2163,9 +2319,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>True if the binding table entry is active, false otherwise.</returns>
-        public bool BindingIsActive(byte Index)
+        public bool BindingIsActive(byte index)
         {
             BindingIsActiveRequest request = new BindingIsActiveRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BindingIsActiveResponse)));
             BindingIsActiveResponse response = (BindingIsActiveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2177,9 +2334,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>The short ID of the destination node or SL_ZIGBEE_NULL_NODE_ID if no destination is known.</returns>
-        public ushort GetBindingRemoteNodeId(byte Index)
+        public ushort GetBindingRemoteNodeId(byte index)
         {
             GetBindingRemoteNodeIdRequest request = new GetBindingRemoteNodeIdRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetBindingRemoteNodeIdResponse)));
             GetBindingRemoteNodeIdResponse response = (GetBindingRemoteNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2192,9 +2350,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Index">The index of a binding table entry.</param>
         /// <param name="NodeId">The short ID of the destination node.</param>
         /// <returns>The SetBindingRemoteNodeIdResponse object from the NCP</returns>
-        public SetBindingRemoteNodeIdResponse SetBindingRemoteNodeId(byte Index, ushort NodeId)
+        public SetBindingRemoteNodeIdResponse SetBindingRemoteNodeId(byte index, ushort nodeId)
         {
             SetBindingRemoteNodeIdRequest request = new SetBindingRemoteNodeIdRequest();
+            request.Index = index;
+            request.NodeId = nodeId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBindingRemoteNodeIdResponse)));
             SetBindingRemoteNodeIdResponse response = (SetBindingRemoteNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2260,9 +2420,15 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Sequence: The sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte Sequence) SendUnicast(ZigbeeOutgoingMessageType Type, ushort IndexOrDestination, ZigbeeApsFrame ApsFrame, ushort MessageTag, byte MessageLength, byte[] MessageContents)
+        public (Status Status, byte Sequence) SendUnicast(ZigbeeOutgoingMessageType type, ushort indexOrDestination, ZigbeeApsFrame apsFrame, ushort messageTag, byte messageLength, byte[] messageContents)
         {
             SendUnicastRequest request = new SendUnicastRequest();
+            request.Type = type;
+            request.IndexOrDestination = indexOrDestination;
+            request.ApsFrame = apsFrame;
+            request.MessageTag = messageTag;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendUnicastResponse)));
             SendUnicastResponse response = (SendUnicastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2284,9 +2450,17 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - ApsSequence: The APS sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte ApsSequence) SendBroadcast(ushort Alias, ushort Destination, byte NwkSequence, ZigbeeApsFrame ApsFrame, byte Radius, ushort MessageTag, byte MessageLength, byte[] MessageContents)
+        public (Status Status, byte ApsSequence) SendBroadcast(ushort alias, ushort destination, byte nwkSequence, ZigbeeApsFrame apsFrame, byte radius, ushort messageTag, byte messageLength, byte[] messageContents)
         {
             SendBroadcastRequest request = new SendBroadcastRequest();
+            request.Alias = alias;
+            request.Destination = destination;
+            request.NwkSequence = nwkSequence;
+            request.ApsFrame = apsFrame;
+            request.Radius = radius;
+            request.MessageTag = messageTag;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendBroadcastResponse)));
             SendBroadcastResponse response = (SendBroadcastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2298,9 +2472,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="EuiSource">The long source from which to send the broadcast</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ProxyNextBroadcastFromLong(byte[] EuiSource)
+        public Status ProxyNextBroadcastFromLong(byte[] euiSource)
         {
             ProxyNextBroadcastFromLongRequest request = new ProxyNextBroadcastFromLongRequest();
+            request.EuiSource = euiSource;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ProxyNextBroadcastFromLongResponse)));
             ProxyNextBroadcastFromLongResponse response = (ProxyNextBroadcastFromLongResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2322,9 +2497,17 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value. For any result other than SL_STATUS_OK, the message will not be sent. SL_STATUS_OK - The message has been submitted for transmission. SL_STATUS_INVALID_INDEX - The bindingTableIndex refers to a non-multicast binding. SL_STATUS_NETWORK_DOWN - The node is not part of a network. SL_STATUS_MESSAGE_TOO_LONG - The message is too large to fit in a MAC layer frame. SL_STATUS_ALLOCATION_FAILED - The free packet buffer pool is empty. SL_STATUS_BUSY - Insufficient resources available in Network or MAC layers to send message.
         /// - Sequence: The sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte Sequence) SendMulticast(ZigbeeApsFrame ApsFrame, byte Hops, ushort BroadcastAddr, ushort Alias, byte NwkSequence, ushort MessageTag, byte MessageLength, byte[] MessageContents)
+        public (Status Status, byte Sequence) SendMulticast(ZigbeeApsFrame apsFrame, byte hops, ushort broadcastAddr, ushort alias, byte nwkSequence, ushort messageTag, byte messageLength, byte[] messageContents)
         {
             SendMulticastRequest request = new SendMulticastRequest();
+            request.ApsFrame = apsFrame;
+            request.Hops = hops;
+            request.BroadcastAddr = broadcastAddr;
+            request.Alias = alias;
+            request.NwkSequence = nwkSequence;
+            request.MessageTag = messageTag;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendMulticastResponse)));
             SendMulticastResponse response = (SendMulticastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2339,9 +2522,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The reply message.</param>
         /// <returns>An sl_status_t value. SL_STATUS_INVALID_STATE - The SL_ZIGBEE_EZSP_UNICAST_REPLIES_POLICY is set to SL_ZIGBEE_EZSP_HOST_WILL_NOT_SUPPLY_REPLY. This means the NCP will automatically send an empty reply. The Host must change the policy to SL_ZIGBEE_EZSP_HOST_WILL_SUPPLY_REPLY before it can supply the reply. There is one exception to this rule: In the case of responses to message fragments, the host must call sendReply when a message fragment is received. In this case, the policy set on the NCP does not matter. The NCP expects a sendReply call from the Host for message fragments regardless of the current policy settings. SL_STATUS_ALLOCATION_FAILED - Not enough memory was available to send the reply. SL_STATUS_BUSY - Either no route or insufficient resources available. SL_STATUS_OK - The reply was successfully queued for transmission.</returns>
-        public Status SendReply(ushort Sender, ZigbeeApsFrame ApsFrame, byte MessageLength, byte[] MessageContents)
+        public Status SendReply(ushort sender, ZigbeeApsFrame apsFrame, byte messageLength, byte[] messageContents)
         {
             SendReplyRequest request = new SendReplyRequest();
+            request.Sender = sender;
+            request.ApsFrame = apsFrame;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendReplyResponse)));
             SendReplyResponse response = (SendReplyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2356,8 +2543,8 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Type: The type of message sent.
         /// - IndexOrDestination: The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
         /// - ApsFrame: The APS frame for the message.
-        /// - MessageTag: The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageTag: The value supplied by the Host in the <i>sl_zigbee_ezsp_send_unicast</i>, <i>sl_zigbee_ezsp_send_broadcast</i> or <i>sl_zigbee_ezsp_send_multicast</i> command.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
         /// </returns>
         public (Status Status, ZigbeeOutgoingMessageType Type, ushort IndexOrDestination, ZigbeeApsFrame ApsFrame, ushort MessageTag, byte MessageLength, byte[] MessageContents) MessageSentHandler()
@@ -2375,9 +2562,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="ConcentratorType">Must be either SL_ZIGBEE_HIGH_RAM_CONCENTRATOR or SL_ZIGBEE_LOW_RAM_CONCENTRATOR. The former is used when the caller has enough memory to store source routes for the whole network. In that case, remote nodes stop sending route records once the concentrator has successfully received one. The latter is used when the concentrator has insufficient RAM to store all outbound source routes. In that case, route records are sent to the concentrator prior to every inbound APS unicast.</param>
         /// <param name="Radius">The maximum number of hops the route request will be relayed. A radius of zero is converted to SL_ZIGBEE_MAX_HOPS</param>
         /// <returns>SL_STATUS_OK if the route request was successfully submitted to the transmit queue, and SL_STATUS_FAIL otherwise.</returns>
-        public Status SendManyToOneRouteRequest(ushort ConcentratorType, byte Radius)
+        public Status SendManyToOneRouteRequest(ushort concentratorType, byte radius)
         {
             SendManyToOneRouteRequestRequest request = new SendManyToOneRouteRequestRequest();
+            request.ConcentratorType = concentratorType;
+            request.Radius = radius;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendManyToOneRouteRequestResponse)));
             SendManyToOneRouteRequestResponse response = (SendManyToOneRouteRequestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2391,9 +2580,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Units">The units for &lt;i&gt;interval&lt;/i&gt;.</param>
         /// <param name="FailureLimit">The number of poll failures that will be tolerated before a &lt;i&gt;pollCompleteHandler&lt;/i&gt; callback is generated. A value of zero will result in a callback for every poll. Any status value apart from SL_STATUS_OK and SL_STATUS_MAC_NO_DATA is counted as a failure.</param>
         /// <returns>The result of sending the first poll.</returns>
-        public Status PollForData(ushort Interval, ZigbeeEventUnits Units, byte FailureLimit)
+        public Status PollForData(ushort interval, ZigbeeEventUnits units, byte failureLimit)
         {
             PollForDataRequest request = new PollForDataRequest();
+            request.Interval = interval;
+            request.Units = units;
+            request.FailureLimit = failureLimit;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PollForDataResponse)));
             PollForDataResponse response = (PollForDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2418,9 +2610,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ChildId">The ID of the child that just polled for data.</param>
         /// <returns>SL_STATUS_OK - The next time that the child polls, it will be informed that it has pending data. SL_STATUS_NOT_JOINED - The child identified by childId is not our child.</returns>
-        public Status SetMessageFlag(ushort ChildId)
+        public Status SetMessageFlag(ushort childId)
         {
             SetMessageFlagRequest request = new SetMessageFlagRequest();
+            request.ChildId = childId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMessageFlagResponse)));
             SetMessageFlagResponse response = (SetMessageFlagResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2432,9 +2625,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ChildId">The ID of the child that no longer has pending messages.</param>
         /// <returns>SL_STATUS_OK - The next time that the child polls, it will be informed that it does not have any pending messages. SL_STATUS_NOT_JOINED - The child identified by childId is not our child.</returns>
-        public Status ClearMessageFlag(ushort ChildId)
+        public Status ClearMessageFlag(ushort childId)
         {
             ClearMessageFlagRequest request = new ClearMessageFlagRequest();
+            request.ChildId = childId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearMessageFlagResponse)));
             ClearMessageFlagResponse response = (ClearMessageFlagResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2464,9 +2658,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="LongId">The long ID of the node.</param>
         /// <param name="NodeType">The nodetype e.g., SL_ZIGBEE_ROUTER defining, if this would be added to the child table or neighbor table.</param>
         /// <returns>SL_STATUS_OK - This node has been successfully added. SL_STATUS_FAIL - The child was not added to the child/neighbor table.</returns>
-        public Status AddChild(ushort ShortId, byte LongId, ZigbeeNodeType NodeType)
+        public Status AddChild(ushort shortId, byte[] longId, ZigbeeNodeType nodeType)
         {
             AddChildRequest request = new AddChildRequest();
+            request.ShortId = shortId;
+            request.LongId = longId;
+            request.NodeType = nodeType;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddChildResponse)));
             AddChildResponse response = (AddChildResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2478,9 +2675,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ChildEui64">The long ID of the node.</param>
         /// <returns>SL_STATUS_OK - This node has been successfully removed. SL_STATUS_FAIL - The node was not found in either of the child or neighbor tables.</returns>
-        public Status RemoveChild(byte ChildEui64)
+        public Status RemoveChild(byte[] childEui64)
         {
             RemoveChildRequest request = new RemoveChildRequest();
+            request.ChildEui64 = childEui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveChildResponse)));
             RemoveChildResponse response = (RemoveChildResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2493,9 +2691,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="ShortId">The short ID of the neighbor.</param>
         /// <param name="LongId">The long ID of the neighbor.</param>
         /// <returns>The RemoveNeighborResponse object from the NCP</returns>
-        public RemoveNeighborResponse RemoveNeighbor(ushort ShortId, byte LongId)
+        public RemoveNeighborResponse RemoveNeighbor(ushort shortId, byte[] longId)
         {
             RemoveNeighborRequest request = new RemoveNeighborRequest();
+            request.ShortId = shortId;
+            request.LongId = longId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveNeighborResponse)));
             RemoveNeighborResponse response = (RemoveNeighborResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2509,7 +2709,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Type: The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK
         /// - ApsFrame: The APS frame from the incoming message.
         /// - PacketInfo: Miscellanous message information.
-        /// - MessageLength: The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>message</i> parameter in bytes.
         /// - Message: The incoming message.
         /// </returns>
         public (ZigbeeIncomingMessageType Type, ZigbeeApsFrame ApsFrame, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] Message) IncomingMessageHandler()
@@ -2526,9 +2726,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Mode">Source route discovery mode: off:0, on:1, reschedule:2</param>
         /// <returns>Remaining time(ms) until next MTORR broadcast if the mode is on, MAX_INT32U_VALUE if the mode is off</returns>
-        public uint SetSourceRouteDiscoveryMode(byte Mode)
+        public uint SetSourceRouteDiscoveryMode(byte mode)
         {
             SetSourceRouteDiscoveryModeRequest request = new SetSourceRouteDiscoveryModeRequest();
+            request.Mode = mode;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetSourceRouteDiscoveryModeResponse)));
             SetSourceRouteDiscoveryModeResponse response = (SetSourceRouteDiscoveryModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2543,7 +2744,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - LongId: The EUI64 of the concentrator.
         /// - Cost: The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
         /// </returns>
-        public (ushort Source, byte LongId, byte Cost) IncomingManyToOneRouteRequestHandler()
+        public (ushort Source, byte[] LongId, byte Cost) IncomingManyToOneRouteRequestHandler()
         {
             IncomingManyToOneRouteRequestHandlerRequest request = new IncomingManyToOneRouteRequestHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingManyToOneRouteRequestHandlerResponse)));
@@ -2592,10 +2793,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - SourceEui: The EUI64 of the source.
         /// - LastHopLqi: The link quality from the node that last relayed the route record.
         /// - LastHopRssi: The energy level (in units of dBm) observed during the reception.
-        /// - RelayCount: The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
+        /// - RelayCount: The number of relays in <i>relayList</i>.
         /// - RelayList: The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
         /// </returns>
-        public (ushort Source, byte SourceEui, byte LastHopLqi, sbyte LastHopRssi, byte RelayCount, byte[] RelayList) IncomingRouteRecordHandler()
+        public (ushort Source, byte[] SourceEui, byte LastHopLqi, sbyte LastHopRssi, byte RelayCount, byte[] RelayList) IncomingRouteRecordHandler()
         {
             IncomingRouteRecordHandlerRequest request = new IncomingRouteRecordHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingRouteRecordHandlerResponse)));
@@ -2611,9 +2812,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="RelayCount">The number of relays in &lt;i&gt;relayList&lt;/i&gt;.</param>
         /// <param name="RelayList">The source route.</param>
         /// <returns>SL_STATUS_OK if the source route was successfully stored, and SL_STATUS_ALLOCATION_FAILED otherwise.</returns>
-        public Status SetSourceRoute(ushort Destination, byte RelayCount, ushort[] RelayList)
+        public Status SetSourceRoute(ushort destination, byte relayCount, ushort[] relayList)
         {
             SetSourceRouteRequest request = new SetSourceRouteRequest();
+            request.Destination = destination;
+            request.RelayCount = relayCount;
+            request.RelayList = relayList;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetSourceRouteResponse)));
             SetSourceRouteResponse response = (SetSourceRouteResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2627,9 +2831,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="TargetLong">The long address of the destination node.</param>
         /// <param name="ParentShortId">The parent node of the destination node.</param>
         /// <returns>SL_STATUS_OK if send was successful</returns>
-        public Status UnicastCurrentNetworkKey(ushort TargetShort, byte TargetLong, ushort ParentShortId)
+        public Status UnicastCurrentNetworkKey(ushort targetShort, byte[] targetLong, ushort parentShortId)
         {
             UnicastCurrentNetworkKeyRequest request = new UnicastCurrentNetworkKeyRequest();
+            request.TargetShort = targetShort;
+            request.TargetLong = targetLong;
+            request.ParentShortId = parentShortId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UnicastCurrentNetworkKeyResponse)));
             UnicastCurrentNetworkKeyResponse response = (UnicastCurrentNetworkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2641,9 +2848,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="AddressTableIndex">The index of an address table entry.</param>
         /// <returns>True if the address table entry is active, false otherwise.</returns>
-        public bool AddressTableEntryIsActive(byte AddressTableIndex)
+        public bool AddressTableEntryIsActive(byte addressTableIndex)
         {
             AddressTableEntryIsActiveRequest request = new AddressTableEntryIsActiveRequest();
+            request.AddressTableIndex = addressTableIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddressTableEntryIsActiveResponse)));
             AddressTableEntryIsActiveResponse response = (AddressTableEntryIsActiveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2657,9 +2865,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Eui64">The EUI64 to use for the address table entry.</param>
         /// <param name="Id">The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index or SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID which indicates that the entry stored in the address table at the given index is not in use.</param>
         /// <returns>SL_STATUS_OK if the information was successfully set, and SL_STATUS_ZIGBEE_ADDRESS_TABLE_ENTRY_IS_ACTIVE otherwise.</returns>
-        public Status SetAddressTableInfo(byte AddressTableIndex, byte Eui64, ushort Id)
+        public Status SetAddressTableInfo(byte addressTableIndex, byte[] eui64, ushort id)
         {
             SetAddressTableInfoRequest request = new SetAddressTableInfoRequest();
+            request.AddressTableIndex = addressTableIndex;
+            request.Eui64 = eui64;
+            request.Id = id;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetAddressTableInfoResponse)));
             SetAddressTableInfoResponse response = (SetAddressTableInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2675,9 +2886,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - NodeId: One of the following: The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index. SL_ZIGBEE_UNKNOWN_NODE_ID - Indicates that the EUI64 stored in the address table at the given index is valid but the short ID is currently unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID - Indicates that the EUI64 stored in the address table at the given location is valid and network address discovery is underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID - Indicates that the entry stored in the address table at the given index is not in use.
         /// - Eui64: The EUI64 of the address table entry is copied to this location.
         /// </returns>
-        public (Status Status, ushort NodeId, byte Eui64) GetAddressTableInfo(byte AddressTableIndex)
+        public (Status Status, ushort NodeId, byte[] Eui64) GetAddressTableInfo(byte addressTableIndex)
         {
             GetAddressTableInfoRequest request = new GetAddressTableInfoRequest();
+            request.AddressTableIndex = addressTableIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetAddressTableInfoResponse)));
             GetAddressTableInfoResponse response = (GetAddressTableInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2690,9 +2902,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="RemoteEui64">The address of the node for which the timeout is to be set.</param>
         /// <param name="ExtendedTimeout">true if the retry interval should be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval should be used.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure  </returns>
-        public Status SetExtendedTimeout(byte RemoteEui64, bool ExtendedTimeout)
+        public Status SetExtendedTimeout(byte[] remoteEui64, bool extendedTimeout)
         {
             SetExtendedTimeoutRequest request = new SetExtendedTimeoutRequest();
+            request.RemoteEui64 = remoteEui64;
+            request.ExtendedTimeout = extendedTimeout;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetExtendedTimeoutResponse)));
             SetExtendedTimeoutResponse response = (SetExtendedTimeoutResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2704,9 +2918,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="RemoteEui64">The address of the node for which the timeout is to be returned.</param>
         /// <returns>SL_STATUS_OK if the retry interval will be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT and SL_STATUS_FAIL if the normal retry interval will be used.</returns>
-        public Status GetExtendedTimeout(byte RemoteEui64)
+        public Status GetExtendedTimeout(byte[] remoteEui64)
         {
             GetExtendedTimeoutRequest request = new GetExtendedTimeoutRequest();
+            request.RemoteEui64 = remoteEui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetExtendedTimeoutResponse)));
             GetExtendedTimeoutResponse response = (GetExtendedTimeoutResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2726,9 +2941,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - OldId: One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
         /// - OldExtendedTimeout: true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
         /// </returns>
-        public (Status Status, byte OldEui64, ushort OldId, bool OldExtendedTimeout) ReplaceAddressTableEntry(byte AddressTableIndex, byte NewEui64, ushort NewId, bool NewExtendedTimeout)
+        public (Status Status, byte[] OldEui64, ushort OldId, bool OldExtendedTimeout) ReplaceAddressTableEntry(byte addressTableIndex, byte[] newEui64, ushort newId, bool newExtendedTimeout)
         {
             ReplaceAddressTableEntryRequest request = new ReplaceAddressTableEntryRequest();
+            request.AddressTableIndex = addressTableIndex;
+            request.NewEui64 = newEui64;
+            request.NewId = newId;
+            request.NewExtendedTimeout = newExtendedTimeout;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReplaceAddressTableEntryResponse)));
             ReplaceAddressTableEntryResponse response = (ReplaceAddressTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2743,9 +2962,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: SL_STATUS_OK if the short ID was found, SL_STATUS_FAIL if the short ID is not known.
         /// - NodeId: The short ID of the node or SL_ZIGBEE_NULL_NODE_ID if the short ID is not known.
         /// </returns>
-        public (Status Status, ushort NodeId) LookupNodeIdByEui64(byte Eui64)
+        public (Status Status, ushort NodeId) LookupNodeIdByEui64(byte[] eui64)
         {
             LookupNodeIdByEui64Request request = new LookupNodeIdByEui64Request();
+            request.Eui64 = eui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LookupNodeIdByEui64Response)));
             LookupNodeIdByEui64Response response = (LookupNodeIdByEui64Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2760,9 +2980,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
         /// - Eui64: The EUI64 of the node.
         /// </returns>
-        public (Status Status, byte Eui64) LookupEui64ByNodeId(ushort NodeId)
+        public (Status Status, byte[] Eui64) LookupEui64ByNodeId(ushort nodeId)
         {
             LookupEui64ByNodeIdRequest request = new LookupEui64ByNodeIdRequest();
+            request.NodeId = nodeId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LookupEui64ByNodeIdResponse)));
             LookupEui64ByNodeIdResponse response = (LookupEui64ByNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2777,9 +2998,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Value: The contents of the multicast entry.
         /// </returns>
-        public (Status Status, ZigbeeMulticastTableEntry Value) GetMulticastTableEntry(byte Index)
+        public (Status Status, ZigbeeMulticastTableEntry Value) GetMulticastTableEntry(byte index)
         {
             GetMulticastTableEntryRequest request = new GetMulticastTableEntryRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetMulticastTableEntryResponse)));
             GetMulticastTableEntryResponse response = (GetMulticastTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2792,9 +3014,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Index">The index of a multicast table entry</param>
         /// <param name="Value">The contents of the multicast entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetMulticastTableEntry(byte Index, ZigbeeMulticastTableEntry Value)
+        public Status SetMulticastTableEntry(byte index, ZigbeeMulticastTableEntry value)
         {
             SetMulticastTableEntryRequest request = new SetMulticastTableEntryRequest();
+            request.Index = index;
+            request.Value = value;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMulticastTableEntryResponse)));
             SetMulticastTableEntryResponse response = (SetMulticastTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2819,9 +3043,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Erase">Erase the node type or not</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status WriteNodeData(bool Erase)
+        public Status WriteNodeData(bool erase)
         {
             WriteNodeDataRequest request = new WriteNodeDataRequest();
+            request.Erase = erase;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(WriteNodeDataResponse)));
             WriteNodeDataResponse response = (WriteNodeDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2836,9 +3061,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Priority">transmit priority.</param>
         /// <param name="UseCca">Should we enable CCA or not.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SendRawMessage(byte MessageLength, byte[] MessageContents, byte Priority, bool UseCca)
+        public Status SendRawMessage(byte messageLength, byte[] messageContents, byte priority, bool useCca)
         {
             SendRawMessageRequest request = new SendRawMessageRequest();
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
+            request.Priority = priority;
+            request.UseCca = useCca;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendRawMessageResponse)));
             SendRawMessageResponse response = (SendRawMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2851,7 +3080,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <returns>A tuple containing:
         /// - MessageType: The type of MAC passthrough message received.
         /// - PacketInfo: Information about the incoming packet.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
         public (ZigbeeMacPassthroughType MessageType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacPassthroughMessageHandler()
@@ -2870,7 +3099,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - FilterValueMatch: The value of the filter that was matched.
         /// - LegacyPassthroughType: The type of MAC passthrough message received.
         /// - PacketInfo: Information about the incoming packet.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
         public (ushort FilterValueMatch, ZigbeeMacPassthroughType LegacyPassthroughType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacFilterMatchMessageHandler()
@@ -2904,9 +3133,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="WaitBeforeRetryIntervalMs">Time in milliseconds the device waits before retrying a data poll when a MAC level data poll fails for any reason.</param>
         /// <returns>The SetMacPollFailureWaitTimeResponse object from the NCP</returns>
-        public SetMacPollFailureWaitTimeResponse SetMacPollFailureWaitTime(uint WaitBeforeRetryIntervalMs)
+        public SetMacPollFailureWaitTimeResponse SetMacPollFailureWaitTime(uint waitBeforeRetryIntervalMs)
         {
             SetMacPollFailureWaitTimeRequest request = new SetMacPollFailureWaitTimeRequest();
+            request.WaitBeforeRetryIntervalMs = waitBeforeRetryIntervalMs;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMacPollFailureWaitTimeResponse)));
             SetMacPollFailureWaitTimeResponse response = (SetMacPollFailureWaitTimeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -2990,9 +3220,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="NwkUpdateId">Desired value of the network update ID.</param>
         /// <param name="SetWhenOnNetwork">Set to true in case change should also apply when on network.</param>
         /// <returns>Status of set operation for the network update ID.</returns>
-        public Status SetNwkUpdateId(byte NwkUpdateId, bool SetWhenOnNetwork)
+        public Status SetNwkUpdateId(byte nwkUpdateId, bool setWhenOnNetwork)
         {
             SetNwkUpdateIdRequest request = new SetNwkUpdateIdRequest();
+            request.NwkUpdateId = nwkUpdateId;
+            request.SetWhenOnNetwork = setWhenOnNetwork;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNwkUpdateIdResponse)));
             SetNwkUpdateIdResponse response = (SetNwkUpdateIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3004,9 +3236,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="State">The security configuration to be set.</param>
         /// <returns>The success or failure code of the operation.</returns>
-        public Status SetInitialSecurityState(ZigbeeInitialSecurityState State)
+        public Status SetInitialSecurityState(ZigbeeInitialSecurityState state)
         {
             SetInitialSecurityStateRequest request = new SetInitialSecurityStateRequest();
+            request.State = state;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetInitialSecurityStateResponse)));
             SetInitialSecurityStateResponse response = (SetInitialSecurityStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3037,9 +3270,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: The success or failure code of the operation.
         /// - Key: Data to store the exported key in.
         /// </returns>
-        public (Status Status, ZigbeeSecManKey Key) SecManExportKey(ZigbeeSecManContext Context)
+        public (Status Status, ZigbeeSecManKey Key) SecManExportKey(ZigbeeSecManContext context)
         {
             SecManExportKeyRequest request = new SecManExportKeyRequest();
+            request.Context = context;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportKeyResponse)));
             SecManExportKeyResponse response = (SecManExportKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3052,9 +3286,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Context">Metadata to identify where the imported key should be stored.</param>
         /// <param name="Key">The key to be imported.</param>
         /// <returns>The success or failure code of the operation.</returns>
-        public Status SecManImportKey(ZigbeeSecManContext Context, ZigbeeSecManKey Key)
+        public Status SecManImportKey(ZigbeeSecManContext context, ZigbeeSecManKey key)
         {
             SecManImportKeyRequest request = new SecManImportKeyRequest();
+            request.Context = context;
+            request.Key = key;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportKeyResponse)));
             SecManImportKeyResponse response = (SecManImportKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3080,9 +3316,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Address">The address to search for. Alternatively, all zeros may be passed in to search for the first empty entry.</param>
         /// <param name="LinkKey">This indicates whether to search for an entry that contains a link key or a master key. true means to search for an entry with a Link Key.</param>
         /// <returns>This indicates the index of the entry that matches the search criteria. A value of 0xFF is returned if not matching entry is found.</returns>
-        public byte FindKeyTableEntry(byte Address, bool LinkKey)
+        public byte FindKeyTableEntry(byte[] address, bool linkKey)
         {
             FindKeyTableEntryRequest request = new FindKeyTableEntryRequest();
+            request.Address = address;
+            request.LinkKey = linkKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindKeyTableEntryResponse)));
             FindKeyTableEntryResponse response = (FindKeyTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3095,9 +3333,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="DestinationNodeId">The short address of the node to which this command will be sent</param>
         /// <param name="DestinationEui64">The long address of the node to which this command will be sent</param>
         /// <returns>An sl_status_t value indicating success of failure of the operation</returns>
-        public Status SendTrustCenterLinkKey(ushort DestinationNodeId, byte DestinationEui64)
+        public Status SendTrustCenterLinkKey(ushort destinationNodeId, byte[] destinationEui64)
         {
             SendTrustCenterLinkKeyRequest request = new SendTrustCenterLinkKeyRequest();
+            request.DestinationNodeId = destinationNodeId;
+            request.DestinationEui64 = destinationEui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendTrustCenterLinkKeyResponse)));
             SendTrustCenterLinkKeyResponse response = (SendTrustCenterLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3109,9 +3349,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Index">This indicates the index of entry to erase.</param>
         /// <returns>The success or failure of the operation.</returns>
-        public Status EraseKeyTableEntry(byte Index)
+        public Status EraseKeyTableEntry(byte index)
         {
             EraseKeyTableEntryRequest request = new EraseKeyTableEntryRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EraseKeyTableEntryResponse)));
             EraseKeyTableEntryResponse response = (EraseKeyTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3136,9 +3377,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Partner">This is the IEEE address of the partner device that will share the link key.</param>
         /// <returns>The success or failure of sending the request. This is not the final result of the attempt. sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will return that.</returns>
-        public Status RequestLinkKey(byte Partner)
+        public Status RequestLinkKey(byte[] partner)
         {
             RequestLinkKeyRequest request = new RequestLinkKeyRequest();
+            request.Partner = partner;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RequestLinkKeyResponse)));
             RequestLinkKeyResponse response = (RequestLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3150,9 +3392,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="MaxAttempts">The maximum number of attempts a node should make when sending the Node Descriptor, Request Key, and Verify Key Confirm messages. The number of attempts resets for each message type sent (e.g., if maxAttempts is 3, up to 3 Node Descriptors are sent, up to 3 Request Keys, and up to 3 Verify Key Confirm messages are sent).</param>
         /// <returns>The success or failure of sending the request. If the Node Descriptor is successfully transmitted, sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will be called at a later time with a final status result.</returns>
-        public Status UpdateTcLinkKey(byte MaxAttempts)
+        public Status UpdateTcLinkKey(byte maxAttempts)
         {
             UpdateTcLinkKeyRequest request = new UpdateTcLinkKeyRequest();
+            request.MaxAttempts = maxAttempts;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UpdateTcLinkKeyResponse)));
             UpdateTcLinkKeyResponse response = (UpdateTcLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3166,7 +3409,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Partner: This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
         /// - Status: This is the status indicating what was established or why the key establishment failed.
         /// </returns>
-        public (byte Partner, ZigbeeKeyStatus Status) ZigbeeKeyEstablishmentHandler()
+        public (byte[] Partner, ZigbeeKeyStatus Status) ZigbeeKeyEstablishmentHandler()
         {
             ZigbeeKeyEstablishmentHandlerRequest request = new ZigbeeKeyEstablishmentHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZigbeeKeyEstablishmentHandlerResponse)));
@@ -3212,9 +3455,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: Status of metadata retrieval operation.
         /// - KeyData: Metadata about the referenced key.
         /// </returns>
-        public (Status Status, ZigbeeSecManApsKeyMetadata KeyData) SecManGetApsKeyInfo(ZigbeeSecManContext Context)
+        public (Status Status, ZigbeeSecManApsKeyMetadata KeyData) SecManGetApsKeyInfo(ZigbeeSecManContext context)
         {
             SecManGetApsKeyInfoRequest request = new SecManGetApsKeyInfoRequest();
+            request.Context = context;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManGetApsKeyInfoResponse)));
             SecManGetApsKeyInfoResponse response = (SecManGetApsKeyInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3228,9 +3472,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Address">EUI64 this key is associated with.</param>
         /// <param name="PlaintextKey">The key data to be imported.</param>
         /// <returns>Status of key import operation.</returns>
-        public Status SecManImportLinkKey(byte Index, byte Address, ZigbeeSecManKey PlaintextKey)
+        public Status SecManImportLinkKey(byte index, byte[] address, ZigbeeSecManKey plaintextKey)
         {
             SecManImportLinkKeyRequest request = new SecManImportLinkKeyRequest();
+            request.Index = index;
+            request.Address = address;
+            request.PlaintextKey = plaintextKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportLinkKeyResponse)));
             SecManImportLinkKeyResponse response = (SecManImportLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3247,9 +3494,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByIndex(byte Index)
+        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByIndex(byte index)
         {
             SecManExportLinkKeyByIndexRequest request = new SecManExportLinkKeyByIndexRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportLinkKeyByIndexResponse)));
             SecManExportLinkKeyByIndexResponse response = (SecManExportLinkKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3266,9 +3514,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByEui(byte Eui)
+        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByEui(byte[] eui)
         {
             SecManExportLinkKeyByEuiRequest request = new SecManExportLinkKeyByEuiRequest();
+            request.Eui = eui;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportLinkKeyByEuiResponse)));
             SecManExportLinkKeyByEuiResponse response = (SecManExportLinkKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3280,9 +3529,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Context">Context struct to check the validity of.</param>
         /// <returns>Validity of the checked context.</returns>
-        public Status SecManCheckKeyContext(ZigbeeSecManContext Context)
+        public Status SecManCheckKeyContext(ZigbeeSecManContext context)
         {
             SecManCheckKeyContextRequest request = new SecManCheckKeyContextRequest();
+            request.Context = context;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManCheckKeyContextResponse)));
             SecManCheckKeyContextResponse response = (SecManCheckKeyContextResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3295,9 +3545,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Eui64">EUI64 associated with this transient key.</param>
         /// <param name="PlaintextKey">The key to import.</param>
         /// <returns>Status of key import operation.</returns>
-        public Status SecManImportTransientKey(byte Eui64, ZigbeeSecManKey PlaintextKey)
+        public Status SecManImportTransientKey(byte[] eui64, ZigbeeSecManKey plaintextKey)
         {
             SecManImportTransientKeyRequest request = new SecManImportTransientKeyRequest();
+            request.Eui64 = eui64;
+            request.PlaintextKey = plaintextKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportTransientKeyResponse)));
             SecManImportTransientKeyResponse response = (SecManImportTransientKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3314,9 +3566,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByIndex(byte Index)
+        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByIndex(byte index)
         {
             SecManExportTransientKeyByIndexRequest request = new SecManExportTransientKeyByIndexRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportTransientKeyByIndexResponse)));
             SecManExportTransientKeyByIndexResponse response = (SecManExportTransientKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3333,9 +3586,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByEui(byte Eui)
+        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByEui(byte[] eui)
         {
             SecManExportTransientKeyByEuiRequest request = new SecManExportTransientKeyByEuiRequest();
+            request.Eui = eui;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportTransientKeyByEuiResponse)));
             SecManExportTransientKeyByEuiResponse response = (SecManExportTransientKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3347,9 +3601,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="FrameCounter">Value to set the frame counter to.</param>
         /// <returns>The SetIncomingTcLinkKeyFrameCounterResponse object from the NCP</returns>
-        public SetIncomingTcLinkKeyFrameCounterResponse SetIncomingTcLinkKeyFrameCounter(uint FrameCounter)
+        public SetIncomingTcLinkKeyFrameCounterResponse SetIncomingTcLinkKeyFrameCounter(uint frameCounter)
         {
             SetIncomingTcLinkKeyFrameCounterRequest request = new SetIncomingTcLinkKeyFrameCounterRequest();
+            request.FrameCounter = frameCounter;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetIncomingTcLinkKeyFrameCounterResponse)));
             SetIncomingTcLinkKeyFrameCounterResponse response = (SetIncomingTcLinkKeyFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3365,9 +3620,14 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="ApsHeaderEndIndex">Index just past the APS frame.</param>
         /// <param name="RemoteEui64">IEEE address of the device this message is associated with.</param>
         /// <returns>Status of the encryption/decryption call.</returns>
-        public Status ApsCryptMessage(bool Encrypt, byte LengthCombinedArg, byte[] Message, byte ApsHeaderEndIndex, byte RemoteEui64)
+        public Status ApsCryptMessage(bool encrypt, byte lengthCombinedArg, byte[] message, byte apsHeaderEndIndex, byte[] remoteEui64)
         {
             ApsCryptMessageRequest request = new ApsCryptMessageRequest();
+            request.Encrypt = encrypt;
+            request.LengthCombinedArg = lengthCombinedArg;
+            request.Message = message;
+            request.ApsHeaderEndIndex = apsHeaderEndIndex;
+            request.RemoteEui64 = remoteEui64;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ApsCryptMessageResponse)));
             ApsCryptMessageResponse response = (ApsCryptMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3384,7 +3644,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - PolicyDecision: An sl_zigbee_join_decision_t reflecting the decision made.
         /// - ParentOfNewNodeId: The parent of the node whose status has changed.
         /// </returns>
-        public (ushort NewNodeId, byte NewNodeEui64, ZigbeeDeviceUpdate Status, ZigbeeJoinDecision PolicyDecision, ushort ParentOfNewNodeId) TrustCenterPostJoinHandler()
+        public (ushort NewNodeId, byte[] NewNodeEui64, ZigbeeDeviceUpdate Status, ZigbeeJoinDecision PolicyDecision, ushort ParentOfNewNodeId) TrustCenterPostJoinHandler()
         {
             TrustCenterPostJoinHandlerRequest request = new TrustCenterPostJoinHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(TrustCenterPostJoinHandlerResponse)));
@@ -3398,9 +3658,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Key">An optional pointer to a 16-byte encryption key (SL_ZIGBEE_ENCRYPTION_KEY_SIZE). An all zero key may be passed in, which will cause the stack to randomly generate a new key.</param>
         /// <returns>sl_status_t value that indicates the success or failure of the command.</returns>
-        public Status BroadcastNextNetworkKey(ZigbeeKeyData Key)
+        public Status BroadcastNextNetworkKey(ZigbeeKeyData key)
         {
             BroadcastNextNetworkKeyRequest request = new BroadcastNextNetworkKeyRequest();
+            request.Key = key;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BroadcastNextNetworkKeyResponse)));
             BroadcastNextNetworkKeyResponse response = (BroadcastNextNetworkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3431,9 +3692,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: The result of the operation
         /// - ReturnContext: The updated hash context.
         /// </returns>
-        public (Status Status, ZigbeeAesMmoHashContext ReturnContext) AesMmoHash(ZigbeeAesMmoHashContext Context, bool Finalize, byte Length, byte[] Data)
+        public (Status Status, ZigbeeAesMmoHashContext ReturnContext) AesMmoHash(ZigbeeAesMmoHashContext context, bool finalize, byte length, byte[] data)
         {
             AesMmoHashRequest request = new AesMmoHashRequest();
+            request.Context = context;
+            request.Finalize = finalize;
+            request.Length = length;
+            request.Data = data;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AesMmoHashResponse)));
             AesMmoHashResponse response = (AesMmoHashResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3447,9 +3712,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="DestLong">The long address (EUI64) of the device that will receive the message.</param>
         /// <param name="TargetLong">The long address (EUI64) of the device to be removed.</param>
         /// <returns>An sl_status_t value indicating success, or the reason for failure</returns>
-        public Status RemoveDevice(ushort DestShort, byte DestLong, byte TargetLong)
+        public Status RemoveDevice(ushort destShort, byte[] destLong, byte[] targetLong)
         {
             RemoveDeviceRequest request = new RemoveDeviceRequest();
+            request.DestShort = destShort;
+            request.DestLong = destLong;
+            request.TargetLong = targetLong;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveDeviceResponse)));
             RemoveDeviceResponse response = (RemoveDeviceResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3463,9 +3731,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="DestLong">The long address (EUI64) of the device that will receive the message.</param>
         /// <param name="Key">The NWK key to send to the new device.</param>
         /// <returns>An sl_status_t value indicating success, or the reason for failure</returns>
-        public Status UnicastNwkKeyUpdate(ushort DestShort, byte DestLong, ZigbeeKeyData Key)
+        public Status UnicastNwkKeyUpdate(ushort destShort, byte[] destLong, ZigbeeKeyData key)
         {
             UnicastNwkKeyUpdateRequest request = new UnicastNwkKeyUpdateRequest();
+            request.DestShort = destShort;
+            request.DestLong = destLong;
+            request.Key = key;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UnicastNwkKeyUpdateResponse)));
             UnicastNwkKeyUpdateResponse response = (UnicastNwkKeyUpdateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3508,9 +3779,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="PartnerCertificate">The key establishment partner&apos;s implicit certificate.</param>
         /// <param name="PartnerEphemeralPublicKey">The key establishment partner&apos;s ephemeral public key</param>
         /// <returns></returns>
-        public Status CalculateSmacs(bool AmInitiator, ZigbeeCertificateData PartnerCertificate, ZigbeePublicKeyData PartnerEphemeralPublicKey)
+        public Status CalculateSmacs(bool amInitiator, ZigbeeCertificateData partnerCertificate, ZigbeePublicKeyData partnerEphemeralPublicKey)
         {
             CalculateSmacsRequest request = new CalculateSmacsRequest();
+            request.AmInitiator = amInitiator;
+            request.PartnerCertificate = partnerCertificate;
+            request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacsResponse)));
             CalculateSmacsResponse response = (CalculateSmacsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3522,8 +3796,8 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <returns>A tuple containing:
         /// - Status: The Result of the CBKE operation.
-        /// - InitiatorSmac: The calculated value of the initiator&apos;s SMAC
-        /// - ResponderSmac: The calculated value of the responder&apos;s SMAC
+        /// - InitiatorSmac: The calculated value of the initiator's SMAC
+        /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
         public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacsHandler()
         {
@@ -3570,9 +3844,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="PartnerCertificate">The key establishment partner&apos;s implicit certificate.</param>
         /// <param name="PartnerEphemeralPublicKey">The key establishment partner&apos;s ephemeral public key</param>
         /// <returns></returns>
-        public Status CalculateSmacs283k1(bool AmInitiator, ZigbeeCertificate283k1Data PartnerCertificate, ZigbeePublicKey283k1Data PartnerEphemeralPublicKey)
+        public Status CalculateSmacs283k1(bool amInitiator, ZigbeeCertificate283k1Data partnerCertificate, ZigbeePublicKey283k1Data partnerEphemeralPublicKey)
         {
             CalculateSmacs283k1Request request = new CalculateSmacs283k1Request();
+            request.AmInitiator = amInitiator;
+            request.PartnerCertificate = partnerCertificate;
+            request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacs283k1Response)));
             CalculateSmacs283k1Response response = (CalculateSmacs283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3584,8 +3861,8 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <returns>A tuple containing:
         /// - Status: The Result of the CBKE operation.
-        /// - InitiatorSmac: The calculated value of the initiator&apos;s SMAC
-        /// - ResponderSmac: The calculated value of the responder&apos;s SMAC
+        /// - InitiatorSmac: The calculated value of the initiator's SMAC
+        /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
         public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacs283k1Handler()
         {
@@ -3601,9 +3878,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="StoreLinkKey">A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.</param>
         /// <returns></returns>
-        public Status ClearTemporaryDataMaybeStoreLinkKey(bool StoreLinkKey)
+        public Status ClearTemporaryDataMaybeStoreLinkKey(bool storeLinkKey)
         {
             ClearTemporaryDataMaybeStoreLinkKeyRequest request = new ClearTemporaryDataMaybeStoreLinkKeyRequest();
+            request.StoreLinkKey = storeLinkKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKeyResponse)));
             ClearTemporaryDataMaybeStoreLinkKeyResponse response = (ClearTemporaryDataMaybeStoreLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3615,9 +3893,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="StoreLinkKey">A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.</param>
         /// <returns></returns>
-        public Status ClearTemporaryDataMaybeStoreLinkKey283k1(bool StoreLinkKey)
+        public Status ClearTemporaryDataMaybeStoreLinkKey283k1(bool storeLinkKey)
         {
             ClearTemporaryDataMaybeStoreLinkKey283k1Request request = new ClearTemporaryDataMaybeStoreLinkKey283k1Request();
+            request.StoreLinkKey = storeLinkKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKey283k1Response)));
             ClearTemporaryDataMaybeStoreLinkKey283k1Response response = (ClearTemporaryDataMaybeStoreLinkKey283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3662,9 +3941,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The message contents for which to create a signature. Per above notes, this may include a leading portion of data not included in the signature, in which case the last byte of this array should be set to the index of the first byte to be considered for signing. Otherwise, the last byte of messageContents should be 0x00 to indicate that a signature should occur across the entire contents.</param>
         /// <returns>SL_STATUS_IN_PROGRESS if the stack has queued up the operation for execution. SL_STATUS_INVALID_STATE if the operation can&apos;t be performed in this context, possibly because another ECC operation is pending.</returns>
-        public Status DsaSign(byte MessageLength, byte[] MessageContents)
+        public Status DsaSign(byte messageLength, byte[] messageContents)
         {
             DsaSignRequest request = new DsaSignRequest();
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaSignResponse)));
             DsaSignResponse response = (DsaSignResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3676,7 +3957,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <returns>A tuple containing:
         /// - Status: The result of the DSA signing operation.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message and attached which includes the original message and the appended signature.
         /// </returns>
         public (Status Status, byte MessageLength, byte[] MessageContents) DsaSignHandler()
@@ -3695,9 +3976,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="SignerCertificate">The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.</param>
         /// <param name="ReceivedSig">The signature of the signed data.</param>
         /// <returns></returns>
-        public Status DsaVerify(ZigbeeMessageDigest Digest, ZigbeeCertificateData SignerCertificate, ZigbeeSignatureData ReceivedSig)
+        public Status DsaVerify(ZigbeeMessageDigest digest, ZigbeeCertificateData signerCertificate, ZigbeeSignatureData receivedSig)
         {
             DsaVerifyRequest request = new DsaVerifyRequest();
+            request.Digest = digest;
+            request.SignerCertificate = signerCertificate;
+            request.ReceivedSig = receivedSig;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaVerifyResponse)));
             DsaVerifyResponse response = (DsaVerifyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3724,9 +4008,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="SignerCertificate">The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.</param>
         /// <param name="ReceivedSig">The signature of the signed data.</param>
         /// <returns></returns>
-        public Status DsaVerify283k1(ZigbeeMessageDigest Digest, ZigbeeCertificate283k1Data SignerCertificate, ZigbeeSignature283k1Data ReceivedSig)
+        public Status DsaVerify283k1(ZigbeeMessageDigest digest, ZigbeeCertificate283k1Data signerCertificate, ZigbeeSignature283k1Data receivedSig)
         {
             DsaVerify283k1Request request = new DsaVerify283k1Request();
+            request.Digest = digest;
+            request.SignerCertificate = signerCertificate;
+            request.ReceivedSig = receivedSig;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaVerify283k1Response)));
             DsaVerify283k1Response response = (DsaVerify283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3740,9 +4027,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="MyCert">The node&apos;s new certificate signed by the CA.</param>
         /// <param name="MyKey">The node&apos;s new static private key.</param>
         /// <returns></returns>
-        public Status SetPreinstalledCbkeData(ZigbeePublicKeyData CaPublic, ZigbeeCertificateData MyCert, ZigbeePrivateKeyData MyKey)
+        public Status SetPreinstalledCbkeData(ZigbeePublicKeyData caPublic, ZigbeeCertificateData myCert, ZigbeePrivateKeyData myKey)
         {
             SetPreinstalledCbkeDataRequest request = new SetPreinstalledCbkeDataRequest();
+            request.CaPublic = caPublic;
+            request.MyCert = myCert;
+            request.MyKey = myKey;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPreinstalledCbkeDataResponse)));
             SetPreinstalledCbkeDataResponse response = (SetPreinstalledCbkeDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3767,9 +4057,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="RxCallback">true to generate a mfglibRxHandler callback when a packet is received.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStart(bool RxCallback)
+        public Status MfglibInternalStart(bool rxCallback)
         {
             MfglibInternalStartRequest request = new MfglibInternalStartRequest();
+            request.RxCallback = rxCallback;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStartResponse)));
             MfglibInternalStartResponse response = (MfglibInternalStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3847,9 +4138,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="PacketLength">The length of the packetContents parameter in bytes. Must be greater than 3 and less than 123.</param>
         /// <param name="PacketContents">The packet to send. The last two bytes will be replaced with the 16-bit CRC.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSendPacket(byte PacketLength, byte[] PacketContents)
+        public Status MfglibInternalSendPacket(byte packetLength, byte[] packetContents)
         {
             MfglibInternalSendPacketRequest request = new MfglibInternalSendPacketRequest();
+            request.PacketLength = packetLength;
+            request.PacketContents = packetContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSendPacketResponse)));
             MfglibInternalSendPacketResponse response = (MfglibInternalSendPacketResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3861,9 +4154,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Channel">The channel to switch to. Valid values are 11 to 26.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSetChannel(byte Channel)
+        public Status MfglibInternalSetChannel(byte channel)
         {
             MfglibInternalSetChannelRequest request = new MfglibInternalSetChannelRequest();
+            request.Channel = channel;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSetChannelResponse)));
             MfglibInternalSetChannelResponse response = (MfglibInternalSetChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3889,9 +4183,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="TxPowerMode">Power mode. Refer to txPowerModes in stack/include/sl_zigbee_types.h for possible values.</param>
         /// <param name="Power">Power in units of dBm. Refer to radio data sheet for valid range.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSetPower(ushort TxPowerMode, sbyte Power)
+        public Status MfglibInternalSetPower(ushort txPowerMode, sbyte power)
         {
             MfglibInternalSetPowerRequest request = new MfglibInternalSetPowerRequest();
+            request.TxPowerMode = txPowerMode;
+            request.Power = power;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSetPowerResponse)));
             MfglibInternalSetPowerResponse response = (MfglibInternalSetPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3934,9 +4230,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Enabled">If true, launch the standalone bootloader. If false, do nothing.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status LaunchStandaloneBootloader(bool Enabled)
+        public Status LaunchStandaloneBootloader(bool enabled)
         {
             LaunchStandaloneBootloaderRequest request = new LaunchStandaloneBootloaderRequest();
+            request.Enabled = enabled;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LaunchStandaloneBootloaderResponse)));
             LaunchStandaloneBootloaderResponse response = (LaunchStandaloneBootloaderResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3951,9 +4248,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The multicast message.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SendBootloadMessage(bool Broadcast, byte DestEui64, byte MessageLength, byte[] MessageContents)
+        public Status SendBootloadMessage(bool broadcast, byte[] destEui64, byte messageLength, byte[] messageContents)
         {
             SendBootloadMessageRequest request = new SendBootloadMessageRequest();
+            request.Broadcast = broadcast;
+            request.DestEui64 = destEui64;
+            request.MessageLength = messageLength;
+            request.MessageContents = messageContents;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendBootloadMessageResponse)));
             SendBootloadMessageResponse response = (SendBootloadMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -3984,10 +4285,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <returns>A tuple containing:
         /// - LongId: The EUI64 of the sending node.
         /// - PacketInfo: Information about the incoming packet.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The bootload message that was sent.
         /// </returns>
-        public (byte LongId, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) IncomingBootloadMessageHandler()
+        public (byte[] LongId, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) IncomingBootloadMessageHandler()
         {
             IncomingBootloadMessageHandlerRequest request = new IncomingBootloadMessageHandlerRequest();
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingBootloadMessageHandlerResponse)));
@@ -4001,7 +4302,7 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <returns>A tuple containing:
         /// - Status: An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
-        /// - MessageLength: The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
+        /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message that was sent.
         /// </returns>
         public (Status Status, byte MessageLength, byte[] MessageContents) BootloadTransmitCompleteHandler()
@@ -4019,9 +4320,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Plaintext">16 bytes of plaintext.</param>
         /// <param name="Key">The 16-byte encryption key to use.</param>
         /// <returns>16 bytes of ciphertext.</returns>
-        public byte[] AesEncrypt(byte[] Plaintext, byte[] Key)
+        public byte[] AesEncrypt(byte[] plaintext, byte[] key)
         {
             AesEncryptRequest request = new AesEncryptRequest();
+            request.Plaintext = plaintext;
+            request.Key = key;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AesEncryptResponse)));
             AesEncryptResponse response = (AesEncryptResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4050,9 +4353,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="BeginConfiguration">Determines the new mode of operation. true causes the node to enter manufacturing configuration. false causes the node to return to normal network operation.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSetPacketMode(bool BeginConfiguration)
+        public Status MfgTestSetPacketMode(bool beginConfiguration)
         {
             MfgTestSetPacketModeRequest request = new MfgTestSetPacketModeRequest();
+            request.BeginConfiguration = beginConfiguration;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSetPacketModeResponse)));
             MfgTestSetPacketModeResponse response = (MfgTestSetPacketModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4077,9 +4381,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="NewId">The 8-byte EUID for the DUT.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendEui64(byte NewId)
+        public Status MfgTestSendEui64(byte[] newId)
         {
             MfgTestSendEui64Request request = new MfgTestSendEui64Request();
+            request.NewId = newId;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendEui64Response)));
             MfgTestSendEui64Response response = (MfgTestSendEui64Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4091,9 +4396,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="NewString">The 16-byte manufacturing string.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendManufacturingString(byte NewString)
+        public Status MfgTestSendManufacturingString(byte[] newString)
         {
             MfgTestSendManufacturingStringRequest request = new MfgTestSendManufacturingStringRequest();
+            request.NewString = newString;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendManufacturingStringResponse)));
             MfgTestSendManufacturingStringResponse response = (MfgTestSendManufacturingStringResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4106,9 +4412,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="SupportedBands">Sets the radio band for the DUT. See ember-common.h for possible values.</param>
         /// <param name="CrystalOffset">Sets the CC1020 crystal offset. This parameter has no effect on the EM2420, and it may safely be set to 0 for this RFIC.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendRadioParameters(byte SupportedBands, sbyte CrystalOffset)
+        public Status MfgTestSendRadioParameters(byte supportedBands, sbyte crystalOffset)
         {
             MfgTestSendRadioParametersRequest request = new MfgTestSendRadioParametersRequest();
+            request.SupportedBands = supportedBands;
+            request.CrystalOffset = crystalOffset;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendRadioParametersResponse)));
             MfgTestSendRadioParametersResponse response = (MfgTestSendRadioParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4120,9 +4428,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Command">A pointer to the outgoing command string.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendCommand(byte[] Command)
+        public Status MfgTestSendCommand(byte[] command)
         {
             MfgTestSendCommandRequest request = new MfgTestSendCommandRequest();
+            request.Command = command;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendCommandResponse)));
             MfgTestSendCommandResponse response = (MfgTestSendCommandResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4136,9 +4445,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Op">Operation indicator.</param>
         /// <param name="RadioTxPower">Radio transmission power.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllNetworkOps(ZigbeeZllNetwork NetworkInfo, ZigbeeEzspZllNetworkOperation Op, sbyte RadioTxPower)
+        public Status ZllNetworkOps(ZigbeeZllNetwork networkInfo, ZigbeeEzspZllNetworkOperation op, sbyte radioTxPower)
         {
             ZllNetworkOpsRequest request = new ZllNetworkOpsRequest();
+            request.NetworkInfo = networkInfo;
+            request.Op = op;
+            request.RadioTxPower = radioTxPower;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllNetworkOpsResponse)));
             ZllNetworkOpsResponse response = (ZllNetworkOpsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4151,9 +4463,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="NetworkKey">ZLL Network key.</param>
         /// <param name="SecurityState">Initial security state of the network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetInitialSecurityState(ZigbeeKeyData NetworkKey, ZigbeeZllInitialSecurityState SecurityState)
+        public Status ZllSetInitialSecurityState(ZigbeeKeyData networkKey, ZigbeeZllInitialSecurityState securityState)
         {
             ZllSetInitialSecurityStateRequest request = new ZllSetInitialSecurityStateRequest();
+            request.NetworkKey = networkKey;
+            request.SecurityState = securityState;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetInitialSecurityStateResponse)));
             ZllSetInitialSecurityStateResponse response = (ZllSetInitialSecurityStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4165,9 +4479,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="SecurityState">Security state of the network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetSecurityStateWithoutKey(ZigbeeZllInitialSecurityState SecurityState)
+        public Status ZllSetSecurityStateWithoutKey(ZigbeeZllInitialSecurityState securityState)
         {
             ZllSetSecurityStateWithoutKeyRequest request = new ZllSetSecurityStateWithoutKeyRequest();
+            request.SecurityState = securityState;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetSecurityStateWithoutKeyResponse)));
             ZllSetSecurityStateWithoutKeyResponse response = (ZllSetSecurityStateWithoutKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4181,9 +4496,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="RadioPowerForScan">The radio output power used for the scan requests.</param>
         /// <param name="NodeType">The node type of the local device.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllStartScan(uint ChannelMask, sbyte RadioPowerForScan, ZigbeeNodeType NodeType)
+        public Status ZllStartScan(uint channelMask, sbyte radioPowerForScan, ZigbeeNodeType nodeType)
         {
             ZllStartScanRequest request = new ZllStartScanRequest();
+            request.ChannelMask = channelMask;
+            request.RadioPowerForScan = radioPowerForScan;
+            request.NodeType = nodeType;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllStartScanResponse)));
             ZllStartScanResponse response = (ZllStartScanResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4195,9 +4513,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="DurationMs">The duration in milliseconds to leave the radio on.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetRxOnWhenIdle(uint DurationMs)
+        public Status ZllSetRxOnWhenIdle(uint durationMs)
         {
             ZllSetRxOnWhenIdleRequest request = new ZllSetRxOnWhenIdleRequest();
+            request.DurationMs = durationMs;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetRxOnWhenIdleResponse)));
             ZllSetRxOnWhenIdleResponse response = (ZllSetRxOnWhenIdleResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4285,9 +4604,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Data">Data token to be set.</param>
         /// <returns>The ZllSetDataTokenResponse object from the NCP</returns>
-        public ZllSetDataTokenResponse ZllSetDataToken(ZigbeeTokTypeStackZllData Data)
+        public ZllSetDataTokenResponse ZllSetDataToken(ZigbeeTokTypeStackZllData data)
         {
             ZllSetDataTokenRequest request = new ZllSetDataTokenRequest();
+            request.Data = data;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetDataTokenResponse)));
             ZllSetDataTokenResponse response = (ZllSetDataTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4325,9 +4645,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Mode">The power mode to be set.</param>
         /// <returns>The ZllSetRadioIdleModeResponse object from the NCP</returns>
-        public ZllSetRadioIdleModeResponse ZllSetRadioIdleMode(ZigbeeRadioPowerMode Mode)
+        public ZllSetRadioIdleModeResponse ZllSetRadioIdleMode(ZigbeeRadioPowerMode mode)
         {
             ZllSetRadioIdleModeRequest request = new ZllSetRadioIdleModeRequest();
+            request.Mode = mode;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetRadioIdleModeResponse)));
             ZllSetRadioIdleModeResponse response = (ZllSetRadioIdleModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4352,9 +4673,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="NodeType">The node type to be set.</param>
         /// <returns>The SetZllNodeTypeResponse object from the NCP</returns>
-        public SetZllNodeTypeResponse SetZllNodeType(ZigbeeNodeType NodeType)
+        public SetZllNodeTypeResponse SetZllNodeType(ZigbeeNodeType nodeType)
         {
             SetZllNodeTypeRequest request = new SetZllNodeTypeRequest();
+            request.NodeType = nodeType;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllNodeTypeResponse)));
             SetZllNodeTypeResponse response = (SetZllNodeTypeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4366,9 +4688,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="State">A mask with the bits to be set or cleared.</param>
         /// <returns>The SetZllAdditionalStateResponse object from the NCP</returns>
-        public SetZllAdditionalStateResponse SetZllAdditionalState(ushort State)
+        public SetZllAdditionalStateResponse SetZllAdditionalState(ushort state)
         {
             SetZllAdditionalStateRequest request = new SetZllAdditionalStateRequest();
+            request.State = state;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllAdditionalStateResponse)));
             SetZllAdditionalStateResponse response = (SetZllAdditionalStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4445,9 +4768,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ZllPrimaryChannelMask">The primary ZLL channel mask</param>
         /// <returns>The SetZllPrimaryChannelMaskResponse object from the NCP</returns>
-        public SetZllPrimaryChannelMaskResponse SetZllPrimaryChannelMask(uint ZllPrimaryChannelMask)
+        public SetZllPrimaryChannelMaskResponse SetZllPrimaryChannelMask(uint zllPrimaryChannelMask)
         {
             SetZllPrimaryChannelMaskRequest request = new SetZllPrimaryChannelMaskRequest();
+            request.ZllPrimaryChannelMask = zllPrimaryChannelMask;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllPrimaryChannelMaskResponse)));
             SetZllPrimaryChannelMaskResponse response = (SetZllPrimaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4459,9 +4783,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ZllSecondaryChannelMask">The secondary ZLL channel mask</param>
         /// <returns>The SetZllSecondaryChannelMaskResponse object from the NCP</returns>
-        public SetZllSecondaryChannelMaskResponse SetZllSecondaryChannelMask(uint ZllSecondaryChannelMask)
+        public SetZllSecondaryChannelMaskResponse SetZllSecondaryChannelMask(uint zllSecondaryChannelMask)
         {
             SetZllSecondaryChannelMaskRequest request = new SetZllSecondaryChannelMaskRequest();
+            request.ZllSecondaryChannelMask = zllSecondaryChannelMask;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllSecondaryChannelMaskResponse)));
             SetZllSecondaryChannelMaskResponse response = (SetZllSecondaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4495,9 +4820,19 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="GpdSecurityFrameCounter">The GPD security frame counter.</param>
         /// <param name="ForwardingRadius">The forwarding radius.</param>
         /// <returns>Whether a GP Pairing has been created or not.</returns>
-        public bool GpProxyTableProcessGpPairing(uint Options, ZigbeeGpAddress Addr, byte CommMode, ushort SinkNetworkAddress, ushort SinkGroupId, ushort AssignedAlias, byte[] SinkIeeeAddress, ZigbeeKeyData GpdKey, uint GpdSecurityFrameCounter, byte ForwardingRadius)
+        public bool GpProxyTableProcessGpPairing(uint options, ZigbeeGpAddress addr, byte commMode, ushort sinkNetworkAddress, ushort sinkGroupId, ushort assignedAlias, byte[] sinkIeeeAddress, ZigbeeKeyData gpdKey, uint gpdSecurityFrameCounter, byte forwardingRadius)
         {
             GpProxyTableProcessGpPairingRequest request = new GpProxyTableProcessGpPairingRequest();
+            request.Options = options;
+            request.Addr = addr;
+            request.CommMode = commMode;
+            request.SinkNetworkAddress = sinkNetworkAddress;
+            request.SinkGroupId = sinkGroupId;
+            request.AssignedAlias = assignedAlias;
+            request.SinkIeeeAddress = sinkIeeeAddress;
+            request.GpdKey = gpdKey;
+            request.GpdSecurityFrameCounter = gpdSecurityFrameCounter;
+            request.ForwardingRadius = forwardingRadius;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableProcessGpPairingResponse)));
             GpProxyTableProcessGpPairingResponse response = (GpProxyTableProcessGpPairingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4516,9 +4851,17 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="GpepHandle">The handle to refer to the GPDF.</param>
         /// <param name="GpTxQueueEntryLifetimeMs">How long to keep the GPDF in the TX Queue.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DGpSend(bool Action, bool UseCca, ZigbeeGpAddress Addr, byte GpdCommandId, byte GpdAsduLength, byte[] GpdAsdu, byte GpepHandle, ushort GpTxQueueEntryLifetimeMs)
+        public Status DGpSend(bool action, bool useCca, ZigbeeGpAddress addr, byte gpdCommandId, byte gpdAsduLength, byte[] gpdAsdu, byte gpepHandle, ushort gpTxQueueEntryLifetimeMs)
         {
             DGpSendRequest request = new DGpSendRequest();
+            request.Action = action;
+            request.UseCca = useCca;
+            request.Addr = addr;
+            request.GpdCommandId = gpdCommandId;
+            request.GpdAsduLength = gpdAsduLength;
+            request.GpdAsdu = gpdAsdu;
+            request.GpepHandle = gpepHandle;
+            request.GpTxQueueEntryLifetimeMs = gpTxQueueEntryLifetimeMs;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DGpSendResponse)));
             DGpSendResponse response = (DGpSendResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4562,9 +4905,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Entry: An sl_zigbee_gp_proxy_table_entry_t struct containing a copy of the requested proxy entry.
         /// </returns>
-        public (Status Status, ZigbeeGpProxyTableEntry Entry) GpProxyTableGetEntry(byte ProxyIndex)
+        public (Status Status, ZigbeeGpProxyTableEntry Entry) GpProxyTableGetEntry(byte proxyIndex)
         {
             GpProxyTableGetEntryRequest request = new GpProxyTableGetEntryRequest();
+            request.ProxyIndex = proxyIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableGetEntryResponse)));
             GpProxyTableGetEntryResponse response = (GpProxyTableGetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4576,9 +4920,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Addr">The address to search for</param>
         /// <returns>The index, or 0xFF for not found</returns>
-        public byte GpProxyTableLookup(ZigbeeGpAddress Addr)
+        public byte GpProxyTableLookup(ZigbeeGpAddress addr)
         {
             GpProxyTableLookupRequest request = new GpProxyTableLookupRequest();
+            request.Addr = addr;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableLookupResponse)));
             GpProxyTableLookupResponse response = (GpProxyTableLookupResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4590,9 +4935,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="ProxyIndex">The index of the requested proxy table entry.</param>
         /// <returns>The GpProxyTableRemoveEntryResponse object from the NCP</returns>
-        public GpProxyTableRemoveEntryResponse GpProxyTableRemoveEntry(byte ProxyIndex)
+        public GpProxyTableRemoveEntryResponse GpProxyTableRemoveEntry(byte proxyIndex)
         {
             GpProxyTableRemoveEntryRequest request = new GpProxyTableRemoveEntryRequest();
+            request.ProxyIndex = proxyIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableRemoveEntryResponse)));
             GpProxyTableRemoveEntryResponse response = (GpProxyTableRemoveEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4620,9 +4966,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Entry: An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the requested sink entry.
         /// </returns>
-        public (Status Status, ZigbeeGpSinkTableEntry Entry) GpSinkTableGetEntry(byte SinkIndex)
+        public (Status Status, ZigbeeGpSinkTableEntry Entry) GpSinkTableGetEntry(byte sinkIndex)
         {
             GpSinkTableGetEntryRequest request = new GpSinkTableGetEntryRequest();
+            request.SinkIndex = sinkIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableGetEntryResponse)));
             GpSinkTableGetEntryResponse response = (GpSinkTableGetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4634,9 +4981,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Addr">The address to search for.</param>
         /// <returns>The index, or 0xFF for not found</returns>
-        public byte GpSinkTableLookup(ZigbeeGpAddress Addr)
+        public byte GpSinkTableLookup(ZigbeeGpAddress addr)
         {
             GpSinkTableLookupRequest request = new GpSinkTableLookupRequest();
+            request.Addr = addr;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableLookupResponse)));
             GpSinkTableLookupResponse response = (GpSinkTableLookupResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4649,9 +4997,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="SinkIndex">The index of the requested sink table entry.</param>
         /// <param name="Entry">An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the sink entry to be updated.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status GpSinkTableSetEntry(byte SinkIndex, ZigbeeGpSinkTableEntry Entry)
+        public Status GpSinkTableSetEntry(byte sinkIndex, ZigbeeGpSinkTableEntry entry)
         {
             GpSinkTableSetEntryRequest request = new GpSinkTableSetEntryRequest();
+            request.SinkIndex = sinkIndex;
+            request.Entry = entry;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableSetEntryResponse)));
             GpSinkTableSetEntryResponse response = (GpSinkTableSetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4663,9 +5013,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="SinkIndex">The index of the requested sink table entry.</param>
         /// <returns>The GpSinkTableRemoveEntryResponse object from the NCP</returns>
-        public GpSinkTableRemoveEntryResponse GpSinkTableRemoveEntry(byte SinkIndex)
+        public GpSinkTableRemoveEntryResponse GpSinkTableRemoveEntry(byte sinkIndex)
         {
             GpSinkTableRemoveEntryRequest request = new GpSinkTableRemoveEntryRequest();
+            request.SinkIndex = sinkIndex;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableRemoveEntryResponse)));
             GpSinkTableRemoveEntryResponse response = (GpSinkTableRemoveEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4677,9 +5028,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// </summary>
         /// <param name="Addr">An sl_zigbee_gp_address_t struct containing a copy of the gpd address to be found.</param>
         /// <returns>An index of found or allocated sink or 0xFF if failed.</returns>
-        public byte GpSinkTableFindOrAllocateEntry(ZigbeeGpAddress Addr)
+        public byte GpSinkTableFindOrAllocateEntry(ZigbeeGpAddress addr)
         {
             GpSinkTableFindOrAllocateEntryRequest request = new GpSinkTableFindOrAllocateEntryRequest();
+            request.Addr = addr;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableFindOrAllocateEntryResponse)));
             GpSinkTableFindOrAllocateEntryResponse response = (GpSinkTableFindOrAllocateEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4718,9 +5070,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Index">Index to the Sink table</param>
         /// <param name="Sfc">Security Frame Counter</param>
         /// <returns>The GpSinkTableSetSecurityFrameCounterResponse object from the NCP</returns>
-        public GpSinkTableSetSecurityFrameCounterResponse GpSinkTableSetSecurityFrameCounter(byte Index, uint Sfc)
+        public GpSinkTableSetSecurityFrameCounterResponse GpSinkTableSetSecurityFrameCounter(byte index, uint sfc)
         {
             GpSinkTableSetSecurityFrameCounterRequest request = new GpSinkTableSetSecurityFrameCounterRequest();
+            request.Index = index;
+            request.Sfc = sfc;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableSetSecurityFrameCounterResponse)));
             GpSinkTableSetSecurityFrameCounterResponse response = (GpSinkTableSetSecurityFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4735,9 +5089,13 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="GpmAddrForPairing">gpm address for pairing.</param>
         /// <param name="SinkEndpoint">sink endpoint.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status GpSinkCommission(byte Options, ushort GpmAddrForSecurity, ushort GpmAddrForPairing, byte SinkEndpoint)
+        public Status GpSinkCommission(byte options, ushort gpmAddrForSecurity, ushort gpmAddrForPairing, byte sinkEndpoint)
         {
             GpSinkCommissionRequest request = new GpSinkCommissionRequest();
+            request.Options = options;
+            request.GpmAddrForSecurity = gpmAddrForSecurity;
+            request.GpmAddrForPairing = gpmAddrForPairing;
+            request.SinkEndpoint = sinkEndpoint;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkCommissionResponse)));
             GpSinkCommissionResponse response = (GpSinkCommissionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4791,9 +5149,10 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenInfo: Token information.
         /// </returns>
-        public (Status Status, ZigbeeTokenInfo TokenInfo) GetTokenInfo(byte Index)
+        public (Status Status, ZigbeeTokenInfo TokenInfo) GetTokenInfo(byte index)
         {
             GetTokenInfoRequest request = new GetTokenInfoRequest();
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenInfoResponse)));
             GetTokenInfoResponse response = (GetTokenInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4809,9 +5168,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenData: Token Data
         /// </returns>
-        public (Status Status, ZigbeeTokenData TokenData) GetTokenData(uint Token, uint Index)
+        public (Status Status, ZigbeeTokenData TokenData) GetTokenData(uint token, uint index)
         {
             GetTokenDataRequest request = new GetTokenDataRequest();
+            request.Token = token;
+            request.Index = index;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenDataResponse)));
             GetTokenDataResponse response = (GetTokenDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4825,9 +5186,12 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="Index">Index in case of the indexed token.</param>
         /// <param name="TokenData">Token Data</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetTokenData(uint Token, uint Index, ZigbeeTokenData TokenData)
+        public Status SetTokenData(uint token, uint index, ZigbeeTokenData tokenData)
         {
             SetTokenDataRequest request = new SetTokenDataRequest();
+            request.Token = token;
+            request.Index = index;
+            request.TokenData = tokenData;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTokenDataResponse)));
             SetTokenDataResponse response = (SetTokenDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
@@ -4866,9 +5230,11 @@ source route at &lt;i&gt;index&lt;/i&gt;.
         /// <param name="ExcludeOutgoingFC">Exclude network and APS outgoing frame counter tokens.</param>
         /// <param name="ExcludeBootCounter">Exclude stack boot counter token.</param>
         /// <returns>The TokenFactoryResetResponse object from the NCP</returns>
-        public TokenFactoryResetResponse TokenFactoryReset(bool ExcludeOutgoingFC, bool ExcludeBootCounter)
+        public TokenFactoryResetResponse TokenFactoryReset(bool excludeOutgoingFC, bool excludeBootCounter)
         {
             TokenFactoryResetRequest request = new TokenFactoryResetRequest();
+            request.ExcludeOutgoingFC = excludeOutgoingFC;
+            request.ExcludeBootCounter = excludeBootCounter;
             IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(TokenFactoryResetResponse)));
             TokenFactoryResetResponse response = (TokenFactoryResetResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
