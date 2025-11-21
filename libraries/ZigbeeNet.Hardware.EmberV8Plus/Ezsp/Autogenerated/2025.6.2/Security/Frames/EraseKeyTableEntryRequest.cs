@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class EraseKeyTableEntryRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0076; } }
+
     /// <summary>
     /// This indicates the index of entry to erase.
     /// </summary>

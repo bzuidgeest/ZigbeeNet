@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class GetExtendedTimeoutRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x007F; } }
+
     /// <summary>
     /// The address of the node for which the timeout is to be returned.
     /// </summary>

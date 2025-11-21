@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class OkToLongPollResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0142; } }
+
     /// <summary>
     /// True if the device may poll less frequently.
     /// </summary>

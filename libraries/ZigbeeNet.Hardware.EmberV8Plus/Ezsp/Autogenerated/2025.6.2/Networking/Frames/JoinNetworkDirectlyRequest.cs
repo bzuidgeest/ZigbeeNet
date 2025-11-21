@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class JoinNetworkDirectlyRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x003B; } }
+
     /// <summary>
     /// Specifies the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.
     /// </summary>

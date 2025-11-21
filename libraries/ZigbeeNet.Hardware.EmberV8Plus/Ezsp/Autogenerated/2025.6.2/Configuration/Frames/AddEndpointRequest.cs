@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 /// </summary>
 public class AddEndpointRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0002; } }
+
     /// <summary>
     /// The application endpoint to be added.
     /// </summary>

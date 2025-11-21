@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class DsaVerifyHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0078; } }
+
     /// <summary>
     /// The result of the DSA verification operation.
     /// </summary>

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 /// </summary>
 public class WriteAttributeRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0109; } }
+
     /// <summary>
     /// Endpoint
     /// </summary>

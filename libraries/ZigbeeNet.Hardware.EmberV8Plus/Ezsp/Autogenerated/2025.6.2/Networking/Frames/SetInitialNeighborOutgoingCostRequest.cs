@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SetInitialNeighborOutgoingCostRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0122; } }
+
     /// <summary>
     /// The new default cost. Valid values are 0, 1, 3, 5, and 7.
     /// </summary>

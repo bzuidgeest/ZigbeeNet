@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 /// </summary>
 public class AesMmoHashResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x006F; } }
+
     /// <summary>
     /// The result of the operation
     /// </summary>

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ConcentratorNoteRouteErrorResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0151; } }
+
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		ConcentratorNoteRouteErrorResponse frame = new ConcentratorNoteRouteErrorResponse();

@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class GpClearProxyTableResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x005F; } }
+
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
 	{
 		GpClearProxyTableResponse frame = new GpClearProxyTableResponse();

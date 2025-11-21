@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SendZigbeeLeaveResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x011A; } }
+
     /// <summary>
     /// Status indicating success or a reason for failure. Call is invalid if destination is on network or is the local node.
     /// </summary>

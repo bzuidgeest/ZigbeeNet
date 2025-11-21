@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class ApsCryptMessageResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0129; } }
+
     /// <summary>
     /// Status of the encryption/decryption call.
     /// </summary>

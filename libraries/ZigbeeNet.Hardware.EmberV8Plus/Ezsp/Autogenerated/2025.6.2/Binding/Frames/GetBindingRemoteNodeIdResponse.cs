@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// </summary>
 public class GetBindingRemoteNodeIdResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x002F; } }
+
     /// <summary>
     /// The short ID of the destination node or SL_ZIGBEE_NULL_NODE_ID if no destination is known.
     /// </summary>

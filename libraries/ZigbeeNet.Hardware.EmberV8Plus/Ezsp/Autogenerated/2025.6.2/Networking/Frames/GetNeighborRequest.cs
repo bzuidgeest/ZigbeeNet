@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetNeighborRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0079; } }
+
     /// <summary>
     /// The index of the neighbor of interest. Neighbors are stored in ascending order by node id, with all unused entries at the end of the table.
     /// </summary>

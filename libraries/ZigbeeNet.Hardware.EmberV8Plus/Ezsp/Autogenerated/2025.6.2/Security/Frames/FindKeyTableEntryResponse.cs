@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class FindKeyTableEntryResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0075; } }
+
     /// <summary>
     /// This indicates the index of the entry that matches the search criteria. A value of 0xFF is returned if not matching entry is found.
     /// </summary>

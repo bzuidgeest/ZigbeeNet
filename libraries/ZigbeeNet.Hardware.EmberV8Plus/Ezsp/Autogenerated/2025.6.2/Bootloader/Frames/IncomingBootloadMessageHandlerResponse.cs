@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class IncomingBootloadMessageHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0092; } }
+
     /// <summary>
     /// The EUI64 of the sending node.
     /// </summary>

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class MfgTestSendCommandRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x014D; } }
+
     /// <summary>
     /// A pointer to the outgoing command string.
     /// </summary>

@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
 /// </summary>
 public class GetTokenInfoRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0101; } }
+
     /// <summary>
     /// Index of the token in the token table for which information is needed.
     /// </summary>

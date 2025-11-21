@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 /// </summary>
 public class SendPanIdUpdateResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0057; } }
+
     /// <summary>
     /// true if the request was successfully handed to the stack, false otherwise
     /// </summary>

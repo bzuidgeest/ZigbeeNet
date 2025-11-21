@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class GpProxyTableProcessGpPairingResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00C9; } }
+
     /// <summary>
     /// Whether a GP Pairing has been created or not.
     /// </summary>

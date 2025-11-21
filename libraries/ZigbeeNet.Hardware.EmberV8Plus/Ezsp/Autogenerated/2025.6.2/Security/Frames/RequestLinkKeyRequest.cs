@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class RequestLinkKeyRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0014; } }
+
     /// <summary>
     /// This is the IEEE address of the partner device that will share the link key.
     /// </summary>

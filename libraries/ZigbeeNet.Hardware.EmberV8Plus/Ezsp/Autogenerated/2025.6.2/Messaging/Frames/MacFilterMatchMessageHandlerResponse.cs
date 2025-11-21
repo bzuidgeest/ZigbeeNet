@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0046; } }
+
     /// <summary>
     /// The value of the filter that was matched.
     /// </summary>

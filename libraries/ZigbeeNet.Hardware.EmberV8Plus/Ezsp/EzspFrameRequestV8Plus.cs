@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
-using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {

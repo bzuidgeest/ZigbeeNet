@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class PendingAckedMessagesResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0121; } }
+
     /// <summary>
     /// True if there is a pending message for this network in the APS retry queue, false if not.
     /// </summary>

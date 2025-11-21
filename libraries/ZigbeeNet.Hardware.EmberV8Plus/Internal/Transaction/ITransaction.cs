@@ -11,7 +11,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
     /// The transaction looks for a {@link EzspFrameResponse} that matches the {@link EzspFrameRequest}.
     /// The{ @link EzspFrameResponse } and {@link EzspFrameRequest} classes are provided when the transaction is created.
     /// </summary>
-    public interface IEzspTransaction
+    public interface ITransaction
     {
         /**
          * Matches request and response.

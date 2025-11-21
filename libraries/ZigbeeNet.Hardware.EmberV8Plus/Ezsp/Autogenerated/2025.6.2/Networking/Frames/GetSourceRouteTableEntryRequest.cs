@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetSourceRouteTableEntryRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00C1; } }
+
     /// <summary>
     /// The index of the entry of interest in the
 	/// source route table. Possible indexes range from zero to

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class MfgTestSetPacketModeRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0148; } }
+
     /// <summary>
     /// Determines the new mode of operation. true causes the node to enter manufacturing configuration. false causes the node to return to normal network operation.
     /// </summary>

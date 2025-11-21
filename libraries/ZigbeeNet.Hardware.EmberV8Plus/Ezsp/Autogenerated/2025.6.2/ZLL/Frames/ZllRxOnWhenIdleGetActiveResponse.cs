@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// </summary>
 public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00D8; } }
+
     /// <summary>
     /// ZLL radio on when idle mode is active?
     /// </summary>

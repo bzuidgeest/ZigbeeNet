@@ -53,6 +53,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     {
         static private readonly ILogger _logger = LogManager.GetLog<EzspFrameV8Plus>();
 
+        //public abstract ushort FrameId { get; }
+
         /**
          * The minimum supported version of EZSP
          */
@@ -66,7 +68,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /**
          * The current version of EZSP being used
          */
-        protected static int ezspVersion = EZSP_MIN_VERSION;
+        protected static byte ezspVersion = EZSP_MIN_VERSION;
 
         /**
          * EZSP Frame Control Request flag
@@ -78,7 +80,6 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          */
         protected const int EZSP_FC_RESPONSE = 0x80;
 
-        protected int _sequenceNumber;
         protected int _frameControl;
         protected int _frameId = 0;
         protected bool _isResponse = false;
@@ -88,10 +89,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          *
          * @param sequenceNumber
          */
-        public void SetSequenceNumber(int sequenceNumber)
-        {
-            this._sequenceNumber = sequenceNumber;
-        }
+        public int SequenceNumber { get; set; }
 
         /**
          * Gets the 8 bit transaction sequence number
@@ -188,7 +186,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          *
          * @return the current version of EZSP
          */
-        public static int GetEzspVersion()
+        public static byte GetEzspVersion()
         {
             return EzspFrameV8Plus.ezspVersion;
         }

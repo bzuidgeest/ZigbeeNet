@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SetChildDataResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00AC; } }
+
     /// <summary>
     /// SL_STATUS_OK if the child data is set successfully at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_INVALID_INDEX if provided &lt;i&gt;index&lt;/i&gt; is out of range.
     /// </summary>

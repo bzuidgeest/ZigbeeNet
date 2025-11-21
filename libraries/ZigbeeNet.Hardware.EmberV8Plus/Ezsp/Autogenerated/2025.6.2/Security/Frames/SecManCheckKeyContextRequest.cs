@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class SecManCheckKeyContextRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0110; } }
+
     /// <summary>
     /// Context struct to check the validity of.
     /// </summary>

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// </summary>
 public class SetZllAdditionalStateRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00D6; } }
+
     /// <summary>
     /// A mask with the bits to be set or cleared.
     /// </summary>

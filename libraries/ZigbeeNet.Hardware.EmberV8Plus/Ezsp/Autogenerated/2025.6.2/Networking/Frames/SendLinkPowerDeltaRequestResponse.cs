@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SendLinkPowerDeltaRequestResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00F7; } }
+
     /// <summary>
     /// An sl_status_t value indicating the success or failure of sending the request.
     /// </summary>

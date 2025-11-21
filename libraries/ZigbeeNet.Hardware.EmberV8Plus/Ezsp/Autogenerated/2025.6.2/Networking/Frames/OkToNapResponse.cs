@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class OkToNapResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0146; } }
+
     /// <summary>
     /// True if the application may sleep but the stack may be expecting incoming messages.
     /// </summary>

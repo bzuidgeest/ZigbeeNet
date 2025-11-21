@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Command;
 using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 using ZigBeeNet.Util;
@@ -738,11 +737,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
         private class TransactionWaiter : AshListener 
         {
             private bool _complete = false;
-            private IEzspTransaction _ezspTransaction;
+            private ITransaction _ezspTransaction;
             private AshFrameHandler _frameHandler;
             private TaskCompletionSource<bool> _tcs;
 
-            public TransactionWaiter(IEzspTransaction ezspTransaction, AshFrameHandler frameHandler)
+            public TransactionWaiter(ITransaction ezspTransaction, AshFrameHandler frameHandler)
             {
                 _ezspTransaction = ezspTransaction;
                 _frameHandler = frameHandler;
@@ -794,7 +793,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             }
         }
 
-        public Task<EzspFrameV8Plus> SendEzspRequestAsync(IEzspTransaction ezspTransaction) 
+        public Task<EzspFrameV8Plus> SendEzspRequestAsync(ITransaction ezspTransaction) 
         {
             if (_parserCancellationToken.IsCancellationRequested) 
             {
@@ -805,7 +804,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             return new TransactionWaiter(ezspTransaction, this).Wait();
         }
 
-        public IEzspTransaction SendEzspTransaction(IEzspTransaction ezspTransaction) 
+        public ITransaction SendEzspTransaction(ITransaction ezspTransaction) 
         {
             try
             {

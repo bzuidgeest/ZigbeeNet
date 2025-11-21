@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class DGpSendResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00C6; } }
+
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>

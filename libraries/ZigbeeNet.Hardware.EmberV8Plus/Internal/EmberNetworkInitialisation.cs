@@ -4,14 +4,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Command;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
-using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
 using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Transport;
 using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
@@ -63,14 +63,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param linkKey the {@link ZigBeeKey} with the link key. This can not be set to all 00 or all FF.
          * @param networkKey the {@link ZigBeeKey} with the network key. This can not be set to all 00 or all FF.
          */
-        public void FormNetwork(EmberNetworkParameters networkParameters, ZigBeeKey linkKey, ZigBeeKey networkKey) 
+        public void FormNetwork(ZigbeeNetworkParameters networkParameters, ZigBeeKey linkKey, ZigBeeKey networkKey) 
         {
-            if (networkParameters.GetExtendedPanId() == null) 
+            if (networkParameters.extendedPanId == null) 
             {
-                networkParameters.SetExtendedPanId(new ExtendedPanId());
+                networkParameters.extendedPanId = new ExtendedPanId().PanId;
             }
 
-            _logger.LogDebug("Initialising Ember network with configuration {NetworkParameters}", networkParameters);
+            _logger.LogDebug("Initialising Zigbee network with configuration {NetworkParameters}", networkParameters);
 
             EmberNcp ncp = new EmberNcp(_protocolHandler);
 
@@ -131,14 +131,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param networkParameters the required {@link EmberNetworkParameters}
          * @param linkKey the {@link ZigBeeKey} with the initial link key. This cannot be set to all 00 or all FF.
          */
-        public void JoinNetwork(EmberNetworkParameters networkParameters, ZigBeeKey linkKey) 
+        public void JoinNetwork(ZigbeeNetworkParameters networkParameters, ZigBeeKey linkKey, ZigbeeLeaveNetworkOption zigbeeLeaveNetworkOption) 
         {
             _logger.LogDebug("Joining Ember network with configuration {Parameters}", networkParameters);
 
             // Leave the current network so we can initialise a new network
             EmberNcp ncp = new EmberNcp(_protocolHandler);
             if (CheckNetworkJoined())
-                ncp.LeaveNetwork();
+                ncp.LeaveNetwork(zigbeeLeaveNetworkOption);
 
             ncp.ClearKeyTable();
 
@@ -160,9 +160,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         private bool CheckNetworkJoined() 
         {
             // Check if the network is initialised
-            EzspNetworkStateRequest networkStateRequest = new EzspNetworkStateRequest();
-            IEzspTransaction networkStateTransaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(networkStateRequest, typeof(EzspNetworkStateResponse)));
-            EzspNetworkStateResponse networkStateResponse = (EzspNetworkStateResponse) networkStateTransaction.GetResponse();
+            NetworkStateRequest networkStateRequest = new NetworkStateRequest();
+            ITransaction networkStateTransaction = _protocolHandler.SendEzspTransaction(new SingleResponseTransaction(networkStateRequest, typeof(NetworkStateResponse)));
+            NetworkStateResponse networkStateResponse = (NetworkStateResponse) networkStateTransaction.GetResponse();
             _logger.LogDebug(networkStateResponse.ToString());
             _logger.LogDebug("EZSP networkStateResponse {Status}", networkStateResponse.GetStatus());
 
@@ -178,7 +178,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          */
         private int? DoEnergyScan(EmberNcp ncp, int scanDuration) 
         {
-            List<EzspEnergyScanResultHandler> channels = ncp.DoEnergyScan(ZigBeeChannelMask.CHANNEL_MASK_2GHZ, scanDuration);
+            List<EnergyScanResultHandler> channels = ncp.DoEnergyScan(ZigBeeChannelMask.CHANNEL_MASK_2GHZ, scanDuration);
 
             if (channels == null) {
                 _logger.LogDebug("Error during energy scan: {Status}", ncp.GetLastStatus());
@@ -187,7 +187,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 
             int lowestRSSI = 999;
             int lowestChannel = 11;
-            foreach (EzspEnergyScanResultHandler channel in channels) 
+            foreach (EnergyScanResultHandler channel in channels) 
             {
                 if (channel.GetMaxRssiValue() < lowestRSSI) {
                     lowestRSSI = channel.GetMaxRssiValue();
@@ -205,10 +205,10 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          */
         private EmberNetworkParameters GetNetworkParameters() 
         {
-            EzspGetNetworkParametersRequest networkParms = new EzspGetNetworkParametersRequest();
-            EzspSingleResponseTransaction transaction = new EzspSingleResponseTransaction(networkParms, typeof(EzspGetNetworkParametersResponse));
+            GetNetworkParametersRequest networkParms = new GetNetworkParametersRequest();
+            SingleResponseTransaction transaction = new SingleResponseTransaction(networkParms, typeof(GetNetworkParametersResponse));
             _protocolHandler.SendEzspTransaction(transaction);
-            EzspGetNetworkParametersResponse getNetworkParametersResponse = (EzspGetNetworkParametersResponse) transaction.GetResponse();
+            GetNetworkParametersResponse getNetworkParametersResponse = (GetNetworkParametersResponse) transaction.GetResponse();
             _logger.LogDebug(getNetworkParametersResponse.ToString());
             if (getNetworkParametersResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
             {
@@ -227,7 +227,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          */
         private bool SetSecurityState(ZigBeeKey linkKey, ZigBeeKey networkKey) 
         {
-            EzspSetInitialSecurityStateRequest securityState = new EzspSetInitialSecurityStateRequest();
+            SetInitialSecurityStateRequest securityState = new SetInitialSecurityStateRequest();
             EmberInitialSecurityState state = new EmberInitialSecurityState();
             state.AddBitmask(EmberInitialSecurityBitmask.EMBER_TRUST_CENTER_GLOBAL_LINK_KEY);
 
@@ -255,9 +255,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
             state.SetPreconfiguredTrustCenterEui64(new IeeeAddress());
 
             securityState.SetState(state);
-            EzspSingleResponseTransaction transaction = new EzspSingleResponseTransaction(securityState, typeof(EzspSetInitialSecurityStateResponse));
+            SingleResponseTransaction transaction = new SingleResponseTransaction(securityState, typeof(SetInitialSecurityStateResponse));
             _protocolHandler.SendEzspTransaction(transaction);
-            EzspSetInitialSecurityStateResponse securityStateResponse = (EzspSetInitialSecurityStateResponse) transaction.GetResponse();
+            SetInitialSecurityStateResponse securityStateResponse = (SetInitialSecurityStateResponse) transaction.GetResponse();
             _logger.LogDebug(securityStateResponse.ToString());
             if (securityStateResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
             {
@@ -268,16 +268,16 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
             EmberNcp ncp = new EmberNcp(_protocolHandler);
             if (networkKey != null && networkKey.OutgoingFrameCounter.HasValue) 
             {
-                EzspSerializer serializer = new EzspSerializer();
+                Serializer serializer = new Serializer();
                 serializer.SerializeUInt32(networkKey.OutgoingFrameCounter.Value);
-                if (ncp.SetValue(EzspValueId.EZSP_VALUE_NWK_FRAME_COUNTER, serializer.GetPayload()) != EzspStatus.EZSP_SUCCESS)
+                if (ncp.SetValue(ValueId.EZSP_VALUE_NWK_FRAME_COUNTER, serializer.GetPayload()) != Status.EZSP_SUCCESS)
                     return false;
             }
             if (linkKey != null && linkKey.OutgoingFrameCounter.HasValue) 
             {
-                EzspSerializer serializer = new EzspSerializer();
+                Serializer serializer = new Serializer();
                 serializer.SerializeUInt32(linkKey.OutgoingFrameCounter.Value);
-                if (ncp.SetValue(EzspValueId.EZSP_VALUE_APS_FRAME_COUNTER, serializer.GetPayload()) != EzspStatus.EZSP_SUCCESS)
+                if (ncp.SetValue(ValueId.EZSP_VALUE_APS_FRAME_COUNTER, serializer.GetPayload()) != Status.EZSP_SUCCESS)
                     return false;
             }
 
@@ -294,11 +294,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         {
             networkParameters.SetJoinMethod(EmberJoinMethod.EMBER_USE_MAC_ASSOCIATION);
 
-            EzspFormNetworkRequest formNetwork = new EzspFormNetworkRequest();
+            FormNetworkRequest formNetwork = new FormNetworkRequest();
             formNetwork.SetParameters(networkParameters);
-            EzspSingleResponseTransaction transaction = new EzspSingleResponseTransaction(formNetwork, typeof(EzspFormNetworkResponse));
+            SingleResponseTransaction transaction = new SingleResponseTransaction(formNetwork, typeof(FormNetworkResponse));
             _protocolHandler.SendEzspTransaction(transaction);
-            EzspFormNetworkResponse formNetworkResponse = (EzspFormNetworkResponse) transaction.GetResponse();
+            FormNetworkResponse formNetworkResponse = (FormNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(formNetworkResponse.ToString());
             if (formNetworkResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
             {
@@ -315,19 +315,19 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param networkParameters the {@link EmberNetworkParameters}
          * @return true if the network was joined successfully
          */
-        private bool DoJoinNetwork(EmberNetworkParameters networkParameters) 
+        private bool DoJoinNetwork(ZigbeeNetworkParameters networkParameters) 
         {
-            networkParameters.SetJoinMethod(EmberJoinMethod.EMBER_USE_MAC_ASSOCIATION);
+            networkParameters.joinMethod = ZigbeeJoinMethod.SL_ZIGBEE_USE_MAC_ASSOCIATION;
 
-            EzspJoinNetworkRequest joinNetwork = new EzspJoinNetworkRequest();
-            joinNetwork.SetNodeType(EmberNodeType.EMBER_ROUTER);
-            joinNetwork.SetParameters(networkParameters);
-            EzspSingleResponseTransaction transaction = new EzspSingleResponseTransaction(joinNetwork, typeof(EzspJoinNetworkResponse));
+            JoinNetworkRequest joinNetwork = new JoinNetworkRequest();
+            joinNetwork.NodeType = ZigbeeNodeType.SL_ZIGBEE_ROUTER;
+            joinNetwork.Parameters =networkParameters;
+            SingleResponseTransaction transaction = new SingleResponseTransaction(joinNetwork, typeof(JoinNetworkResponse));
             _protocolHandler.SendEzspTransaction(transaction);
 
-            EzspJoinNetworkResponse joinNetworkResponse = (EzspJoinNetworkResponse) transaction.GetResponse();
+            JoinNetworkResponse joinNetworkResponse = (JoinNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(joinNetworkResponse.ToString());
-            if (joinNetworkResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
+            if (joinNetworkResponse.Status != Status.SL_STATUS_OK) 
             {
                 _logger.LogDebug("Error joining network: {Response}", joinNetworkResponse);
                 return false;
@@ -344,13 +344,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          */
         private bool DoRejoinNetwork(bool haveCurrentNetworkKey, ZigBeeChannelMask channelMask) 
         {
-            EzspFindAndRejoinNetworkRequest rejoinNetwork = new EzspFindAndRejoinNetworkRequest();
+            FindAndRejoinNetworkRequest rejoinNetwork = new FindAndRejoinNetworkRequest();
             rejoinNetwork.SetHaveCurrentNetworkKey(haveCurrentNetworkKey);
             rejoinNetwork.SetChannelMask(channelMask.ChannelMask);
-            EzspSingleResponseTransaction transaction = new EzspSingleResponseTransaction(rejoinNetwork, typeof(EzspFindAndRejoinNetworkResponse));
+            SingleResponseTransaction transaction = new SingleResponseTransaction(rejoinNetwork, typeof(FindAndRejoinNetworkResponse));
             _protocolHandler.SendEzspTransaction(transaction);
 
-            EzspFindAndRejoinNetworkResponse rejoinNetworkResponse = (EzspFindAndRejoinNetworkResponse) transaction.GetResponse();
+            FindAndRejoinNetworkResponse rejoinNetworkResponse = (FindAndRejoinNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(rejoinNetworkResponse.ToString());
             if (rejoinNetworkResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
             {

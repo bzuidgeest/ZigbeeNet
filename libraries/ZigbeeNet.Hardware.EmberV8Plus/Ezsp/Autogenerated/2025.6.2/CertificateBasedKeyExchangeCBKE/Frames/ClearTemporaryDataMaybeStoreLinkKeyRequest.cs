@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class ClearTemporaryDataMaybeStoreLinkKeyRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00A1; } }
+
     /// <summary>
     /// A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.
     /// </summary>

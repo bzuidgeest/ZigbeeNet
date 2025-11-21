@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class MfgTestSendManufacturingStringRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x014B; } }
+
     /// <summary>
     /// The 16-byte manufacturing string.
     /// </summary>

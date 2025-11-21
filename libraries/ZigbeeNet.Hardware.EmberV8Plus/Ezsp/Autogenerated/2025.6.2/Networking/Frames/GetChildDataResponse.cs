@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetChildDataResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x004A; } }
+
     /// <summary>
     /// SL_STATUS_OK if there is a child at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_JOINED if there is no child at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>

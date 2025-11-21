@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 /// </summary>
 public class MfglibInternalStartRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0083; } }
+
     /// <summary>
     /// true to generate a mfglibRxHandler callback when a packet is received.
     /// </summary>

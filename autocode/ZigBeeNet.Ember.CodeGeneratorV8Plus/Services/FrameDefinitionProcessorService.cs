@@ -90,6 +90,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 sb.AppendLine($"public class {className} : EzspFrameRequestV8Plus");
                 sb.AppendLine("{");
 
+                sb.AppendLine("\t/// <summary>");
+                sb.AppendLine($"\t/// The frameId of the frame");
+                sb.AppendLine("]\t/// </summary>");
+                sb.AppendLine($"\tpublic static ushort FrameId {{ get {{ return {frameDefinition.Value}; }} }}");
+                sb.AppendLine("");
+
                 // Generate properties for command arguments
                 if (frameDefinition.CommandArguments != null && frameDefinition.CommandArguments.Count > 0)
                 {
@@ -217,6 +223,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 // Generate class declaration inheriting from EzspFrameResponse
                 sb.AppendLine($"public class {className} : EzspFrameResponseV8Plus");
                 sb.AppendLine("{");
+
+                sb.AppendLine("\t/// <summary>");
+                sb.AppendLine($"\t/// The frameId of the frame");
+                sb.AppendLine("]\t/// </summary>");
+                sb.AppendLine($"\tpublic static ushort FrameId {{ get {{ return {frameDefinition.Value}; }} }}");
+                sb.AppendLine("");
 
                 // Generate properties for response arguments
                 if (frameDefinition.ResponseArguments != null && frameDefinition.ResponseArguments.Count > 0)

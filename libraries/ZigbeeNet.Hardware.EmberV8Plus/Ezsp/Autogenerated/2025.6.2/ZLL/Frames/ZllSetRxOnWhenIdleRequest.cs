@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// </summary>
 public class ZllSetRxOnWhenIdleRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00B5; } }
+
     /// <summary>
     /// The duration in milliseconds to leave the radio on.
     /// </summary>

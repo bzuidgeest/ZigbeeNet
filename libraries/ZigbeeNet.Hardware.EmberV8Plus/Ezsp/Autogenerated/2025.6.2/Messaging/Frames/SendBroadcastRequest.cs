@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class SendBroadcastRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0036; } }
+
     /// <summary>
     /// The aliased source from which we send the broadcast. This must be SL_ZIGBEE_NULL_NODE_ID if we do not need an aliased source
     /// </summary>

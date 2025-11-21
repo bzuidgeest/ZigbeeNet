@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00C5; } }
+
     /// <summary>
     /// GP parameters list represented as a macro for GP endpoint incoming message handler and callbacks prototypes.
     /// </summary>

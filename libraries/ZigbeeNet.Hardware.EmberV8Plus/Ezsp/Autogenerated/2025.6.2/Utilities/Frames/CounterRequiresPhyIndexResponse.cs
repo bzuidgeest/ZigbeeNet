@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class CounterRequiresPhyIndexResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0132; } }
+
     /// <summary>
     /// Whether this counter requires a PHY index when operating on a dual-PHY system.
     /// </summary>

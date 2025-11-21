@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Fr
 /// </summary>
 public class CalculateSmacsRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x009F; } }
+
     /// <summary>
     /// The role of this device in the Key Establishment protocol.
     /// </summary>

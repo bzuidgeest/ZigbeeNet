@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -5,14 +6,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 using ZigBeeNet.Hardware.EmberV8Plus.Internal;
 using ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash;
 using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Transport;
-using ZigBeeNet.ZDO.Field;
 using ZigBeeNet.Util;
-using Microsoft.Extensions.Logging;
+using ZigBeeNet.ZDO.Field;
 
 namespace ZigBeeNet.Hardware.Ember
 {
@@ -20,7 +26,7 @@ namespace ZigBeeNet.Hardware.Ember
     {
         static private readonly ILogger _logger = LogManager.GetLog<ZigBeeDongleEzsp>();
 
-        private const int POLL_FRAME_ID = EzspNetworkStateRequest.FRAME_ID;
+        private readonly int POLL_FRAME_ID = NetworkStateRequest.FrameId;
         private const int WAIT_FOR_ONLINE = 5000;
 
         /**
@@ -47,12 +53,12 @@ namespace ZigBeeNet.Hardware.Ember
         /**
          * The stack configuration we need for the NCP
          */
-        private Dictionary<EzspConfigId, int> _stackConfiguration;
+        private Dictionary<ZigbeeEzspConfigId, ushort> _stackConfiguration;
 
         /**
          * The stack policies we need for the NCP
          */
-        private Dictionary<EzspPolicyId, EzspDecisionId> _stackPolicies;
+        private Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> _stackPolicies;
 
         /**
          * The reference to the receive interface
@@ -72,7 +78,7 @@ namespace ZigBeeNet.Hardware.Ember
         /**
          * The current network parameters as {@link EmberNetworkParameters}
          */
-        private EmberNetworkParameters _networkParameters = new EmberNetworkParameters();
+        private ZigbeeNetworkParameters _networkParameters = new ZigbeeNetworkParameters();
 
         /**
          * The IeeeAddress of the Ember NCP
@@ -193,34 +199,34 @@ namespace ZigBeeNet.Hardware.Ember
             this._protocol = protocol;
 
             // Define the default configuration
-            _stackConfiguration = new Dictionary<EzspConfigId, int>();
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_SOURCE_ROUTE_TABLE_SIZE, 16);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_SECURITY_LEVEL, 5);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_ADDRESS_TABLE_SIZE, 8);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_TRUST_CENTER_ADDRESS_CACHE_SIZE, 2);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_STACK_PROFILE, 2);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_INDIRECT_TRANSMISSION_TIMEOUT, 7680);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_MAX_HOPS, 30);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_TX_POWER_MODE, 0);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_SUPPORTED_NETWORKS, 1);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_KEY_TABLE_SIZE, 4);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_APPLICATION_ZDO_FLAGS, (int)EmberZdoConfigurationFlags.EMBER_APP_RECEIVES_SUPPORTED_ZDO_REQUESTS);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_MAX_END_DEVICE_CHILDREN, 16);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_APS_UNICAST_MESSAGE_COUNT, 10);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_BROADCAST_TABLE_SIZE, 15);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_NEIGHBOR_TABLE_SIZE, 16);
+            _stackConfiguration = new Dictionary<ZigbeeEzspConfigId, ushort>();
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ROUTE_TABLE_SIZE, 16);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SECURITY_LEVEL, 5);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ADDRESS_TABLE_SIZE, 8);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TRUST_CENTER_ADDRESS_CACHE_SIZE, 2);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_STACK_PROFILE, 2);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_INDIRECT_TRANSMISSION_TIMEOUT, 7680);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_HOPS, 30);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TX_POWER_MODE, 0);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SUPPORTED_NETWORKS, 1);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_KEY_TABLE_SIZE, 4);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APPLICATION_ZDO_FLAGS, (int)ZigbeeZdoConfigurationFlags.SL_ZIGBEE_APP_RECEIVES_SUPPORTED_ZDO_REQUESTS);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_END_DEVICE_CHILDREN, 16);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APS_UNICAST_MESSAGE_COUNT, 10);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_BROADCAST_TABLE_SIZE, 15);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_NEIGHBOR_TABLE_SIZE, 16);
             //Fragmentation not implemented yet
-            //stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_FRAGMENT_WINDOW_SIZE, 1);
-            //stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_FRAGMENT_DELAY_MS, 50);
-            _stackConfiguration.Add(EzspConfigId.EZSP_CONFIG_PACKET_BUFFER_COUNT, 255);
+            //stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_WINDOW_SIZE, 1);
+            //stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_DELAY_MS, 50);
+            _stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_PACKET_BUFFER_COUNT, 255);
 
             // Define the default policies
-            _stackPolicies = new Dictionary<EzspPolicyId, EzspDecisionId>();
-            _stackPolicies.Add(EzspPolicyId.EZSP_TC_KEY_REQUEST_POLICY, EzspDecisionId.EZSP_DENY_TC_KEY_REQUESTS);
-            _stackPolicies.Add(EzspPolicyId.EZSP_TRUST_CENTER_POLICY, EzspDecisionId.EZSP_ALLOW_PRECONFIGURED_KEY_JOINS);
-            _stackPolicies.Add(EzspPolicyId.EZSP_MESSAGE_CONTENTS_IN_CALLBACK_POLICY, EzspDecisionId.EZSP_MESSAGE_TAG_ONLY_IN_CALLBACK);
-            _stackPolicies.Add(EzspPolicyId.EZSP_APP_KEY_REQUEST_POLICY, EzspDecisionId.EZSP_DENY_APP_KEY_REQUESTS);
-            _stackPolicies.Add(EzspPolicyId.EZSP_BINDING_MODIFICATION_POLICY, EzspDecisionId.EZSP_CHECK_BINDING_MODIFICATIONS_ARE_VALID_ENDPOINT_CLUSTERS);
+            _stackPolicies = new Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId>();
+            _stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TC_KEY_REQUEST_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_TC_KEY_REQUESTS);
+            _stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TRUST_CENTER_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_ALLOW_PRECONFIGURED_KEY_JOINS);
+            _stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_MESSAGE_CONTENTS_IN_CALLBACK_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_MESSAGE_TAG_ONLY_IN_CALLBACK);
+            _stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_APP_KEY_REQUEST_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_APP_KEY_REQUESTS);
+            _stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_BINDING_MODIFICATION_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_CHECK_BINDING_MODIFICATIONS_ARE_VALID_ENDPOINT_CLUSTERS);
 
             _networkKey = new ZigBeeKey();
         }
@@ -243,12 +249,12 @@ namespace ZigBeeNet.Hardware.Ember
          * <p>
          * Note that this must be called prior to {@link #initialize()} for the configuration to be effective.
          *
-         * @param configId the {@link EzspConfigId} to be updated.
+         * @param configId the {@link ZigbeeEzspConfigId} to be updated.
          * @param value the value to set (as {@link Integer}. Setting this to null will remove the configuration Id from the
          *            list of configuration to be sent during NCP initialisation.
-         * @return the previously configured value, or null if no value was set for the {@link EzspConfigId}
+         * @return the previously configured value, or null if no value was set for the {@link ZigbeeEzspConfigId}
          */
-        public int? UpdateDefaultConfiguration(EzspConfigId configId, int? value) 
+        public int? UpdateDefaultConfiguration(ZigbeeEzspConfigId configId, ushort? value) 
         {
             int? previousValue = _stackConfiguration.ContainsKey(configId) ? (int?)_stackConfiguration[configId] : null;
             if (value == null)
@@ -264,15 +270,15 @@ namespace ZigBeeNet.Hardware.Ember
          * <p>
          * Note that this must be called prior to {@link #initialize()} for the configuration to be effective.
          *
-         * @param policyId the {@link EzspPolicyId} to be updated
-         * @param decisionId the (as {@link EzspDecisionId} to set. Setting this to null will remove the policy from
+         * @param policyId the {@link ZigbeeEzspPolicyId} to be updated
+         * @param decisionId the (as {@link ZigbeeEzspDecisionId} to set. Setting this to null will remove the policy from
          *            the list of policies to be sent during NCP initialisation.
-         * @return the previously configured {@link EzspDecisionId}, or null if no value was set for the
-         *         {@link EzspPolicyId}
+         * @return the previously configured {@link ZigbeeEzspDecisionId}, or null if no value was set for the
+         *         {@link ZigbeeEzspPolicyId}
          */
-        public EzspDecisionId? UpdateDefaultPolicy(EzspPolicyId policyId, EzspDecisionId? decisionId) 
+        public ZigbeeEzspDecisionId? UpdateDefaultPolicy(ZigbeeEzspPolicyId policyId, ZigbeeEzspDecisionId? decisionId) 
         {
-            EzspDecisionId? previousValue = _stackPolicies.ContainsKey(policyId) ? (EzspDecisionId?)_stackPolicies[policyId] : null;
+            ZigbeeEzspDecisionId? previousValue = _stackPolicies.ContainsKey(policyId) ? (ZigbeeEzspDecisionId?)_stackPolicies[policyId] : null;
 
             if (decisionId == null)
                 _stackPolicies.Remove(policyId);
@@ -323,13 +329,13 @@ namespace ZigBeeNet.Hardware.Ember
             // Perform any stack configuration
             EmberStackConfiguration stackConfigurer = new EmberStackConfiguration(GetEmberNcp());
 
-            Dictionary<EzspConfigId, int?> configuration = stackConfigurer.GetConfiguration(_stackConfiguration.Keys);
+            Dictionary<ZigbeeEzspConfigId, int?> configuration = stackConfigurer.GetConfiguration(_stackConfiguration.Keys);
             foreach (var config in configuration) 
             {
                 _logger.LogDebug("Configuration state {Key} = {Value}", config.Key, config.Value);
             }
 
-            Dictionary<EzspPolicyId, EzspDecisionId> policies = stackConfigurer.GetPolicy(_stackPolicies.Keys);
+            Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> policies = stackConfigurer.GetPolicy(_stackPolicies.Keys);
             foreach (var policy in policies) 
             {
                 _logger.LogDebug("Policy state {Key} = {Value}", policy.Key, policy.Value);
@@ -352,7 +358,7 @@ namespace ZigBeeNet.Hardware.Ember
             EmberNcp ncp = GetEmberNcp();
 
             // Get the current network parameters so that any configuration updates start from here
-            _networkParameters = ncp.GetNetworkParameters().GetParameters();
+            _networkParameters = ncp.GetNetworkParameters().Parameters;
             _logger.LogDebug("Ember initial network parameters are {NetworkParameters}", _networkParameters);
 
             IeeeAddress = ncp.GetIeeeAddress();
@@ -385,19 +391,19 @@ namespace ZigBeeNet.Hardware.Ember
             ncp.AddEndpoint(1, _defaultDeviceId, _defaultProfileId, _inputClusters, _outputClusters);
 
             // Now initialise the network
-            EmberStatus initResponse = ncp.NetworkInit();
-            if (initResponse == EmberStatus.EMBER_NOT_JOINED) 
+            Status initResponse = ncp.NetworkInit();
+            if (initResponse == Status.SL_STATUS_NOT_JOINED) 
             {
                 _logger.LogDebug("EZSP dongle initialize done - response {Response}", initResponse);
             }
 
             // Print current security state to debug logs
-            ncp.getCurrentSecurityState();
+            ncp.GetCurrentSecurityState();
 
             ScheduleNetworkStatePolling();
 
             // Check if the network is initialised
-            EmberNetworkStatus networkState = ncp.GetNetworkState();
+            ZigbeeNetworkStatus networkState = ncp.NetworkState();
             _logger.LogDebug("EZSP networkStateResponse {State}", networkState);
 
             // If we want to reinitialize the network, then go...
@@ -422,13 +428,13 @@ namespace ZigBeeNet.Hardware.Ember
             _logger.LogDebug("EZSP networkState after online wait {NetworkState}", networkState);
 
             // Get the security state - mainly for information
-            EmberCurrentSecurityState currentSecurityState = ncp.getCurrentSecurityState();
-            _logger.LogDebug("EZSP Current Security State = {CurrentSecurityState}", currentSecurityState);
+            var currentSecurityState = ncp.GetCurrentSecurityState();
+            _logger.LogDebug("EZSP Current status {status} and Security State = {CurrentSecurityState}", currentSecurityState.Status, currentSecurityState.State);
 
-            EmberStatus txPowerResponse = ncp.SetRadioPower(_networkParameters.GetRadioTxPower());
-            if (txPowerResponse != EmberStatus.EMBER_SUCCESS) 
+            Status txPowerResponse = ncp.SetRadioPower(_networkParameters.radioTxPower);
+            if (txPowerResponse != Status.SL_STATUS_OK) 
             {
-                _logger.LogDebug("Setting TX Power to {TxPower} resulted in {Response}", _networkParameters.GetRadioTxPower(), txPowerResponse);
+                _logger.LogDebug("Setting TX Power to {TxPower} resulted in {Response}", _networkParameters.radioTxPower, txPowerResponse);
             }
 
             int address = ncp.GetNwkAddress();
@@ -437,8 +443,8 @@ namespace ZigBeeNet.Hardware.Ember
 
             _logger.LogDebug("EZSP Dongle: Startup complete. NWK Address = {NwkAddress}, State = {NetworkState}", NwkAddress.ToString("X4"), networkState);
 
-            // At this stage, we will now take note of the EzspStackStatusHandler notifications
-            bool joinedNetwork = (networkState == EmberNetworkStatus.EMBER_JOINED_NETWORK || networkState == EmberNetworkStatus.EMBER_JOINED_NETWORK_NO_PARENT);
+            // At this stage, we will now take note of the StackStatusHandler notifications
+            bool joinedNetwork = (networkState == ZigbeeNetworkStatus.SL_ZIGBEE_JOINED_NETWORK || networkState == ZigbeeNetworkStatus.SL_ZIGBEE_JOINED_NETWORK_NO_PARENT);
             _initialised = true;
             HandleLinkStateChange(joinedNetwork);
 
@@ -447,36 +453,36 @@ namespace ZigBeeNet.Hardware.Ember
 
         /**
          * Waits for the network to start. This periodically polls the network state waiting for the network to come online.
-         * If a terminal state is observed (eg EMBER_JOINED_NETWORK or EMBER_LEAVING_NETWORK) whereby the network cannot
+         * If a terminal state is observed (eg SL_ZIGBEE_JOINED_NETWORK or SL_ZIGBEE_LEAVING_NETWORK) whereby the network cannot
          * start, then this method will return.
          * <p>
-         * If the network start starts to join, but then shows EMBER_NO_NETWORK, it will return. Otherwise it will wait for
+         * If the network start starts to join, but then shows SL_ZIGBEE_NO_NETWORK, it will return. Otherwise it will wait for
          * the timeout.
          *
          * @param ncp
          * @return
          */
-        private EmberNetworkStatus WaitNetworkStartup(EmberNcp ncp) 
+        private ZigbeeNetworkStatus WaitNetworkStartup(EmberNcp ncp) 
         {
-            EmberNetworkStatus networkState;
+            ZigbeeNetworkStatus networkState;
             bool joinStarted = false;
             DateTime startTime = DateTime.Now;
             do 
             {
-                networkState = ncp.GetNetworkState();
+                networkState = ncp.NetworkState();
                 switch (networkState) 
                 {
-                    case EmberNetworkStatus.EMBER_JOINING_NETWORK:
+                    case ZigbeeNetworkStatus.SL_ZIGBEE_JOINING_NETWORK:
                         joinStarted = true;
                         break;
-                    case EmberNetworkStatus.EMBER_NO_NETWORK:
+                    case ZigbeeNetworkStatus.SL_ZIGBEE_NO_NETWORK:
                         if (joinStarted)
                             return networkState;
                         break;
                         
-                    case EmberNetworkStatus.EMBER_JOINED_NETWORK:
-                    case EmberNetworkStatus.EMBER_JOINED_NETWORK_NO_PARENT:
-                    case EmberNetworkStatus.EMBER_LEAVING_NETWORK:
+                    case ZigbeeNetworkStatus.SL_ZIGBEE_JOINED_NETWORK:
+                    case ZigbeeNetworkStatus.SL_ZIGBEE_JOINED_NETWORK_NO_PARENT:
+                    case ZigbeeNetworkStatus.SL_ZIGBEE_LEAVING_NETWORK:
                         return networkState;
                     default:
                         break;
@@ -524,7 +530,7 @@ namespace ZigBeeNet.Hardware.Ember
                     return;
                 }
                 // Don't wait for the response. This is running in a single thread scheduler
-                _frameHandler.QueueFrame(new EzspNetworkStateRequest());
+                _frameHandler.QueueFrame(new NetworkStateRequest());
             }
             catch (Exception ex)
             {
@@ -612,39 +618,37 @@ namespace ZigBeeNet.Hardware.Ember
 
             _lastSendCommand = DateTime.Now;
 
-            IEzspTransaction transaction;
+            ITransaction transaction;
 
-            EmberApsFrame emberApsFrame = new EmberApsFrame();
-            emberApsFrame.SetClusterId(apsFrame.Cluster);
-            emberApsFrame.SetProfileId(apsFrame.Profile);
-            emberApsFrame.SetSourceEndpoint(apsFrame.SourceEndpoint);
-            emberApsFrame.SetDestinationEndpoint(apsFrame.DestinationEndpoint);
-            emberApsFrame.SetSequence(apsFrame.ApsCounter);
-            emberApsFrame.AddOptions(EmberApsOption.EMBER_APS_OPTION_RETRY);
-            emberApsFrame.AddOptions(EmberApsOption.EMBER_APS_OPTION_ENABLE_ROUTE_DISCOVERY);
-            emberApsFrame.AddOptions(EmberApsOption.EMBER_APS_OPTION_ENABLE_ADDRESS_DISCOVERY);
+            ZigbeeApsFrame zigbeeApsFrame = new ZigbeeApsFrame();
+            zigbeeApsFrame.clusterId = apsFrame.Cluster;
+            zigbeeApsFrame.profileId = apsFrame.Profile;
+            zigbeeApsFrame.sourceEndpoint = apsFrame.SourceEndpoint;
+            zigbeeApsFrame.destinationEndpoint = apsFrame.DestinationEndpoint;
+            zigbeeApsFrame.sequence = apsFrame.ApsCounter;
+            zigbeeApsFrame.options = ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_RETRY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ROUTE_DISCOVERY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ADDRESS_DISCOVERY);
 
             if (apsFrame.SecurityEnabled) 
             {
-                emberApsFrame.AddOptions(EmberApsOption.EMBER_APS_OPTION_ENCRYPTION);
+                zigbeeApsFrame.options = zigbeeApsFrame.options | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENCRYPTION);
             }
 
             if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Device && !ZigBeeBroadcastDestinationHelper.IsBroadcast(apsFrame.DestinationAddress)) 
             {
-                EzspSendUnicastRequest emberUnicast = new EzspSendUnicastRequest();
-                emberUnicast.SetIndexOrDestination(apsFrame.DestinationAddress);
+                SendUnicastRequest emberUnicast = new SendUnicastRequest();
+                emberUnicast.IndexOrDestination = apsFrame.DestinationAddress;
                 //emberUnicast.SetMessageTag(msgTag);
-                emberUnicast.SetSequenceNumber(apsFrame.ApsCounter);
-                emberUnicast.SetType(EmberOutgoingMessageType.EMBER_OUTGOING_DIRECT);
-                emberUnicast.SetApsFrame(emberApsFrame);
-                emberUnicast.SetMessageContents(Array.ConvertAll(apsFrame.Payload, c => (int)c));
+                emberUnicast.SequenceNumber = apsFrame.ApsCounter;
+                emberUnicast.Type = ZigbeeOutgoingMessageType.SL_ZIGBEE_OUTGOING_DIRECT;
+                emberUnicast.ApsFrame = zigbeeApsFrame;
+                emberUnicast.MessageContents = apsFrame.Payload;
 
                 //Fragmentation not implemented yet
                 /*
                 if (apsFrame is ZigBeeApsFrameFragment) 
                 {
                     ZigBeeApsFrameFragment fragment = (ZigBeeApsFrameFragment) apsFrame;
-                    emberApsFrame.addOptions(EmberApsOption.EMBER_APS_OPTION_FRAGMENT);
+                    emberApsFrame.addOptions(EmberApsOption.SL_ZIGBEE_APS_OPTION_FRAGMENT);
                     emberApsFrame.setGroupId(fragment.getFragmentNumber() + (fragment.getFragmentTotal() << 8));
                     if (fragment.getFragmentNumber() != 0) {
                         emberApsFrame.setSequence(fragmentationApsCounters.get(msgTag));
@@ -655,32 +659,32 @@ namespace ZigBeeNet.Hardware.Ember
                 }
                 */
 
-                transaction = new EzspSingleResponseTransaction(emberUnicast, typeof(EzspSendUnicastResponse));
+                transaction = new SingleResponseTransaction(emberUnicast, typeof(SendUnicastResponse));
             } 
             else if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Device && ZigBeeBroadcastDestinationHelper.IsBroadcast(apsFrame.DestinationAddress)) 
             {
-                EzspSendBroadcastRequest emberBroadcast = new EzspSendBroadcastRequest();
-                emberBroadcast.SetDestination(apsFrame.DestinationAddress);
-                //emberBroadcast.SetMessageTag(msgTag);
-                emberBroadcast.SetSequenceNumber(apsFrame.ApsCounter);
-                emberBroadcast.SetApsFrame(emberApsFrame);
-                emberBroadcast.SetRadius(apsFrame.Radius);
-                emberBroadcast.SetMessageContents(Array.ConvertAll(apsFrame.Payload, c => (int)c));
+                SendBroadcastRequest emberBroadcast = new SendBroadcastRequest();
+                emberBroadcast.Destination = apsFrame.DestinationAddress;
+                //emberBroadcast.SetMessageTag(msgTag;
+                emberBroadcast.SequenceNumber = apsFrame.ApsCounter;
+                emberBroadcast.ApsFrame = zigbeeApsFrame;
+                emberBroadcast.Radius = (byte)apsFrame.Radius;
+                emberBroadcast.MessageContents = apsFrame.Payload;
 
-                transaction = new EzspSingleResponseTransaction(emberBroadcast, typeof(EzspSendBroadcastResponse));
+                transaction = new SingleResponseTransaction(emberBroadcast, typeof(SendBroadcastResponse);
             } 
             else if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Group) 
             {
-                emberApsFrame.SetGroupId(apsFrame.GroupAddress);
+                zigbeeApsFrame.groupId = apsFrame.GroupAddress;
 
-                EzspSendMulticastRequest emberMulticast = new EzspSendMulticastRequest();
-                emberMulticast.SetApsFrame(emberApsFrame);
-                emberMulticast.SetHops(apsFrame.Radius);
-                emberMulticast.SetNonmemberRadius(apsFrame.NonMemberRadius);
+                SendMulticastRequest emberMulticast = new SendMulticastRequest();
+                emberMulticast.ApsFrame = zigbeeApsFrame;
+                emberMulticast.Hops = (byte)apsFrame.Radius;
+                emberMulticast.NonmemberRadius = apsFrame.NonMemberRadius;
                 //emberMulticast.SetMessageTag(msgTag);
-                emberMulticast.SetMessageContents(Array.ConvertAll(apsFrame.Payload, c => (int)c));
+                emberMulticast.MessageContents = apsFrame.Payload;
 
-                transaction = new EzspSingleResponseTransaction(emberMulticast, typeof(EzspSendMulticastResponse));
+                transaction = new SingleResponseTransaction(emberMulticast, typeof(SendMulticastResponse));
             } 
             else 
             {
@@ -696,20 +700,20 @@ namespace ZigBeeNet.Hardware.Ember
                 {
                     _frameHandler.SendEzspTransaction(transaction);
 
-                    EmberStatus status = EmberStatus.UNKNOWN;
-                    if (transaction.GetResponse() is EzspSendUnicastResponse)
+                    Status? status;
+                    if (transaction.GetResponse() is SendUnicastResponse)
                     {
                         //Fragmentation not implemented yet        
-                        //fragmentationApsCounters.put(msgTag, ((EzspSendUnicastResponse) transaction.getResponse()).getSequence());
-                        status = ((EzspSendUnicastResponse)transaction.GetResponse()).GetStatus();
+                        //fragmentationApsCounters.put(msgTag, ((SendUnicastResponse) transaction.getResponse()).getSequence());
+                        status = ((SendUnicastResponse)transaction.GetResponse()).Status;
                     }
-                    else if (transaction.GetResponse() is EzspSendBroadcastResponse)
+                    else if (transaction.GetResponse() is SendBroadcastResponse)
                     {
-                        status = ((EzspSendBroadcastResponse)transaction.GetResponse()).GetStatus();
+                        status = ((SendBroadcastResponse)transaction.GetResponse()).Status;
                     }
-                    else if (transaction.GetResponse() is EzspSendMulticastResponse)
+                    else if (transaction.GetResponse() is SendMulticastResponse)
                     {
-                        status = ((EzspSendMulticastResponse)transaction.GetResponse()).GetStatus();
+                        status = ((SendMulticastResponse)transaction.GetResponse()).Status;
                     }
                     else
                     {
@@ -717,9 +721,9 @@ namespace ZigBeeNet.Hardware.Ember
                         return;
                     }
 
-                    // If this is EMBER_SUCCESS, then do nothing as the command is still not transmitted.
+                    // If this is SL_STATUS_OK, then do nothing as the command is still not transmitted.
                     // If there was an error, then we let the system know we've failed already!
-                    if (status == EmberStatus.EMBER_SUCCESS)
+                    if (status == Status.SL_STATUS_OK)
                         return;
 
                     //Not implemented yet
@@ -745,7 +749,7 @@ namespace ZigBeeNet.Hardware.Ember
             if ((nodeDescriptor.MacCapabilities&NodeDescriptor.MacCapabilitiesType.RECEIVER_ON_WHEN_IDLE)==0) 
             {
                 EmberNcp ncp = GetEmberNcp();
-                ncp.SetExtendedTimeout(ieeeAddress, true);
+                ncp.SetExtendedTimeout(ieeeAddress.GetAddress(), true);
             }
         }
 
@@ -755,24 +759,24 @@ namespace ZigBeeNet.Hardware.Ember
                 _logger.LogDebug("RX EZSP: {Response}", response);
             }
 
-            if (response is EzspIncomingMessageHandler) 
+            if (response is IncomingMessageHandlerResponse) 
             {
                 if (!_initialised) {
                     _logger.LogDebug("Ignoring received frame as stack is still initialising");
                     return;
                 }
-                EzspIncomingMessageHandler incomingMessage = (EzspIncomingMessageHandler) response;
-                EmberApsFrame emberApsFrame = incomingMessage.GetApsFrame();
+                IncomingMessageHandlerResponse incomingMessage = (IncomingMessageHandlerResponse) response;
+                ZigbeeApsFrame emberApsFrame = incomingMessage.ApsFrame;
                 ZigBeeApsFrame apsFrame = new ZigBeeApsFrame();
             //Fragmentation not implemented yet    
             /*
-                if (emberApsFrame.getOptions().contains(EmberApsOption.EMBER_APS_OPTION_FRAGMENT)) {
+                if (ZigbeeApsFrame.getOptions().contains(EmberApsOption.SL_ZIGBEE_APS_OPTION_FRAGMENT)) {
                     ZigBeeApsFrameFragment fragment = new ZigBeeApsFrameFragment(emberApsFrame.getGroupId() & 0xFF);
                     if ((emberApsFrame.getGroupId() & 0xFF) == 0) {
                         fragment.setFragmentTotal((emberApsFrame.getGroupId() & 0xFF00) >> 8);
                     }
                     // We must respond to a fragment with a sendReply command
-                    EzspSendReplyRequest sendReply = new EzspSendReplyRequest();
+                    SendReplyRequest sendReply = new SendReplyRequest();
                     emberApsFrame.setGroupId(emberApsFrame.getGroupId() | 0xFF00);
                     sendReply.setApsFrame(emberApsFrame);
                     sendReply.setSender(incomingMessage.getSender());
@@ -786,43 +790,42 @@ namespace ZigBeeNet.Hardware.Ember
 
                 switch (incomingMessage.GetType2()) 
                 {
-                    case EmberIncomingMessageType.EMBER_INCOMING_BROADCAST_LOOPBACK:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK:
                         if (!_passLoopbackMessages)
                             return;
                         apsFrame.AddressMode = ZigBeeNwkAddressMode.Device;
                         break;
-                    case EmberIncomingMessageType.EMBER_INCOMING_BROADCAST:
-                    case EmberIncomingMessageType.EMBER_INCOMING_UNICAST:
-                    case EmberIncomingMessageType.EMBER_INCOMING_UNICAST_REPLY:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_BROADCAST:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_UNICAST:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_UNICAST_REPLY:
                         apsFrame.AddressMode = ZigBeeNwkAddressMode.Device;
                         break;
-                    case EmberIncomingMessageType.EMBER_INCOMING_MULTICAST_LOOPBACK:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK:
                         if (!_passLoopbackMessages)
                             return;
                         apsFrame.AddressMode = ZigBeeNwkAddressMode.Group;
                         break;
-                    case EmberIncomingMessageType.EMBER_INCOMING_MULTICAST:
+                    case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_MULTICAST:
                         apsFrame.AddressMode = ZigBeeNwkAddressMode.Group;
                         break;
-                    case EmberIncomingMessageType.EMBER_INCOMING_MANY_TO_ONE_ROUTE_REQUEST:
+                    case ZigbeeIncomingMessageType.EMBER_INCOMING_MANY_TO_ONE_ROUTE_REQUEST:
                         return;
-                    case EmberIncomingMessageType.UNKNOWN:
-                        _logger.LogInformation("Ignoring unknown EZSP incoming message type");
+                    default:
+                        _logger.LogWarning("Ignoring unknown EZSP incoming message type");
                         return;
                 }
 
-                apsFrame.ApsCounter = (byte)emberApsFrame.GetSequence();
-                apsFrame.Cluster = (ushort)emberApsFrame.GetClusterId();
-                apsFrame.Profile = (ushort)emberApsFrame.GetProfileId();
-                apsFrame.SecurityEnabled = emberApsFrame.GetOptions().Contains(EmberApsOption.EMBER_APS_OPTION_ENCRYPTION);
+                apsFrame.ApsCounter = (byte)emberApsFrame.sequence;
+                apsFrame.Cluster = (ushort)emberApsFrame.clusterId;
+                apsFrame.Profile = (ushort)emberApsFrame.profileId;
+                apsFrame.SecurityEnabled = emberApsFrame.options.HasFlag(ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENCRYPTION);
 
                 apsFrame.DestinationAddress = NwkAddress;
-                apsFrame.DestinationEndpoint = (byte) emberApsFrame.GetDestinationEndpoint();
+                apsFrame.DestinationEndpoint = (byte) emberApsFrame.destinationEndpoint;
+                apsFrame.SourceAddress = incomingMessage.PacketInfo.sender_short_id;
+                apsFrame.SourceEndpoint = (byte)emberApsFrame.sourceEndpoint;
 
-                apsFrame.SourceAddress = (ushort)incomingMessage.GetSender();
-                apsFrame.SourceEndpoint = (byte)emberApsFrame.GetSourceEndpoint();
-
-                apsFrame.Payload = Array.ConvertAll(incomingMessage.GetMessageContents(), c => (byte)c);
+                apsFrame.Payload = incomingMessage.Message;
                 _zigbeeTransportReceive.ReceiveCommand(apsFrame);
 
                 return;
@@ -831,13 +834,13 @@ namespace ZigBeeNet.Hardware.Ember
             // Message has been completed by the NCP
             //Not implemented yet
             /*
-            if (response is EzspMessageSentHandler) 
+            if (response is MessageSentHandler) 
             {
                 Task.Run(() =>
                 {
-                    EzspMessageSentHandler sentHandler = (EzspMessageSentHandler) response;
+                    MessageSentHandler sentHandler = (MessageSentHandler) response;
                     ZigBeeTransportProgressState sentHandlerState;
-                    if (sentHandler.GetStatus() == EmberStatus.EMBER_SUCCESS) {
+                    if (sentHandler.Status() == Status.SL_STATUS_OK) {
                         sentHandlerState = ZigBeeTransportProgressState.RX_ACK;
                     } else {
                         sentHandlerState = ZigBeeTransportProgressState.RX_NAK;
@@ -848,17 +851,17 @@ namespace ZigBeeNet.Hardware.Ember
             }
             */
 
-            if (response is EzspStackStatusHandler) 
+            if (response is StackStatusHandlerResponse) 
             {
-                switch (((EzspStackStatusHandler) response).GetStatus()) 
+                switch (((StackStatusHandlerResponse) response).Status) 
                 {
-                    case EmberStatus.EMBER_NETWORK_BUSY:
+                    case Status.SL_STATUS_BUSY:
                         break;
-                    case EmberStatus.EMBER_PRECONFIGURED_KEY_REQUIRED:
-                    case EmberStatus.EMBER_NETWORK_DOWN:
+                    case Status.SL_STATUS_ZIGBEE_PRECONFIGURED_KEY_REQUIRED:
+                    case Status.SL_STATUS_NETWORK_DOWN:
                         HandleLinkStateChange(false);
                         break;
-                    case EmberStatus.EMBER_NETWORK_UP:
+                    case Status.SL_STATUS_NETWORK_UP:
                         HandleLinkStateChange(true);
                         break;
                     default:
@@ -867,30 +870,30 @@ namespace ZigBeeNet.Hardware.Ember
                 return;
             }
 
-            if (response is EzspTrustCenterJoinHandler) 
+            if (response is TrustCenterPostJoinHandlerResponse) 
             {
-                EzspTrustCenterJoinHandler joinHandler = (EzspTrustCenterJoinHandler) response;
+                TrustCenterPostJoinHandlerResponse joinHandler = (TrustCenterPostJoinHandlerResponse) response;
 
                 ZigBeeNodeStatus status;
-                switch (joinHandler.GetStatus()) 
+                switch (joinHandler.Status) 
                 {
-                    case EmberDeviceUpdate.EMBER_HIGH_SECURITY_UNSECURED_JOIN:
-                    case EmberDeviceUpdate.EMBER_STANDARD_SECURITY_UNSECURED_JOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_HIGH_SECURITY_UNSECURED_JOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_STANDARD_SECURITY_UNSECURED_JOIN:
                         status = ZigBeeNodeStatus.UNSECURED_JOIN;
                         break;
-                    case EmberDeviceUpdate.EMBER_HIGH_SECURITY_UNSECURED_REJOIN:
-                    case EmberDeviceUpdate.EMBER_STANDARD_SECURITY_UNSECURED_REJOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_HIGH_SECURITY_UNSECURED_REJOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_STANDARD_SECURITY_UNSECURED_REJOIN:
                         status = ZigBeeNodeStatus.UNSECURED_REJOIN;
                         break;
-                    case EmberDeviceUpdate.EMBER_HIGH_SECURITY_SECURED_REJOIN:
-                    case EmberDeviceUpdate.EMBER_STANDARD_SECURITY_SECURED_REJOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_HIGH_SECURITY_SECURED_REJOIN:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_STANDARD_SECURITY_SECURED_REJOIN:
                         status = ZigBeeNodeStatus.SECURED_REJOIN;
                         break;
-                    case EmberDeviceUpdate.EMBER_DEVICE_LEFT:
+                    case ZigbeeDeviceUpdate.SL_ZIGBEE_DEVICE_LEFT:
                         status = ZigBeeNodeStatus.DEVICE_LEFT;
                         break;
                     default:
-                        _logger.LogDebug("Unknown state in trust centre join handler {Status}", joinHandler.GetStatus());
+                        _logger.LogDebug("Unknown state in trust centre join handler {Status}", joinHandler.Status);
                         return;
                 }
 
@@ -898,19 +901,19 @@ namespace ZigBeeNet.Hardware.Ember
                 return;
             }
 
-            if (response is EzspChildJoinHandler) 
+            if (response is ChildJoinHandlerResponse) 
             {
-                EzspChildJoinHandler joinHandler = (EzspChildJoinHandler) response;
+                ChildJoinHandlerResponse joinHandler = (ChildJoinHandlerResponse) response;
                 _zigbeeTransportReceive.NodeStatusUpdate(
-                        joinHandler.GetJoining() ? ZigBeeNodeStatus.UNSECURED_JOIN : ZigBeeNodeStatus.DEVICE_LEFT,
-                        (ushort)joinHandler.GetChildId(), joinHandler.GetChildEui64());
+                        joinHandler.Joining ? ZigBeeNodeStatus.UNSECURED_JOIN : ZigBeeNodeStatus.DEVICE_LEFT,
+                        (ushort)joinHandler.ChildId, new IeeeAddress(joinHandler.ChildEui64));
                 return;
             }
         
             /*
-            if (response instanceof EzspMfglibRxHandler) {
+            if (response instanceof MfglibRxHandler) {
                 if (mfglibListener != null) {
-                    EzspMfglibRxHandler mfglibHandler = (EzspMfglibRxHandler) response;
+                    MfglibRxHandler mfglibHandler = (MfglibRxHandler) response;
                     mfglibListener.emberMfgLibPacketReceived(mfglibHandler.getLinkQuality(), mfglibHandler.getLinkQuality(),
                             mfglibHandler.getPacketContents());
                 }
@@ -951,7 +954,7 @@ namespace ZigBeeNet.Hardware.Ember
 
         public ZigBeeChannel ZigBeeChannel
         {
-            get { return (ZigBeeChannel)(1 << _networkParameters.GetRadioChannel()); } 
+            get { return (ZigBeeChannel)(1 << _networkParameters.radioChannel); } 
         }
 
         public ZigBeeStatus SetZigBeeChannel(ZigBeeChannel channel) 
@@ -961,29 +964,29 @@ namespace ZigBeeNet.Hardware.Ember
                 _logger.LogDebug("Unable to set channel outside of 2.4GHz channels: {Channel}", channel);
                 return ZigBeeStatus.INVALID_ARGUMENTS;
             }
-            _networkParameters.SetRadioChannel(channel.GetChannelNum());
+            _networkParameters.radioChannel = (byte)channel.GetChannelNum();
             return ZigBeeStatus.SUCCESS;
         }
 
         public ushort PanID
         {
-            get { return (ushort) _networkParameters.GetPanId(); }
+            get { return (ushort) _networkParameters.panId; }
         }
 
         public ZigBeeStatus SetZigBeePanId(ushort panId) 
         {
-            _networkParameters.SetPanId(panId);
+            _networkParameters.panId = panId;
             return ZigBeeStatus.SUCCESS;
         }
 
         public ExtendedPanId ExtendedPanId 
         {
-            get { return _networkParameters.GetExtendedPanId(); }
+            get { return new ExtendedPanId(_networkParameters.extendedPanId); }
         }
 
         public ZigBeeStatus SetZigBeeExtendedPanId(ExtendedPanId extendedPanId) 
         {
-            _networkParameters.SetExtendedPanId(extendedPanId);
+            _networkParameters.extendedPanId = extendedPanId.PanId;
             return ZigBeeStatus.SUCCESS;
         }
 
@@ -1001,7 +1004,7 @@ namespace ZigBeeNet.Hardware.Ember
             get
             {
                 EmberNcp ncp = GetEmberNcp();
-                EmberKeyStruct key = ncp.GetKey(EmberKeyType.EMBER_CURRENT_NETWORK_KEY);
+                ZigbeeKeyStruct key = ncp.GetKey(ZigbeeKeyType.SL_ZIGBEE_CURRENT_NETWORK_KEY);
                 return EmberKeyToZigBeeKey(key);
             }
         }
@@ -1020,7 +1023,7 @@ namespace ZigBeeNet.Hardware.Ember
             get
             {
                 EmberNcp ncp = GetEmberNcp();
-                EmberKeyStruct key = ncp.GetKey(EmberKeyType.EMBER_TRUST_CENTER_LINK_KEY);
+                ZigbeeKeyStruct key = ncp.GetKey(EmberKeyType.SL_ZIGBEE_TRUST_CENTER_LINK_KEY);
                 return EmberKeyToZigBeeKey(key);
             }
         }
@@ -1046,13 +1049,13 @@ namespace ZigBeeNet.Hardware.Ember
                                 configuration.SetResult(option, ZigBeeStatus.FAILURE);
                                 break;
                             }
-                            EmberStatus result = ncp.AddTransientLinkKey(nodeKey.address, nodeKey);
+                            Status result = ncp.AddTransientLinkKey(nodeKey.address, nodeKey);
 
-                            configuration.SetResult(option, result == EmberStatus.EMBER_SUCCESS ? ZigBeeStatus.SUCCESS : ZigBeeStatus.FAILURE);
+                            configuration.SetResult(option, result == Status.SL_STATUS_OK ? ZigBeeStatus.SUCCESS : ZigBeeStatus.FAILURE);
                             break;
 
                         case TransportConfigOption.RADIO_TX_POWER:
-                            configuration.SetResult(option, SetEmberTxPower((int) configuration.GetValue(option)));
+                            configuration.SetResult(option, SetEmberTxPower((sbyte) configuration.GetValue(option)));
                             break;
 
                         case TransportConfigOption.DEVICE_TYPE:
@@ -1122,22 +1125,22 @@ namespace ZigBeeNet.Hardware.Ember
 
         private ZigBeeStatus SetTcJoinMode(TrustCentreJoinMode joinMode) 
         {
-            EzspDecisionId emberJoinMode;
+            ZigbeeEzspDecisionId emberJoinMode;
             switch (joinMode) 
             {
                 case TrustCentreJoinMode.TC_JOIN_INSECURE:
-                    emberJoinMode = EzspDecisionId.EZSP_ALLOW_JOINS;
+                    emberJoinMode = ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_ALLOW_JOINS;
                     break;
                 case TrustCentreJoinMode.TC_JOIN_SECURE:
-                    emberJoinMode = EzspDecisionId.EZSP_ALLOW_PRECONFIGURED_KEY_JOINS;
+                    emberJoinMode = ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_ALLOW_PRECONFIGURED_KEY_JOINS;
                     break;
                 case TrustCentreJoinMode.TC_JOIN_DENY:
-                    emberJoinMode = EzspDecisionId.EZSP_DISALLOW_ALL_JOINS_AND_REJOINS;
+                    emberJoinMode = ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DISALLOW_ALL_JOINS_AND_REJOINS;
                     break;
                 default:
                     return ZigBeeStatus.INVALID_ARGUMENTS;
             }
-            return (GetEmberNcp().SetPolicy(EzspPolicyId.EZSP_TRUST_CENTER_POLICY, emberJoinMode) == EzspStatus.EZSP_SUCCESS) ? ZigBeeStatus.SUCCESS : ZigBeeStatus.FAILURE;
+            return (GetEmberNcp().SetPolicy(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TRUST_CENTER_POLICY, emberJoinMode) == Status.SL_STATUS_OK) ? ZigBeeStatus.SUCCESS : ZigBeeStatus.FAILURE;
         }
 
         private bool InitialiseEzspProtocol() 
@@ -1186,57 +1189,63 @@ namespace ZigBeeNet.Hardware.Ember
 
             // We MUST send the version command first.
             // Any failure to respond here indicates a failure of the ASH or EZSP layers to initialise
-            EzspVersionResponse version = ncp.GetVersion(4);
+            VersionResponse version = ncp.Version(4);
             if (version == null) 
             {
                 _logger.LogDebug("EZSP Dongle: Version returned null. ASH/EZSP not initialised.");
                 return false;
             }
 
-            if (version.GetProtocolVersion() != EzspFrameV8Plus.GetEzspVersion()) 
+            if (version.ProtocolVersion != EzspFrameV8Plus.GetEzspVersion()) 
             {
                 // The device supports a different version that we current have set
-                if (!EzspFrameV8Plus.SetEzspVersion(version.GetProtocolVersion()))
+                if (!EzspFrameV8Plus.SetEzspVersion(version.ProtocolVersion))
                 {
                     _logger.LogError("EZSP Dongle: NCP requires unsupported version of EZSP (required = V{RequiredVersion}, supported = V{SupportedVersion})",
-                            version.GetProtocolVersion(), EzspFrameV8Plus.GetEzspVersion());
+                            version.ProtocolVersion, EzspFrameV8Plus.GetEzspVersion());
                     return false;
                 }
 
-                version = ncp.GetVersion(EzspFrameV8Plus.GetEzspVersion());
+                version = ncp.Version(EzspFrameV8Plus.GetEzspVersion());
                 _logger.LogDebug(version.ToString());
             }
 
             StringBuilder builder = new StringBuilder();
             builder.Append("EZSP Version=");
-            builder.Append(version.GetProtocolVersion());
+            builder.Append(version.ProtocolVersion);
             builder.Append(", Stack Type=");
-            builder.Append(version.GetStackType());
+            builder.Append(version.StackType);
             builder.Append(", Stack Version=");
             for (int cnt = 3; cnt >= 0; cnt--) 
             {
-                builder.Append((version.GetStackVersion() >> (cnt * 4)) & 0x0F);
+                builder.Append((version.StackVersion >> (cnt * 4)) & 0x0F);
                 if (cnt != 0) 
                 {
                     builder.Append('.');
                 }
             }
 
-            int bootloaderVersion = ncp.GetBootloaderVersion();
+            var standaloneBootloaderVersionPlatMicroPhy = ncp.GetStandaloneBootloaderVersionPlatMicroPhy();
             builder.Append(", Bootloader Version=");
-            if (bootloaderVersion == BOOTLOADER_INVALID_VERSION) 
+            if (standaloneBootloaderVersionPlatMicroPhy.BootloaderVersion == BOOTLOADER_INVALID_VERSION) 
             {
                 builder.Append("NONE");
             } 
             else 
             {
-                builder.Append((bootloaderVersion >> 12) & 0x0F);
+                builder.Append((standaloneBootloaderVersionPlatMicroPhy.BootloaderVersion >> 12) & 0x0F);
                 builder.Append('.');
-                builder.Append((bootloaderVersion >> 8) & 0x0F);
+                builder.Append((standaloneBootloaderVersionPlatMicroPhy.BootloaderVersion >> 8) & 0x0F);
 
                 builder.Append(" build ");
-                builder.Append(bootloaderVersion & 0xFF);
+                builder.Append(standaloneBootloaderVersionPlatMicroPhy.BootloaderVersion & 0xFF);
             }
+            builder.Append(", Platform=");
+            builder.Append(standaloneBootloaderVersionPlatMicroPhy.NodePlat);
+            builder.Append(", Micro=");
+            builder.Append(standaloneBootloaderVersionPlatMicroPhy.NodeMicro);
+            builder.Append(", Phy=");
+            builder.Append(standaloneBootloaderVersionPlatMicroPhy.NodePhy);
 
             VersionString = builder.ToString();
 
@@ -1253,34 +1262,35 @@ namespace ZigBeeNet.Hardware.Ember
 
         private ZigBeeStatus SetConcentrator(ConcentratorConfig concentratorConfig) 
         {
-            EzspSetConcentratorRequest concentratorRequest = new EzspSetConcentratorRequest();
-            concentratorRequest.SetMinTime(concentratorConfig.RefreshMinimum);
-            concentratorRequest.SetMaxTime(concentratorConfig.RefreshMaximum);
-            concentratorRequest.SetMaxHops(concentratorConfig.MaxHops);
-            concentratorRequest.SetRouteErrorThreshold(concentratorConfig.MaxFailures);
-            concentratorRequest.SetDeliveryFailureThreshold(concentratorConfig.MaxFailures);
+            SetConcentratorRequest concentratorRequest = new SetConcentratorRequest();
+            concentratorRequest.MinTime = (ushort)concentratorConfig.RefreshMinimum;
+            concentratorRequest.MaxTime = (ushort)concentratorConfig.RefreshMaximum;
+            concentratorRequest.MaxHops = (byte)concentratorConfig.MaxHops;
+            concentratorRequest.RouteErrorThreshold = (byte)concentratorConfig.MaxFailures;
+            concentratorRequest.DeliveryFailureThreshold = (byte)concentratorConfig.MaxFailures;
             switch (concentratorConfig.Type) 
             {
                 case ConcentratorType.DISABLED:
-                    concentratorRequest.SetEnable(false);
+                    concentratorRequest.On = false;
+                    concentratorRequest.ConcentratorType = (ushort)ConcentratorType.DISABLED;
                     break;
                 case ConcentratorType.HIGH_RAM:
-                    concentratorRequest.SetConcentratorType(EmberConcentratorType.EMBER_HIGH_RAM_CONCENTRATOR);
-                    concentratorRequest.SetEnable(true);
+                    concentratorRequest.ConcentratorType = (ushort)ConcentratorType.HIGH_RAM;
+                    concentratorRequest.On = true;
                     break;
                 case ConcentratorType.LOW_RAM:
-                    concentratorRequest.SetConcentratorType(EmberConcentratorType.EMBER_LOW_RAM_CONCENTRATOR);
-                    concentratorRequest.SetEnable(true);
+                    concentratorRequest.ConcentratorType = (ushort)ConcentratorType.LOW_RAM;
+                    concentratorRequest.On = true;
                     break;
                 default:
                     break;
             }
 
-            IEzspTransaction concentratorTransaction = _frameHandler.SendEzspTransaction(new EzspSingleResponseTransaction(concentratorRequest, typeof(EzspSetConcentratorResponse)));
-            EzspSetConcentratorResponse concentratorResponse = (EzspSetConcentratorResponse) concentratorTransaction.GetResponse();
+            ITransaction concentratorTransaction = _frameHandler.SendEzspTransaction(new SingleResponseTransaction(concentratorRequest, typeof(SetConcentratorResponse)));
+            SetConcentratorResponse concentratorResponse = (SetConcentratorResponse) concentratorTransaction.GetResponse();
             _logger.LogDebug(concentratorResponse.ToString());
 
-            if (concentratorResponse.GetStatus() == EzspStatus.EZSP_SUCCESS)
+            if (concentratorResponse.Status == Status.SL_STATUS_OK)
                 return ZigBeeStatus.SUCCESS;
             
             return ZigBeeStatus.FAILURE;
@@ -1292,12 +1302,12 @@ namespace ZigBeeNet.Hardware.Ember
          * @param txPower the power in dBm
          * @return {@link ZigBeeStatus}
          */
-        private ZigBeeStatus SetEmberTxPower(int txPower) 
+        private ZigBeeStatus SetEmberTxPower(sbyte txPower) 
         {
-            _networkParameters.SetRadioTxPower(txPower);
+            _networkParameters.radioTxPower = txPower;
 
             EmberNcp ncp = GetEmberNcp();
-            return (ncp.SetRadioPower(txPower) == EmberStatus.EMBER_SUCCESS) ? ZigBeeStatus.SUCCESS : ZigBeeStatus.BAD_RESPONSE;
+            return (ncp.SetRadioPower(txPower) == Status.SL_STATUS_OK) ? ZigBeeStatus.SUCCESS : ZigBeeStatus.BAD_RESPONSE;
         }
 
         /**
@@ -1319,32 +1329,29 @@ namespace ZigBeeNet.Hardware.Ember
          * @param emberKey the {@link EmberKeyStruct} read from the NCP
          * @return the {@link ZigBeeKey} used by the framework. May be null if the key is invalid.
          */
-        private ZigBeeKey EmberKeyToZigBeeKey(EmberKeyStruct emberKey) 
+        private ZigBeeKey EmberKeyToZigBeeKey(ZigbeeKeyStruct zigbeeKey) 
         {
-            if (emberKey == null)
-                return null;
-            
-            ZigBeeKey key = new ZigBeeKey(Array.ConvertAll(emberKey.GetKey().GetContents(), c => (byte)c));
+            ZigBeeKey key = new ZigBeeKey(zigbeeKey.key.contents);
 
-            if (emberKey.GetBitmask().Contains(EmberKeyStructBitmask.EMBER_KEY_HAS_PARTNER_EUI64))
-                key.address = emberKey.GetPartnerEUI64();
+            if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_PARTNER_EUI64))
+                key.address = new IeeeAddress(zigbeeKey.partnerEUI64);
             
-            if (emberKey.GetBitmask().Contains(EmberKeyStructBitmask.EMBER_KEY_HAS_SEQUENCE_NUMBER))
-                key.SequenceNumber = (byte)emberKey.GetSequenceNumber();
+            if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_SEQUENCE_NUMBER))
+                key.SequenceNumber = (byte)zigbeeKey.sequenceNumber;
             
-            if (emberKey.GetBitmask().Contains(EmberKeyStructBitmask.EMBER_KEY_HAS_OUTGOING_FRAME_COUNTER))
-                key.OutgoingFrameCounter = (byte) emberKey.GetOutgoingFrameCounter();
+            if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_OUTGOING_FRAME_COUNTER))
+                key.OutgoingFrameCounter = (byte) zigbeeKey.outgoingFrameCounter;
 
-            if (emberKey.GetBitmask().Contains(EmberKeyStructBitmask.EMBER_KEY_HAS_INCOMING_FRAME_COUNTER))
-                key.IncomingFrameCounter = (byte) emberKey.GetIncomingFrameCounter();
+            if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_INCOMING_FRAME_COUNTER))
+                key.IncomingFrameCounter = (byte) zigbeeKey.incomingFrameCounter;
 
             return key;
         }
 
         /**
-         * Gets the {@link EzspProtocolHandler}
+         * Gets the {@link ProtocolHandler}
          *
-         * @return the {@link EzspProtocolHandler}
+         * @return the {@link ProtocolHandler}
          */
         protected IEzspProtocolHandler GetProtocolHandler() 
         {

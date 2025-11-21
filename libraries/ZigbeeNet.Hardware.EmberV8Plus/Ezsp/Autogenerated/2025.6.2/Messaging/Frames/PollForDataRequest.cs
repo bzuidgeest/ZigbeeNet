@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class PollForDataRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0042; } }
+
     /// <summary>
     /// The time between polls. Note that the timer clock is free running and is not synchronized with this command. This means that the time will be between &lt;i&gt;interval&lt;/i&gt; and (&lt;i&gt;interval&lt;/i&gt; - 1). The maximum interval is 32767.
     /// </summary>

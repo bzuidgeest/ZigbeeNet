@@ -36,7 +36,6 @@
   <ItemGroup>
     <Compile Remove="Internal\Serializer\EzspDeserializer.cs" />
     <Compile Remove="Internal\Serializer\EzspSerializer.cs" />
-    <Compile Remove="MyStruct.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +56,5 @@
   <ItemGroup>
     <None Include="Internal\Serializer\EzspDeserializer.cs" />
     <None Include="Internal\Serializer\EzspSerializer.cs" />
-    <None Include="MyStruct.cs" />
   </ItemGroup>
 </Project>

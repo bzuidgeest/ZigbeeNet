@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class SendBootloadMessageRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0090; } }
+
     /// <summary>
     /// If true, the destination address and pan id are both set to the broadcast address.
     /// </summary>

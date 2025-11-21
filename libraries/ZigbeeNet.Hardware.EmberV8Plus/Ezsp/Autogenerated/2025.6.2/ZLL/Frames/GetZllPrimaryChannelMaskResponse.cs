@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// </summary>
 public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00D9; } }
+
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>

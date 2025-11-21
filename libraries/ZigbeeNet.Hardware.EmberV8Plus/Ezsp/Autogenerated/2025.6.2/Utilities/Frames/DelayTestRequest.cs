@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class DelayTestRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x009D; } }
+
     /// <summary>
     /// Data will not be read from the host for this many milliseconds.
     /// </summary>

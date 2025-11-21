@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class EchoRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0081; } }
+
     /// <summary>
     /// The length of the &lt;i&gt;data&lt;/i&gt; parameter in bytes.
     /// </summary>

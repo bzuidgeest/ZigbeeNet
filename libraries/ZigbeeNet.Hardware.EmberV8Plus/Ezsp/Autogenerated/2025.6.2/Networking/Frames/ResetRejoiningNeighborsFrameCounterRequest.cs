@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ResetRejoiningNeighborsFrameCounterRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0124; } }
+
     /// <summary>
     /// Whether or not a neighbor&apos;s incoming FC should be reset upon rejoining (true or false).
     /// </summary>

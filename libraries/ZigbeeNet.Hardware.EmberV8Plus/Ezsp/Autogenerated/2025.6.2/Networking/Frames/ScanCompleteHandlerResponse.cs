@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ScanCompleteHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x001C; } }
+
     /// <summary>
     /// The channel on which the current error occurred. Undefined for the case of SL_STATUS_OK.
     /// </summary>

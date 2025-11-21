@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 /// </summary>
 public class GetValueResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00AA; } }
+
     /// <summary>
     /// SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
     /// </summary>

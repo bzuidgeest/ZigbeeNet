@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SetConcentratorRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0010; } }
+
     /// <summary>
     /// If this bool is true the concentrator support is enabled. Otherwise is disabled. If this bool is false all the other arguments are ignored.
     /// </summary>

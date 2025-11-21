@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SetRadioIeee802154CcaModeRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0095; } }
+
     /// <summary>
     /// A RAIL_IEEE802154_CcaMode_t value.
     /// </summary>

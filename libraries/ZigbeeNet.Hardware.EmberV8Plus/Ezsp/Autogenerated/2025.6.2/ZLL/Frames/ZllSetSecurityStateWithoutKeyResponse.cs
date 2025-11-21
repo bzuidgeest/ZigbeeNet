@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// </summary>
 public class ZllSetSecurityStateWithoutKeyResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00CF; } }
+
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>

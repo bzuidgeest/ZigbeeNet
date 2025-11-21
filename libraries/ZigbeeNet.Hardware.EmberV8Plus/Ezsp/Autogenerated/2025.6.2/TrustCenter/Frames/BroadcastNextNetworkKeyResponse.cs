@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 /// </summary>
 public class BroadcastNextNetworkKeyResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0073; } }
+
     /// <summary>
     /// sl_status_t value that indicates the success or failure of the command.
     /// </summary>

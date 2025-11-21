@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class RequestLinkKeyResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0014; } }
+
     /// <summary>
     /// The success or failure of sending the request. This is not the final result of the attempt. sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will return that.
     /// </summary>

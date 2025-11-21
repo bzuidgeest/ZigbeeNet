@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// </summary>
 public class BindingIsActiveResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x002E; } }
+
     /// <summary>
     /// True if the binding table entry is active, false otherwise.
     /// </summary>

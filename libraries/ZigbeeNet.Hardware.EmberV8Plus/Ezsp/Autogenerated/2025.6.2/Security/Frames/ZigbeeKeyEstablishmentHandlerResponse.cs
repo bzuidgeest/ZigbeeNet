@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x009B; } }
+
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>

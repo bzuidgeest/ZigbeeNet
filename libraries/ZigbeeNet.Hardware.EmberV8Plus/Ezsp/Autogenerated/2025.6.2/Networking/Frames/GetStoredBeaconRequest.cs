@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetStoredBeaconRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0004; } }
+
     /// <summary>
     /// The beacon index to fetch. Valid values range from 0 to &lt;i&gt;sli_zigbee_stack_get_num_stored_beacons&lt;/i&gt;-1.
     /// </summary>

@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 /// </summary>
 public class MfglibInternalSetPowerRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x008c; } }
+
     /// <summary>
     /// Power mode. Refer to txPowerModes in stack/include/sl_zigbee_types.h for possible values.
     /// </summary>

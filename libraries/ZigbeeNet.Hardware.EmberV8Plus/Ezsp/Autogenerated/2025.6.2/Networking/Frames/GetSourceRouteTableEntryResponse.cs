@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00C1; } }
+
     /// <summary>
     /// SL_STATUS_OK if there is source route entry at
 	/// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no

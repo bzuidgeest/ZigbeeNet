@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class GetMfgTokenResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x000B; } }
+
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
     /// </summary>

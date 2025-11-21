@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0147; } }
+
     /// <summary>
     /// The type of the incoming message. Currently, the only possibility is MFG_TEST_TYPE_ACK.
     /// </summary>

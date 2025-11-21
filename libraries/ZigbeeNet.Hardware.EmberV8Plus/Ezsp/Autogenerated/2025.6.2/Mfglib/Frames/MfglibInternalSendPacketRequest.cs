@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 /// </summary>
 public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0089; } }
+
     /// <summary>
     /// The length of the packetContents parameter in bytes. Must be greater than 3 and less than 123.
     /// </summary>

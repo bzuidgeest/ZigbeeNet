@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 /// </summary>
 public class UnicastNwkKeyUpdateRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00A9; } }
+
     /// <summary>
     /// The node ID of the device that will receive the message
     /// </summary>

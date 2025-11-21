@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 /// </summary>
 public class MfglibInternalSetChannelRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x008a; } }
+
     /// <summary>
     /// The channel to switch to. Valid values are 11 to 26.
     /// </summary>

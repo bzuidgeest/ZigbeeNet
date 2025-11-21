@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class SetDutyCycleLimitsInStackResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0040; } }
+
     /// <summary>
     /// SL_STATUS_OK  if the duty cycle limit configurations set successfully, SL_STATUS_INVALID_PARAMETER if set illegal value such as setting only one of the limits to default or violates constraints Susp &gt; Crit &gt; Limi, SL_STATUS_INVALID_STATE if device is operating on 2.4Ghz
     /// </summary>

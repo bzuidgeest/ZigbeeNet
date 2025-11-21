@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class SetSourceRouteDiscoveryModeRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x005A; } }
+
     /// <summary>
     /// Source route discovery mode: off:0, on:1, reschedule:2
     /// </summary>

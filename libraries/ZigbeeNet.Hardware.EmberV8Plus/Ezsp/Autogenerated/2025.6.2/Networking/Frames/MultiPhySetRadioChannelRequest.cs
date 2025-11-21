@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class MultiPhySetRadioChannelRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00FB; } }
+
     /// <summary>
     /// Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.
     /// </summary>

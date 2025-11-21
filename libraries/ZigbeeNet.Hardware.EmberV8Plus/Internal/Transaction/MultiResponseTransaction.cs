@@ -17,7 +17,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
     ///  
     ///  This transaction handler will record all responses related to the request, but only complete on the final response.
     /// </summary>
-	public class EzspMultiResponseTransaction : IEzspTransaction
+	public class MultiResponseTransaction : ITransaction
     {
         /**
 		 * The request we sent
@@ -39,7 +39,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 		 */
         private HashSet<Type> _relatedResponses;
 
-        public EzspMultiResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse,
+        public MultiResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse,
                 HashSet<Type> relatedResponses)
         {
             this._request = request;

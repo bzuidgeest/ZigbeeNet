@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class SetMacPollFailureWaitTimeRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00F4; } }
+
     /// <summary>
     /// Time in milliseconds the device waits before retrying a data poll when a MAC level data poll fails for any reason.
     /// </summary>

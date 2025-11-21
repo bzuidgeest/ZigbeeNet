@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// </summary>
 public class FindKeyTableEntryRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0075; } }
+
     /// <summary>
     /// The address to search for. Alternatively, all zeros may be passed in to search for the first empty entry.
     /// </summary>

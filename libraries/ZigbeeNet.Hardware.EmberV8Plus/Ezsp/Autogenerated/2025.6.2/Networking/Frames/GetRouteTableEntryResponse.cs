@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class GetRouteTableEntryResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x007B; } }
+
     /// <summary>
     /// SL_STATUS_FAIL if the index is out of range or the device is an end device, and SL_STATUS_OK otherwise.
     /// </summary>

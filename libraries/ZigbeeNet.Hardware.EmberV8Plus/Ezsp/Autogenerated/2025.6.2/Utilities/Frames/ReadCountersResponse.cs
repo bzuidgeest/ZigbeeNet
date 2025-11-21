@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class ReadCountersResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00F1; } }
+
     /// <summary>
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>

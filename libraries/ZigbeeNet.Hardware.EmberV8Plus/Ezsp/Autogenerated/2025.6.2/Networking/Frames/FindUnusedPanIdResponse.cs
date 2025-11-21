@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class FindUnusedPanIdResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00D3; } }
+
     /// <summary>
     /// The error condition that occurred during the scan. Value will be SL_STATUS_OK if there are no errors.
     /// </summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Transport;
 
@@ -30,19 +30,19 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         }
 
         /**
-         * Configuration utility. Takes a {@link Map} of {@link EzspConfigId} to {@link Integer} and will work through
+         * Configuration utility. Takes a {@link Map} of {@link ZigbeeEzspConfigId} to {@link Integer} and will work through
          * setting them before returning.
          *
-         * @param configuration {@link Map} of {@link EzspConfigId} to {@link Integer} with configuration to set
+         * @param configuration {@link Map} of {@link ZigbeeEzspConfigId} to {@link Integer} with configuration to set
          * @return true if all configuration were set successfully
          */
-        public bool SetConfiguration(Dictionary<EzspConfigId, int> configuration) 
+        public bool SetConfiguration(Dictionary<ZigbeeEzspConfigId, ushort> configuration) 
         {
             bool success = true;
 
             foreach (var config in configuration) 
             {
-                if (_ncp.SetConfiguration(config.Key, config.Value) != EzspStatus.EZSP_SUCCESS) 
+                if (_ncp.SetConfigurationValue(config.Key, config.Value) != Status.SL_STATUS_OK) 
                 {
                     success = false;
                 }
@@ -51,39 +51,39 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         }
 
         /**
-         * Configuration utility. Takes a {@link Set} of {@link EzspConfigId} and will work through
+         * Configuration utility. Takes a {@link Set} of {@link ZigbeeEzspConfigId} and will work through
          * requesting them before returning.
          *
-         * @param configuration {@link Set} of {@link EzspConfigId} to request
-         * @return map of configuration data mapping {@link EzspConfigId} to {@link Integer}. Value will be null if error
+         * @param configuration {@link Set} of {@link ZigbeeEzspConfigId} to request
+         * @return map of configuration data mapping {@link ZigbeeEzspConfigId} to {@link Integer}. Value will be null if error
          *         occurred.
          */
-        public Dictionary<EzspConfigId, int?> GetConfiguration(IEnumerable<EzspConfigId> configuration) 
+        public Dictionary<ZigbeeEzspConfigId, int?> GetConfiguration(IEnumerable<ZigbeeEzspConfigId> configuration) 
         {
-            Dictionary<EzspConfigId, int?> response = new Dictionary<EzspConfigId, int?>();
+            Dictionary<ZigbeeEzspConfigId, int?> response = new Dictionary<ZigbeeEzspConfigId, int?>();
 
-            foreach (EzspConfigId configId in configuration) 
+            foreach (ZigbeeEzspConfigId configId in configuration) 
             {
-                response.Add(configId, _ncp.GetConfiguration(configId));
+                response.Add(configId, _ncp.GetConfigurationValue(configId).Value);
             }
 
             return response;
         }
 
         /**
-         * Configuration utility. Takes a {@link Map} of {@link EzspConfigId} to {@link EzspDecisionId} and will work
+         * Configuration utility. Takes a {@link Map} of {@link ZigbeeEzspConfigId} to {@link ZigbeeEzspDecisionId} and will work
          * through setting them before returning.
          *
-         * @param policies {@link Map} of {@link EzspPolicyId} to {@link EzspDecisionId} with configuration to set
+         * @param policies {@link Map} of {@link ZigbeeEzspPolicyId} to {@link ZigbeeEzspDecisionId} with configuration to set
          * @return true if all policies were set successfully
          */
-        public bool SetPolicy(Dictionary<EzspPolicyId, EzspDecisionId> policies) 
+        public bool SetPolicy(Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> policies) 
         {
             bool success = true;
 
             foreach (var policy in policies) 
             {
-                if (_ncp.SetPolicy(policy.Key, policy.Value) != EzspStatus.EZSP_SUCCESS) 
+                if (_ncp.SetPolicy(policy.Key, policy.Value) != Status.SL_STATUS_OK) 
                 {
                     success = false;
                 }
@@ -92,20 +92,20 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         }
 
         /**
-         * Configuration utility. Takes a {@link Set} of {@link EzspPolicyId} and will work through
+         * Configuration utility. Takes a {@link Set} of {@link ZigbeeEzspPolicyId} and will work through
          * requesting them before returning.
          *
-         * @param policies {@link Set} of {@link EzspPolicyId} to request
-         * @return map of configuration data mapping {@link EzspPolicyId} to {@link EzspDecisionId}. Value will be null if
+         * @param policies {@link Set} of {@link ZigbeeEzspPolicyId} to request
+         * @return map of configuration data mapping {@link ZigbeeEzspPolicyId} to {@link ZigbeeEzspDecisionId}. Value will be null if
          *         error occurred.
          */
-        public Dictionary<EzspPolicyId, EzspDecisionId> GetPolicy(IEnumerable<EzspPolicyId> policies) 
+        public Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> GetPolicy(IEnumerable<ZigbeeEzspPolicyId> policies) 
         {
-            Dictionary<EzspPolicyId, EzspDecisionId> response = new Dictionary<EzspPolicyId, EzspDecisionId>();
+            Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> response = new Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId>();
 
-            foreach (EzspPolicyId policyId in policies) 
+            foreach (ZigbeeEzspPolicyId policyId in policies) 
             {
-                response.Add(policyId, _ncp.GetPolicy(policyId));
+                response.Add(policyId, _ncp.GetPolicy(policyId).DecisionId);
             }
 
             return response;

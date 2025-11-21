@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0061; } }
+
     /// <summary>
     /// SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
     /// </summary>

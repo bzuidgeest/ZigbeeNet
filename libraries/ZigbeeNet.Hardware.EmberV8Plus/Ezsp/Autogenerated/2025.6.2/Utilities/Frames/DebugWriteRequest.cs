@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// </summary>
 public class DebugWriteRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0012; } }
+
     /// <summary>
     /// true if the message should be interpreted as binary data, false if the message should be interpreted as ASCII text.
     /// </summary>

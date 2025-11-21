@@ -9,13 +9,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
     /// Single EZSP transaction response handling. This matches a {@link EzspFrameRequest} with a single
     /// {@link EzspFrameResponse}. {@link EzspFrame#frameId} must also match.
     /// </summary>
-    public class EzspSingleResponseTransaction : IEzspTransaction
+    public class SingleResponseTransaction : ITransaction
     {
         private EzspFrameRequestV8Plus _request;
         private EzspFrameResponseV8Plus _response;
         private Type _requiredResponse;
 
-        public EzspSingleResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse) 
+        public SingleResponseTransaction(EzspFrameRequestV8Plus request, Type requiredResponse) 
         {
             this._request = request;
             this._requiredResponse = requiredResponse;

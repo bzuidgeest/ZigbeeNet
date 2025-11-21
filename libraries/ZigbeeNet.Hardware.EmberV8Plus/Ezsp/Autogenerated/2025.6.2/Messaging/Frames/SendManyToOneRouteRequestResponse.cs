@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// </summary>
 public class SendManyToOneRouteRequestResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0041; } }
+
     /// <summary>
     /// SL_STATUS_OK if the route request was successfully submitted to the transmit queue, and SL_STATUS_FAIL otherwise.
     /// </summary>

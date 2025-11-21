@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
 /// </summary>
 public class TrustCenterPostJoinHandlerRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0024; } }
+
 }
 
 #endif

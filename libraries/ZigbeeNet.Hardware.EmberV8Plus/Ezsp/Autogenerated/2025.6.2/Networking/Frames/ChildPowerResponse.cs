@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class ChildPowerResponse : EzspFrameResponseV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0134; } }
+
     /// <summary>
     /// The power of the child or maximum radio power, which is the power value provided by the user while forming/joining a network if there isn&apos;t a child at the childIndex specified
     /// </summary>

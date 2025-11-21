@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// </summary>
 public class LaunchStandaloneBootloaderRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x008f; } }
+
     /// <summary>
     /// If true, launch the standalone bootloader. If false, do nothing.
     /// </summary>

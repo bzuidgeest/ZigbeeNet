@@ -24,6 +24,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// </summary>
 public class PermitJoiningRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x0022; } }
+
     /// <summary>
     /// A value of 0x00 disables joining. A value of 0xFF enables joining. Any other value enables joining for that number of seconds.
     /// </summary>

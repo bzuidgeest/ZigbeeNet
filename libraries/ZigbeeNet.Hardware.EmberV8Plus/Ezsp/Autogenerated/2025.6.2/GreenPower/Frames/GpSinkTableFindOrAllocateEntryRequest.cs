@@ -25,6 +25,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
 /// </summary>
 public class GpSinkTableFindOrAllocateEntryRequest : EzspFrameRequestV8Plus
 {
+	/// <summary>
+	/// The frameId of the frame
+]	/// </summary>
+	public static ushort FrameId { get { return 0x00E1; } }
+
     /// <summary>
     /// An sl_zigbee_gp_address_t struct containing a copy of the gpd address to be found.
     /// </summary>
