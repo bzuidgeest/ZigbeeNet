@@ -26,7 +26,7 @@ public class SetIncomingTcLinkKeyFrameCounterResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0128; } }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)

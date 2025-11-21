@@ -793,7 +793,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             }
         }
 
-        public Task<EzspFrameV8Plus> SendEzspRequestAsync(ITransaction ezspTransaction) 
+        public Task<EzspFrameV8Plus> SendRequestAsync(ITransaction ezspTransaction) 
         {
             if (_parserCancellationToken.IsCancellationRequested) 
             {
@@ -804,13 +804,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
             return new TransactionWaiter(ezspTransaction, this).Wait();
         }
 
-        public ITransaction SendEzspTransaction(ITransaction ezspTransaction) 
+        public ITransaction SendTransaction(ITransaction ezspTransaction) 
         {
             try
             {
                 _logger.LogDebug("TX EZSP: {Request}", ezspTransaction.GetRequest());
 
-                Task transactionTask = SendEzspRequestAsync(ezspTransaction);
+                Task transactionTask = SendRequestAsync(ezspTransaction);
                 if (transactionTask == null) 
                 {
                     _logger.LogDebug("ASH: Error sending EZSP transaction task is null");

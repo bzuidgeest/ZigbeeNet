@@ -26,7 +26,7 @@ public class ClearTemporaryDataMaybeStoreLinkKey283k1Response : EzspFrameRespons
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00EE; } }
 
 	public Status Status { get; set; }

@@ -26,7 +26,7 @@ public class ClearTemporaryDataMaybeStoreLinkKey283k1Request : EzspFrameRequestV
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00EE; } }
 
     /// <summary>

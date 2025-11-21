@@ -26,7 +26,7 @@ public class AddChildRequest : EzspFrameRequestV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0138; } }
 
     /// <summary>

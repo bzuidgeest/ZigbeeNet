@@ -26,7 +26,7 @@ public class GenerateCbkeKeys283k1HandlerResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00E9; } }
 
     /// <summary>

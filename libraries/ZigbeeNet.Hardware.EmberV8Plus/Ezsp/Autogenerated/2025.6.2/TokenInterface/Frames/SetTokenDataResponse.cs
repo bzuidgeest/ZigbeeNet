@@ -27,7 +27,7 @@ public class SetTokenDataResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0103; } }
 
     /// <summary>

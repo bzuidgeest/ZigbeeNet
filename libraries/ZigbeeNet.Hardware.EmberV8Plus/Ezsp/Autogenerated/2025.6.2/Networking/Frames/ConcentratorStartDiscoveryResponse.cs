@@ -26,7 +26,7 @@ public class ConcentratorStartDiscoveryResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x014F; } }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)

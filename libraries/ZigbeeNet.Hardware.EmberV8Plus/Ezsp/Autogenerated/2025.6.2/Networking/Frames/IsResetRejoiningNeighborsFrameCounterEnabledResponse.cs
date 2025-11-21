@@ -26,7 +26,7 @@ public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameRes
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0125; } }
 
     /// <summary>

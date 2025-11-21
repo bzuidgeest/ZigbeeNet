@@ -26,7 +26,7 @@ public class RescheduleLinkStatusMsgResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x011B; } }
 
 	public Status Status { get; set; }

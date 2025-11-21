@@ -92,7 +92,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 sb.AppendLine("\t/// <summary>");
                 sb.AppendLine($"\t/// The frameId of the frame");
-                sb.AppendLine("]\t/// </summary>");
+                sb.AppendLine("\t/// </summary>");
                 sb.AppendLine($"\tpublic static ushort FrameId {{ get {{ return {frameDefinition.Value}; }} }}");
                 sb.AppendLine("");
 
@@ -226,7 +226,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
                 sb.AppendLine("\t/// <summary>");
                 sb.AppendLine($"\t/// The frameId of the frame");
-                sb.AppendLine("]\t/// </summary>");
+                sb.AppendLine("\t/// </summary>");
                 sb.AppendLine($"\tpublic static ushort FrameId {{ get {{ return {frameDefinition.Value}; }} }}");
                 sb.AppendLine("");
 

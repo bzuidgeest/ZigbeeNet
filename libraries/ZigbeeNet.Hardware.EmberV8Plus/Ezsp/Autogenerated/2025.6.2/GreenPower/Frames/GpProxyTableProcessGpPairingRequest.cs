@@ -27,7 +27,7 @@ public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00C9; } }
 
     /// <summary>

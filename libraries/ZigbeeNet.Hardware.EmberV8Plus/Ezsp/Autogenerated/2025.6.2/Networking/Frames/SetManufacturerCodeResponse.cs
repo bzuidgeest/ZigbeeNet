@@ -26,7 +26,7 @@ public class SetManufacturerCodeResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0015; } }
 
 	public Status Status { get; set; }

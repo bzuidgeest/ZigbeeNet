@@ -26,7 +26,7 @@ public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0061; } }
 
     /// <summary>

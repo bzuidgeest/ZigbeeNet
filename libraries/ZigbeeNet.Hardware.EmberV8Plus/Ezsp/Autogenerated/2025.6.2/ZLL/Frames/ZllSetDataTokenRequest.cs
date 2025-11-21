@@ -26,7 +26,7 @@ public class ZllSetDataTokenRequest : EzspFrameRequestV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00BD; } }
 
     /// <summary>

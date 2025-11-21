@@ -27,7 +27,7 @@ public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Pl
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x0118; } }
 
     /// <summary>

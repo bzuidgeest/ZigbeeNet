@@ -22,7 +22,7 @@ public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x013E; } }
 
 	public uint ParentIncomingNwkFrameCounter { get; set; }

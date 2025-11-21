@@ -626,11 +626,11 @@ namespace ZigBeeNet.Hardware.Ember
             zigbeeApsFrame.sourceEndpoint = apsFrame.SourceEndpoint;
             zigbeeApsFrame.destinationEndpoint = apsFrame.DestinationEndpoint;
             zigbeeApsFrame.sequence = apsFrame.ApsCounter;
-            zigbeeApsFrame.options = ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_RETRY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ROUTE_DISCOVERY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ADDRESS_DISCOVERY);
+            zigbeeApsFrame.options = ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_RETRY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ROUTE_DISCOVERY | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ADDRESS_DISCOVERY;
 
             if (apsFrame.SecurityEnabled) 
             {
-                zigbeeApsFrame.options = zigbeeApsFrame.options | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENCRYPTION);
+                zigbeeApsFrame.options = zigbeeApsFrame.options | ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENCRYPTION;
             }
 
             if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Device && !ZigBeeBroadcastDestinationHelper.IsBroadcast(apsFrame.DestinationAddress)) 
@@ -671,7 +671,7 @@ namespace ZigBeeNet.Hardware.Ember
                 emberBroadcast.Radius = (byte)apsFrame.Radius;
                 emberBroadcast.MessageContents = apsFrame.Payload;
 
-                transaction = new SingleResponseTransaction(emberBroadcast, typeof(SendBroadcastResponse);
+                transaction = new SingleResponseTransaction(emberBroadcast, typeof(SendBroadcastResponse));
             } 
             else if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Group) 
             {
@@ -698,7 +698,7 @@ namespace ZigBeeNet.Hardware.Ember
             {
                 try
                 {
-                    _frameHandler.SendEzspTransaction(transaction);
+                    _frameHandler.SendTransaction(transaction);
 
                     Status? status;
                     if (transaction.GetResponse() is SendUnicastResponse)
@@ -897,7 +897,7 @@ namespace ZigBeeNet.Hardware.Ember
                         return;
                 }
 
-                _zigbeeTransportReceive.NodeStatusUpdate(status, (ushort)joinHandler.GetNewNodeId(), joinHandler.GetNewNodeEui64());
+                _zigbeeTransportReceive.NodeStatusUpdate(status, (ushort)joinHandler.NewNodeId, new IeeeAddress(joinHandler.NewNodeEui64));
                 return;
             }
 
@@ -1286,7 +1286,7 @@ namespace ZigBeeNet.Hardware.Ember
                     break;
             }
 
-            ITransaction concentratorTransaction = _frameHandler.SendEzspTransaction(new SingleResponseTransaction(concentratorRequest, typeof(SetConcentratorResponse)));
+            ITransaction concentratorTransaction = _frameHandler.SendTransaction(new SingleResponseTransaction(concentratorRequest, typeof(SetConcentratorResponse)));
             SetConcentratorResponse concentratorResponse = (SetConcentratorResponse) concentratorTransaction.GetResponse();
             _logger.LogDebug(concentratorResponse.ToString());
 

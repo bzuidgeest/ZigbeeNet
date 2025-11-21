@@ -26,7 +26,7 @@ public class BindingIsActiveRequest : EzspFrameRequestV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x002E; } }
 
     /// <summary>

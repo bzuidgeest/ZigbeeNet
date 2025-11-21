@@ -161,7 +161,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         {
             // Check if the network is initialised
             NetworkStateRequest networkStateRequest = new NetworkStateRequest();
-            ITransaction networkStateTransaction = _protocolHandler.SendEzspTransaction(new SingleResponseTransaction(networkStateRequest, typeof(NetworkStateResponse)));
+            ITransaction networkStateTransaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(networkStateRequest, typeof(NetworkStateResponse)));
             NetworkStateResponse networkStateResponse = (NetworkStateResponse) networkStateTransaction.GetResponse();
             _logger.LogDebug(networkStateResponse.ToString());
             _logger.LogDebug("EZSP networkStateResponse {Status}", networkStateResponse.GetStatus());
@@ -207,7 +207,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         {
             GetNetworkParametersRequest networkParms = new GetNetworkParametersRequest();
             SingleResponseTransaction transaction = new SingleResponseTransaction(networkParms, typeof(GetNetworkParametersResponse));
-            _protocolHandler.SendEzspTransaction(transaction);
+            _protocolHandler.SendTransaction(transaction);
             GetNetworkParametersResponse getNetworkParametersResponse = (GetNetworkParametersResponse) transaction.GetResponse();
             _logger.LogDebug(getNetworkParametersResponse.ToString());
             if (getNetworkParametersResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
@@ -256,7 +256,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 
             securityState.SetState(state);
             SingleResponseTransaction transaction = new SingleResponseTransaction(securityState, typeof(SetInitialSecurityStateResponse));
-            _protocolHandler.SendEzspTransaction(transaction);
+            _protocolHandler.SendTransaction(transaction);
             SetInitialSecurityStateResponse securityStateResponse = (SetInitialSecurityStateResponse) transaction.GetResponse();
             _logger.LogDebug(securityStateResponse.ToString());
             if (securityStateResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
@@ -297,7 +297,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
             FormNetworkRequest formNetwork = new FormNetworkRequest();
             formNetwork.SetParameters(networkParameters);
             SingleResponseTransaction transaction = new SingleResponseTransaction(formNetwork, typeof(FormNetworkResponse));
-            _protocolHandler.SendEzspTransaction(transaction);
+            _protocolHandler.SendTransaction(transaction);
             FormNetworkResponse formNetworkResponse = (FormNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(formNetworkResponse.ToString());
             if (formNetworkResponse.GetStatus() != EmberStatus.EMBER_SUCCESS) 
@@ -323,7 +323,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
             joinNetwork.NodeType = ZigbeeNodeType.SL_ZIGBEE_ROUTER;
             joinNetwork.Parameters =networkParameters;
             SingleResponseTransaction transaction = new SingleResponseTransaction(joinNetwork, typeof(JoinNetworkResponse));
-            _protocolHandler.SendEzspTransaction(transaction);
+            _protocolHandler.SendTransaction(transaction);
 
             JoinNetworkResponse joinNetworkResponse = (JoinNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(joinNetworkResponse.ToString());
@@ -348,7 +348,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
             rejoinNetwork.SetHaveCurrentNetworkKey(haveCurrentNetworkKey);
             rejoinNetwork.SetChannelMask(channelMask.ChannelMask);
             SingleResponseTransaction transaction = new SingleResponseTransaction(rejoinNetwork, typeof(FindAndRejoinNetworkResponse));
-            _protocolHandler.SendEzspTransaction(transaction);
+            _protocolHandler.SendTransaction(transaction);
 
             FindAndRejoinNetworkResponse rejoinNetworkResponse = (FindAndRejoinNetworkResponse) transaction.GetResponse();
             _logger.LogDebug(rejoinNetworkResponse.ToString());

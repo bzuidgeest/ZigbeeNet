@@ -60,7 +60,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param ezspTransaction Request {@link EzspTransaction}
          * @return response {@link Future} {@link EzspFrame}
          */
-        Task<EzspFrameV8Plus> SendEzspRequestAsync(ITransaction ezspTransaction);
+        Task<EzspFrameV8Plus> SendRequestAsync(ITransaction ezspTransaction);
 
         /**
          * Sends an EZSP request to the NCP and waits for the response. The response is correlated with the request and the
@@ -69,7 +69,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
          * @param ezspTransaction Request {@link EzspTransaction}
          * @return response {@link EzspTransaction}
          */
-        ITransaction SendEzspTransaction(ITransaction ezspTransaction);
+        ITransaction SendTransaction(ITransaction ezspTransaction);
 
         /**
          * Wait for the requested {@link EzspFrameResponse} to be received

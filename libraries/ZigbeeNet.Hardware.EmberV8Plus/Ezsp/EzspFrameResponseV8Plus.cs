@@ -59,7 +59,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         protected int ParseHeader(ReadOnlySpan<byte> frameBytes)
         {
             
-            _sequenceNumber = frameBytes[0];
+            SequenceNumber = frameBytes[0];
             _frameControl = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
             _frameId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
 

@@ -26,7 +26,7 @@ public class CalculateSmacsResponse : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x009F; } }
 
 	public Status Status { get; set; }

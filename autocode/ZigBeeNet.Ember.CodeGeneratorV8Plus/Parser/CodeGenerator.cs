@@ -109,15 +109,15 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
             // Create transaction
             statements.Add(LocalDeclarationStatement(
-                VariableDeclaration(ParseTypeName("IEzspTransaction"))
+                VariableDeclaration(ParseTypeName("ITransaction"))
                     .AddVariables(VariableDeclarator(Identifier("transaction"))
                         .WithInitializer(EqualsValueClause(
                             InvocationExpression(
                                 MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                     IdentifierName("_protocolHandler"),
-                                    IdentifierName("SendEzspTransaction")))
+                                    IdentifierName("SendTransaction")))
                             .AddArgumentListArguments(
-                                Argument(ObjectCreationExpression(ParseTypeName("EzspSingleResponseTransaction"))
+                                Argument(ObjectCreationExpression(ParseTypeName("SingleResponseTransaction"))
                                     .AddArgumentListArguments(
                                         Argument(IdentifierName("request")),
                                         Argument(TypeOfExpression(ParseTypeName($"{sanitizedCommandName}Response")))))))))));

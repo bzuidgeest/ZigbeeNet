@@ -57,7 +57,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             VersionRequest request = new VersionRequest();
             request.DesiredProtocolVersion = desiredProtocolVersion;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(VersionResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(VersionResponse)));
             VersionResponse response = (VersionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.ProtocolVersion, response.StackType, response.StackVersion);
@@ -75,7 +75,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetConfigurationValueRequest request = new GetConfigurationValueRequest();
             request.ConfigId = configId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetConfigurationValueResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetConfigurationValueResponse)));
             GetConfigurationValueResponse response = (GetConfigurationValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -92,7 +92,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetConfigurationValueRequest request = new SetConfigurationValueRequest();
             request.ConfigId = configId;
             request.Value = value;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetConfigurationValueResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetConfigurationValueResponse)));
             SetConfigurationValueResponse response = (SetConfigurationValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -120,7 +120,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.AttributeId = attributeId;
             request.Mask = mask;
             request.ManufacturerCode = manufacturerCode;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReadAttributeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadAttributeResponse)));
             ReadAttributeResponse response = (ReadAttributeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.AfStatus, response.DataType, response.ReadLength, response.DataPtr);
@@ -153,7 +153,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.DataType = dataType;
             request.DataLength = dataLength;
             request.Data = data;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(WriteAttributeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(WriteAttributeResponse)));
             WriteAttributeResponse response = (WriteAttributeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.AfStatus;
@@ -182,7 +182,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.OutputClusterCount = outputClusterCount;
             request.InputClusterList = inputClusterList;
             request.OutputClusterList = outputClusterList;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddEndpointResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddEndpointResponse)));
             AddEndpointResponse response = (AddEndpointResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -199,7 +199,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetPolicyRequest request = new SetPolicyRequest();
             request.PolicyId = policyId;
             request.DecisionId = decisionId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPolicyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPolicyResponse)));
             SetPolicyResponse response = (SetPolicyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -217,7 +217,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetPolicyRequest request = new GetPolicyRequest();
             request.PolicyId = policyId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetPolicyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPolicyResponse)));
             GetPolicyResponse response = (GetPolicyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.DecisionId);
@@ -232,7 +232,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SendPanIdUpdateRequest request = new SendPanIdUpdateRequest();
             request.NewPan = newPan;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendPanIdUpdateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendPanIdUpdateResponse)));
             SendPanIdUpdateResponse response = (SendPanIdUpdateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -251,7 +251,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetValueRequest request = new GetValueRequest();
             request.ValueId = valueId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetValueResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetValueResponse)));
             GetValueResponse response = (GetValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ValueLength, response.Value);
@@ -272,7 +272,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             GetExtendedValueRequest request = new GetExtendedValueRequest();
             request.ValueId = valueId;
             request.Characteristics = characteristics;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetExtendedValueResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedValueResponse)));
             GetExtendedValueResponse response = (GetExtendedValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ValueLength, response.Value);
@@ -291,7 +291,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ValueId = valueId;
             request.ValueLength = valueLength;
             request.Value = value;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetValueResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetValueResponse)));
             SetValueResponse response = (SetValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -308,7 +308,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetPassiveAckConfigRequest request = new SetPassiveAckConfigRequest();
             request.Config = config;
             request.MinAcksNeeded = minAcksNeeded;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPassiveAckConfigResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPassiveAckConfigResponse)));
             SetPassiveAckConfigResponse response = (SetPassiveAckConfigResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -323,7 +323,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetPendingNetworkUpdatePanIdRequest request = new SetPendingNetworkUpdatePanIdRequest();
             request.PanId = panId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPendingNetworkUpdatePanIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPendingNetworkUpdatePanIdResponse)));
             SetPendingNetworkUpdatePanIdResponse response = (SetPendingNetworkUpdatePanIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -338,7 +338,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetEndpointRequest request = new GetEndpointRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointResponse)));
             GetEndpointResponse response = (GetEndpointResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Endpoint;
@@ -351,7 +351,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetEndpointCount()
         {
             GetEndpointCountRequest request = new GetEndpointCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointCountResponse)));
             GetEndpointCountResponse response = (GetEndpointCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Count;
@@ -366,7 +366,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetEndpointDescriptionRequest request = new GetEndpointDescriptionRequest();
             request.Endpoint = endpoint;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointDescriptionResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointDescriptionResponse)));
             GetEndpointDescriptionResponse response = (GetEndpointDescriptionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Result;
@@ -385,7 +385,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Endpoint = endpoint;
             request.ListId = listId;
             request.ListIndex = listIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEndpointClusterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointClusterResponse)));
             GetEndpointClusterResponse response = (GetEndpointClusterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.EndpointCluster;
@@ -398,7 +398,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public NopResponse Nop()
         {
             NopRequest request = new NopRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NopResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NopResponse)));
             NopResponse response = (NopResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -418,7 +418,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             EchoRequest request = new EchoRequest();
             request.DataLength = dataLength;
             request.Data = data;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EchoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EchoResponse)));
             EchoResponse response = (EchoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.EchoLength, response.Echo);
@@ -431,7 +431,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeEzspStatus InvalidCommand()
         {
             InvalidCommandRequest request = new InvalidCommandRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(InvalidCommandResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(InvalidCommandResponse)));
             InvalidCommandResponse response = (InvalidCommandResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Reason;
@@ -444,7 +444,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public CallbackResponse Callback()
         {
             CallbackRequest request = new CallbackRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CallbackResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CallbackResponse)));
             CallbackResponse response = (CallbackResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -457,7 +457,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public NoCallbacksResponse NoCallbacks()
         {
             NoCallbacksRequest request = new NoCallbacksRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NoCallbacksResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NoCallbacksResponse)));
             NoCallbacksResponse response = (NoCallbacksResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -474,7 +474,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetTokenRequest request = new SetTokenRequest();
             request.TokenId = tokenId;
             request.TokenData = tokenData;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTokenResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTokenResponse)));
             SetTokenResponse response = (SetTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -492,7 +492,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetTokenRequest request = new GetTokenRequest();
             request.TokenId = tokenId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenResponse)));
             GetTokenResponse response = (GetTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.TokenData);
@@ -510,7 +510,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetMfgTokenRequest request = new GetMfgTokenRequest();
             request.TokenId = tokenId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetMfgTokenResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMfgTokenResponse)));
             GetMfgTokenResponse response = (GetMfgTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.TokenDataLength, response.TokenData);
@@ -529,7 +529,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.TokenId = tokenId;
             request.TokenDataLength = tokenDataLength;
             request.TokenData = tokenData;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMfgTokenResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMfgTokenResponse)));
             SetMfgTokenResponse response = (SetMfgTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -542,7 +542,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort StackTokenChangedHandler()
         {
             StackTokenChangedHandlerRequest request = new StackTokenChangedHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StackTokenChangedHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackTokenChangedHandlerResponse)));
             StackTokenChangedHandlerResponse response = (StackTokenChangedHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.TokenAddress;
@@ -558,7 +558,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ushort Value) GetRandomNumber()
         {
             GetRandomNumberRequest request = new GetRandomNumberRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRandomNumberResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRandomNumberResponse)));
             GetRandomNumberResponse response = (GetRandomNumberResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -579,7 +579,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Time = time;
             request.Units = units;
             request.Repeat = repeat;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTimerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTimerResponse)));
             SetTimerResponse response = (SetTimerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -598,7 +598,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetTimerRequest request = new GetTimerRequest();
             request.TimerId = timerId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTimerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTimerResponse)));
             GetTimerResponse response = (GetTimerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Time, response.Units, response.Repeat);
@@ -611,7 +611,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte TimerHandler()
         {
             TimerHandlerRequest request = new TimerHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(TimerHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TimerHandlerResponse)));
             TimerHandlerResponse response = (TimerHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.TimerId;
@@ -630,7 +630,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.BinaryMessage = binaryMessage;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DebugWriteResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DebugWriteResponse)));
             DebugWriteResponse response = (DebugWriteResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -643,7 +643,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort[] ReadAndClearCounters()
         {
             ReadAndClearCountersRequest request = new ReadAndClearCountersRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReadAndClearCountersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadAndClearCountersResponse)));
             ReadAndClearCountersResponse response = (ReadAndClearCountersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Values;
@@ -656,7 +656,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort[] ReadCounters()
         {
             ReadCountersRequest request = new ReadCountersRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReadCountersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadCountersResponse)));
             ReadCountersResponse response = (ReadCountersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Values;
@@ -669,7 +669,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeCounterType CounterRolloverHandler()
         {
             CounterRolloverHandlerRequest request = new CounterRolloverHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CounterRolloverHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRolloverHandlerResponse)));
             CounterRolloverHandlerResponse response = (CounterRolloverHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Type;
@@ -685,7 +685,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte NewRxChannel, byte OldRxChannel) MuxInvalidRxHandler()
         {
             MuxInvalidRxHandlerRequest request = new MuxInvalidRxHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MuxInvalidRxHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MuxInvalidRxHandlerResponse)));
             MuxInvalidRxHandlerResponse response = (MuxInvalidRxHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.NewRxChannel, response.OldRxChannel);
@@ -700,7 +700,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             DelayTestRequest request = new DelayTestRequest();
             request.Delay = delay;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DelayTestResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DelayTestResponse)));
             DelayTestResponse response = (DelayTestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -715,7 +715,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetLibraryStatusRequest request = new GetLibraryStatusRequest();
             request.LibraryId = libraryId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetLibraryStatusResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetLibraryStatusResponse)));
             GetLibraryStatusResponse response = (GetLibraryStatusResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -732,7 +732,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ushort ManufacturerId, ushort VersionNumber) GetXncpInfo()
         {
             GetXncpInfoRequest request = new GetXncpInfoRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetXncpInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetXncpInfoResponse)));
             GetXncpInfoResponse response = (GetXncpInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ManufacturerId, response.VersionNumber);
@@ -753,7 +753,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             CustomFrameRequest request = new CustomFrameRequest();
             request.PayloadLength = payloadLength;
             request.Payload = payload;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CustomFrameResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameResponse)));
             CustomFrameResponse response = (CustomFrameResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ReplyLength, response.Reply);
@@ -769,7 +769,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte PayloadLength, byte[] Payload) CustomFrameHandler()
         {
             CustomFrameHandlerRequest request = new CustomFrameHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CustomFrameHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameHandlerResponse)));
             CustomFrameHandlerResponse response = (CustomFrameHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.PayloadLength, response.Payload);
@@ -782,7 +782,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte[] GetEui64()
         {
             GetEui64Request request = new GetEui64Request();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetEui64Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEui64Response)));
             GetEui64Response response = (GetEui64Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Eui64;
@@ -795,7 +795,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort GetNodeId()
         {
             GetNodeIdRequest request = new GetNodeIdRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNodeIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNodeIdResponse)));
             GetNodeIdResponse response = (GetNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.NodeId;
@@ -808,7 +808,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetPhyInterfaceCount()
         {
             GetPhyInterfaceCountRequest request = new GetPhyInterfaceCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetPhyInterfaceCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPhyInterfaceCountResponse)));
             GetPhyInterfaceCountResponse response = (GetPhyInterfaceCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.InterfaceCount;
@@ -821,7 +821,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeEntropySource GetTrueRandomEntropySource()
         {
             GetTrueRandomEntropySourceRequest request = new GetTrueRandomEntropySourceRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTrueRandomEntropySourceResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTrueRandomEntropySourceResponse)));
             GetTrueRandomEntropySourceResponse response = (GetTrueRandomEntropySourceResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.EntropySource;
@@ -836,7 +836,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetupDelayedJoinRequest request = new SetupDelayedJoinRequest();
             request.NetworkKeyTimeoutS = networkKeyTimeoutS;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetupDelayedJoinResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetupDelayedJoinResponse)));
             SetupDelayedJoinResponse response = (SetupDelayedJoinResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -849,7 +849,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public _802154RadioPriorities RadioGetSchedulerPriorities()
         {
             RadioGetSchedulerPrioritiesRequest request = new RadioGetSchedulerPrioritiesRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioGetSchedulerPrioritiesResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioGetSchedulerPrioritiesResponse)));
             RadioGetSchedulerPrioritiesResponse response = (RadioGetSchedulerPrioritiesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Priorities;
@@ -864,7 +864,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             RadioSetSchedulerPrioritiesRequest request = new RadioSetSchedulerPrioritiesRequest();
             request.Priorities = priorities;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioSetSchedulerPrioritiesResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioSetSchedulerPrioritiesResponse)));
             RadioSetSchedulerPrioritiesResponse response = (RadioSetSchedulerPrioritiesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -877,7 +877,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public uint[] RadioGetSchedulerSliptime()
         {
             RadioGetSchedulerSliptimeRequest request = new RadioGetSchedulerSliptimeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioGetSchedulerSliptimeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioGetSchedulerSliptimeResponse)));
             RadioGetSchedulerSliptimeResponse response = (RadioGetSchedulerSliptimeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.SlipTime;
@@ -892,7 +892,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             RadioSetSchedulerSliptimeRequest request = new RadioSetSchedulerSliptimeRequest();
             request.SlipTime = slipTime;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RadioSetSchedulerSliptimeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioSetSchedulerSliptimeResponse)));
             RadioSetSchedulerSliptimeResponse response = (RadioSetSchedulerSliptimeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -907,7 +907,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             CounterRequiresPhyIndexRequest request = new CounterRequiresPhyIndexRequest();
             request.Counter = counter;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CounterRequiresPhyIndexResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRequiresPhyIndexResponse)));
             CounterRequiresPhyIndexResponse response = (CounterRequiresPhyIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Requires;
@@ -922,7 +922,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             CounterRequiresDestinationNodeIdRequest request = new CounterRequiresDestinationNodeIdRequest();
             request.Counter = counter;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CounterRequiresDestinationNodeIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRequiresDestinationNodeIdResponse)));
             CounterRequiresDestinationNodeIdResponse response = (CounterRequiresDestinationNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Requires;
@@ -937,7 +937,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetManufacturerCodeRequest request = new SetManufacturerCodeRequest();
             request.Code = code;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetManufacturerCodeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetManufacturerCodeResponse)));
             SetManufacturerCodeResponse response = (SetManufacturerCodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -950,7 +950,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort GetManufacturerCode()
         {
             GetManufacturerCodeRequest request = new GetManufacturerCodeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetManufacturerCodeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetManufacturerCodeResponse)));
             GetManufacturerCodeResponse response = (GetManufacturerCodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Code;
@@ -965,7 +965,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetPowerDescriptorRequest request = new SetPowerDescriptorRequest();
             request.Descriptor = descriptor;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPowerDescriptorResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPowerDescriptorResponse)));
             SetPowerDescriptorResponse response = (SetPowerDescriptorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -980,7 +980,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             NetworkInitRequest request = new NetworkInitRequest();
             request.NetworkInitStruct = networkInitStruct;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkInitResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkInitResponse)));
             NetworkInitResponse response = (NetworkInitResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -993,7 +993,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeNetworkStatus NetworkState()
         {
             NetworkStateRequest request = new NetworkStateRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkStateResponse)));
             NetworkStateResponse response = (NetworkStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1006,7 +1006,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status StackStatusHandler()
         {
             StackStatusHandlerRequest request = new StackStatusHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StackStatusHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackStatusHandlerResponse)));
             StackStatusHandlerResponse response = (StackStatusHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1025,7 +1025,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ScanType = scanType;
             request.ChannelMask = channelMask;
             request.Duration = duration;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StartScanResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StartScanResponse)));
             StartScanResponse response = (StartScanResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1041,7 +1041,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte Channel, sbyte MaxRssiValue) EnergyScanResultHandler()
         {
             EnergyScanResultHandlerRequest request = new EnergyScanResultHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EnergyScanResultHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EnergyScanResultHandlerResponse)));
             EnergyScanResultHandlerResponse response = (EnergyScanResultHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Channel, response.MaxRssiValue);
@@ -1058,7 +1058,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeZigbeeNetwork NetworkFound, byte LastHopLqi, sbyte LastHopRssi) NetworkFoundHandler()
         {
             NetworkFoundHandlerRequest request = new NetworkFoundHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NetworkFoundHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkFoundHandlerResponse)));
             NetworkFoundHandlerResponse response = (NetworkFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.NetworkFound, response.LastHopLqi, response.LastHopRssi);
@@ -1074,7 +1074,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte Channel, Status Status) ScanCompleteHandler()
         {
             ScanCompleteHandlerRequest request = new ScanCompleteHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ScanCompleteHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ScanCompleteHandlerResponse)));
             ScanCompleteHandlerResponse response = (ScanCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Channel, response.Status);
@@ -1090,7 +1090,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort PanId, byte Channel) UnusedPanIdFoundHandler()
         {
             UnusedPanIdFoundHandlerRequest request = new UnusedPanIdFoundHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UnusedPanIdFoundHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnusedPanIdFoundHandlerResponse)));
             UnusedPanIdFoundHandlerResponse response = (UnusedPanIdFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.PanId, response.Channel);
@@ -1107,7 +1107,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             FindUnusedPanIdRequest request = new FindUnusedPanIdRequest();
             request.ChannelMask = channelMask;
             request.Duration = duration;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindUnusedPanIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindUnusedPanIdResponse)));
             FindUnusedPanIdResponse response = (FindUnusedPanIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1120,7 +1120,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status StopScan()
         {
             StopScanRequest request = new StopScanRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StopScanResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StopScanResponse)));
             StopScanResponse response = (StopScanResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1135,7 +1135,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             FormNetworkRequest request = new FormNetworkRequest();
             request.Parameters = parameters;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FormNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FormNetworkResponse)));
             FormNetworkResponse response = (FormNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1152,7 +1152,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             JoinNetworkRequest request = new JoinNetworkRequest();
             request.NodeType = nodeType;
             request.Parameters = parameters;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(JoinNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(JoinNetworkResponse)));
             JoinNetworkResponse response = (JoinNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1173,7 +1173,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Beacon = beacon;
             request.RadioTxPower = radioTxPower;
             request.ClearBeaconsAfterNetworkUp = clearBeaconsAfterNetworkUp;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(JoinNetworkDirectlyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(JoinNetworkDirectlyResponse)));
             JoinNetworkDirectlyResponse response = (JoinNetworkDirectlyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1188,7 +1188,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             LeaveNetworkRequest request = new LeaveNetworkRequest();
             request.Options = options;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LeaveNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LeaveNetworkResponse)));
             LeaveNetworkResponse response = (LeaveNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1209,7 +1209,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ChannelMask = channelMask;
             request.Reason = reason;
             request.NodeType = nodeType;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindAndRejoinNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindAndRejoinNetworkResponse)));
             FindAndRejoinNetworkResponse response = (FindAndRejoinNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1224,7 +1224,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             PermitJoiningRequest request = new PermitJoiningRequest();
             request.Duration = duration;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PermitJoiningResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PermitJoiningResponse)));
             PermitJoiningResponse response = (PermitJoiningResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1243,7 +1243,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte Index, bool Joining, ushort ChildId, byte[] ChildEui64, ZigbeeNodeType ChildType) ChildJoinHandler()
         {
             ChildJoinHandlerRequest request = new ChildJoinHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildJoinHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildJoinHandlerResponse)));
             ChildJoinHandlerResponse response = (ChildJoinHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Index, response.Joining, response.ChildId, response.ChildEui64, response.ChildType);
@@ -1264,7 +1264,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ScanChannels = scanChannels;
             request.ScanDuration = scanDuration;
             request.ScanCount = scanCount;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EnergyScanRequestResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EnergyScanRequestResponse)));
             EnergyScanRequestResponse response = (EnergyScanRequestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1281,7 +1281,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeNodeType NodeType, ZigbeeNetworkParameters Parameters) GetNetworkParameters()
         {
             GetNetworkParametersRequest request = new GetNetworkParametersRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNetworkParametersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNetworkParametersResponse)));
             GetNetworkParametersResponse response = (GetNetworkParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.NodeType, response.Parameters);
@@ -1299,7 +1299,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetRadioParametersRequest request = new GetRadioParametersRequest();
             request.PhyIndex = phyIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRadioParametersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRadioParametersResponse)));
             GetRadioParametersResponse response = (GetRadioParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Parameters);
@@ -1316,7 +1316,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte ChildCount, byte[] ParentEui64, ushort ParentNodeId) GetParentChildParameters()
         {
             GetParentChildParametersRequest request = new GetParentChildParametersRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetParentChildParametersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetParentChildParametersResponse)));
             GetParentChildParametersResponse response = (GetParentChildParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.ChildCount, response.ParentEui64, response.ParentNodeId);
@@ -1329,7 +1329,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte RouterChildCount()
         {
             RouterChildCountRequest request = new RouterChildCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RouterChildCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RouterChildCountResponse)));
             RouterChildCountResponse response = (RouterChildCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.RouterChildCount;
@@ -1342,7 +1342,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte MaxChildCount()
         {
             MaxChildCountRequest request = new MaxChildCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MaxChildCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaxChildCountResponse)));
             MaxChildCountResponse response = (MaxChildCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.MaxChildCount;
@@ -1355,7 +1355,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte MaxRouterChildCount()
         {
             MaxRouterChildCountRequest request = new MaxRouterChildCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MaxRouterChildCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaxRouterChildCountResponse)));
             MaxRouterChildCountResponse response = (MaxRouterChildCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.MaxRouterChildCount;
@@ -1364,7 +1364,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public uint GetParentIncomingNwkFrameCounter()
         {
             GetParentIncomingNwkFrameCounterRequest request = new GetParentIncomingNwkFrameCounterRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetParentIncomingNwkFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetParentIncomingNwkFrameCounterResponse)));
             GetParentIncomingNwkFrameCounterResponse response = (GetParentIncomingNwkFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ParentIncomingNwkFrameCounter;
@@ -1374,7 +1374,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetParentIncomingNwkFrameCounterRequest request = new SetParentIncomingNwkFrameCounterRequest();
             request.Value = value;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetParentIncomingNwkFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetParentIncomingNwkFrameCounterResponse)));
             SetParentIncomingNwkFrameCounterResponse response = (SetParentIncomingNwkFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1387,7 +1387,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort CurrentStackTasks()
         {
             CurrentStackTasksRequest request = new CurrentStackTasksRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CurrentStackTasksResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CurrentStackTasksResponse)));
             CurrentStackTasksResponse response = (CurrentStackTasksResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ActiveTasks;
@@ -1401,7 +1401,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool OkToNap()
         {
             OkToNapRequest request = new OkToNapRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(OkToNapResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToNapResponse)));
             OkToNapResponse response = (OkToNapResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Value;
@@ -1414,7 +1414,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool ParentTokenSet()
         {
             ParentTokenSetRequest request = new ParentTokenSetRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ParentTokenSetResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ParentTokenSetResponse)));
             ParentTokenSetResponse response = (ParentTokenSetResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Indicator;
@@ -1427,7 +1427,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool OkToHibernate()
         {
             OkToHibernateRequest request = new OkToHibernateRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(OkToHibernateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToHibernateResponse)));
             OkToHibernateResponse response = (OkToHibernateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Indicator;
@@ -1440,7 +1440,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool OkToLongPoll()
         {
             OkToLongPollRequest request = new OkToLongPollRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(OkToLongPollResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToLongPollResponse)));
             OkToLongPollResponse response = (OkToLongPollResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Indicator;
@@ -1453,7 +1453,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public StackPowerDownResponse StackPowerDown()
         {
             StackPowerDownRequest request = new StackPowerDownRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StackPowerDownResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackPowerDownResponse)));
             StackPowerDownResponse response = (StackPowerDownResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1466,7 +1466,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public StackPowerUpResponse StackPowerUp()
         {
             StackPowerUpRequest request = new StackPowerUpRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(StackPowerUpResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackPowerUpResponse)));
             StackPowerUpResponse response = (StackPowerUpResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1484,7 +1484,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetChildDataRequest request = new GetChildDataRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetChildDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetChildDataResponse)));
             GetChildDataResponse response = (GetChildDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ChildData);
@@ -1501,7 +1501,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetChildDataRequest request = new SetChildDataRequest();
             request.Index = index;
             request.ChildData = childData;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetChildDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetChildDataResponse)));
             SetChildDataResponse response = (SetChildDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1516,7 +1516,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ChildIdRequest request = new ChildIdRequest();
             request.ChildIndex = childIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildIdResponse)));
             ChildIdResponse response = (ChildIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ChildId;
@@ -1531,7 +1531,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ChildPowerRequest request = new ChildPowerRequest();
             request.ChildIndex = childIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildPowerResponse)));
             ChildPowerResponse response = (ChildPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ChildPower;
@@ -1548,7 +1548,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetChildPowerRequest request = new SetChildPowerRequest();
             request.ChildIndex = childIndex;
             request.NewPower = newPower;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetChildPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetChildPowerResponse)));
             SetChildPowerResponse response = (SetChildPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1563,7 +1563,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ChildIndexRequest request = new ChildIndexRequest();
             request.ChildId = childId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ChildIndexResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildIndexResponse)));
             ChildIndexResponse response = (ChildIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ChildIndex;
@@ -1576,7 +1576,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetSourceRouteTableTotalSize()
         {
             GetSourceRouteTableTotalSizeRequest request = new GetSourceRouteTableTotalSizeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetSourceRouteTableTotalSizeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableTotalSizeResponse)));
             GetSourceRouteTableTotalSizeResponse response = (GetSourceRouteTableTotalSizeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.SourceRouteTableTotalSize;
@@ -1589,7 +1589,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetSourceRouteTableFilledSize()
         {
             GetSourceRouteTableFilledSizeRequest request = new GetSourceRouteTableFilledSizeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetSourceRouteTableFilledSizeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableFilledSizeResponse)));
             GetSourceRouteTableFilledSizeResponse response = (GetSourceRouteTableFilledSizeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.SourceRouteTableFilledSize;
@@ -1614,7 +1614,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetSourceRouteTableEntryRequest request = new GetSourceRouteTableEntryRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetSourceRouteTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableEntryResponse)));
             GetSourceRouteTableEntryResponse response = (GetSourceRouteTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Destination, response.CloserIndex);
@@ -1632,7 +1632,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetNeighborRequest request = new GetNeighborRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNeighborResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNeighborResponse)));
             GetNeighborResponse response = (GetNeighborResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -1650,7 +1650,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetNeighborFrameCounterRequest request = new GetNeighborFrameCounterRequest();
             request.Eui64 = eui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNeighborFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNeighborFrameCounterResponse)));
             GetNeighborFrameCounterResponse response = (GetNeighborFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ReturnFrameCounter);
@@ -1667,7 +1667,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetNeighborFrameCounterRequest request = new SetNeighborFrameCounterRequest();
             request.Eui64 = eui64;
             request.FrameCounter = frameCounter;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNeighborFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNeighborFrameCounterResponse)));
             SetNeighborFrameCounterResponse response = (SetNeighborFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1682,7 +1682,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetRoutingShortcutThresholdRequest request = new SetRoutingShortcutThresholdRequest();
             request.CostThresh = costThresh;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRoutingShortcutThresholdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRoutingShortcutThresholdResponse)));
             SetRoutingShortcutThresholdResponse response = (SetRoutingShortcutThresholdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1695,7 +1695,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetRoutingShortcutThreshold()
         {
             GetRoutingShortcutThresholdRequest request = new GetRoutingShortcutThresholdRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRoutingShortcutThresholdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRoutingShortcutThresholdResponse)));
             GetRoutingShortcutThresholdResponse response = (GetRoutingShortcutThresholdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.RoutingShortcutThresh;
@@ -1708,7 +1708,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte NeighborCount()
         {
             NeighborCountRequest request = new NeighborCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(NeighborCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NeighborCountResponse)));
             NeighborCountResponse response = (NeighborCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Value;
@@ -1726,7 +1726,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetRouteTableEntryRequest request = new GetRouteTableEntryRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRouteTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRouteTableEntryResponse)));
             GetRouteTableEntryResponse response = (GetRouteTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -1741,7 +1741,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetRadioPowerRequest request = new SetRadioPowerRequest();
             request.Power = power;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioPowerResponse)));
             SetRadioPowerResponse response = (SetRadioPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1756,7 +1756,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetRadioChannelRequest request = new SetRadioChannelRequest();
             request.Channel = channel;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioChannelResponse)));
             SetRadioChannelResponse response = (SetRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1769,7 +1769,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetRadioChannel()
         {
             GetRadioChannelRequest request = new GetRadioChannelRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetRadioChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRadioChannelResponse)));
             GetRadioChannelResponse response = (GetRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Channel;
@@ -1784,7 +1784,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetRadioIeee802154CcaModeRequest request = new SetRadioIeee802154CcaModeRequest();
             request.CcaMode = ccaMode;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetRadioIeee802154CcaModeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioIeee802154CcaModeResponse)));
             SetRadioIeee802154CcaModeResponse response = (SetRadioIeee802154CcaModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1811,7 +1811,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.RouteErrorThreshold = routeErrorThreshold;
             request.DeliveryFailureThreshold = deliveryFailureThreshold;
             request.MaxHops = maxHops;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetConcentratorResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetConcentratorResponse)));
             SetConcentratorResponse response = (SetConcentratorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1824,7 +1824,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ConcentratorStartDiscoveryResponse ConcentratorStartDiscovery()
         {
             ConcentratorStartDiscoveryRequest request = new ConcentratorStartDiscoveryRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ConcentratorStartDiscoveryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorStartDiscoveryResponse)));
             ConcentratorStartDiscoveryResponse response = (ConcentratorStartDiscoveryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1837,7 +1837,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ConcentratorStopDiscoveryResponse ConcentratorStopDiscovery()
         {
             ConcentratorStopDiscoveryRequest request = new ConcentratorStopDiscoveryRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ConcentratorStopDiscoveryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorStopDiscoveryResponse)));
             ConcentratorStopDiscoveryResponse response = (ConcentratorStopDiscoveryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1856,7 +1856,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ConcentratorNoteRouteErrorRequest request = new ConcentratorNoteRouteErrorRequest();
             request.Status = status;
             request.NodeId = nodeId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ConcentratorNoteRouteErrorResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorNoteRouteErrorResponse)));
             ConcentratorNoteRouteErrorResponse response = (ConcentratorNoteRouteErrorResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -1871,7 +1871,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetBrokenRouteErrorCodeRequest request = new SetBrokenRouteErrorCodeRequest();
             request.ErrorCode = errorCode;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBrokenRouteErrorCodeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBrokenRouteErrorCodeResponse)));
             SetBrokenRouteErrorCodeResponse response = (SetBrokenRouteErrorCodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1894,7 +1894,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Channel = channel;
             request.Power = power;
             request.Bitmask = bitmask;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhyStartResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhyStartResponse)));
             MultiPhyStartResponse response = (MultiPhyStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1909,7 +1909,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MultiPhyStopRequest request = new MultiPhyStopRequest();
             request.PhyIndex = phyIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhyStopResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhyStopResponse)));
             MultiPhyStopResponse response = (MultiPhyStopResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1926,7 +1926,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             MultiPhySetRadioPowerRequest request = new MultiPhySetRadioPowerRequest();
             request.PhyIndex = phyIndex;
             request.Power = power;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhySetRadioPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhySetRadioPowerResponse)));
             MultiPhySetRadioPowerResponse response = (MultiPhySetRadioPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1939,7 +1939,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status SendLinkPowerDeltaRequest()
         {
             SendLinkPowerDeltaRequestRequest request = new SendLinkPowerDeltaRequestRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendLinkPowerDeltaRequestResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendLinkPowerDeltaRequestResponse)));
             SendLinkPowerDeltaRequestResponse response = (SendLinkPowerDeltaRequestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1958,7 +1958,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.PhyIndex = phyIndex;
             request.Page = page;
             request.Channel = channel;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MultiPhySetRadioChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhySetRadioChannelResponse)));
             MultiPhySetRadioChannelResponse response = (MultiPhySetRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -1974,7 +1974,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeDutyCycleState ReturnedState) GetDutyCycleState()
         {
             GetDutyCycleStateRequest request = new GetDutyCycleStateRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetDutyCycleStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetDutyCycleStateResponse)));
             GetDutyCycleStateResponse response = (GetDutyCycleStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ReturnedState);
@@ -1989,7 +1989,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetDutyCycleLimitsInStackRequest request = new SetDutyCycleLimitsInStackRequest();
             request.Limits = limits;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetDutyCycleLimitsInStackResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetDutyCycleLimitsInStackResponse)));
             SetDutyCycleLimitsInStackResponse response = (SetDutyCycleLimitsInStackResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2005,7 +2005,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeDutyCycleLimits ReturnedLimits) GetDutyCycleLimits()
         {
             GetDutyCycleLimitsRequest request = new GetDutyCycleLimitsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetDutyCycleLimitsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetDutyCycleLimitsResponse)));
             GetDutyCycleLimitsResponse response = (GetDutyCycleLimitsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ReturnedLimits);
@@ -2023,7 +2023,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetCurrentDutyCycleRequest request = new GetCurrentDutyCycleRequest();
             request.MaxDevices = maxDevices;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCurrentDutyCycleResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentDutyCycleResponse)));
             GetCurrentDutyCycleResponse response = (GetCurrentDutyCycleResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ArrayOfDeviceDutyCycles);
@@ -2042,7 +2042,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte ChannelPage, byte Channel, ZigbeeDutyCycleState State, byte TotalDevices, ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles) DutyCycleHandler()
         {
             DutyCycleHandlerRequest request = new DutyCycleHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DutyCycleHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DutyCycleHandlerResponse)));
             DutyCycleHandlerResponse response = (DutyCycleHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.ChannelPage, response.Channel, response.State, response.TotalDevices, response.ArrayOfDeviceDutyCycles);
@@ -2057,7 +2057,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetNumBeaconsToStoreRequest request = new SetNumBeaconsToStoreRequest();
             request.NumBeacons = numBeacons;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNumBeaconsToStoreResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNumBeaconsToStoreResponse)));
             SetNumBeaconsToStoreResponse response = (SetNumBeaconsToStoreResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2075,7 +2075,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetStoredBeaconRequest request = new GetStoredBeaconRequest();
             request.BeaconNumber = beaconNumber;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetStoredBeaconResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetStoredBeaconResponse)));
             GetStoredBeaconResponse response = (GetStoredBeaconResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Beacon);
@@ -2088,7 +2088,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetNumStoredBeacons()
         {
             GetNumStoredBeaconsRequest request = new GetNumStoredBeaconsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetNumStoredBeaconsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNumStoredBeaconsResponse)));
             GetNumStoredBeaconsResponse response = (GetNumStoredBeaconsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.NumBeacons;
@@ -2101,7 +2101,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status ClearStoredBeacons()
         {
             ClearStoredBeaconsRequest request = new ClearStoredBeaconsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearStoredBeaconsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearStoredBeaconsResponse)));
             ClearStoredBeaconsResponse response = (ClearStoredBeaconsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2116,7 +2116,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetLogicalAndRadioChannelRequest request = new SetLogicalAndRadioChannelRequest();
             request.RadioChannel = radioChannel;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetLogicalAndRadioChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetLogicalAndRadioChannelResponse)));
             SetLogicalAndRadioChannelResponse response = (SetLogicalAndRadioChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2133,7 +2133,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SleepyToSleepyNetworkStartRequest request = new SleepyToSleepyNetworkStartRequest();
             request.Parameters = parameters;
             request.Initiator = initiator;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SleepyToSleepyNetworkStartResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SleepyToSleepyNetworkStartResponse)));
             SleepyToSleepyNetworkStartResponse response = (SleepyToSleepyNetworkStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2150,7 +2150,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SendZigbeeLeaveRequest request = new SendZigbeeLeaveRequest();
             request.Destination = destination;
             request.Flags = flags;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendZigbeeLeaveResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendZigbeeLeaveResponse)));
             SendZigbeeLeaveResponse response = (SendZigbeeLeaveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2163,7 +2163,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool GetPermitJoining()
         {
             GetPermitJoiningRequest request = new GetPermitJoiningRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetPermitJoiningResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPermitJoiningResponse)));
             GetPermitJoiningResponse response = (GetPermitJoiningResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.JoiningPermitted;
@@ -2176,7 +2176,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte[] GetExtendedPanId()
         {
             GetExtendedPanIdRequest request = new GetExtendedPanIdRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetExtendedPanIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedPanIdResponse)));
             GetExtendedPanIdResponse response = (GetExtendedPanIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ExtendedPanId;
@@ -2189,7 +2189,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetCurrentNetwork()
         {
             GetCurrentNetworkRequest request = new GetCurrentNetworkRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCurrentNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentNetworkResponse)));
             GetCurrentNetworkResponse response = (GetCurrentNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Index;
@@ -2204,7 +2204,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetInitialNeighborOutgoingCostRequest request = new SetInitialNeighborOutgoingCostRequest();
             request.Cost = cost;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetInitialNeighborOutgoingCostResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetInitialNeighborOutgoingCostResponse)));
             SetInitialNeighborOutgoingCostResponse response = (SetInitialNeighborOutgoingCostResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2217,7 +2217,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetInitialNeighborOutgoingCost()
         {
             GetInitialNeighborOutgoingCostRequest request = new GetInitialNeighborOutgoingCostRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetInitialNeighborOutgoingCostResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetInitialNeighborOutgoingCostResponse)));
             GetInitialNeighborOutgoingCostResponse response = (GetInitialNeighborOutgoingCostResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Cost;
@@ -2232,7 +2232,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ResetRejoiningNeighborsFrameCounterRequest request = new ResetRejoiningNeighborsFrameCounterRequest();
             request.Reset = reset;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ResetRejoiningNeighborsFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ResetRejoiningNeighborsFrameCounterResponse)));
             ResetRejoiningNeighborsFrameCounterResponse response = (ResetRejoiningNeighborsFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -2245,7 +2245,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool IsResetRejoiningNeighborsFrameCounterEnabled()
         {
             IsResetRejoiningNeighborsFrameCounterEnabledRequest request = new IsResetRejoiningNeighborsFrameCounterEnabledRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IsResetRejoiningNeighborsFrameCounterEnabledResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IsResetRejoiningNeighborsFrameCounterEnabledResponse)));
             IsResetRejoiningNeighborsFrameCounterEnabledResponse response = (IsResetRejoiningNeighborsFrameCounterEnabledResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.GetsReset;
@@ -2258,7 +2258,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status ClearBindingTable()
         {
             ClearBindingTableRequest request = new ClearBindingTableRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearBindingTableResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearBindingTableResponse)));
             ClearBindingTableResponse response = (ClearBindingTableResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2275,7 +2275,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetBindingRequest request = new SetBindingRequest();
             request.Index = index;
             request.Value = value;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBindingResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBindingResponse)));
             SetBindingResponse response = (SetBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2293,7 +2293,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetBindingRequest request = new GetBindingRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetBindingResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBindingResponse)));
             GetBindingResponse response = (GetBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -2308,7 +2308,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             DeleteBindingRequest request = new DeleteBindingRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DeleteBindingResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DeleteBindingResponse)));
             DeleteBindingResponse response = (DeleteBindingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2323,7 +2323,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             BindingIsActiveRequest request = new BindingIsActiveRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BindingIsActiveResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BindingIsActiveResponse)));
             BindingIsActiveResponse response = (BindingIsActiveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Active;
@@ -2338,7 +2338,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetBindingRemoteNodeIdRequest request = new GetBindingRemoteNodeIdRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetBindingRemoteNodeIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBindingRemoteNodeIdResponse)));
             GetBindingRemoteNodeIdResponse response = (GetBindingRemoteNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.NodeId;
@@ -2355,7 +2355,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetBindingRemoteNodeIdRequest request = new SetBindingRemoteNodeIdRequest();
             request.Index = index;
             request.NodeId = nodeId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBindingRemoteNodeIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBindingRemoteNodeIdResponse)));
             SetBindingRemoteNodeIdResponse response = (SetBindingRemoteNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -2372,7 +2372,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeBindingTableEntry Entry, byte Index, Status PolicyDecision) RemoteSetBindingHandler()
         {
             RemoteSetBindingHandlerRequest request = new RemoteSetBindingHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoteSetBindingHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteSetBindingHandlerResponse)));
             RemoteSetBindingHandlerResponse response = (RemoteSetBindingHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Entry, response.Index, response.PolicyDecision);
@@ -2388,7 +2388,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte Index, Status PolicyDecision) RemoteDeleteBindingHandler()
         {
             RemoteDeleteBindingHandlerRequest request = new RemoteDeleteBindingHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoteDeleteBindingHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteDeleteBindingHandlerResponse)));
             RemoteDeleteBindingHandlerResponse response = (RemoteDeleteBindingHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Index, response.PolicyDecision);
@@ -2401,7 +2401,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte MaximumPayloadLength()
         {
             MaximumPayloadLengthRequest request = new MaximumPayloadLengthRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MaximumPayloadLengthResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaximumPayloadLengthResponse)));
             MaximumPayloadLengthResponse response = (MaximumPayloadLengthResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ApsLength;
@@ -2429,7 +2429,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendUnicastResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendUnicastResponse)));
             SendUnicastResponse response = (SendUnicastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Sequence);
@@ -2461,7 +2461,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendBroadcastResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendBroadcastResponse)));
             SendBroadcastResponse response = (SendBroadcastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ApsSequence);
@@ -2476,7 +2476,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ProxyNextBroadcastFromLongRequest request = new ProxyNextBroadcastFromLongRequest();
             request.EuiSource = euiSource;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ProxyNextBroadcastFromLongResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ProxyNextBroadcastFromLongResponse)));
             ProxyNextBroadcastFromLongResponse response = (ProxyNextBroadcastFromLongResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2508,7 +2508,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendMulticastResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendMulticastResponse)));
             SendMulticastResponse response = (SendMulticastResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Sequence);
@@ -2529,7 +2529,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ApsFrame = apsFrame;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendReplyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendReplyResponse)));
             SendReplyResponse response = (SendReplyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2550,7 +2550,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeOutgoingMessageType Type, ushort IndexOrDestination, ZigbeeApsFrame ApsFrame, ushort MessageTag, byte MessageLength, byte[] MessageContents) MessageSentHandler()
         {
             MessageSentHandlerRequest request = new MessageSentHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MessageSentHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MessageSentHandlerResponse)));
             MessageSentHandlerResponse response = (MessageSentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Type, response.IndexOrDestination, response.ApsFrame, response.MessageTag, response.MessageLength, response.MessageContents);
@@ -2567,7 +2567,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SendManyToOneRouteRequestRequest request = new SendManyToOneRouteRequestRequest();
             request.ConcentratorType = concentratorType;
             request.Radius = radius;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendManyToOneRouteRequestResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendManyToOneRouteRequestResponse)));
             SendManyToOneRouteRequestResponse response = (SendManyToOneRouteRequestResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2586,7 +2586,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Interval = interval;
             request.Units = units;
             request.FailureLimit = failureLimit;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PollForDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollForDataResponse)));
             PollForDataResponse response = (PollForDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2599,7 +2599,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status PollCompleteHandler()
         {
             PollCompleteHandlerRequest request = new PollCompleteHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PollCompleteHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollCompleteHandlerResponse)));
             PollCompleteHandlerResponse response = (PollCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2614,7 +2614,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetMessageFlagRequest request = new SetMessageFlagRequest();
             request.ChildId = childId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMessageFlagResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMessageFlagResponse)));
             SetMessageFlagResponse response = (SetMessageFlagResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2629,7 +2629,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ClearMessageFlagRequest request = new ClearMessageFlagRequest();
             request.ChildId = childId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearMessageFlagResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearMessageFlagResponse)));
             ClearMessageFlagResponse response = (ClearMessageFlagResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2645,7 +2645,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort ChildId, bool TransmitExpected) PollHandler()
         {
             PollHandlerRequest request = new PollHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PollHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollHandlerResponse)));
             PollHandlerResponse response = (PollHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.ChildId, response.TransmitExpected);
@@ -2664,7 +2664,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ShortId = shortId;
             request.LongId = longId;
             request.NodeType = nodeType;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddChildResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddChildResponse)));
             AddChildResponse response = (AddChildResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2679,7 +2679,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             RemoveChildRequest request = new RemoveChildRequest();
             request.ChildEui64 = childEui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveChildResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveChildResponse)));
             RemoveChildResponse response = (RemoveChildResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2696,7 +2696,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             RemoveNeighborRequest request = new RemoveNeighborRequest();
             request.ShortId = shortId;
             request.LongId = longId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveNeighborResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveNeighborResponse)));
             RemoveNeighborResponse response = (RemoveNeighborResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -2715,7 +2715,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeIncomingMessageType Type, ZigbeeApsFrame ApsFrame, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] Message) IncomingMessageHandler()
         {
             IncomingMessageHandlerRequest request = new IncomingMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMessageHandlerResponse)));
             IncomingMessageHandlerResponse response = (IncomingMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Type, response.ApsFrame, response.PacketInfo, response.MessageLength, response.Message);
@@ -2730,7 +2730,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetSourceRouteDiscoveryModeRequest request = new SetSourceRouteDiscoveryModeRequest();
             request.Mode = mode;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetSourceRouteDiscoveryModeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetSourceRouteDiscoveryModeResponse)));
             SetSourceRouteDiscoveryModeResponse response = (SetSourceRouteDiscoveryModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.RemainingTime;
@@ -2747,7 +2747,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort Source, byte[] LongId, byte Cost) IncomingManyToOneRouteRequestHandler()
         {
             IncomingManyToOneRouteRequestHandlerRequest request = new IncomingManyToOneRouteRequestHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingManyToOneRouteRequestHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingManyToOneRouteRequestHandlerResponse)));
             IncomingManyToOneRouteRequestHandlerResponse response = (IncomingManyToOneRouteRequestHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Source, response.LongId, response.Cost);
@@ -2763,7 +2763,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ushort Target) IncomingRouteErrorHandler()
         {
             IncomingRouteErrorHandlerRequest request = new IncomingRouteErrorHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingRouteErrorHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingRouteErrorHandlerResponse)));
             IncomingRouteErrorHandlerResponse response = (IncomingRouteErrorHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Target);
@@ -2779,7 +2779,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte ErrorCode, ushort Target) IncomingNetworkStatusHandler()
         {
             IncomingNetworkStatusHandlerRequest request = new IncomingNetworkStatusHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingNetworkStatusHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingNetworkStatusHandlerResponse)));
             IncomingNetworkStatusHandlerResponse response = (IncomingNetworkStatusHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.ErrorCode, response.Target);
@@ -2799,7 +2799,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort Source, byte[] SourceEui, byte LastHopLqi, sbyte LastHopRssi, byte RelayCount, byte[] RelayList) IncomingRouteRecordHandler()
         {
             IncomingRouteRecordHandlerRequest request = new IncomingRouteRecordHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingRouteRecordHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingRouteRecordHandlerResponse)));
             IncomingRouteRecordHandlerResponse response = (IncomingRouteRecordHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Source, response.SourceEui, response.LastHopLqi, response.LastHopRssi, response.RelayCount, response.RelayList);
@@ -2818,7 +2818,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Destination = destination;
             request.RelayCount = relayCount;
             request.RelayList = relayList;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetSourceRouteResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetSourceRouteResponse)));
             SetSourceRouteResponse response = (SetSourceRouteResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2837,7 +2837,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.TargetShort = targetShort;
             request.TargetLong = targetLong;
             request.ParentShortId = parentShortId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UnicastCurrentNetworkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnicastCurrentNetworkKeyResponse)));
             UnicastCurrentNetworkKeyResponse response = (UnicastCurrentNetworkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2852,7 +2852,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             AddressTableEntryIsActiveRequest request = new AddressTableEntryIsActiveRequest();
             request.AddressTableIndex = addressTableIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AddressTableEntryIsActiveResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddressTableEntryIsActiveResponse)));
             AddressTableEntryIsActiveResponse response = (AddressTableEntryIsActiveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Active;
@@ -2871,7 +2871,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.AddressTableIndex = addressTableIndex;
             request.Eui64 = eui64;
             request.Id = id;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetAddressTableInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetAddressTableInfoResponse)));
             SetAddressTableInfoResponse response = (SetAddressTableInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2890,7 +2890,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetAddressTableInfoRequest request = new GetAddressTableInfoRequest();
             request.AddressTableIndex = addressTableIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetAddressTableInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetAddressTableInfoResponse)));
             GetAddressTableInfoResponse response = (GetAddressTableInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.NodeId, response.Eui64);
@@ -2907,7 +2907,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetExtendedTimeoutRequest request = new SetExtendedTimeoutRequest();
             request.RemoteEui64 = remoteEui64;
             request.ExtendedTimeout = extendedTimeout;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetExtendedTimeoutResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetExtendedTimeoutResponse)));
             SetExtendedTimeoutResponse response = (SetExtendedTimeoutResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2922,7 +2922,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetExtendedTimeoutRequest request = new GetExtendedTimeoutRequest();
             request.RemoteEui64 = remoteEui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetExtendedTimeoutResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedTimeoutResponse)));
             GetExtendedTimeoutResponse response = (GetExtendedTimeoutResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -2948,7 +2948,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.NewEui64 = newEui64;
             request.NewId = newId;
             request.NewExtendedTimeout = newExtendedTimeout;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ReplaceAddressTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReplaceAddressTableEntryResponse)));
             ReplaceAddressTableEntryResponse response = (ReplaceAddressTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.OldEui64, response.OldId, response.OldExtendedTimeout);
@@ -2966,7 +2966,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             LookupNodeIdByEui64Request request = new LookupNodeIdByEui64Request();
             request.Eui64 = eui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LookupNodeIdByEui64Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LookupNodeIdByEui64Response)));
             LookupNodeIdByEui64Response response = (LookupNodeIdByEui64Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.NodeId);
@@ -2984,7 +2984,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             LookupEui64ByNodeIdRequest request = new LookupEui64ByNodeIdRequest();
             request.NodeId = nodeId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LookupEui64ByNodeIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LookupEui64ByNodeIdResponse)));
             LookupEui64ByNodeIdResponse response = (LookupEui64ByNodeIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Eui64);
@@ -3002,7 +3002,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetMulticastTableEntryRequest request = new GetMulticastTableEntryRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetMulticastTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMulticastTableEntryResponse)));
             GetMulticastTableEntryResponse response = (GetMulticastTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Value);
@@ -3019,7 +3019,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetMulticastTableEntryRequest request = new SetMulticastTableEntryRequest();
             request.Index = index;
             request.Value = value;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMulticastTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMulticastTableEntryResponse)));
             SetMulticastTableEntryResponse response = (SetMulticastTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3032,7 +3032,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ushort IdConflictHandler()
         {
             IdConflictHandlerRequest request = new IdConflictHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IdConflictHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IdConflictHandlerResponse)));
             IdConflictHandlerResponse response = (IdConflictHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Id;
@@ -3047,7 +3047,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             WriteNodeDataRequest request = new WriteNodeDataRequest();
             request.Erase = erase;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(WriteNodeDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(WriteNodeDataResponse)));
             WriteNodeDataResponse response = (WriteNodeDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3068,7 +3068,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageContents = messageContents;
             request.Priority = priority;
             request.UseCca = useCca;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendRawMessageResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendRawMessageResponse)));
             SendRawMessageResponse response = (SendRawMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3086,7 +3086,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeMacPassthroughType MessageType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacPassthroughMessageHandler()
         {
             MacPassthroughMessageHandlerRequest request = new MacPassthroughMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MacPassthroughMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacPassthroughMessageHandlerResponse)));
             MacPassthroughMessageHandlerResponse response = (MacPassthroughMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.MessageType, response.PacketInfo, response.MessageLength, response.MessageContents);
@@ -3105,7 +3105,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort FilterValueMatch, ZigbeeMacPassthroughType LegacyPassthroughType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacFilterMatchMessageHandler()
         {
             MacFilterMatchMessageHandlerRequest request = new MacFilterMatchMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MacFilterMatchMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacFilterMatchMessageHandlerResponse)));
             MacFilterMatchMessageHandlerResponse response = (MacFilterMatchMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.FilterValueMatch, response.LegacyPassthroughType, response.PacketInfo, response.MessageLength, response.MessageContents);
@@ -3122,7 +3122,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte MessageLength, byte[] MessageContents, Status Status) RawTransmitCompleteHandler()
         {
             RawTransmitCompleteHandlerRequest request = new RawTransmitCompleteHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RawTransmitCompleteHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RawTransmitCompleteHandlerResponse)));
             RawTransmitCompleteHandlerResponse response = (RawTransmitCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.MessageLength, response.MessageContents, response.Status);
@@ -3137,7 +3137,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetMacPollFailureWaitTimeRequest request = new SetMacPollFailureWaitTimeRequest();
             request.WaitBeforeRetryIntervalMs = waitBeforeRetryIntervalMs;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetMacPollFailureWaitTimeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMacPollFailureWaitTimeResponse)));
             SetMacPollFailureWaitTimeResponse response = (SetMacPollFailureWaitTimeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -3150,7 +3150,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GetMaxMacRetries()
         {
             GetMaxMacRetriesRequest request = new GetMaxMacRetriesRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetMaxMacRetriesResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMaxMacRetriesResponse)));
             GetMaxMacRetriesResponse response = (GetMaxMacRetriesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Retries;
@@ -3166,7 +3166,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeBeaconClassificationParams Param) SetBeaconClassificationParams()
         {
             SetBeaconClassificationParamsRequest request = new SetBeaconClassificationParamsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetBeaconClassificationParamsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBeaconClassificationParamsResponse)));
             SetBeaconClassificationParamsResponse response = (SetBeaconClassificationParamsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Param);
@@ -3182,7 +3182,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeBeaconClassificationParams Param) GetBeaconClassificationParams()
         {
             GetBeaconClassificationParamsRequest request = new GetBeaconClassificationParamsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetBeaconClassificationParamsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBeaconClassificationParamsResponse)));
             GetBeaconClassificationParamsResponse response = (GetBeaconClassificationParamsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Param);
@@ -3195,7 +3195,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool PendingAckedMessages()
         {
             PendingAckedMessagesRequest request = new PendingAckedMessagesRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(PendingAckedMessagesResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PendingAckedMessagesResponse)));
             PendingAckedMessagesResponse response = (PendingAckedMessagesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.PendingMessages;
@@ -3208,7 +3208,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status RescheduleLinkStatusMsg()
         {
             RescheduleLinkStatusMsgRequest request = new RescheduleLinkStatusMsgRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RescheduleLinkStatusMsgResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RescheduleLinkStatusMsgResponse)));
             RescheduleLinkStatusMsgResponse response = (RescheduleLinkStatusMsgResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3225,7 +3225,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SetNwkUpdateIdRequest request = new SetNwkUpdateIdRequest();
             request.NwkUpdateId = nwkUpdateId;
             request.SetWhenOnNetwork = setWhenOnNetwork;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetNwkUpdateIdResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNwkUpdateIdResponse)));
             SetNwkUpdateIdResponse response = (SetNwkUpdateIdResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3240,7 +3240,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetInitialSecurityStateRequest request = new SetInitialSecurityStateRequest();
             request.State = state;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetInitialSecurityStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetInitialSecurityStateResponse)));
             SetInitialSecurityStateResponse response = (SetInitialSecurityStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Success;
@@ -3256,7 +3256,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeCurrentSecurityState State) GetCurrentSecurityState()
         {
             GetCurrentSecurityStateRequest request = new GetCurrentSecurityStateRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCurrentSecurityStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentSecurityStateResponse)));
             GetCurrentSecurityStateResponse response = (GetCurrentSecurityStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.State);
@@ -3274,7 +3274,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManExportKeyRequest request = new SecManExportKeyRequest();
             request.Context = context;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportKeyResponse)));
             SecManExportKeyResponse response = (SecManExportKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Key);
@@ -3291,7 +3291,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SecManImportKeyRequest request = new SecManImportKeyRequest();
             request.Context = context;
             request.Key = key;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportKeyResponse)));
             SecManImportKeyResponse response = (SecManImportKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3304,7 +3304,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte SwitchNetworkKeyHandler()
         {
             SwitchNetworkKeyHandlerRequest request = new SwitchNetworkKeyHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SwitchNetworkKeyHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SwitchNetworkKeyHandlerResponse)));
             SwitchNetworkKeyHandlerResponse response = (SwitchNetworkKeyHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.SequenceNumber;
@@ -3321,7 +3321,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             FindKeyTableEntryRequest request = new FindKeyTableEntryRequest();
             request.Address = address;
             request.LinkKey = linkKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(FindKeyTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindKeyTableEntryResponse)));
             FindKeyTableEntryResponse response = (FindKeyTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Index;
@@ -3338,7 +3338,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SendTrustCenterLinkKeyRequest request = new SendTrustCenterLinkKeyRequest();
             request.DestinationNodeId = destinationNodeId;
             request.DestinationEui64 = destinationEui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendTrustCenterLinkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendTrustCenterLinkKeyResponse)));
             SendTrustCenterLinkKeyResponse response = (SendTrustCenterLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3353,7 +3353,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             EraseKeyTableEntryRequest request = new EraseKeyTableEntryRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(EraseKeyTableEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EraseKeyTableEntryResponse)));
             EraseKeyTableEntryResponse response = (EraseKeyTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3366,7 +3366,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status ClearKeyTable()
         {
             ClearKeyTableRequest request = new ClearKeyTableRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearKeyTableResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearKeyTableResponse)));
             ClearKeyTableResponse response = (ClearKeyTableResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3381,7 +3381,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             RequestLinkKeyRequest request = new RequestLinkKeyRequest();
             request.Partner = partner;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RequestLinkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RequestLinkKeyResponse)));
             RequestLinkKeyResponse response = (RequestLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3396,7 +3396,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             UpdateTcLinkKeyRequest request = new UpdateTcLinkKeyRequest();
             request.MaxAttempts = maxAttempts;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UpdateTcLinkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UpdateTcLinkKeyResponse)));
             UpdateTcLinkKeyResponse response = (UpdateTcLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3412,7 +3412,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte[] Partner, ZigbeeKeyStatus Status) ZigbeeKeyEstablishmentHandler()
         {
             ZigbeeKeyEstablishmentHandlerRequest request = new ZigbeeKeyEstablishmentHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZigbeeKeyEstablishmentHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZigbeeKeyEstablishmentHandlerResponse)));
             ZigbeeKeyEstablishmentHandlerResponse response = (ZigbeeKeyEstablishmentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Partner, response.Status);
@@ -3425,7 +3425,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ClearTransientLinkKeysResponse ClearTransientLinkKeys()
         {
             ClearTransientLinkKeysRequest request = new ClearTransientLinkKeysRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearTransientLinkKeysResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTransientLinkKeysResponse)));
             ClearTransientLinkKeysResponse response = (ClearTransientLinkKeysResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -3441,7 +3441,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeSecManNetworkKeyInfo NetworkKeyInfo) SecManGetNetworkKeyInfo()
         {
             SecManGetNetworkKeyInfoRequest request = new SecManGetNetworkKeyInfoRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManGetNetworkKeyInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManGetNetworkKeyInfoResponse)));
             SecManGetNetworkKeyInfoResponse response = (SecManGetNetworkKeyInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.NetworkKeyInfo);
@@ -3459,7 +3459,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManGetApsKeyInfoRequest request = new SecManGetApsKeyInfoRequest();
             request.Context = context;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManGetApsKeyInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManGetApsKeyInfoResponse)));
             SecManGetApsKeyInfoResponse response = (SecManGetApsKeyInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.KeyData);
@@ -3478,7 +3478,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Index = index;
             request.Address = address;
             request.PlaintextKey = plaintextKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportLinkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportLinkKeyResponse)));
             SecManImportLinkKeyResponse response = (SecManImportLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3498,7 +3498,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManExportLinkKeyByIndexRequest request = new SecManExportLinkKeyByIndexRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportLinkKeyByIndexResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByIndexResponse)));
             SecManExportLinkKeyByIndexResponse response = (SecManExportLinkKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
@@ -3518,7 +3518,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManExportLinkKeyByEuiRequest request = new SecManExportLinkKeyByEuiRequest();
             request.Eui = eui;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportLinkKeyByEuiResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByEuiResponse)));
             SecManExportLinkKeyByEuiResponse response = (SecManExportLinkKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
@@ -3533,7 +3533,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManCheckKeyContextRequest request = new SecManCheckKeyContextRequest();
             request.Context = context;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManCheckKeyContextResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManCheckKeyContextResponse)));
             SecManCheckKeyContextResponse response = (SecManCheckKeyContextResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3550,7 +3550,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             SecManImportTransientKeyRequest request = new SecManImportTransientKeyRequest();
             request.Eui64 = eui64;
             request.PlaintextKey = plaintextKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManImportTransientKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportTransientKeyResponse)));
             SecManImportTransientKeyResponse response = (SecManImportTransientKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3570,7 +3570,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManExportTransientKeyByIndexRequest request = new SecManExportTransientKeyByIndexRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportTransientKeyByIndexResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByIndexResponse)));
             SecManExportTransientKeyByIndexResponse response = (SecManExportTransientKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
@@ -3590,7 +3590,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SecManExportTransientKeyByEuiRequest request = new SecManExportTransientKeyByEuiRequest();
             request.Eui = eui;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SecManExportTransientKeyByEuiResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByEuiResponse)));
             SecManExportTransientKeyByEuiResponse response = (SecManExportTransientKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
@@ -3605,7 +3605,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetIncomingTcLinkKeyFrameCounterRequest request = new SetIncomingTcLinkKeyFrameCounterRequest();
             request.FrameCounter = frameCounter;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetIncomingTcLinkKeyFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetIncomingTcLinkKeyFrameCounterResponse)));
             SetIncomingTcLinkKeyFrameCounterResponse response = (SetIncomingTcLinkKeyFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -3628,7 +3628,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Message = message;
             request.ApsHeaderEndIndex = apsHeaderEndIndex;
             request.RemoteEui64 = remoteEui64;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ApsCryptMessageResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ApsCryptMessageResponse)));
             ApsCryptMessageResponse response = (ApsCryptMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3647,7 +3647,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort NewNodeId, byte[] NewNodeEui64, ZigbeeDeviceUpdate Status, ZigbeeJoinDecision PolicyDecision, ushort ParentOfNewNodeId) TrustCenterPostJoinHandler()
         {
             TrustCenterPostJoinHandlerRequest request = new TrustCenterPostJoinHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(TrustCenterPostJoinHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TrustCenterPostJoinHandlerResponse)));
             TrustCenterPostJoinHandlerResponse response = (TrustCenterPostJoinHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.NewNodeId, response.NewNodeEui64, response.Status, response.PolicyDecision, response.ParentOfNewNodeId);
@@ -3662,7 +3662,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             BroadcastNextNetworkKeyRequest request = new BroadcastNextNetworkKeyRequest();
             request.Key = key;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BroadcastNextNetworkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BroadcastNextNetworkKeyResponse)));
             BroadcastNextNetworkKeyResponse response = (BroadcastNextNetworkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3675,7 +3675,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status BroadcastNetworkKeySwitch()
         {
             BroadcastNetworkKeySwitchRequest request = new BroadcastNetworkKeySwitchRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BroadcastNetworkKeySwitchResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BroadcastNetworkKeySwitchResponse)));
             BroadcastNetworkKeySwitchResponse response = (BroadcastNetworkKeySwitchResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3699,7 +3699,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Finalize = finalize;
             request.Length = length;
             request.Data = data;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AesMmoHashResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AesMmoHashResponse)));
             AesMmoHashResponse response = (AesMmoHashResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.ReturnContext);
@@ -3718,7 +3718,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.DestShort = destShort;
             request.DestLong = destLong;
             request.TargetLong = targetLong;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(RemoveDeviceResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveDeviceResponse)));
             RemoveDeviceResponse response = (RemoveDeviceResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3737,7 +3737,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.DestShort = destShort;
             request.DestLong = destLong;
             request.Key = key;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(UnicastNwkKeyUpdateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnicastNwkKeyUpdateResponse)));
             UnicastNwkKeyUpdateResponse response = (UnicastNwkKeyUpdateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3750,7 +3750,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status GenerateCbkeKeys()
         {
             GenerateCbkeKeysRequest request = new GenerateCbkeKeysRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GenerateCbkeKeysResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeysResponse)));
             GenerateCbkeKeysResponse response = (GenerateCbkeKeysResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3766,7 +3766,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeePublicKeyData EphemeralPublicKey) GenerateCbkeKeysHandler()
         {
             GenerateCbkeKeysHandlerRequest request = new GenerateCbkeKeysHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GenerateCbkeKeysHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeysHandlerResponse)));
             GenerateCbkeKeysHandlerResponse response = (GenerateCbkeKeysHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.EphemeralPublicKey);
@@ -3785,7 +3785,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.AmInitiator = amInitiator;
             request.PartnerCertificate = partnerCertificate;
             request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacsResponse)));
             CalculateSmacsResponse response = (CalculateSmacsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3802,7 +3802,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacsHandler()
         {
             CalculateSmacsHandlerRequest request = new CalculateSmacsHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacsHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacsHandlerResponse)));
             CalculateSmacsHandlerResponse response = (CalculateSmacsHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.InitiatorSmac, response.ResponderSmac);
@@ -3815,7 +3815,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status GenerateCbkeKeys283k1()
         {
             GenerateCbkeKeys283k1Request request = new GenerateCbkeKeys283k1Request();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1Response)));
             GenerateCbkeKeys283k1Response response = (GenerateCbkeKeys283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3831,7 +3831,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeePublicKey283k1Data EphemeralPublicKey) GenerateCbkeKeys283k1Handler()
         {
             GenerateCbkeKeys283k1HandlerRequest request = new GenerateCbkeKeys283k1HandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1HandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1HandlerResponse)));
             GenerateCbkeKeys283k1HandlerResponse response = (GenerateCbkeKeys283k1HandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.EphemeralPublicKey);
@@ -3850,7 +3850,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.AmInitiator = amInitiator;
             request.PartnerCertificate = partnerCertificate;
             request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacs283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacs283k1Response)));
             CalculateSmacs283k1Response response = (CalculateSmacs283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3867,7 +3867,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacs283k1Handler()
         {
             CalculateSmacs283k1HandlerRequest request = new CalculateSmacs283k1HandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(CalculateSmacs283k1HandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacs283k1HandlerResponse)));
             CalculateSmacs283k1HandlerResponse response = (CalculateSmacs283k1HandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.InitiatorSmac, response.ResponderSmac);
@@ -3882,7 +3882,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ClearTemporaryDataMaybeStoreLinkKeyRequest request = new ClearTemporaryDataMaybeStoreLinkKeyRequest();
             request.StoreLinkKey = storeLinkKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKeyResponse)));
             ClearTemporaryDataMaybeStoreLinkKeyResponse response = (ClearTemporaryDataMaybeStoreLinkKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3897,7 +3897,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ClearTemporaryDataMaybeStoreLinkKey283k1Request request = new ClearTemporaryDataMaybeStoreLinkKey283k1Request();
             request.StoreLinkKey = storeLinkKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKey283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKey283k1Response)));
             ClearTemporaryDataMaybeStoreLinkKey283k1Response response = (ClearTemporaryDataMaybeStoreLinkKey283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3913,7 +3913,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeCertificateData LocalCert) GetCertificate()
         {
             GetCertificateRequest request = new GetCertificateRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCertificateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCertificateResponse)));
             GetCertificateResponse response = (GetCertificateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.LocalCert);
@@ -3929,7 +3929,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, ZigbeeCertificate283k1Data LocalCert) GetCertificate283k1()
         {
             GetCertificate283k1Request request = new GetCertificate283k1Request();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetCertificate283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCertificate283k1Response)));
             GetCertificate283k1Response response = (GetCertificate283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.LocalCert);
@@ -3946,7 +3946,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             DsaSignRequest request = new DsaSignRequest();
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaSignResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaSignResponse)));
             DsaSignResponse response = (DsaSignResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3963,7 +3963,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, byte MessageLength, byte[] MessageContents) DsaSignHandler()
         {
             DsaSignHandlerRequest request = new DsaSignHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaSignHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaSignHandlerResponse)));
             DsaSignHandlerResponse response = (DsaSignHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.MessageLength, response.MessageContents);
@@ -3982,7 +3982,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Digest = digest;
             request.SignerCertificate = signerCertificate;
             request.ReceivedSig = receivedSig;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaVerifyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerifyResponse)));
             DsaVerifyResponse response = (DsaVerifyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -3995,7 +3995,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status DsaVerifyHandler()
         {
             DsaVerifyHandlerRequest request = new DsaVerifyHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaVerifyHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerifyHandlerResponse)));
             DsaVerifyHandlerResponse response = (DsaVerifyHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4014,7 +4014,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Digest = digest;
             request.SignerCertificate = signerCertificate;
             request.ReceivedSig = receivedSig;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DsaVerify283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerify283k1Response)));
             DsaVerify283k1Response response = (DsaVerify283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4033,7 +4033,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.CaPublic = caPublic;
             request.MyCert = myCert;
             request.MyKey = myKey;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetPreinstalledCbkeDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPreinstalledCbkeDataResponse)));
             SetPreinstalledCbkeDataResponse response = (SetPreinstalledCbkeDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4046,7 +4046,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status SavePreinstalledCbkeData283k1()
         {
             SavePreinstalledCbkeData283k1Request request = new SavePreinstalledCbkeData283k1Request();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SavePreinstalledCbkeData283k1Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SavePreinstalledCbkeData283k1Response)));
             SavePreinstalledCbkeData283k1Response response = (SavePreinstalledCbkeData283k1Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4061,7 +4061,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfglibInternalStartRequest request = new MfglibInternalStartRequest();
             request.RxCallback = rxCallback;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStartResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartResponse)));
             MfglibInternalStartResponse response = (MfglibInternalStartResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4074,7 +4074,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfglibInternalEnd()
         {
             MfglibInternalEndRequest request = new MfglibInternalEndRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalEndResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalEndResponse)));
             MfglibInternalEndResponse response = (MfglibInternalEndResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4087,7 +4087,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfglibInternalStartTone()
         {
             MfglibInternalStartToneRequest request = new MfglibInternalStartToneRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStartToneResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartToneResponse)));
             MfglibInternalStartToneResponse response = (MfglibInternalStartToneResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4100,7 +4100,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfglibInternalStopTone()
         {
             MfglibInternalStopToneRequest request = new MfglibInternalStopToneRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStopToneResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStopToneResponse)));
             MfglibInternalStopToneResponse response = (MfglibInternalStopToneResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4113,7 +4113,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfglibInternalStartStream()
         {
             MfglibInternalStartStreamRequest request = new MfglibInternalStartStreamRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStartStreamResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartStreamResponse)));
             MfglibInternalStartStreamResponse response = (MfglibInternalStartStreamResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4126,7 +4126,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfglibInternalStopStream()
         {
             MfglibInternalStopStreamRequest request = new MfglibInternalStopStreamRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalStopStreamResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStopStreamResponse)));
             MfglibInternalStopStreamResponse response = (MfglibInternalStopStreamResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4143,7 +4143,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             MfglibInternalSendPacketRequest request = new MfglibInternalSendPacketRequest();
             request.PacketLength = packetLength;
             request.PacketContents = packetContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSendPacketResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSendPacketResponse)));
             MfglibInternalSendPacketResponse response = (MfglibInternalSendPacketResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4158,7 +4158,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfglibInternalSetChannelRequest request = new MfglibInternalSetChannelRequest();
             request.Channel = channel;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSetChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSetChannelResponse)));
             MfglibInternalSetChannelResponse response = (MfglibInternalSetChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4171,7 +4171,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte MfglibInternalGetChannel()
         {
             MfglibInternalGetChannelRequest request = new MfglibInternalGetChannelRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalGetChannelResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalGetChannelResponse)));
             MfglibInternalGetChannelResponse response = (MfglibInternalGetChannelResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Channel;
@@ -4188,7 +4188,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             MfglibInternalSetPowerRequest request = new MfglibInternalSetPowerRequest();
             request.TxPowerMode = txPowerMode;
             request.Power = power;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalSetPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSetPowerResponse)));
             MfglibInternalSetPowerResponse response = (MfglibInternalSetPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4201,7 +4201,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public sbyte MfglibInternalGetPower()
         {
             MfglibInternalGetPowerRequest request = new MfglibInternalGetPowerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibInternalGetPowerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalGetPowerResponse)));
             MfglibInternalGetPowerResponse response = (MfglibInternalGetPowerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Power;
@@ -4219,7 +4219,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte LinkQuality, sbyte Rssi, byte PacketLength, byte[] PacketContents) MfglibRxHandler()
         {
             MfglibRxHandlerRequest request = new MfglibRxHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfglibRxHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibRxHandlerResponse)));
             MfglibRxHandlerResponse response = (MfglibRxHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.LinkQuality, response.Rssi, response.PacketLength, response.PacketContents);
@@ -4234,7 +4234,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             LaunchStandaloneBootloaderRequest request = new LaunchStandaloneBootloaderRequest();
             request.Enabled = enabled;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(LaunchStandaloneBootloaderResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LaunchStandaloneBootloaderResponse)));
             LaunchStandaloneBootloaderResponse response = (LaunchStandaloneBootloaderResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4255,7 +4255,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.DestEui64 = destEui64;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SendBootloadMessageResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendBootloadMessageResponse)));
             SendBootloadMessageResponse response = (SendBootloadMessageResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4273,7 +4273,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ushort BootloaderVersion, byte NodePlat, byte NodeMicro, byte NodePhy) GetStandaloneBootloaderVersionPlatMicroPhy()
         {
             GetStandaloneBootloaderVersionPlatMicroPhyRequest request = new GetStandaloneBootloaderVersionPlatMicroPhyRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetStandaloneBootloaderVersionPlatMicroPhyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetStandaloneBootloaderVersionPlatMicroPhyResponse)));
             GetStandaloneBootloaderVersionPlatMicroPhyResponse response = (GetStandaloneBootloaderVersionPlatMicroPhyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.BootloaderVersion, response.NodePlat, response.NodeMicro, response.NodePhy);
@@ -4291,7 +4291,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte[] LongId, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) IncomingBootloadMessageHandler()
         {
             IncomingBootloadMessageHandlerRequest request = new IncomingBootloadMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingBootloadMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingBootloadMessageHandlerResponse)));
             IncomingBootloadMessageHandlerResponse response = (IncomingBootloadMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.LongId, response.PacketInfo, response.MessageLength, response.MessageContents);
@@ -4308,7 +4308,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, byte MessageLength, byte[] MessageContents) BootloadTransmitCompleteHandler()
         {
             BootloadTransmitCompleteHandlerRequest request = new BootloadTransmitCompleteHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(BootloadTransmitCompleteHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BootloadTransmitCompleteHandlerResponse)));
             BootloadTransmitCompleteHandlerResponse response = (BootloadTransmitCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.MessageLength, response.MessageContents);
@@ -4325,7 +4325,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             AesEncryptRequest request = new AesEncryptRequest();
             request.Plaintext = plaintext;
             request.Key = key;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(AesEncryptResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AesEncryptResponse)));
             AesEncryptResponse response = (AesEncryptResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Ciphertext;
@@ -4342,7 +4342,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (byte MessageType, byte DataLength, byte[] Data) IncomingMfgTestMessageHandler()
         {
             IncomingMfgTestMessageHandlerRequest request = new IncomingMfgTestMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IncomingMfgTestMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMfgTestMessageHandlerResponse)));
             IncomingMfgTestMessageHandlerResponse response = (IncomingMfgTestMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.MessageType, response.DataLength, response.Data);
@@ -4357,7 +4357,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfgTestSetPacketModeRequest request = new MfgTestSetPacketModeRequest();
             request.BeginConfiguration = beginConfiguration;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSetPacketModeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSetPacketModeResponse)));
             MfgTestSetPacketModeResponse response = (MfgTestSetPacketModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4370,7 +4370,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status MfgTestSendRebootCommand()
         {
             MfgTestSendRebootCommandRequest request = new MfgTestSendRebootCommandRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendRebootCommandResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendRebootCommandResponse)));
             MfgTestSendRebootCommandResponse response = (MfgTestSendRebootCommandResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4385,7 +4385,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfgTestSendEui64Request request = new MfgTestSendEui64Request();
             request.NewId = newId;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendEui64Response)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendEui64Response)));
             MfgTestSendEui64Response response = (MfgTestSendEui64Response)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4400,7 +4400,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfgTestSendManufacturingStringRequest request = new MfgTestSendManufacturingStringRequest();
             request.NewString = newString;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendManufacturingStringResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendManufacturingStringResponse)));
             MfgTestSendManufacturingStringResponse response = (MfgTestSendManufacturingStringResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4417,7 +4417,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             MfgTestSendRadioParametersRequest request = new MfgTestSendRadioParametersRequest();
             request.SupportedBands = supportedBands;
             request.CrystalOffset = crystalOffset;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendRadioParametersResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendRadioParametersResponse)));
             MfgTestSendRadioParametersResponse response = (MfgTestSendRadioParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4432,7 +4432,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             MfgTestSendCommandRequest request = new MfgTestSendCommandRequest();
             request.Command = command;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(MfgTestSendCommandResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendCommandResponse)));
             MfgTestSendCommandResponse response = (MfgTestSendCommandResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4451,7 +4451,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.NetworkInfo = networkInfo;
             request.Op = op;
             request.RadioTxPower = radioTxPower;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllNetworkOpsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllNetworkOpsResponse)));
             ZllNetworkOpsResponse response = (ZllNetworkOpsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4468,7 +4468,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ZllSetInitialSecurityStateRequest request = new ZllSetInitialSecurityStateRequest();
             request.NetworkKey = networkKey;
             request.SecurityState = securityState;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetInitialSecurityStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetInitialSecurityStateResponse)));
             ZllSetInitialSecurityStateResponse response = (ZllSetInitialSecurityStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4483,7 +4483,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ZllSetSecurityStateWithoutKeyRequest request = new ZllSetSecurityStateWithoutKeyRequest();
             request.SecurityState = securityState;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetSecurityStateWithoutKeyResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetSecurityStateWithoutKeyResponse)));
             ZllSetSecurityStateWithoutKeyResponse response = (ZllSetSecurityStateWithoutKeyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4502,7 +4502,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.ChannelMask = channelMask;
             request.RadioPowerForScan = radioPowerForScan;
             request.NodeType = nodeType;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllStartScanResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllStartScanResponse)));
             ZllStartScanResponse response = (ZllStartScanResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4517,7 +4517,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ZllSetRxOnWhenIdleRequest request = new ZllSetRxOnWhenIdleRequest();
             request.DurationMs = durationMs;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetRxOnWhenIdleResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetRxOnWhenIdleResponse)));
             ZllSetRxOnWhenIdleResponse response = (ZllSetRxOnWhenIdleResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4535,7 +4535,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeZllNetwork NetworkInfo, bool IsDeviceInfoNull, ZigbeeZllDeviceInfoRecord DeviceInfo, ZigbeeRxPacketInfo PacketInfo) ZllNetworkFoundHandler()
         {
             ZllNetworkFoundHandlerRequest request = new ZllNetworkFoundHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllNetworkFoundHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllNetworkFoundHandlerResponse)));
             ZllNetworkFoundHandlerResponse response = (ZllNetworkFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.NetworkInfo, response.IsDeviceInfoNull, response.DeviceInfo, response.PacketInfo);
@@ -4548,7 +4548,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status ZllScanCompleteHandler()
         {
             ZllScanCompleteHandlerRequest request = new ZllScanCompleteHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllScanCompleteHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllScanCompleteHandlerResponse)));
             ZllScanCompleteHandlerResponse response = (ZllScanCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4564,7 +4564,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeZllAddressAssignment AddressInfo, ZigbeeRxPacketInfo PacketInfo) ZllAddressAssignmentHandler()
         {
             ZllAddressAssignmentHandlerRequest request = new ZllAddressAssignmentHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllAddressAssignmentHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllAddressAssignmentHandlerResponse)));
             ZllAddressAssignmentHandlerResponse response = (ZllAddressAssignmentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.AddressInfo, response.PacketInfo);
@@ -4577,7 +4577,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeZllNetwork ZllTouchLinkTargetHandler()
         {
             ZllTouchLinkTargetHandlerRequest request = new ZllTouchLinkTargetHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllTouchLinkTargetHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllTouchLinkTargetHandlerResponse)));
             ZllTouchLinkTargetHandlerResponse response = (ZllTouchLinkTargetHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.NetworkInfo;
@@ -4593,7 +4593,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (ZigbeeTokTypeStackZllData Data, ZigbeeTokTypeStackZllSecurity Security) ZllGetTokens()
         {
             ZllGetTokensRequest request = new ZllGetTokensRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllGetTokensResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllGetTokensResponse)));
             ZllGetTokensResponse response = (ZllGetTokensResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Data, response.Security);
@@ -4608,7 +4608,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ZllSetDataTokenRequest request = new ZllSetDataTokenRequest();
             request.Data = data;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetDataTokenResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetDataTokenResponse)));
             ZllSetDataTokenResponse response = (ZllSetDataTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4621,7 +4621,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZllSetNonZllNetworkResponse ZllSetNonZllNetwork()
         {
             ZllSetNonZllNetworkRequest request = new ZllSetNonZllNetworkRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetNonZllNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetNonZllNetworkResponse)));
             ZllSetNonZllNetworkResponse response = (ZllSetNonZllNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4634,7 +4634,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool IsZllNetwork()
         {
             IsZllNetworkRequest request = new IsZllNetworkRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(IsZllNetworkResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IsZllNetworkResponse)));
             IsZllNetworkResponse response = (IsZllNetworkResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.IsZllNetwork;
@@ -4649,7 +4649,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             ZllSetRadioIdleModeRequest request = new ZllSetRadioIdleModeRequest();
             request.Mode = mode;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllSetRadioIdleModeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetRadioIdleModeResponse)));
             ZllSetRadioIdleModeResponse response = (ZllSetRadioIdleModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4662,7 +4662,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte ZllGetRadioIdleMode()
         {
             ZllGetRadioIdleModeRequest request = new ZllGetRadioIdleModeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllGetRadioIdleModeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllGetRadioIdleModeResponse)));
             ZllGetRadioIdleModeResponse response = (ZllGetRadioIdleModeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.RadioIdleMode;
@@ -4677,7 +4677,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetZllNodeTypeRequest request = new SetZllNodeTypeRequest();
             request.NodeType = nodeType;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllNodeTypeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllNodeTypeResponse)));
             SetZllNodeTypeResponse response = (SetZllNodeTypeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4692,7 +4692,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetZllAdditionalStateRequest request = new SetZllAdditionalStateRequest();
             request.State = state;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllAdditionalStateResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllAdditionalStateResponse)));
             SetZllAdditionalStateResponse response = (SetZllAdditionalStateResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4705,7 +4705,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool ZllOperationInProgress()
         {
             ZllOperationInProgressRequest request = new ZllOperationInProgressRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllOperationInProgressResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllOperationInProgressResponse)));
             ZllOperationInProgressResponse response = (ZllOperationInProgressResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ZllOperationInProgress;
@@ -4718,7 +4718,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public bool ZllRxOnWhenIdleGetActive()
         {
             ZllRxOnWhenIdleGetActiveRequest request = new ZllRxOnWhenIdleGetActiveRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllRxOnWhenIdleGetActiveResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllRxOnWhenIdleGetActiveResponse)));
             ZllRxOnWhenIdleGetActiveResponse response = (ZllRxOnWhenIdleGetActiveResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ZllRxOnWhenIdleGetActive;
@@ -4731,7 +4731,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZllScanningCompleteResponse ZllScanningComplete()
         {
             ZllScanningCompleteRequest request = new ZllScanningCompleteRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllScanningCompleteResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllScanningCompleteResponse)));
             ZllScanningCompleteResponse response = (ZllScanningCompleteResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4744,7 +4744,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public uint GetZllPrimaryChannelMask()
         {
             GetZllPrimaryChannelMaskRequest request = new GetZllPrimaryChannelMaskRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetZllPrimaryChannelMaskResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetZllPrimaryChannelMaskResponse)));
             GetZllPrimaryChannelMaskResponse response = (GetZllPrimaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ZllPrimaryChannelMask;
@@ -4757,7 +4757,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public uint GetZllSecondaryChannelMask()
         {
             GetZllSecondaryChannelMaskRequest request = new GetZllSecondaryChannelMaskRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetZllSecondaryChannelMaskResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetZllSecondaryChannelMaskResponse)));
             GetZllSecondaryChannelMaskResponse response = (GetZllSecondaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.ZllSecondaryChannelMask;
@@ -4772,7 +4772,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetZllPrimaryChannelMaskRequest request = new SetZllPrimaryChannelMaskRequest();
             request.ZllPrimaryChannelMask = zllPrimaryChannelMask;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllPrimaryChannelMaskResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllPrimaryChannelMaskResponse)));
             SetZllPrimaryChannelMaskResponse response = (SetZllPrimaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4787,7 +4787,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             SetZllSecondaryChannelMaskRequest request = new SetZllSecondaryChannelMaskRequest();
             request.ZllSecondaryChannelMask = zllSecondaryChannelMask;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetZllSecondaryChannelMaskResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllSecondaryChannelMaskResponse)));
             SetZllSecondaryChannelMaskResponse response = (SetZllSecondaryChannelMaskResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4800,7 +4800,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZllClearTokensResponse ZllClearTokens()
         {
             ZllClearTokensRequest request = new ZllClearTokensRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ZllClearTokensResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllClearTokensResponse)));
             ZllClearTokensResponse response = (ZllClearTokensResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4833,7 +4833,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.GpdKey = gpdKey;
             request.GpdSecurityFrameCounter = gpdSecurityFrameCounter;
             request.ForwardingRadius = forwardingRadius;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableProcessGpPairingResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableProcessGpPairingResponse)));
             GpProxyTableProcessGpPairingResponse response = (GpProxyTableProcessGpPairingResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.GpPairingAdded;
@@ -4862,7 +4862,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.GpdAsdu = gpdAsdu;
             request.GpepHandle = gpepHandle;
             request.GpTxQueueEntryLifetimeMs = gpTxQueueEntryLifetimeMs;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DGpSendResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DGpSendResponse)));
             DGpSendResponse response = (DGpSendResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -4878,7 +4878,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public (Status Status, byte GpepHandle) DGpSentHandler()
         {
             DGpSentHandlerRequest request = new DGpSentHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(DGpSentHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DGpSentHandlerResponse)));
             DGpSentHandlerResponse response = (DGpSentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.GpepHandle);
@@ -4891,7 +4891,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ZigbeeGpParams GpepIncomingMessageHandler()
         {
             GpepIncomingMessageHandlerRequest request = new GpepIncomingMessageHandlerRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpepIncomingMessageHandlerResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpepIncomingMessageHandlerResponse)));
             GpepIncomingMessageHandlerResponse response = (GpepIncomingMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Param;
@@ -4909,7 +4909,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpProxyTableGetEntryRequest request = new GpProxyTableGetEntryRequest();
             request.ProxyIndex = proxyIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableGetEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableGetEntryResponse)));
             GpProxyTableGetEntryResponse response = (GpProxyTableGetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Entry);
@@ -4924,7 +4924,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpProxyTableLookupRequest request = new GpProxyTableLookupRequest();
             request.Addr = addr;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableLookupResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableLookupResponse)));
             GpProxyTableLookupResponse response = (GpProxyTableLookupResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Index;
@@ -4939,7 +4939,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpProxyTableRemoveEntryRequest request = new GpProxyTableRemoveEntryRequest();
             request.ProxyIndex = proxyIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpProxyTableRemoveEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableRemoveEntryResponse)));
             GpProxyTableRemoveEntryResponse response = (GpProxyTableRemoveEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4952,7 +4952,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public GpClearProxyTableResponse GpClearProxyTable()
         {
             GpClearProxyTableRequest request = new GpClearProxyTableRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpClearProxyTableResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpClearProxyTableResponse)));
             GpClearProxyTableResponse response = (GpClearProxyTableResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -4970,7 +4970,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpSinkTableGetEntryRequest request = new GpSinkTableGetEntryRequest();
             request.SinkIndex = sinkIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableGetEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableGetEntryResponse)));
             GpSinkTableGetEntryResponse response = (GpSinkTableGetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.Entry);
@@ -4985,7 +4985,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpSinkTableLookupRequest request = new GpSinkTableLookupRequest();
             request.Addr = addr;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableLookupResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableLookupResponse)));
             GpSinkTableLookupResponse response = (GpSinkTableLookupResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Index;
@@ -5002,7 +5002,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             GpSinkTableSetEntryRequest request = new GpSinkTableSetEntryRequest();
             request.SinkIndex = sinkIndex;
             request.Entry = entry;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableSetEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableSetEntryResponse)));
             GpSinkTableSetEntryResponse response = (GpSinkTableSetEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -5017,7 +5017,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpSinkTableRemoveEntryRequest request = new GpSinkTableRemoveEntryRequest();
             request.SinkIndex = sinkIndex;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableRemoveEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableRemoveEntryResponse)));
             GpSinkTableRemoveEntryResponse response = (GpSinkTableRemoveEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5032,7 +5032,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GpSinkTableFindOrAllocateEntryRequest request = new GpSinkTableFindOrAllocateEntryRequest();
             request.Addr = addr;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableFindOrAllocateEntryResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableFindOrAllocateEntryResponse)));
             GpSinkTableFindOrAllocateEntryResponse response = (GpSinkTableFindOrAllocateEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Index;
@@ -5045,7 +5045,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public GpSinkTableClearAllResponse GpSinkTableClearAll()
         {
             GpSinkTableClearAllRequest request = new GpSinkTableClearAllRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableClearAllResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableClearAllResponse)));
             GpSinkTableClearAllResponse response = (GpSinkTableClearAllResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5058,7 +5058,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public GpSinkTableInitResponse GpSinkTableInit()
         {
             GpSinkTableInitRequest request = new GpSinkTableInitRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableInitResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableInitResponse)));
             GpSinkTableInitResponse response = (GpSinkTableInitResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5075,7 +5075,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             GpSinkTableSetSecurityFrameCounterRequest request = new GpSinkTableSetSecurityFrameCounterRequest();
             request.Index = index;
             request.Sfc = sfc;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableSetSecurityFrameCounterResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableSetSecurityFrameCounterResponse)));
             GpSinkTableSetSecurityFrameCounterResponse response = (GpSinkTableSetSecurityFrameCounterResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5096,7 +5096,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.GpmAddrForSecurity = gpmAddrForSecurity;
             request.GpmAddrForPairing = gpmAddrForPairing;
             request.SinkEndpoint = sinkEndpoint;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkCommissionResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkCommissionResponse)));
             GpSinkCommissionResponse response = (GpSinkCommissionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -5109,7 +5109,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public GpTranslationTableClearResponse GpTranslationTableClear()
         {
             GpTranslationTableClearRequest request = new GpTranslationTableClearRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpTranslationTableClearResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpTranslationTableClearResponse)));
             GpTranslationTableClearResponse response = (GpTranslationTableClearResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5122,7 +5122,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public byte GpSinkTableGetNumberOfActiveEntries()
         {
             GpSinkTableGetNumberOfActiveEntriesRequest request = new GpSinkTableGetNumberOfActiveEntriesRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSinkTableGetNumberOfActiveEntriesResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableGetNumberOfActiveEntriesResponse)));
             GpSinkTableGetNumberOfActiveEntriesResponse response = (GpSinkTableGetNumberOfActiveEntriesResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.NumberOfEntries;
@@ -5135,7 +5135,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public uint GetTokenCount()
         {
             GetTokenCountRequest request = new GetTokenCountRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenCountResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenCountResponse)));
             GetTokenCountResponse response = (GetTokenCountResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Count;
@@ -5153,7 +5153,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         {
             GetTokenInfoRequest request = new GetTokenInfoRequest();
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenInfoResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenInfoResponse)));
             GetTokenInfoResponse response = (GetTokenInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.TokenInfo);
@@ -5173,7 +5173,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             GetTokenDataRequest request = new GetTokenDataRequest();
             request.Token = token;
             request.Index = index;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GetTokenDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenDataResponse)));
             GetTokenDataResponse response = (GetTokenDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return (response.Status, response.TokenData);
@@ -5192,7 +5192,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Token = token;
             request.Index = index;
             request.TokenData = tokenData;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(SetTokenDataResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTokenDataResponse)));
             SetTokenDataResponse response = (SetTokenDataResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -5205,7 +5205,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public ResetNodeResponse ResetNode()
         {
             ResetNodeRequest request = new ResetNodeRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(ResetNodeResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ResetNodeResponse)));
             ResetNodeResponse response = (ResetNodeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;
@@ -5218,7 +5218,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public Status GpSecurityTestVectors()
         {
             GpSecurityTestVectorsRequest request = new GpSecurityTestVectorsRequest();
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(GpSecurityTestVectorsResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSecurityTestVectorsResponse)));
             GpSecurityTestVectorsResponse response = (GpSecurityTestVectorsResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response.Status;
@@ -5235,7 +5235,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             TokenFactoryResetRequest request = new TokenFactoryResetRequest();
             request.ExcludeOutgoingFC = excludeOutgoingFC;
             request.ExcludeBootCounter = excludeBootCounter;
-            IEzspTransaction transaction = _protocolHandler.SendEzspTransaction(new EzspSingleResponseTransaction(request, typeof(TokenFactoryResetResponse)));
+            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TokenFactoryResetResponse)));
             TokenFactoryResetResponse response = (TokenFactoryResetResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
             return response;

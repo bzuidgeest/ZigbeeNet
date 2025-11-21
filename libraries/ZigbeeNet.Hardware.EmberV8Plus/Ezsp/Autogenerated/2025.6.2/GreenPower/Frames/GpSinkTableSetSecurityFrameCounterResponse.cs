@@ -27,7 +27,7 @@ public class GpSinkTableSetSecurityFrameCounterResponse : EzspFrameResponseV8Plu
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00F5; } }
 
 	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)

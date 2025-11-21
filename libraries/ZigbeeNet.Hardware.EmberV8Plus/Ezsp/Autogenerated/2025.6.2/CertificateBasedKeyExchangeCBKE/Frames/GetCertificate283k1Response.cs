@@ -26,7 +26,7 @@ public class GetCertificate283k1Response : EzspFrameResponseV8Plus
 {
 	/// <summary>
 	/// The frameId of the frame
-]	/// </summary>
+	/// </summary>
 	public static ushort FrameId { get { return 0x00EC; } }
 
 	public Status Status { get; set; }
