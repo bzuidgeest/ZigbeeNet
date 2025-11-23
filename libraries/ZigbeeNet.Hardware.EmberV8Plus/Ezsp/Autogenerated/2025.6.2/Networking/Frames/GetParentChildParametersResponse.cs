@@ -11,54 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns information about the children of the local node and the parent of the local node.
 /// Frame value: 0x0029
 /// </summary>
-public class GetParentChildParametersResponse : EzspFrameResponseV8Plus
+public class GetParentChildParametersResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0029; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0029; }
     /// <summary>
     /// The number of children the node currently has.
     /// </summary>
-	public byte ChildCount { get; set; }
+    public byte ChildCount { get; set; }
 
     /// <summary>
     /// The parent&apos;s EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] ParentEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] ParentEui64;
     /// <summary>
     /// The parent&apos;s node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
     /// </summary>
-	public ushort ParentNodeId { get; set; }
+    public ushort ParentNodeId { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetParentChildParametersResponse frame = new GetParentChildParametersResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ChildCount = frameBytes[index];
-		index += 1;
-		frame.ParentEui64 = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.ParentNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetParentChildParametersResponse frame = new GetParentChildParametersResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ChildCount = frameBytes[index];
+        index += 1;
+        frame.ParentEui64 = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.ParentNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

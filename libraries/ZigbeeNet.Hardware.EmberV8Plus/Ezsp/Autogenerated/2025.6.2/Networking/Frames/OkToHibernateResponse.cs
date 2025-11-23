@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Indicate whether the stack currently has any tasks pending. If no tasks are pending, ::emberTick() does not need to be called until the next time a stack API function is called. This function can only be called when the node type is ::SL_ZIGBEE_SLEEPY_END_DEVICE.
 /// Frame value: 0x0141
 /// </summary>
-public class OkToHibernateResponse : EzspFrameResponseV8Plus
+public class OkToHibernateResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0141; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0141; }
     /// <summary>
     /// True if the application may sleep for as long as it wishes.
     /// </summary>
-	public bool Indicator { get; set; }
+    public bool Indicator { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		OkToHibernateResponse frame = new OkToHibernateResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Indicator = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        OkToHibernateResponse frame = new OkToHibernateResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Indicator = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

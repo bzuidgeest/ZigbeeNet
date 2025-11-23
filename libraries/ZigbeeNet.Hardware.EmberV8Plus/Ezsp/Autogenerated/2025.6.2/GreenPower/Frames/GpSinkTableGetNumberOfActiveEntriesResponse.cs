@@ -11,40 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// Return number of active entries in sink table.
 /// Frame value: 0x0118
 /// </summary>
-public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Plus
+public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0118; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0118; }
     /// <summary>
     /// Number of active entries in sink table.
     /// </summary>
-	public byte NumberOfEntries { get; set; }
+    public byte NumberOfEntries { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GpSinkTableGetNumberOfActiveEntriesResponse frame = new GpSinkTableGetNumberOfActiveEntriesResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.NumberOfEntries = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GpSinkTableGetNumberOfActiveEntriesResponse frame = new GpSinkTableGetNumberOfActiveEntriesResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.NumberOfEntries = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

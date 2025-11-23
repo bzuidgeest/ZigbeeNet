@@ -11,43 +11,37 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Retrieves the certificate installed on the NCP.
 /// Frame value: 0x00A5
 /// </summary>
-public class GetCertificateResponse : EzspFrameResponseV8Plus
+public class GetCertificateResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00A5; } }
-
-	public Status Status { get; set; }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00A5; }
+    public Status Status { get; set; }
     /// <summary>
     /// The locally installed certificate.
     /// </summary>
-	public ZigbeeCertificateData LocalCert { get; set; }
+    public ZigbeeCertificateData LocalCert { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetCertificateResponse frame = new GetCertificateResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificateData>(frameBytes.Slice(index, 48));
-		index += 48;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetCertificateResponse frame = new GetCertificateResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificateData>(frameBytes.Slice(index, 48));
+        index += 48;
+        return frame;
+    }
 }
-
 #endif

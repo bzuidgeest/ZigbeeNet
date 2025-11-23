@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// The command allows the Host to specify the desired EZSP version and must be sent before any other command. The response provides information about the firmware running on the NCP.
 /// Frame value: 0x0000
 /// </summary>
-public class VersionResponse : EzspFrameResponseV8Plus
+public class VersionResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0000; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0000; }
     /// <summary>
     /// The EZSP version the NCP is using.
     /// </summary>
-	public byte ProtocolVersion { get; set; }
-
+    public byte ProtocolVersion { get; set; }
     /// <summary>
     /// The type of stack running on the NCP (2).
     /// </summary>
-	public byte StackType { get; set; }
-
+    public byte StackType { get; set; }
     /// <summary>
     /// The version number of the stack.
     /// </summary>
-	public ushort StackVersion { get; set; }
+    public ushort StackVersion { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		VersionResponse frame = new VersionResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ProtocolVersion = frameBytes[index];
-		index += 1;
-		frame.StackType = frameBytes[index];
-		index += 1;
-		frame.StackVersion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        VersionResponse frame = new VersionResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ProtocolVersion = frameBytes[index];
+        index += 1;
+        frame.StackType = frameBytes[index];
+        index += 1;
+        frame.StackVersion = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

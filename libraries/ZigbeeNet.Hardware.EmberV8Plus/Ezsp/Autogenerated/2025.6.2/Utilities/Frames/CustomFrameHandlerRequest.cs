@@ -11,24 +11,32 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// A callback indicating a custom EZSP message has been received.
 /// Frame value: 0x0054
 /// </summary>
-public class CustomFrameHandlerRequest : EzspFrameRequestV8Plus
+public class CustomFrameHandlerRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0054; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0054; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

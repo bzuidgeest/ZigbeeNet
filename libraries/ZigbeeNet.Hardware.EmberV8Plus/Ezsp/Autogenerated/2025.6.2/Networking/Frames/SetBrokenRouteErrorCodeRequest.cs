@@ -11,29 +11,36 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Sets the error code that is sent back from a router with a broken route. 
 /// Frame value: 0x0011
 /// </summary>
-public class SetBrokenRouteErrorCodeRequest : EzspFrameRequestV8Plus
+public class SetBrokenRouteErrorCodeRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0011; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0011; }
     /// <summary>
     /// Desired error code.
     /// </summary>
-	public byte ErrorCode { get; set; }
+    public byte ErrorCode { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

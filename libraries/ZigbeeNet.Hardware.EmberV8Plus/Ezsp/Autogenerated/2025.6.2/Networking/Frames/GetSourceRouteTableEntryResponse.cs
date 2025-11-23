@@ -11,55 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns information about a source route table entry
 /// Frame value: 0x00C1
 /// </summary>
-public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus
+public class GetSourceRouteTableEntryResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C1; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C1; }
     /// <summary>
     /// SL_STATUS_OK if there is source route entry at
-	/// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
-	/// source route at &lt;i&gt;index&lt;/i&gt;.
+    /// &lt;i&gt;index&lt;/i&gt;. SL_STATUS_NOT_FOUND if there is no
+    /// source route at &lt;i&gt;index&lt;/i&gt;.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The node ID of the destination in that entry.
     /// </summary>
-	public ushort Destination { get; set; }
-
+    public ushort Destination { get; set; }
     /// <summary>
     /// The closer node index for this source route table entry
     /// </summary>
-	public byte CloserIndex { get; set; }
+    public byte CloserIndex { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetSourceRouteTableEntryResponse frame = new GetSourceRouteTableEntryResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Destination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.CloserIndex = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetSourceRouteTableEntryResponse frame = new GetSourceRouteTableEntryResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Destination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.CloserIndex = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

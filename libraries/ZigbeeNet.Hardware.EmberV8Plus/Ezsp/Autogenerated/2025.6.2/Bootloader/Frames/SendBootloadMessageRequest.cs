@@ -11,45 +11,50 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
-
 /// <summary>
 /// Transmits the given bootload message to a neighboring node using a specific 802.15.4 header that allows the EmberZNet stack as well as the bootloader to recognize the message, but will not interfere with other ZigBee stacks.
 /// Frame value: 0x0090
 /// </summary>
-public class SendBootloadMessageRequest : EzspFrameRequestV8Plus
+public class SendBootloadMessageRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0090; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0090; }
     /// <summary>
     /// If true, the destination address and pan id are both set to the broadcast address.
     /// </summary>
-	public bool Broadcast { get; set; }
+    public bool Broadcast { get; set; }
 
     /// <summary>
     /// The EUI64 of the target node. Ignored if the broadcast field is set to true.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] DestEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] DestEui64;
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The multicast message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

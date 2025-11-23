@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.Linq;
 using System.Threading;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 
@@ -50,6 +51,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             
 
             
+        }
+
+        public bool IsSupportedResponse()
+        {
+            //fix
+            return _ezspHandlerDict.Keys.Contains(_frameId);
         }
 
         /*Use this method in derived classes to parse the header if needed

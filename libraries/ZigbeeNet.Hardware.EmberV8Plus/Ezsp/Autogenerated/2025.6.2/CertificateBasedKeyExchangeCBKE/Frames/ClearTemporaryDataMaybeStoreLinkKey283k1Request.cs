@@ -11,29 +11,36 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Clears the temporary data associated with CBKE and the key establishment, most notably the ephemeral public/private key pair. If storeLinKey is true it moves the unverified link key stored in temporary storage into the link key table. Otherwise it discards the key.
 /// Frame value: 0x00EE
 /// </summary>
-public class ClearTemporaryDataMaybeStoreLinkKey283k1Request : EzspFrameRequestV8Plus
+public class ClearTemporaryDataMaybeStoreLinkKey283k1Request : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00EE; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00EE; }
     /// <summary>
     /// A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.
     /// </summary>
-	public bool StoreLinkKey { get; set; }
+    public bool StoreLinkKey { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

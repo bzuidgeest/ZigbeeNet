@@ -11,40 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Send the network key to a destination.
 /// Frame value: 0x0050
 /// </summary>
-public class UnicastCurrentNetworkKeyRequest : EzspFrameRequestV8Plus
+public class UnicastCurrentNetworkKeyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0050; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0050; }
     /// <summary>
     /// The destination node of the key.
     /// </summary>
-	public ushort TargetShort { get; set; }
+    public ushort TargetShort { get; set; }
 
     /// <summary>
     /// The long address of the destination node.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] TargetLong;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] TargetLong;
     /// <summary>
     /// The parent node of the destination node.
     /// </summary>
-	public ushort ParentShortId { get; set; }
+    public ushort ParentShortId { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

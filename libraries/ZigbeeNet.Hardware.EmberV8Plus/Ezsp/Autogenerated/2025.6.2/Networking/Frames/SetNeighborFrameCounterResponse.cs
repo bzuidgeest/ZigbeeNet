@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Sets the frame counter for the neighbour or child.
 /// Frame value: 0x00AD
 /// </summary>
-public class SetNeighborFrameCounterResponse : EzspFrameResponseV8Plus
+public class SetNeighborFrameCounterResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00AD; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00AD; }
     /// <summary>
     /// Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetNeighborFrameCounterResponse frame = new SetNeighborFrameCounterResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetNeighborFrameCounterResponse frame = new SetNeighborFrameCounterResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

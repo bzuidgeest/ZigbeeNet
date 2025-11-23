@@ -11,59 +11,60 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Enable/disable concentrator support.
 /// Frame value: 0x0010
 /// </summary>
-public class SetConcentratorRequest : EzspFrameRequestV8Plus
+public class SetConcentratorRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0010; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0010; }
     /// <summary>
     /// If this bool is true the concentrator support is enabled. Otherwise is disabled. If this bool is false all the other arguments are ignored.
     /// </summary>
-	public bool On { get; set; }
-
+    public bool On { get; set; }
     /// <summary>
     /// Must be either SL_ZIGBEE_HIGH_RAM_CONCENTRATOR or SL_ZIGBEE_LOW_RAM_CONCENTRATOR. The former is used when the caller has enough memory to store source routes for the whole network. In that case, remote nodes stop sending route records once the concentrator has successfully received one. The latter is used when the concentrator has insufficient RAM to store all outbound source routes. In that case, route records are sent to the concentrator prior to every inbound APS unicast.
     /// </summary>
-	public ushort ConcentratorType { get; set; }
-
+    public ushort ConcentratorType { get; set; }
     /// <summary>
     /// The minimum amount of time that must pass between MTORR broadcasts.
     /// </summary>
-	public ushort MinTime { get; set; }
-
+    public ushort MinTime { get; set; }
     /// <summary>
     /// The maximum amount of time that can pass between MTORR broadcasts.
     /// </summary>
-	public ushort MaxTime { get; set; }
-
+    public ushort MaxTime { get; set; }
     /// <summary>
     /// The number of route errors that will trigger a re-broadcast of the MTORR.
     /// </summary>
-	public byte RouteErrorThreshold { get; set; }
-
+    public byte RouteErrorThreshold { get; set; }
     /// <summary>
     /// The number of APS delivery failures that will trigger a re-broadcast of the MTORR.
     /// </summary>
-	public byte DeliveryFailureThreshold { get; set; }
-
+    public byte DeliveryFailureThreshold { get; set; }
     /// <summary>
     /// The maximum number of hops that the MTORR broadcast will be allowed to have. A value of 0 will be converted to the SL_ZIGBEE_MAX_HOPS value set by the stack.
     /// </summary>
-	public byte MaxHops { get; set; }
+    public byte MaxHops { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
-
 /// <summary>
 /// This function broadcasts a switch key message to tell all nodes to change to the sequence number of the previously sent Alternate Encryption Key.
 /// Frame value: 0x0074
 /// </summary>
-public class BroadcastNetworkKeySwitchResponse : EzspFrameResponseV8Plus
+public class BroadcastNetworkKeySwitchResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0074; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0074; }
     /// <summary>
     /// sl_status_t value that indicates the success or failure of the command.
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		BroadcastNetworkKeySwitchResponse frame = new BroadcastNetworkKeySwitchResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        BroadcastNetworkKeySwitchResponse frame = new BroadcastNetworkKeySwitchResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

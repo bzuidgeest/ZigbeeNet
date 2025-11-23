@@ -768,8 +768,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 
             public bool TransactionEvent(EzspFrameResponseV8Plus ezspResponse)
             {
-                if (ezspResponse.GetSequenceNumber() == _ezspTransaction.GetRequest().GetSequenceNumber()
-                        && ezspResponse is EzspInvalidCommandResponse) 
+                if (ezspResponse.SequenceNumber == _ezspTransaction.GetRequest().SequenceNumber && ezspResponse.IsSupportedResponse()) 
                 {
                     // NCP doesn't support this command!
                     TransactionComplete();

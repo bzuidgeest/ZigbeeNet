@@ -11,32 +11,28 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// Set the primary ZLL (touchlink) channel mask
 /// Frame value: 0x00DB
 /// </summary>
-public class SetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
+public class SetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00DB; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00DB; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetZllPrimaryChannelMaskResponse frame = new SetZllPrimaryChannelMaskResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetZllPrimaryChannelMaskResponse frame = new SetZllPrimaryChannelMaskResponse();
+        int index = frame.ParseHeader(frameBytes);
+        return frame;
+    }
 }
-
 #endif

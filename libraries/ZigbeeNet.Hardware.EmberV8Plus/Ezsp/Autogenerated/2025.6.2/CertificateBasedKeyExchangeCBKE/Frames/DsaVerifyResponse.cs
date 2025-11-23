@@ -11,36 +11,31 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Verify that signature of the associated message digest was signed by the private key of the associated certificate.
 /// Frame value: 0x00A3
 /// </summary>
-public class DsaVerifyResponse : EzspFrameResponseV8Plus
+public class DsaVerifyResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00A3; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00A3; }
+    public Status Status { get; set; }
 
-	public Status Status { get; set; }
-
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		DsaVerifyResponse frame = new DsaVerifyResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        DsaVerifyResponse frame = new DsaVerifyResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

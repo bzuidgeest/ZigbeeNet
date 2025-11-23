@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Calculates the SMAC verification keys for both the initiator and responder roles of CBKE using the passed parameters and the stored public/private key pair previously generated with ezspGenerateKeysRetrieveCert(). It also stores the unverified link key data in temporary storage on the NCP until the key establishment is complete.
 /// Frame value: 0x009F
 /// </summary>
-public class CalculateSmacsRequest : EzspFrameRequestV8Plus
+public class CalculateSmacsRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x009F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x009F; }
     /// <summary>
     /// The role of this device in the Key Establishment protocol.
     /// </summary>
-	public bool AmInitiator { get; set; }
-
+    public bool AmInitiator { get; set; }
     /// <summary>
     /// The key establishment partner&apos;s implicit certificate.
     /// </summary>
-	public ZigbeeCertificateData PartnerCertificate { get; set; }
-
+    public ZigbeeCertificateData PartnerCertificate { get; set; }
     /// <summary>
     /// The key establishment partner&apos;s ephemeral public key
     /// </summary>
-	public ZigbeePublicKeyData PartnerEphemeralPublicKey { get; set; }
+    public ZigbeePublicKeyData PartnerEphemeralPublicKey { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

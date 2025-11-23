@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Retrieve one of the cluster IDs associated with the given endpoint.
 /// Frame value: 0x0131
 /// </summary>
-public class GetEndpointClusterResponse : EzspFrameResponseV8Plus
+public class GetEndpointClusterResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0131; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0131; }
     /// <summary>
     /// ID of the requested cluster.
     /// </summary>
-	public ushort EndpointCluster { get; set; }
+    public ushort EndpointCluster { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetEndpointClusterResponse frame = new GetEndpointClusterResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.EndpointCluster = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetEndpointClusterResponse frame = new GetEndpointClusterResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.EndpointCluster = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Return the maximum number of children for this node. The return value is undefined for nodes that are not joined to a network.
 /// Frame value: 0x013C
 /// </summary>
-public class MaxChildCountResponse : EzspFrameResponseV8Plus
+public class MaxChildCountResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x013C; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x013C; }
     /// <summary>
     /// The maximum number of children.
     /// </summary>
-	public byte MaxChildCount { get; set; }
+    public byte MaxChildCount { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MaxChildCountResponse frame = new MaxChildCountResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.MaxChildCount = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MaxChildCountResponse frame = new MaxChildCountResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.MaxChildCount = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

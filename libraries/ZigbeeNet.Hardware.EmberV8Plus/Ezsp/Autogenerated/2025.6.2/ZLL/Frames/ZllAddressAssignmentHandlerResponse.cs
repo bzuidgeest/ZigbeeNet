@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// This call is fired when network and group addresses are assigned to a remote mode in a network start or network join request.
 /// Frame value: 0x00B8
 /// </summary>
-public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus
+public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00B8; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00B8; }
     /// <summary>
     /// Address assignment information.
     /// </summary>
-	public ZigbeeZllAddressAssignment AddressInfo { get; set; }
-
+    public ZigbeeZllAddressAssignment AddressInfo { get; set; }
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-	public ZigbeeRxPacketInfo PacketInfo { get; set; }
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ZllAddressAssignmentHandlerResponse frame = new ZllAddressAssignmentHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.AddressInfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
-		index += 14;
-		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
-		index += 18;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ZllAddressAssignmentHandlerResponse frame = new ZllAddressAssignmentHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.AddressInfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
+        index += 14;
+        frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+        index += 18;
+        return frame;
+    }
 }
-
 #endif

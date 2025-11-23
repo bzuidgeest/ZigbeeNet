@@ -11,35 +11,41 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// This function sends an APS TransportKey command containing the current trust center link key. The node to which the command is sent is specified via the short and long address arguments.
 /// Frame value: 0x0067
 /// </summary>
-public class SendTrustCenterLinkKeyRequest : EzspFrameRequestV8Plus
+public class SendTrustCenterLinkKeyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0067; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0067; }
     /// <summary>
     /// The short address of the node to which this command will be sent
     /// </summary>
-	public ushort DestinationNodeId { get; set; }
+    public ushort DestinationNodeId { get; set; }
 
     /// <summary>
     /// The long address of the node to which this command will be sent
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] DestinationEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] DestinationEui64;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -11,32 +11,28 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// This call sets additional capability bits in the ZLL state.
 /// Frame value: 0x00D6
 /// </summary>
-public class SetZllAdditionalStateResponse : EzspFrameResponseV8Plus
+public class SetZllAdditionalStateResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D6; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D6; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetZllAdditionalStateResponse frame = new SetZllAdditionalStateResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetZllAdditionalStateResponse frame = new SetZllAdditionalStateResponse();
+        int index = frame.ParseHeader(frameBytes);
+        return frame;
+    }
 }
-
 #endif

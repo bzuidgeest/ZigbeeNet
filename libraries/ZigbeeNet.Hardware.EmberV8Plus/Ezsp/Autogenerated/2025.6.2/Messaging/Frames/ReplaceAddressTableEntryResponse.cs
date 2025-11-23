@@ -11,61 +11,54 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Replaces the EUI64, short ID and extended timeout setting of an address table entry. The previous EUI64, short ID and extended timeout setting are returned.
 /// Frame value: 0x0082
 /// </summary>
-public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus
+public class ReplaceAddressTableEntryResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0082; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0082; }
     /// <summary>
     /// SL_STATUS_OK if the EUI64, short ID and extended timeout setting were successfully modified, and SL_STATUS_ZIGBEE_ADDRESS_TABLE_ENTRY_IS_ACTIVE otherwise.
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The EUI64 of the address table entry before it was modified.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] OldEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] OldEui64;
     /// <summary>
     /// One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
     /// </summary>
-	public ushort OldId { get; set; }
-
+    public ushort OldId { get; set; }
     /// <summary>
     /// true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
     /// </summary>
-	public bool OldExtendedTimeout { get; set; }
+    public bool OldExtendedTimeout { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ReplaceAddressTableEntryResponse frame = new ReplaceAddressTableEntryResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.OldEui64 = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.OldId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.OldExtendedTimeout = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ReplaceAddressTableEntryResponse frame = new ReplaceAddressTableEntryResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.OldEui64 = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.OldId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.OldExtendedTimeout = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

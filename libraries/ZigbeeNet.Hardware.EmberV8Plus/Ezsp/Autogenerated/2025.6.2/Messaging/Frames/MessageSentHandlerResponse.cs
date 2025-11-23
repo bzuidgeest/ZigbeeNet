@@ -11,81 +11,70 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback indicating the stack has completed sending a message.
 /// Frame value: 0x003F
 /// </summary>
-public class MessageSentHandlerResponse : EzspFrameResponseV8Plus
+public class MessageSentHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x003F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x003F; }
     /// <summary>
     /// An sl_status_t value of SL_STATUS_OK if an ACK was received from the destination or SL_STATUS_ZIGBEE_DELIVERY_FAILED if no ACK was received.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The type of message sent.
     /// </summary>
-	public ZigbeeOutgoingMessageType Type { get; set; }
-
+    public ZigbeeOutgoingMessageType Type { get; set; }
     /// <summary>
     /// The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.
     /// </summary>
-	public ushort IndexOrDestination { get; set; }
-
+    public ushort IndexOrDestination { get; set; }
     /// <summary>
     /// The APS frame for the message.
     /// </summary>
-	public ZigbeeApsFrame ApsFrame { get; set; }
-
+    public ZigbeeApsFrame ApsFrame { get; set; }
     /// <summary>
     /// The value supplied by the Host in the &lt;i&gt;sl_zigbee_ezsp_send_unicast&lt;/i&gt;, &lt;i&gt;sl_zigbee_ezsp_send_broadcast&lt;/i&gt; or &lt;i&gt;sl_zigbee_ezsp_send_multicast&lt;/i&gt; command.
     /// </summary>
-	public ushort MessageTag { get; set; }
-
+    public ushort MessageTag { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MessageSentHandlerResponse frame = new MessageSentHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Type = (ZigbeeOutgoingMessageType)frameBytes[index];
-		index += 1;
-		frame.IndexOrDestination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
-		index += 12;
-		frame.MessageTag = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.MessageLength = frameBytes[index];
-		index += 1;
-		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
-		index += frame.MessageLength;
-
-		return frame;
-	}
+    public byte[] MessageContents;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MessageSentHandlerResponse frame = new MessageSentHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Type = (ZigbeeOutgoingMessageType)frameBytes[index];
+        index += 1;
+        frame.IndexOrDestination = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
+        index += 12;
+        frame.MessageTag = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.MessageLength = frameBytes[index];
+        index += 1;
+        frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+        index += frame.MessageLength;
+        return frame;
+    }
 }
-
 #endif

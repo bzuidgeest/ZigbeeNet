@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Globalization;
 using ZigBeeNet.Util;
+using System.Buffers.Binary;
 
 namespace ZigBeeNet
 {
@@ -48,6 +49,13 @@ namespace ZigBeeNet
             if (address.Length != 8)
                 throw new ArgumentOutOfRangeException("IeeeAddress array length must be 8");
             Value = address.ToUInt64();
+        }
+
+        public byte[] AsByteArray()
+        {
+            Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+            BinaryPrimitives.WriteUInt64LittleEndian(bytes, Value);
+            return bytes.ToArray();
         }
 
         /// <summary>

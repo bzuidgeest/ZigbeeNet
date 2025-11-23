@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Gets information about a timer. The Host can use this command to find out how much longer it will be before a previously set timer will generate a callback.
 /// Frame value: 0x004E
 /// </summary>
-public class GetTimerResponse : EzspFrameResponseV8Plus
+public class GetTimerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x004E; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x004E; }
     /// <summary>
     /// The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-	public ushort Time { get; set; }
-
+    public ushort Time { get; set; }
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-	public ZigbeeEventUnits Units { get; set; }
-
+    public ZigbeeEventUnits Units { get; set; }
     /// <summary>
     /// True if a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. False if only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-	public bool Repeat { get; set; }
+    public bool Repeat { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetTimerResponse frame = new GetTimerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Time = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.Units = (ZigbeeEventUnits)frameBytes[index];
-		index += 1;
-		frame.Repeat = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetTimerResponse frame = new GetTimerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Time = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.Units = (ZigbeeEventUnits)frameBytes[index];
+        index += 1;
+        frame.Repeat = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

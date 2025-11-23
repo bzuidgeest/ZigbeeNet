@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Return radio power value of the child from the given childIndex
 /// Frame value: 0x0134
 /// </summary>
-public class ChildPowerResponse : EzspFrameResponseV8Plus
+public class ChildPowerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0134; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0134; }
     /// <summary>
     /// The power of the child or maximum radio power, which is the power value provided by the user while forming/joining a network if there isn&apos;t a child at the childIndex specified
     /// </summary>
-	public sbyte ChildPower { get; set; }
+    public sbyte ChildPower { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ChildPowerResponse frame = new ChildPowerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ChildPower = (sbyte)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ChildPowerResponse frame = new ChildPowerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ChildPower = (sbyte)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

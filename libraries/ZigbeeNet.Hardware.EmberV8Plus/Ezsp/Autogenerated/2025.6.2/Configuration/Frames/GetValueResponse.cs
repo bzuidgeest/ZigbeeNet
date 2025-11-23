@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Reads a value from the NCP.
 /// Frame value: 0x00AA
 /// </summary>
-public class GetValueResponse : EzspFrameResponseV8Plus
+public class GetValueResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00AA; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00AA; }
     /// <summary>
     /// SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the length of the returned &lt;i&gt;value&lt;/i&gt; exceeds the size of local storage allocated to receive it.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned &lt;i&gt;value&lt;/i&gt;. On response, the actual length in bytes of the returned &lt;i&gt;value&lt;/i&gt;.
     /// </summary>
-	public byte ValueLength { get; set; }
+    public byte ValueLength { get; set; }
 
     /// <summary>
     /// The value.
     /// </summary>
-	// Array field with symbolic size: valueLength
-	public byte[] Value;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetValueResponse frame = new GetValueResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.ValueLength = frameBytes[index];
-		index += 1;
-		frame.Value = frameBytes.Slice(index, frame.ValueLength).ToArray();
-		index += frame.ValueLength;
-
-		return frame;
-	}
+    public byte[] Value;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetValueResponse frame = new GetValueResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.ValueLength = frameBytes[index];
+        index += 1;
+        frame.Value = frameBytes.Slice(index, frame.ValueLength).ToArray();
+        index += frame.ValueLength;
+        return frame;
+    }
 }
-
 #endif

@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Exports a key from security manager based on passed context.
 /// Frame value: 0x0114
 /// </summary>
-public class SecManExportKeyResponse : EzspFrameResponseV8Plus
+public class SecManExportKeyResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0114; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0114; }
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Data to store the exported key in.
     /// </summary>
-	public ZigbeeSecManKey Key { get; set; }
+    public ZigbeeSecManKey Key { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SecManExportKeyResponse frame = new SecManExportKeyResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Key = MemoryMarshal.Read<ZigbeeSecManKey>(frameBytes.Slice(index, 16));
-		index += 16;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SecManExportKeyResponse frame = new SecManExportKeyResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Key = MemoryMarshal.Read<ZigbeeSecManKey>(frameBytes.Slice(index, 16));
+        index += 16;
+        return frame;
+    }
 }
-
 #endif

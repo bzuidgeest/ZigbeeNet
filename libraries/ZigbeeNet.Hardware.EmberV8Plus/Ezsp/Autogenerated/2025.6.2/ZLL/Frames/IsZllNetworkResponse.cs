@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// Is this a ZLL network?
 /// Frame value: 0x00BE
 /// </summary>
-public class IsZllNetworkResponse : EzspFrameResponseV8Plus
+public class IsZllNetworkResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00BE; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00BE; }
     /// <summary>
     /// ZLL network?
     /// </summary>
-	public bool IsZllNetwork { get; set; }
+    public bool IsZllNetwork { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IsZllNetworkResponse frame = new IsZllNetworkResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.IsZllNetwork = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IsZllNetworkResponse frame = new IsZllNetworkResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.IsZllNetwork = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

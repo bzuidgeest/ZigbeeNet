@@ -11,67 +11,58 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback indicating a message has been received.
 /// Frame value: 0x0045
 /// </summary>
-public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus
+public class IncomingMessageHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0045; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0045; }
     /// <summary>
     /// The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK
     /// </summary>
-	public ZigbeeIncomingMessageType Type { get; set; }
-
+    public ZigbeeIncomingMessageType Type { get; set; }
     /// <summary>
     /// The APS frame from the incoming message.
     /// </summary>
-	public ZigbeeApsFrame ApsFrame { get; set; }
-
+    public ZigbeeApsFrame ApsFrame { get; set; }
     /// <summary>
     /// Miscellanous message information.
     /// </summary>
-	public ZigbeeRxPacketInfo PacketInfo { get; set; }
-
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;message&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The incoming message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] Message;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IncomingMessageHandlerResponse frame = new IncomingMessageHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Type = (ZigbeeIncomingMessageType)frameBytes[index];
-		index += 1;
-		frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
-		index += 12;
-		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
-		index += 18;
-		frame.MessageLength = frameBytes[index];
-		index += 1;
-		frame.Message = frameBytes.Slice(index, frame.MessageLength).ToArray();
-		index += frame.MessageLength;
-
-		return frame;
-	}
+    public byte[] Message;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IncomingMessageHandlerResponse frame = new IncomingMessageHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Type = (ZigbeeIncomingMessageType)frameBytes[index];
+        index += 1;
+        frame.ApsFrame = MemoryMarshal.Read<ZigbeeApsFrame>(frameBytes.Slice(index, 12));
+        index += 12;
+        frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+        index += 18;
+        frame.MessageLength = frameBytes[index];
+        index += 1;
+        frame.Message = frameBytes.Slice(index, frame.MessageLength).ToArray();
+        index += frame.MessageLength;
+        return frame;
+    }
 }
-
 #endif

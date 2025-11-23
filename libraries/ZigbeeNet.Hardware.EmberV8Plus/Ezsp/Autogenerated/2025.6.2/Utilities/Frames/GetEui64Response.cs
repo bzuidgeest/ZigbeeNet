@@ -11,40 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Returns the EUI64 ID of the local node.
 /// Frame value: 0x0026
 /// </summary>
-public class GetEui64Response : EzspFrameResponseV8Plus
+public class GetEui64Response : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0026; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0026; }
 
     /// <summary>
     /// The 64-bit ID.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] Eui64;
-
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetEui64Response frame = new GetEui64Response();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] Eui64;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetEui64Response frame = new GetEui64Response();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        return frame;
+    }
 }
-
 #endif

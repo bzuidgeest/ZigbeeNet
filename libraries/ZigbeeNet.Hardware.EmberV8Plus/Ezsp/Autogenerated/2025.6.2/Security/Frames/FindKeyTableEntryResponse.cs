@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// This function searches through the Key Table and tries to find the entry that matches the passed search criteria.
 /// Frame value: 0x0075
 /// </summary>
-public class FindKeyTableEntryResponse : EzspFrameResponseV8Plus
+public class FindKeyTableEntryResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0075; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0075; }
     /// <summary>
     /// This indicates the index of the entry that matches the search criteria. A value of 0xFF is returned if not matching entry is found.
     /// </summary>
-	public byte Index { get; set; }
+    public byte Index { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		FindKeyTableEntryResponse frame = new FindKeyTableEntryResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Index = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        FindKeyTableEntryResponse frame = new FindKeyTableEntryResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Index = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

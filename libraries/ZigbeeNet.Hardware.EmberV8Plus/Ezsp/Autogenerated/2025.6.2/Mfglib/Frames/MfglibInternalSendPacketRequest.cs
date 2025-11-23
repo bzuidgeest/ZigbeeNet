@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
-
 /// <summary>
 /// Sends a single packet consisting of the following bytes: packetLength, packetContents[0], ... , packetContents[packetLength - 3], CRC[0], CRC[1]. The total number of bytes sent is packetLength + 1. The radio replaces the last two bytes of packetContents[] with the 16-bit CRC for the packet.
 /// Frame value: 0x0089
 /// </summary>
-public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus
+public class MfglibInternalSendPacketRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0089; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0089; }
     /// <summary>
     /// The length of the packetContents parameter in bytes. Must be greater than 3 and less than 123.
     /// </summary>
-	public byte PacketLength { get; set; }
+    public byte PacketLength { get; set; }
 
     /// <summary>
     /// The packet to send. The last two bytes will be replaced with the 16-bit CRC.
     /// </summary>
-	// Array field with symbolic size: packetLength
-	public byte[] PacketContents;
+    public byte[] PacketContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

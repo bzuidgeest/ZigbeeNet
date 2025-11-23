@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Send a Zigbee NWK Leave command to the destination.
 /// Frame value: 0x011A
 /// </summary>
-public class SendZigbeeLeaveRequest : EzspFrameRequestV8Plus
+public class SendZigbeeLeaveRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x011A; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x011A; }
     /// <summary>
     /// Node ID of the device being told to leave.
     /// </summary>
-	public ushort Destination { get; set; }
-
+    public ushort Destination { get; set; }
     /// <summary>
     /// Bitmask indicating additional considerations for the leave request.
     /// </summary>
-	public ZigbeeLeaveRequestFlags Flags { get; set; }
+    public ZigbeeLeaveRequestFlags Flags { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -11,40 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Import an application link key into the key table.
 /// Frame value: 0x010E
 /// </summary>
-public class SecManImportLinkKeyRequest : EzspFrameRequestV8Plus
+public class SecManImportLinkKeyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x010E; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x010E; }
     /// <summary>
     /// Index where this key is to be imported to.
     /// </summary>
-	public byte Index { get; set; }
+    public byte Index { get; set; }
 
     /// <summary>
     /// EUI64 this key is associated with.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] Address;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] Address;
     /// <summary>
     /// The key data to be imported.
     /// </summary>
-	public ZigbeeSecManKey PlaintextKey { get; set; }
+    public ZigbeeSecManKey PlaintextKey { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

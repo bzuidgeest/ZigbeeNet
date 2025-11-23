@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Returns the entropy source used for true random number generation.
 /// Frame value: 0x004F
 /// </summary>
-public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus
+public class GetTrueRandomEntropySourceResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x004F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x004F; }
     /// <summary>
     /// Value indicates the used entropy source.
     /// </summary>
-	public ZigbeeEntropySource EntropySource { get; set; }
+    public ZigbeeEntropySource EntropySource { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetTrueRandomEntropySourceResponse frame = new GetTrueRandomEntropySourceResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.EntropySource = (ZigbeeEntropySource)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetTrueRandomEntropySourceResponse frame = new GetTrueRandomEntropySourceResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.EntropySource = (ZigbeeEntropySource)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

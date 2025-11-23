@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Write attribute data on NCP endpoints.
 /// Frame value: 0x0109
 /// </summary>
-public class WriteAttributeResponse : EzspFrameResponseV8Plus
+public class WriteAttributeResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0109; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0109; }
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure.
     /// </summary>
-	public ZigbeeAfStatus AfStatus { get; set; }
+    public ZigbeeAfStatus AfStatus { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		WriteAttributeResponse frame = new WriteAttributeResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        WriteAttributeResponse frame = new WriteAttributeResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Convert a node ID to a child index
 /// Frame value: 0x0107
 /// </summary>
-public class ChildIndexResponse : EzspFrameResponseV8Plus
+public class ChildIndexResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0107; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0107; }
     /// <summary>
     /// The child index or 0xFF if the node ID doesn&apos;t belong to a child
     /// </summary>
-	public byte ChildIndex { get; set; }
+    public byte ChildIndex { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ChildIndexResponse frame = new ChildIndexResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ChildIndex = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ChildIndexResponse frame = new ChildIndexResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ChildIndex = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

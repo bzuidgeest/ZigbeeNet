@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// A callback to indicate that the NCP has finished calculating the Secure Message Authentication Codes (SMAC) for both the initiator and responder. The associated link key is kept in temporary storage until the host tells the NCP to store or discard the key via sli_zigbee_stack_clear_temporary_data_maybe_store_link_key().
 /// Frame value: 0x00A0
 /// </summary>
-public class CalculateSmacsHandlerResponse : EzspFrameResponseV8Plus
+public class CalculateSmacsHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00A0; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00A0; }
     /// <summary>
     /// The Result of the CBKE operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The calculated value of the initiator&apos;s SMAC
     /// </summary>
-	public ZigbeeSmacData InitiatorSmac { get; set; }
-
+    public ZigbeeSmacData InitiatorSmac { get; set; }
     /// <summary>
     /// The calculated value of the responder&apos;s SMAC
     /// </summary>
-	public ZigbeeSmacData ResponderSmac { get; set; }
+    public ZigbeeSmacData ResponderSmac { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		CalculateSmacsHandlerResponse frame = new CalculateSmacsHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.InitiatorSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
-		index += 16;
-		frame.ResponderSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
-		index += 16;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        CalculateSmacsHandlerResponse frame = new CalculateSmacsHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.InitiatorSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+        index += 16;
+        frame.ResponderSmac = MemoryMarshal.Read<ZigbeeSmacData>(frameBytes.Slice(index, 16));
+        index += 16;
+        return frame;
+    }
 }
-
 #endif

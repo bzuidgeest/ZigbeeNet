@@ -11,40 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// This call is fired when mux detects an invalid rx case, which would be different rx channels for different protocol contexts, when fast cahnnel switching is not enabled
 /// Frame value: 0x0062
 /// </summary>
-public class MuxInvalidRxHandlerResponse : EzspFrameResponseV8Plus
+public class MuxInvalidRxHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0062; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0062; }
+    public byte NewRxChannel { get; set; }
+    public byte OldRxChannel { get; set; }
 
-	public byte NewRxChannel { get; set; }
-
-	public byte OldRxChannel { get; set; }
-
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MuxInvalidRxHandlerResponse frame = new MuxInvalidRxHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.NewRxChannel = frameBytes[index];
-		index += 1;
-		frame.OldRxChannel = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MuxInvalidRxHandlerResponse frame = new MuxInvalidRxHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.NewRxChannel = frameBytes[index];
+        index += 1;
+        frame.OldRxChannel = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

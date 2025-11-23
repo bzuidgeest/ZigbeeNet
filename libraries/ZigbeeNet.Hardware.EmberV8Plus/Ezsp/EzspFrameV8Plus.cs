@@ -1,8 +1,8 @@
-using System;
-using ZigBeeNet.Util;
 using Microsoft.Extensions.Logging;
+using System;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
-using ZigBeeNet.Hardware.EmberV8Plus.Internal.Serializer;
+using ZigBeeNet.Util;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
@@ -49,7 +49,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     ///   bit 1 : frameFormatVersion[1]
     ///   bit 0 : frameFormatVersion[0]
     /// </summary>
-    public abstract partial class EzspFrameV8Plus
+    public abstract partial class EzspFrameV8Plus 
     {
         static private readonly ILogger _logger = LogManager.GetLog<EzspFrameV8Plus>();
 
@@ -81,7 +81,6 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         protected const int EZSP_FC_RESPONSE = 0x80;
 
         protected int _frameControl;
-        protected int _frameId = 0;
         protected bool _isResponse = false;
 
         /**
@@ -90,16 +89,6 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param sequenceNumber
          */
         public int SequenceNumber { get; set; }
-
-        /**
-         * Gets the 8 bit transaction sequence number
-         *
-         * @return sequence number
-         */
-        public int GetSequenceNumber()
-        {
-            return _sequenceNumber;
-        }
 
         /**
          * Checks if this frame is a response frame
@@ -133,36 +122,37 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param data the int[] containing the EZSP data from which to generate the frame
          * @return the {@link EzspFrameResponse} or null if the response can't be created.
          */
-        public static EzspFrameResponseV8Plus CreateHandler(int[] data)
-        {
-            Type ezspClass = null;
-            EzspFrameResponseV8Plus ezspFrame = null;
+        //fix
+        //public static EzspFrameResponseV8Plus CreateHandler(int[] data)
+        //{
+        //    Type ezspClass = null;
+        //    EzspFrameResponseV8Plus ezspFrame = null;
 
-            try
-            {
-                ezspClass = _ezspHandlerDict[data[3] + (data[4] << 8)];
-            }
-            catch (Exception e)
-            {
-                _logger.LogDebug(e, "Error detecting the EZSP frame type");
-            }
+        //    try
+        //    {
+        //        ezspClass = _ezspHandlerDict[data[3] + (data[4] << 8)];
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogDebug(e, "Error detecting the EZSP frame type");
+        //    }
 
-            if (ezspClass == null)
-            {
-                return null;
-            }
+        //    if (ezspClass == null)
+        //    {
+        //        return null;
+        //    }
 
-            try
-            {
-                ezspFrame = (EzspFrameResponseV8Plus)Activator.CreateInstance(ezspClass, new object[] { data });
-            }
-            catch (Exception e)
-            {
-                _logger.LogDebug(e, "Error creating instance of EzspFrame");
-            }
+        //    try
+        //    {
+        //        ezspFrame = (EzspFrameResponseV8Plus)Activator.CreateInstance(ezspClass, new object[] { data });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogDebug(e, "Error creating instance of EzspFrame");
+        //    }
 
-            return ezspFrame;
-        }
+        //    return ezspFrame;
+        //}
 
         /**
          * Set the EZSP version to use
@@ -170,7 +160,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param ezspVersion the EZSP protocol version
          * @return true if the version is supported
          */
-        public static bool SetEzspVersion(int ezspVersion)
+        public static bool SetEzspVersion(byte ezspVersion)
         {
             if (ezspVersion <= EZSP_MAX_VERSION && ezspVersion >= EZSP_MIN_VERSION)
             {

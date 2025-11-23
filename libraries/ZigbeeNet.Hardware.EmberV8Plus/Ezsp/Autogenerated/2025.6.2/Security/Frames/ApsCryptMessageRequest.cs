@@ -11,50 +11,54 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Encrypt/decrypt a message in-place using APS.
 /// Frame value: 0x0129
 /// </summary>
-public class ApsCryptMessageRequest : EzspFrameRequestV8Plus
+public class ApsCryptMessageRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0129; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0129; }
     /// <summary>
     /// Encrypt (true) or decrypt (false) the message.
     /// </summary>
-	public bool Encrypt { get; set; }
-
+    public bool Encrypt { get; set; }
     /// <summary>
     /// Length of the array containing message, needs to be long enough to include the auxiliary header and MIC.
     /// </summary>
-	public byte LengthCombinedArg { get; set; }
+    public byte LengthCombinedArg { get; set; }
 
     /// <summary>
     /// The message to be en/de-crypted.
     /// </summary>
-	// Array field with symbolic size: length_combined_arg
-	public byte[] Message;
+    public byte[] Message;
     /// <summary>
     /// Index just past the APS frame.
     /// </summary>
-	public byte ApsHeaderEndIndex { get; set; }
+    public byte ApsHeaderEndIndex { get; set; }
 
     /// <summary>
     /// IEEE address of the device this message is associated with.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] RemoteEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] RemoteEui64;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

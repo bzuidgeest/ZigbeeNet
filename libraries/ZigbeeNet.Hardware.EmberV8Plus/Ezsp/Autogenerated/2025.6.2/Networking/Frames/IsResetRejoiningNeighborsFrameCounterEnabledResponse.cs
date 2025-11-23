@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Check whether a rejoining neighbor will have its incoming frame counter reset based on the currently set policy.
 /// Frame value: 0x0125
 /// </summary>
-public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameResponseV8Plus
+public class IsResetRejoiningNeighborsFrameCounterEnabledResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0125; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0125; }
     /// <summary>
     /// Whether or not a rejoining neighbor&apos;s incoming FC gets reset (true or false).
     /// </summary>
-	public bool GetsReset { get; set; }
+    public bool GetsReset { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IsResetRejoiningNeighborsFrameCounterEnabledResponse frame = new IsResetRejoiningNeighborsFrameCounterEnabledResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.GetsReset = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IsResetRejoiningNeighborsFrameCounterEnabledResponse frame = new IsResetRejoiningNeighborsFrameCounterEnabledResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.GetsReset = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

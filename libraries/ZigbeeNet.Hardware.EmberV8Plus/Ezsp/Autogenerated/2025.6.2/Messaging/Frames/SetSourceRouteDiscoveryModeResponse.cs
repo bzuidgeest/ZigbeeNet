@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Sets source route discovery(MTORR) mode to on, off, reschedule
 /// Frame value: 0x005A
 /// </summary>
-public class SetSourceRouteDiscoveryModeResponse : EzspFrameResponseV8Plus
+public class SetSourceRouteDiscoveryModeResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x005A; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x005A; }
     /// <summary>
     /// Remaining time(ms) until next MTORR broadcast if the mode is on, MAX_INT32U_VALUE if the mode is off
     /// </summary>
-	public uint RemainingTime { get; set; }
+    public uint RemainingTime { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetSourceRouteDiscoveryModeResponse frame = new SetSourceRouteDiscoveryModeResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.RemainingTime = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetSourceRouteDiscoveryModeResponse frame = new SetSourceRouteDiscoveryModeResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.RemainingTime = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

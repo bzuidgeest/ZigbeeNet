@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// This function starts a series of scans which will return an available panId.
 /// Frame value: 0x00D3
 /// </summary>
-public class FindUnusedPanIdRequest : EzspFrameRequestV8Plus
+public class FindUnusedPanIdRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D3; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D3; }
     /// <summary>
     /// The channels that will be scanned for available panIds.
     /// </summary>
-	public uint ChannelMask { get; set; }
-
+    public uint ChannelMask { get; set; }
     /// <summary>
     /// The duration of the procedure.
     /// </summary>
-	public byte Duration { get; set; }
+    public byte Duration { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

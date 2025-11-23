@@ -18,7 +18,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
         public AshFrameData(EzspFrameRequestV8Plus ezspRequestFrame) 
         {
             _frameType = FrameType.DATA;
-            _dataBuffer = ezspRequestFrame.Serialize();
+            _dataBuffer = ezspRequestFrame.GetFrameBytes();
         }
 
         /**

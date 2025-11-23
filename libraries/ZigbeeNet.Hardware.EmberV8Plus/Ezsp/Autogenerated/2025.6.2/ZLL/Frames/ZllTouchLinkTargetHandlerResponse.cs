@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// This call is fired when the device is a target of a touch link.
 /// Frame value: 0x00BB
 /// </summary>
-public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus
+public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00BB; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00BB; }
     /// <summary>
     /// Information about the network.
     /// </summary>
-	public ZigbeeZllNetwork NetworkInfo { get; set; }
+    public ZigbeeZllNetwork NetworkInfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.NetworkInfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
-		index += 40;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.NetworkInfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
+        index += 40;
+        return frame;
+    }
 }
-
 #endif

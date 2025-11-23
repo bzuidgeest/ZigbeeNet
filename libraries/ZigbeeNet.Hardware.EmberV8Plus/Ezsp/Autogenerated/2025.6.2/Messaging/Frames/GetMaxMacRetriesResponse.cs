@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Returns the maximum number of no-ack retries that will be attempted
 /// Frame value: 0x006A
 /// </summary>
-public class GetMaxMacRetriesResponse : EzspFrameResponseV8Plus
+public class GetMaxMacRetriesResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x006A; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x006A; }
     /// <summary>
     /// Max MAC retries
     /// </summary>
-	public byte Retries { get; set; }
+    public byte Retries { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetMaxMacRetriesResponse frame = new GetMaxMacRetriesResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Retries = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetMaxMacRetriesResponse frame = new GetMaxMacRetriesResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Retries = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Get initial outgoing link cost for neighbor.
 /// Frame value: 0x0123
 /// </summary>
-public class GetInitialNeighborOutgoingCostResponse : EzspFrameResponseV8Plus
+public class GetInitialNeighborOutgoingCostResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0123; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0123; }
     /// <summary>
     /// The default cost associated with new neighbor&apos;s outgoing links.
     /// </summary>
-	public byte Cost { get; set; }
+    public byte Cost { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetInitialNeighborOutgoingCostResponse frame = new GetInitialNeighborOutgoingCostResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Cost = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetInitialNeighborOutgoingCostResponse frame = new GetInitialNeighborOutgoingCostResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Cost = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

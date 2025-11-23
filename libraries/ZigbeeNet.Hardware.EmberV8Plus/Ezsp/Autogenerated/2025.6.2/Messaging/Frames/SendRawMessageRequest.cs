@@ -11,44 +11,49 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Transmits the given message without modification. The MAC header is assumed to be configured in the message at the time this function is called.
 /// Frame value: 0x0051
 /// </summary>
-public class SendRawMessageRequest : EzspFrameRequestV8Plus
+public class SendRawMessageRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0051; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0051; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The raw message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
     /// <summary>
     /// transmit priority.
     /// </summary>
-	public byte Priority { get; set; }
-
+    public byte Priority { get; set; }
     /// <summary>
     /// Should we enable CCA or not.
     /// </summary>
-	public bool UseCca { get; set; }
+    public bool UseCca { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

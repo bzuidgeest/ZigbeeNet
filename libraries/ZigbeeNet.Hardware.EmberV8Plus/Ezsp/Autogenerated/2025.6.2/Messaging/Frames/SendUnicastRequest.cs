@@ -11,54 +11,56 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Sends a unicast message as per the ZigBee specification. The message will arrive at its destination only if there is a known route to the destination node. Setting the ENABLE_ROUTE_DISCOVERY option will cause a route to be discovered if none is known. Setting the FORCE_ROUTE_DISCOVERY option will force route discovery. Routes to end-device children of the local node are always known. Setting the APS_RETRY option will cause the message to be retransmitted until either a matching acknowledgement is received or three transmissions have been made. &lt;b&gt;Note:&lt;/b&gt; Using the FORCE_ROUTE_DISCOVERY option will cause the first transmission to be consumed by a route request as part of discovery, so the application payload of this packet will not reach its destination on the first attempt. If you want the packet to reach its destination, the APS_RETRY option must be set so that another attempt is made to transmit the message with its application payload after the route has been constructed. &lt;b&gt;Note:&lt;/b&gt; When sending fragmented messages, the stack will only assign a new APS sequence number for the first fragment of the message (i.e., SL_ZIGBEE_APS_OPTION_FRAGMENT is set and the low-order byte of the groupId field in the APS frame is zero). For all subsequent fragments of the same message, the application must set the sequence number field in the APS frame to the sequence number assigned by the stack to the first fragment.
 /// Frame value: 0x0034
 /// </summary>
-public class SendUnicastRequest : EzspFrameRequestV8Plus
+public class SendUnicastRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0034; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0034; }
     /// <summary>
     /// Specifies the outgoing message type. Must be one of SL_ZIGBEE_OUTGOING_DIRECT, SL_ZIGBEE_OUTGOING_VIA_ADDRESS_TABLE, or SL_ZIGBEE_OUTGOING_VIA_BINDING.
     /// </summary>
-	public ZigbeeOutgoingMessageType Type { get; set; }
-
+    public ZigbeeOutgoingMessageType Type { get; set; }
     /// <summary>
     /// Depending on the type of addressing used, this is either the sl_802154_short_addr_t of the destination, an index into the address table, or an index into the binding table.
     /// </summary>
-	public ushort IndexOrDestination { get; set; }
-
+    public ushort IndexOrDestination { get; set; }
     /// <summary>
     /// The APS frame which is to be added to the message.
     /// </summary>
-	public ZigbeeApsFrame ApsFrame { get; set; }
-
+    public ZigbeeApsFrame ApsFrame { get; set; }
     /// <summary>
     /// A value chosen by the Host. This value is used in the &lt;i&gt;sl_zigbee_ezsp_message_sent_handler&lt;/i&gt; response to refer to this message.
     /// </summary>
-	public ushort MessageTag { get; set; }
-
+    public ushort MessageTag { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// Content of the message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

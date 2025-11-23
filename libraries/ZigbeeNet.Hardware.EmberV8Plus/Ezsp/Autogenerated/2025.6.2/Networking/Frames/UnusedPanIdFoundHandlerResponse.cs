@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// This function returns an unused panID and channel pair found via the find unused panId scan procedure.
 /// Frame value: 0x00D2
 /// </summary>
-public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus
+public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D2; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D2; }
     /// <summary>
     /// The unused panID which has been found.
     /// </summary>
-	public ushort PanId { get; set; }
-
+    public ushort PanId { get; set; }
     /// <summary>
     /// The channel that the unused panID was found on.
     /// </summary>
-	public byte Channel { get; set; }
+    public byte Channel { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.PanId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.Channel = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.PanId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.Channel = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

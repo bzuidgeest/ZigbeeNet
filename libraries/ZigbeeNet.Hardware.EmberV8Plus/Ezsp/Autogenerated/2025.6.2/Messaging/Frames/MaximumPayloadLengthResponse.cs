@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Returns the maximum size of the payload. The size depends on the security level in use.
 /// Frame value: 0x0033
 /// </summary>
-public class MaximumPayloadLengthResponse : EzspFrameResponseV8Plus
+public class MaximumPayloadLengthResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0033; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0033; }
     /// <summary>
     /// The maximum APS payload length.
     /// </summary>
-	public byte ApsLength { get; set; }
+    public byte ApsLength { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MaximumPayloadLengthResponse frame = new MaximumPayloadLengthResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ApsLength = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MaximumPayloadLengthResponse frame = new MaximumPayloadLengthResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ApsLength = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

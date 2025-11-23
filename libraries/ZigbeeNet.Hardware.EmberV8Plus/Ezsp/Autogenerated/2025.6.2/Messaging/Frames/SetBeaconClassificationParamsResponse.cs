@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Sets the priority masks and related variables for choosing the best beacon.
 /// Frame value: 0x00EF
 /// </summary>
-public class SetBeaconClassificationParamsResponse : EzspFrameResponseV8Plus
+public class SetBeaconClassificationParamsResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00EF; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00EF; }
     /// <summary>
     /// The attempt to set the pramaters returns SL_STATUS_OK
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Gets the beacon prioritization related variable
     /// </summary>
-	public ZigbeeBeaconClassificationParams Param { get; set; }
+    public ZigbeeBeaconClassificationParams Param { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetBeaconClassificationParamsResponse frame = new SetBeaconClassificationParamsResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Param = MemoryMarshal.Read<ZigbeeBeaconClassificationParams>(frameBytes.Slice(index, 3));
-		index += 3;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetBeaconClassificationParamsResponse frame = new SetBeaconClassificationParamsResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Param = MemoryMarshal.Read<ZigbeeBeaconClassificationParams>(frameBytes.Slice(index, 3));
+        index += 3;
+        return frame;
+    }
 }
-
 #endif

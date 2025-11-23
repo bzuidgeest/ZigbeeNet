@@ -11,39 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
-
 /// <summary>
 /// Perform AES encryption on plaintext using key.
 /// Frame value: 0x0094
 /// </summary>
-public class AesEncryptResponse : EzspFrameResponseV8Plus
+public class AesEncryptResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0094; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0094; }
 
     /// <summary>
     /// 16 bytes of ciphertext.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-	public byte[] Ciphertext;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		AesEncryptResponse frame = new AesEncryptResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Ciphertext = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 16)).ToArray();
-		index += 16;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+    public byte[] Ciphertext;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        AesEncryptResponse frame = new AesEncryptResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Ciphertext = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 16)).ToArray();
+        index += 16;
+        return frame;
+    }
 }
-
 #endif

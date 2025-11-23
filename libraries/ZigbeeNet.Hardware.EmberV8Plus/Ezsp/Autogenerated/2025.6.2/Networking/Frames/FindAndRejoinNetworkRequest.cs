@@ -11,44 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// The application may call this function when contact with the network has been lost. The most common usage case is when an end device can no longer communicate with its parent and wishes to find a new one. Another case is when a device has missed a Network Key update and no longer has the current Network Key. &lt;p&gt; The stack will call &lt;i&gt;sl_zigbee_ezsp_stack_status_handler&lt;/i&gt; to indicate that the network is down, then try to re-establish contact with the network by performing an active scan, choosing a network with matching extended pan id, and sending a ZigBee network rejoin request. A second call to the &lt;i&gt;sl_zigbee_ezsp_stack_status_handler&lt;/i&gt; callback indicates either the success or the failure of the attempt. The process takes approximately 150 milliseconds per channel to complete. &lt;p&gt;
 /// Frame value: 0x0021
 /// </summary>
-public class FindAndRejoinNetworkRequest : EzspFrameRequestV8Plus
+public class FindAndRejoinNetworkRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0021; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0021; }
     /// <summary>
     /// This parameter tells the stack whether to try to use the current network key. If it has the current network key it will perform a secure rejoin (encrypted). If this fails the device should try an unsecure rejoin. If the Trust Center allows the rejoin then the current Network Key will be sent encrypted using the device&apos;s Link Key.
     /// </summary>
-	public bool HaveCurrentNetworkKey { get; set; }
-
+    public bool HaveCurrentNetworkKey { get; set; }
     /// <summary>
     /// A mask indicating the channels to be scanned. See &lt;i&gt;sli_zigbee_stack_start_scan&lt;/i&gt; for format details. A value of 0 is reinterpreted as the mask for the current channel.
     /// </summary>
-	public uint ChannelMask { get; set; }
-
+    public uint ChannelMask { get; set; }
     /// <summary>
     /// A sl_zigbee_rejoin_reason_t variable which could be passed in if there is actually a reason for rejoin, or could be left at 0xFF
     /// </summary>
-	public byte Reason { get; set; }
-
+    public byte Reason { get; set; }
     /// <summary>
     /// The rejoin could be triggered with a different nodeType. This value could be set to 0 or SL_ZIGBEE_DEVICE_TYPE_UNCHANGED if not needed.
     /// </summary>
-	public byte NodeType { get; set; }
+    public byte NodeType { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

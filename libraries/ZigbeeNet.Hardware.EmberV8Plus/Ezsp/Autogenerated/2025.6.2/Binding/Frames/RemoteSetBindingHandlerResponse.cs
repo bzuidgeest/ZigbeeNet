@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
-
 /// <summary>
 /// The NCP used the external binding modification policy to decide how to handle a remote set binding request. The Host cannot change the current decision, but it can change the policy for future decisions using the &lt;i&gt;setPolicy&lt;/i&gt; command.
 /// Frame value: 0x0031
 /// </summary>
-public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus
+public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0031; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0031; }
     /// <summary>
     /// The requested binding.
     /// </summary>
-	public ZigbeeBindingTableEntry Entry { get; set; }
-
+    public ZigbeeBindingTableEntry Entry { get; set; }
     /// <summary>
     /// The index at which the binding was added.
     /// </summary>
-	public byte Index { get; set; }
-
+    public byte Index { get; set; }
     /// <summary>
     /// SL_STATUS_OK if the binding was added to the table and any other status if not.
     /// </summary>
-	public Status PolicyDecision { get; set; }
+    public Status PolicyDecision { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		RemoteSetBindingHandlerResponse frame = new RemoteSetBindingHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Entry = MemoryMarshal.Read<ZigbeeBindingTableEntry>(frameBytes.Slice(index, 14));
-		index += 14;
-		frame.Index = frameBytes[index];
-		index += 1;
-		frame.PolicyDecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        RemoteSetBindingHandlerResponse frame = new RemoteSetBindingHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Entry = MemoryMarshal.Read<ZigbeeBindingTableEntry>(frameBytes.Slice(index, 14));
+        index += 14;
+        frame.Index = frameBytes[index];
+        index += 1;
+        frame.PolicyDecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

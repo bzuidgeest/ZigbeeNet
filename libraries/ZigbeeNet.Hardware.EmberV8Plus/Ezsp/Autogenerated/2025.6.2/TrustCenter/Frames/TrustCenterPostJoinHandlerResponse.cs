@@ -11,68 +11,60 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
-
 /// <summary>
 /// The NCP uses the trust center behavior policy to decide whether to allow a new node to join the network (part of the trust center pre-join handler). The Host cannot change the current decision in this post-join callback, but it can change the policy for future decisions using the &lt;i&gt;setPolicy&lt;/i&gt; command.
 /// Frame value: 0x0024
 /// </summary>
-public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus
+public class TrustCenterPostJoinHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0024; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0024; }
     /// <summary>
     /// The Node Id of the node whose status changed
     /// </summary>
-	public ushort NewNodeId { get; set; }
+    public ushort NewNodeId { get; set; }
 
     /// <summary>
     /// The EUI64 of the node whose status changed.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] NewNodeEui64;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] NewNodeEui64;
     /// <summary>
     /// The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.
     /// </summary>
-	public ZigbeeDeviceUpdate Status { get; set; }
-
+    public ZigbeeDeviceUpdate Status { get; set; }
     /// <summary>
     /// An sl_zigbee_join_decision_t reflecting the decision made.
     /// </summary>
-	public ZigbeeJoinDecision PolicyDecision { get; set; }
-
+    public ZigbeeJoinDecision PolicyDecision { get; set; }
     /// <summary>
     /// The parent of the node whose status has changed.
     /// </summary>
-	public ushort ParentOfNewNodeId { get; set; }
+    public ushort ParentOfNewNodeId { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		TrustCenterPostJoinHandlerResponse frame = new TrustCenterPostJoinHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.NewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.NewNodeEui64 = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.Status = (ZigbeeDeviceUpdate)frameBytes[index];
-		index += 1;
-		frame.PolicyDecision = (ZigbeeJoinDecision)frameBytes[index];
-		index += 1;
-		frame.ParentOfNewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        TrustCenterPostJoinHandlerResponse frame = new TrustCenterPostJoinHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.NewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.NewNodeEui64 = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.Status = (ZigbeeDeviceUpdate)frameBytes[index];
+        index += 1;
+        frame.PolicyDecision = (ZigbeeJoinDecision)frameBytes[index];
+        index += 1;
+        frame.ParentOfNewNodeId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

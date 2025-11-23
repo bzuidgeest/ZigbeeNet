@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Reads a value from the NCP but passes an extra argument specific to the value being retrieved.
 /// Frame value: 0x0003
 /// </summary>
-public class GetExtendedValueRequest : EzspFrameRequestV8Plus
+public class GetExtendedValueRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0003; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0003; }
     /// <summary>
     /// Identifies which extended value ID to read.
     /// </summary>
-	public ZigbeeEzspExtendedValueId ValueId { get; set; }
-
+    public ZigbeeEzspExtendedValueId ValueId { get; set; }
     /// <summary>
     /// Identifies which characteristics of the extended value ID to read. These are specific to the value being read.
     /// </summary>
-	public uint Characteristics { get; set; }
+    public uint Characteristics { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

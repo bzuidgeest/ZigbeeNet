@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns the source route table total size.
 /// Frame value: 0x00C3
 /// </summary>
-public class GetSourceRouteTableTotalSizeResponse : EzspFrameResponseV8Plus
+public class GetSourceRouteTableTotalSizeResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C3; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C3; }
     /// <summary>
     /// Total size of source route table.
     /// </summary>
-	public byte SourceRouteTableTotalSize { get; set; }
+    public byte SourceRouteTableTotalSize { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetSourceRouteTableTotalSizeResponse frame = new GetSourceRouteTableTotalSizeResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.SourceRouteTableTotalSize = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetSourceRouteTableTotalSizeResponse frame = new GetSourceRouteTableTotalSizeResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.SourceRouteTableTotalSize = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

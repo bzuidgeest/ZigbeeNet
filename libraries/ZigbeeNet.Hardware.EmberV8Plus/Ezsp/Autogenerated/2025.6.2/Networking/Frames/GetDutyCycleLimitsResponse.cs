@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Obtains the current duty cycle limits that were previously set by a call to sli_zigbee_stack_set_duty_cycle_limits_in_stack(), or the defaults set by the stack if no set call was made.
 /// Frame value: 0x004B
 /// </summary>
-public class GetDutyCycleLimitsResponse : EzspFrameResponseV8Plus
+public class GetDutyCycleLimitsResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x004B; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x004B; }
     /// <summary>
     /// An sl_status_t value indicating the success or failure of the command.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Return current duty cycle limits if returnedLimits is not NULL
     /// </summary>
-	public ZigbeeDutyCycleLimits ReturnedLimits { get; set; }
+    public ZigbeeDutyCycleLimits ReturnedLimits { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetDutyCycleLimitsResponse frame = new GetDutyCycleLimitsResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.ReturnedLimits = MemoryMarshal.Read<ZigbeeDutyCycleLimits>(frameBytes.Slice(index, 6));
-		index += 6;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetDutyCycleLimitsResponse frame = new GetDutyCycleLimitsResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.ReturnedLimits = MemoryMarshal.Read<ZigbeeDutyCycleLimits>(frameBytes.Slice(index, 6));
+        index += 6;
+        return frame;
+    }
 }
-
 #endif

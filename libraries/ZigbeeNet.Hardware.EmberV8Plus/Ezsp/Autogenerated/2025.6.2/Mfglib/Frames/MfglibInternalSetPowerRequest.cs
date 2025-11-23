@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
-
 /// <summary>
 /// First select the transmit power mode, and then include a method for selecting the radio transmit power. The valid power settings depend upon the specific radio in use. Ember radios have discrete power settings, and then requested power is rounded to a valid power setting; the actual power output is available to the caller via mfglibInternalGetPower().
 /// Frame value: 0x008c
 /// </summary>
-public class MfglibInternalSetPowerRequest : EzspFrameRequestV8Plus
+public class MfglibInternalSetPowerRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x008c; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x008c; }
     /// <summary>
     /// Power mode. Refer to txPowerModes in stack/include/sl_zigbee_types.h for possible values.
     /// </summary>
-	public ushort TxPowerMode { get; set; }
-
+    public ushort TxPowerMode { get; set; }
     /// <summary>
     /// Power in units of dBm. Refer to radio data sheet for valid range.
     /// </summary>
-	public sbyte Power { get; set; }
+    public sbyte Power { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

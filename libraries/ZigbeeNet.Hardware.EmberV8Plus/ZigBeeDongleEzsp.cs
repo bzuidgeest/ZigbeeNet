@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,7 +130,7 @@ namespace ZigBeeNet.Hardware.Ember
         /**
          * The default DeviceID to use
          */
-        private int _defaultDeviceId = (int)ZigBeeDeviceType.HomeGateway;
+        private ushort _defaultDeviceId = (ushort)ZigBeeDeviceType.HomeGateway;
 
         private System.Timers.Timer _pollingTimer = null;
 
@@ -161,12 +162,12 @@ namespace ZigBeeNet.Hardware.Ember
         /**
          * List of input clusters supported - this will be added to the endpoint definition
          */
-        private int[] _inputClusters = new int[] { 0 };
+        private ushort[] _inputClusters = new ushort[] { 0 };
 
         /**
          * List of output clusters supported - this will be added to the endpoint definition
          */
-        private int[] _outputClusters = new int[] { 0 };
+        private ushort[] _outputClusters = new ushort[] { 0 };
 
         /**
          * We need to retain the transaction ID returned by the NCP when we're sending fragments so that we can use this in
@@ -361,7 +362,7 @@ namespace ZigBeeNet.Hardware.Ember
             _networkParameters = ncp.GetNetworkParameters().Parameters;
             _logger.LogDebug("Ember initial network parameters are {NetworkParameters}", _networkParameters);
 
-            IeeeAddress = ncp.GetIeeeAddress();
+            IeeeAddress = new IeeeAddress(ncp.GetEui64());
             _logger.LogDebug("Ember local IEEE Address is {IeeeAddress}", IeeeAddress);
 
             ncp.GetNetworkParameters();
@@ -388,10 +389,10 @@ namespace ZigBeeNet.Hardware.Ember
             _logger.LogDebug("EZSP Adding Endpoint: ProfileID={ProfileID}, DeviceID={DeviceID}", _defaultProfileId.ToString("X4"), _defaultDeviceId.ToString("X4"));
             _logger.LogDebug("EZSP Adding Endpoint: Input Clusters   {InputClusters}", _inputClusters);
             _logger.LogDebug("EZSP Adding Endpoint: Output Clusters  {OutputClusters}", _outputClusters);
-            ncp.AddEndpoint(1, _defaultDeviceId, _defaultProfileId, _inputClusters, _outputClusters);
+            ncp.AddEndpoint(1, _defaultProfileId, _defaultDeviceId, 0, (byte)_inputClusters.Count(), (byte)_outputClusters.Count(), _inputClusters, _outputClusters);
 
             // Now initialise the network
-            Status initResponse = ncp.NetworkInit();
+            Status initResponse = ncp.NetworkInit(new ZigbeeNetworkInitStruct() { bitmask = ZigbeeNetworkInitBitmask.SL_ZIGBEE_NETWORK_INIT_NO_OPTIONS});
             if (initResponse == Status.SL_STATUS_NOT_JOINED) 
             {
                 _logger.LogDebug("EZSP dongle initialize done - response {Response}", initResponse);
@@ -414,7 +415,7 @@ namespace ZigBeeNet.Hardware.Ember
                 if (_deviceType == DeviceType.COORDINATOR)
                     netInitialiser.FormNetwork(_networkParameters, _linkKey, _networkKey);
                 else
-                    netInitialiser.JoinNetwork(_networkParameters, _linkKey);
+                    netInitialiser.JoinNetwork(_networkParameters, _linkKey, ZigbeeLeaveNetworkOption.SL_ZIGBEE_LEAVE_NWK_WITH_NO_OPTION);
 
             } 
             else if (_deviceType == DeviceType.ROUTER) 
@@ -437,9 +438,9 @@ namespace ZigBeeNet.Hardware.Ember
                 _logger.LogDebug("Setting TX Power to {TxPower} resulted in {Response}", _networkParameters.radioTxPower, txPowerResponse);
             }
 
-            int address = ncp.GetNwkAddress();
+            ushort address = ncp.GetNodeId();
             if (address != 0xFFFE)
-                NwkAddress = (ushort) address;
+                NwkAddress = address;
 
             _logger.LogDebug("EZSP Dongle: Startup complete. NWK Address = {NwkAddress}, State = {NetworkState}", NwkAddress.ToString("X4"), networkState);
 
@@ -665,7 +666,7 @@ namespace ZigBeeNet.Hardware.Ember
             {
                 SendBroadcastRequest emberBroadcast = new SendBroadcastRequest();
                 emberBroadcast.Destination = apsFrame.DestinationAddress;
-                //emberBroadcast.SetMessageTag(msgTag;
+                //emberMulticast.MessageTag = msgTag;
                 emberBroadcast.SequenceNumber = apsFrame.ApsCounter;
                 emberBroadcast.ApsFrame = zigbeeApsFrame;
                 emberBroadcast.Radius = (byte)apsFrame.Radius;
@@ -680,8 +681,8 @@ namespace ZigBeeNet.Hardware.Ember
                 SendMulticastRequest emberMulticast = new SendMulticastRequest();
                 emberMulticast.ApsFrame = zigbeeApsFrame;
                 emberMulticast.Hops = (byte)apsFrame.Radius;
-                emberMulticast.NonmemberRadius = apsFrame.NonMemberRadius;
-                //emberMulticast.SetMessageTag(msgTag);
+                //emberMulticast.NonmemberRadius = apsFrame.NonMemberRadius;
+                //emberMulticast.MessageTag = msgTag;
                 emberMulticast.MessageContents = apsFrame.Payload;
 
                 transaction = new SingleResponseTransaction(emberMulticast, typeof(SendMulticastResponse));
@@ -788,7 +789,7 @@ namespace ZigBeeNet.Hardware.Ember
                 }
                 */
 
-                switch (incomingMessage.GetType2()) 
+                switch (incomingMessage.Type) 
                 {
                     case ZigbeeIncomingMessageType.SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK:
                         if (!_passLoopbackMessages)
@@ -942,7 +943,7 @@ namespace ZigBeeNet.Hardware.Ember
                     _logger.LogDebug("Ember: Link State up running");
 
                     EmberNcp ncp = GetEmberNcp();
-                    int addr = ncp.GetNwkAddress();
+                    int addr = ncp.GetNodeId();
                     if (addr != 0xFFFE) {
                         NwkAddress = (ushort)addr;
                     }
@@ -1023,7 +1024,7 @@ namespace ZigBeeNet.Hardware.Ember
             get
             {
                 EmberNcp ncp = GetEmberNcp();
-                ZigbeeKeyStruct key = ncp.GetKey(EmberKeyType.SL_ZIGBEE_TRUST_CENTER_LINK_KEY);
+                ZigbeeKeyStruct key = ncp.GetKey(ZigbeeKeyType.SL_ZIGBEE_TRUST_CENTER_LINK_KEY);
                 return EmberKeyToZigBeeKey(key);
             }
         }
@@ -1073,11 +1074,11 @@ namespace ZigBeeNet.Hardware.Ember
                             break;
 
                         case TransportConfigOption.SUPPORTED_INPUT_CLUSTERS:
-                            configuration.SetResult(option, SetSupportedInputClusters((ICollection<int>)configuration.GetValue(option)));
+                            configuration.SetResult(option, SetSupportedInputClusters((ICollection<ushort>)configuration.GetValue(option)));
                             break;
 
                         case TransportConfigOption.SUPPORTED_OUTPUT_CLUSTERS:
-                            configuration.SetResult(option, SetSupportedOutputClusters((ICollection<int>)configuration.GetValue(option)));
+                            configuration.SetResult(option, SetSupportedOutputClusters((ICollection<ushort>)configuration.GetValue(option)));
                             break;
 
                         default:
@@ -1094,18 +1095,18 @@ namespace ZigBeeNet.Hardware.Ember
             }
         }
 
-        private int[] CopyClusters(ICollection<int> clusterList) 
+        private ushort[] CopyClusters(ICollection<ushort> clusterList) 
         {
-            int[] clusters = new int[clusterList.Count];
+            ushort[] clusters = new ushort[clusterList.Count];
             int cnt = 0;
-            foreach (int value in clusterList) 
+            foreach (ushort value in clusterList) 
             {
                 clusters[cnt++] = value;
             }
             return clusters;
         }
 
-        private ZigBeeStatus SetSupportedInputClusters(ICollection<int> supportedClusters) 
+        private ZigBeeStatus SetSupportedInputClusters(ICollection<ushort> supportedClusters) 
         {
             if (_initialised)
                 return ZigBeeStatus.INVALID_STATE;
@@ -1114,7 +1115,7 @@ namespace ZigBeeNet.Hardware.Ember
             return ZigBeeStatus.SUCCESS;
         }
 
-        private ZigBeeStatus SetSupportedOutputClusters(ICollection<int> supportedClusters) 
+        private ZigBeeStatus SetSupportedOutputClusters(ICollection<ushort> supportedClusters) 
         {
             if (_initialised)
                 return ZigBeeStatus.INVALID_STATE;

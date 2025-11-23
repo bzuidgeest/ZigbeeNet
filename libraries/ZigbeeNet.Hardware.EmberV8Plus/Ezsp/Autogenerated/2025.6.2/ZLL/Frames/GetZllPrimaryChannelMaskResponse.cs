@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// Get the primary ZLL (touchlink) channel mask.
 /// Frame value: 0x00D9
 /// </summary>
-public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus
+public class GetZllPrimaryChannelMaskResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D9; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D9; }
     /// <summary>
     /// The primary ZLL channel mask
     /// </summary>
-	public uint ZllPrimaryChannelMask { get; set; }
+    public uint ZllPrimaryChannelMask { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetZllPrimaryChannelMaskResponse frame = new GetZllPrimaryChannelMaskResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ZllPrimaryChannelMask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetZllPrimaryChannelMaskResponse frame = new GetZllPrimaryChannelMaskResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ZllPrimaryChannelMask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

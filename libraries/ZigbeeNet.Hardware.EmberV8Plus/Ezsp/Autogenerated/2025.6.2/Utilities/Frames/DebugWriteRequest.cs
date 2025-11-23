@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Sends a debug message from the Host to the Network Analyzer utility via the NCP.
 /// Frame value: 0x0012
 /// </summary>
-public class DebugWriteRequest : EzspFrameRequestV8Plus
+public class DebugWriteRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0012; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0012; }
     /// <summary>
     /// true if the message should be interpreted as binary data, false if the message should be interpreted as ASCII text.
     /// </summary>
-	public bool BinaryMessage { get; set; }
-
+    public bool BinaryMessage { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The binary message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

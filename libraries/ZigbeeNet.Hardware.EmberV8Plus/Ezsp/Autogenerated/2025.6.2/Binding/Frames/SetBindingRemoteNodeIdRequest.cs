@@ -11,34 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
-
 /// <summary>
 /// Set the node ID for the binding&apos;s destination. See &lt;i&gt;getBindingRemoteNodeId&lt;/i&gt; for a description.
 /// Frame value: 0x0030
 /// </summary>
-public class SetBindingRemoteNodeIdRequest : EzspFrameRequestV8Plus
+public class SetBindingRemoteNodeIdRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0030; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0030; }
     /// <summary>
     /// The index of a binding table entry.
     /// </summary>
-	public byte Index { get; set; }
-
+    public byte Index { get; set; }
     /// <summary>
     /// The short ID of the destination node.
     /// </summary>
-	public ushort NodeId { get; set; }
+    public ushort NodeId { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

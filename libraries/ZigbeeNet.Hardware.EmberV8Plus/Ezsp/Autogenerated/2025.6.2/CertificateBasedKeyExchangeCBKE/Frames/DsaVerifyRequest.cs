@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Verify that signature of the associated message digest was signed by the private key of the associated certificate.
 /// Frame value: 0x00A3
 /// </summary>
-public class DsaVerifyRequest : EzspFrameRequestV8Plus
+public class DsaVerifyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00A3; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00A3; }
     /// <summary>
     /// The AES-MMO message digest of the signed data. If dsaSign command was used to generate the signature for this data, the final byte (replaced by signature type of 0x01) in the messageContents array passed to dsaSign is included in the hash context used for the digest calculation.
     /// </summary>
-	public ZigbeeMessageDigest Digest { get; set; }
-
+    public ZigbeeMessageDigest Digest { get; set; }
     /// <summary>
     /// The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.
     /// </summary>
-	public ZigbeeCertificateData SignerCertificate { get; set; }
-
+    public ZigbeeCertificateData SignerCertificate { get; set; }
     /// <summary>
     /// The signature of the signed data.
     /// </summary>
-	public ZigbeeSignatureData ReceivedSig { get; set; }
+    public ZigbeeSignatureData ReceivedSig { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

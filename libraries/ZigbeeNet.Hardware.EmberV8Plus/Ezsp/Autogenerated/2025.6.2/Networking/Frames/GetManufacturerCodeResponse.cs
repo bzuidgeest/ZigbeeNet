@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Gets the manufacturer code to the specified value. The manufacturer code is one of the fields of the node descriptor.
 /// Frame value: 0x00CA
 /// </summary>
-public class GetManufacturerCodeResponse : EzspFrameResponseV8Plus
+public class GetManufacturerCodeResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00CA; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00CA; }
     /// <summary>
     /// The manufacturer code for the local node.
     /// </summary>
-	public ushort Code { get; set; }
+    public ushort Code { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetManufacturerCodeResponse frame = new GetManufacturerCodeResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Code = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetManufacturerCodeResponse frame = new GetManufacturerCodeResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Code = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

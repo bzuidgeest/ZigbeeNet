@@ -11,74 +11,75 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// Update the GP Proxy table based on a GP pairing.
 /// Frame value: 0x00C9
 /// </summary>
-public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus
+public class GpProxyTableProcessGpPairingRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C9; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C9; }
     /// <summary>
     /// The options field of the GP Pairing command.
     /// </summary>
-	public uint Options { get; set; }
-
+    public uint Options { get; set; }
     /// <summary>
     /// The target GPD.
     /// </summary>
-	public ZigbeeGpAddress Addr { get; set; }
-
+    public ZigbeeGpAddress Addr { get; set; }
     /// <summary>
     /// The communication mode of the GP Sink.
     /// </summary>
-	public byte CommMode { get; set; }
-
+    public byte CommMode { get; set; }
     /// <summary>
     /// The network address of the GP Sink.
     /// </summary>
-	public ushort SinkNetworkAddress { get; set; }
-
+    public ushort SinkNetworkAddress { get; set; }
     /// <summary>
     /// The group ID of the GP Sink.
     /// </summary>
-	public ushort SinkGroupId { get; set; }
-
+    public ushort SinkGroupId { get; set; }
     /// <summary>
     /// The alias assigned to the GPD.
     /// </summary>
-	public ushort AssignedAlias { get; set; }
+    public ushort AssignedAlias { get; set; }
 
     /// <summary>
     /// The IEEE address of the GP Sink.
     /// </summary>
-	public byte[] SinkIeeeAddress;
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] SinkIeeeAddress;
     /// <summary>
     /// The key to use for the target GPD.
     /// </summary>
-	public ZigbeeKeyData GpdKey { get; set; }
-
+    public ZigbeeKeyData GpdKey { get; set; }
     /// <summary>
     /// The GPD security frame counter.
     /// </summary>
-	public uint GpdSecurityFrameCounter { get; set; }
-
+    public uint GpdSecurityFrameCounter { get; set; }
     /// <summary>
     /// The forwarding radius.
     /// </summary>
-	public byte ForwardingRadius { get; set; }
+    public byte ForwardingRadius { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

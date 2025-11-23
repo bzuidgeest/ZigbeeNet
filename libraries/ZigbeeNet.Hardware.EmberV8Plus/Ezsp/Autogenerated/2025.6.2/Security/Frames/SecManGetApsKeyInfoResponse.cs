@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Retrieve metadata about an APS link key.  Does not retrieve contents.
 /// Frame value: 0x010C
 /// </summary>
-public class SecManGetApsKeyInfoResponse : EzspFrameResponseV8Plus
+public class SecManGetApsKeyInfoResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x010C; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x010C; }
     /// <summary>
     /// Status of metadata retrieval operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Metadata about the referenced key.
     /// </summary>
-	public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
+    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SecManGetApsKeyInfoResponse frame = new SecManGetApsKeyInfoResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.KeyData = MemoryMarshal.Read<ZigbeeSecManApsKeyMetadata>(frameBytes.Slice(index, 12));
-		index += 12;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SecManGetApsKeyInfoResponse frame = new SecManGetApsKeyInfoResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.KeyData = MemoryMarshal.Read<ZigbeeSecManApsKeyMetadata>(frameBytes.Slice(index, 12));
+        index += 12;
+        return frame;
+    }
 }
-
 #endif

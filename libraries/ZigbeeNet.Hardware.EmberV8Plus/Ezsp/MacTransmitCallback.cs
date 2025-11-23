@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ZigbeeNet.Hardware.EmberV8Plus.Ezsp
+namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
     /// <summary>
     /// Defines MAC transmit complete parameters.

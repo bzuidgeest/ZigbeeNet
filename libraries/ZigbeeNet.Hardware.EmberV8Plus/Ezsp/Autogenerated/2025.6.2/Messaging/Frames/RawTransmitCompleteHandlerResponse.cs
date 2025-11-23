@@ -11,53 +11,47 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback invoked by the EmberZNet stack when the MAC has finished transmitting a raw message.
 /// Frame value: 0x0098
 /// </summary>
-public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus
+public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0098; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0098; }
     /// <summary>
     /// Length of the message that was transmitted.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The message that was transmitted.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
     /// <summary>
     /// SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		RawTransmitCompleteHandlerResponse frame = new RawTransmitCompleteHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.MessageLength = frameBytes[index];
-		index += 1;
-		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
-		index += frame.MessageLength;
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        RawTransmitCompleteHandlerResponse frame = new RawTransmitCompleteHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.MessageLength = frameBytes[index];
+        index += 1;
+        frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+        index += frame.MessageLength;
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

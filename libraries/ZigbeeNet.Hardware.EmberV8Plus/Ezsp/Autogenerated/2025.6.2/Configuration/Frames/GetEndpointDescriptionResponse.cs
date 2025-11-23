@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Retrieve the endpoint description for the given endpoint number.
 /// Frame value: 0x0130
 /// </summary>
-public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus
+public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0130; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0130; }
     /// <summary>
     /// Description of this endpoint.
     /// </summary>
-	public ZigbeeEndpointDescription Result { get; set; }
+    public ZigbeeEndpointDescription Result { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetEndpointDescriptionResponse frame = new GetEndpointDescriptionResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Result = MemoryMarshal.Read<ZigbeeEndpointDescription>(frameBytes.Slice(index, 7));
-		index += 7;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetEndpointDescriptionResponse frame = new GetEndpointDescriptionResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Result = MemoryMarshal.Read<ZigbeeEndpointDescription>(frameBytes.Slice(index, 7));
+        index += 7;
+        return frame;
+    }
 }
-
 #endif

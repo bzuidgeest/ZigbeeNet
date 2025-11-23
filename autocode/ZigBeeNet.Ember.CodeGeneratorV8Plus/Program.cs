@@ -45,6 +45,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                     services.Configure<ApplicationSettings>(configuration);
                     services.AddSingleton(sp => sp.GetRequiredService<IOptions<ApplicationSettings>>().Value);
 
+                    services.AddTransient<FrameDefinitionGenerator>();
+
                     services.AddSingleton<TypeMapperService>();
                     services.AddSingleton<CSharpLanguageService>();
                     services.AddTransient<FileService>();

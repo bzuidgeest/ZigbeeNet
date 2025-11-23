@@ -11,60 +11,52 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
-
 /// <summary>
 /// A callback indicating a packet with a valid CRC has been received.
 /// Frame value: 0x008e
 /// </summary>
-public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus
+public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x008e; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x008e; }
     /// <summary>
     /// The link quality observed during the reception
     /// </summary>
-	public byte LinkQuality { get; set; }
-
+    public byte LinkQuality { get; set; }
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-	public sbyte Rssi { get; set; }
-
+    public sbyte Rssi { get; set; }
     /// <summary>
     /// The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
     /// </summary>
-	public byte PacketLength { get; set; }
+    public byte PacketLength { get; set; }
 
     /// <summary>
     /// The received packet (last 2 bytes are not FCS / CRC and may be discarded)
     /// </summary>
-	// Array field with symbolic size: packetLength
-	public byte[] PacketContents;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.LinkQuality = frameBytes[index];
-		index += 1;
-		frame.Rssi = (sbyte)frameBytes[index];
-		index += 1;
-		frame.PacketLength = frameBytes[index];
-		index += 1;
-		frame.PacketContents = frameBytes.Slice(index, frame.PacketLength).ToArray();
-		index += frame.PacketLength;
-
-		return frame;
-	}
+    public byte[] PacketContents;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.LinkQuality = frameBytes[index];
+        index += 1;
+        frame.Rssi = (sbyte)frameBytes[index];
+        index += 1;
+        frame.PacketLength = frameBytes[index];
+        index += 1;
+        frame.PacketContents = frameBytes.Slice(index, frame.PacketLength).ToArray();
+        index += frame.PacketLength;
+        return frame;
+    }
 }
-
 #endif

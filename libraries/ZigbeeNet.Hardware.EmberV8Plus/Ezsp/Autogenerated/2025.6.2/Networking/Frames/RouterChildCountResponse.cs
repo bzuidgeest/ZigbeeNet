@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Return the number of router children that the node currently has.
 /// Frame value: 0x013B
 /// </summary>
-public class RouterChildCountResponse : EzspFrameResponseV8Plus
+public class RouterChildCountResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x013B; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x013B; }
     /// <summary>
     /// The number of router children.
     /// </summary>
-	public byte RouterChildCount { get; set; }
+    public byte RouterChildCount { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		RouterChildCountResponse frame = new RouterChildCountResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.RouterChildCount = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        RouterChildCountResponse frame = new RouterChildCountResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.RouterChildCount = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

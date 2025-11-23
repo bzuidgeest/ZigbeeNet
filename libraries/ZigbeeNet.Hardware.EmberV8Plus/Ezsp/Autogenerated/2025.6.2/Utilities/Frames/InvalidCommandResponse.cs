@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Indicates that the NCP received an invalid command.
 /// Frame value: 0x0058
 /// </summary>
-public class InvalidCommandResponse : EzspFrameResponseV8Plus
+public class InvalidCommandResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0058; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0058; }
     /// <summary>
     /// The reason why the command was invalid.
     /// </summary>
-	public ZigbeeEzspStatus Reason { get; set; }
+    public ZigbeeEzspStatus Reason { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		InvalidCommandResponse frame = new InvalidCommandResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Reason = (ZigbeeEzspStatus)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        InvalidCommandResponse frame = new InvalidCommandResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Reason = (ZigbeeEzspStatus)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

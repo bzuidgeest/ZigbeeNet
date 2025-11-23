@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback invoked when a network status/route error message is received. The error indicates that there was a problem sending/receiving messages from the target node
 /// Frame value: 0x00C4
 /// </summary>
-public class IncomingNetworkStatusHandlerResponse : EzspFrameResponseV8Plus
+public class IncomingNetworkStatusHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C4; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C4; }
     /// <summary>
     /// One byte over-the-air error code from network status message
     /// </summary>
-	public byte ErrorCode { get; set; }
-
+    public byte ErrorCode { get; set; }
     /// <summary>
     /// The short ID of the remote node
     /// </summary>
-	public ushort Target { get; set; }
+    public ushort Target { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IncomingNetworkStatusHandlerResponse frame = new IncomingNetworkStatusHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ErrorCode = frameBytes[index];
-		index += 1;
-		frame.Target = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IncomingNetworkStatusHandlerResponse frame = new IncomingNetworkStatusHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ErrorCode = frameBytes[index];
+        index += 1;
+        frame.Target = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

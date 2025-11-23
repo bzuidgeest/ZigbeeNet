@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Gets the routing shortcut threshold used to differentiate between directly using a neighbor vs. performing routing.
 /// Frame value: 0x00D1
 /// </summary>
-public class GetRoutingShortcutThresholdResponse : EzspFrameResponseV8Plus
+public class GetRoutingShortcutThresholdResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D1; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D1; }
     /// <summary>
     /// The routing shortcut threshold
     /// </summary>
-	public byte RoutingShortcutThresh { get; set; }
+    public byte RoutingShortcutThresh { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetRoutingShortcutThresholdResponse frame = new GetRoutingShortcutThresholdResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.RoutingShortcutThresh = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetRoutingShortcutThresholdResponse frame = new GetRoutingShortcutThresholdResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.RoutingShortcutThresh = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Gets the current security state that is being used by a device that is joined in the network.
 /// Frame value: 0x0069
 /// </summary>
-public class GetCurrentSecurityStateResponse : EzspFrameResponseV8Plus
+public class GetCurrentSecurityStateResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0069; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0069; }
     /// <summary>
     /// The success or failure code of the operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The security configuration in use by the stack.
     /// </summary>
-	public ZigbeeCurrentSecurityState State { get; set; }
+    public ZigbeeCurrentSecurityState State { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetCurrentSecurityStateResponse frame = new GetCurrentSecurityStateResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.State = MemoryMarshal.Read<ZigbeeCurrentSecurityState>(frameBytes.Slice(index, 10));
-		index += 10;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetCurrentSecurityStateResponse frame = new GetCurrentSecurityStateResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.State = MemoryMarshal.Read<ZigbeeCurrentSecurityState>(frameBytes.Slice(index, 10));
+        index += 10;
+        return frame;
+    }
 }
-
 #endif

@@ -11,32 +11,28 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Set the PAN ID to be accepted by the device in a NLME Network Update command.  If this is set to a different value than its default 0xFFFF, NLME network update messages will be ignored if they do not match this PAN ID.
 /// Frame value: 0x011E
 /// </summary>
-public class SetPendingNetworkUpdatePanIdResponse : EzspFrameResponseV8Plus
+public class SetPendingNetworkUpdatePanIdResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x011E; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x011E; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SetPendingNetworkUpdatePanIdResponse frame = new SetPendingNetworkUpdatePanIdResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SetPendingNetworkUpdatePanIdResponse frame = new SetPendingNetworkUpdatePanIdResponse();
+        int index = frame.ParseHeader(frameBytes);
+        return frame;
+    }
 }
-
 #endif

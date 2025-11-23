@@ -11,60 +11,52 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Export the link key associated with the given EUI from the key table.
 /// Frame value: 0x010D
 /// </summary>
-public class SecManExportLinkKeyByEuiResponse : EzspFrameResponseV8Plus
+public class SecManExportLinkKeyByEuiResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x010D; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x010D; }
     /// <summary>
     /// Status of key export operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Context referring to the exported key, containing the table index that this key is located in.
     /// </summary>
-	public ZigbeeSecManContext Context { get; set; }
-
+    public ZigbeeSecManContext Context { get; set; }
     /// <summary>
     /// The exported key.
     /// </summary>
-	public ZigbeeSecManKey PlaintextKey { get; set; }
-
+    public ZigbeeSecManKey PlaintextKey { get; set; }
     /// <summary>
     /// Metadata about the key.
     /// </summary>
-	public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
+    public ZigbeeSecManApsKeyMetadata KeyData { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SecManExportLinkKeyByEuiResponse frame = new SecManExportLinkKeyByEuiResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Context = MemoryMarshal.Read<ZigbeeSecManContext>(frameBytes.Slice(index, 18));
-		index += 18;
-		frame.PlaintextKey = MemoryMarshal.Read<ZigbeeSecManKey>(frameBytes.Slice(index, 16));
-		index += 16;
-		frame.KeyData = MemoryMarshal.Read<ZigbeeSecManApsKeyMetadata>(frameBytes.Slice(index, 12));
-		index += 12;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SecManExportLinkKeyByEuiResponse frame = new SecManExportLinkKeyByEuiResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Context = MemoryMarshal.Read<ZigbeeSecManContext>(frameBytes.Slice(index, 18));
+        index += 18;
+        frame.PlaintextKey = MemoryMarshal.Read<ZigbeeSecManKey>(frameBytes.Slice(index, 16));
+        index += 16;
+        frame.KeyData = MemoryMarshal.Read<ZigbeeSecManApsKeyMetadata>(frameBytes.Slice(index, 12));
+        index += 12;
+        return frame;
+    }
 }
-
 #endif

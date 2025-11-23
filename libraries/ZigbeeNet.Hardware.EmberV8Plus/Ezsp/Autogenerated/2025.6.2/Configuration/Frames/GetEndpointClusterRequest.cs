@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Retrieve one of the cluster IDs associated with the given endpoint.
 /// Frame value: 0x0131
 /// </summary>
-public class GetEndpointClusterRequest : EzspFrameRequestV8Plus
+public class GetEndpointClusterRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0131; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0131; }
     /// <summary>
     /// Endpoint number to get a cluster ID for.
     /// </summary>
-	public byte Endpoint { get; set; }
-
+    public byte Endpoint { get; set; }
     /// <summary>
     /// Which list to get the cluster ID from.  (0 for input, 1 for output).
     /// </summary>
-	public byte ListId { get; set; }
-
+    public byte ListId { get; set; }
     /// <summary>
     /// Index from requested list to look at the cluster ID of.
     /// </summary>
-	public byte ListIndex { get; set; }
+    public byte ListIndex { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

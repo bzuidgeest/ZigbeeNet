@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Variable length data from the Host is echoed back by the NCP. This command has no other effects and is designed for testing the link between the Host and NCP.
 /// Frame value: 0x0081
 /// </summary>
-public class EchoResponse : EzspFrameResponseV8Plus
+public class EchoResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0081; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0081; }
     /// <summary>
     /// The length of the &lt;i&gt;echo&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte EchoLength { get; set; }
+    public byte EchoLength { get; set; }
 
     /// <summary>
     /// The echo of the data.
     /// </summary>
-	// Array field with symbolic size: echoLength
-	public byte[] Echo;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		EchoResponse frame = new EchoResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.EchoLength = frameBytes[index];
-		index += 1;
-		frame.Echo = frameBytes.Slice(index, frame.EchoLength).ToArray();
-		index += frame.EchoLength;
-
-		return frame;
-	}
+    public byte[] Echo;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        EchoResponse frame = new EchoResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.EchoLength = frameBytes[index];
+        index += 1;
+        frame.Echo = frameBytes.Slice(index, frame.EchoLength).ToArray();
+        index += frame.EchoLength;
+        return frame;
+    }
 }
-
 #endif

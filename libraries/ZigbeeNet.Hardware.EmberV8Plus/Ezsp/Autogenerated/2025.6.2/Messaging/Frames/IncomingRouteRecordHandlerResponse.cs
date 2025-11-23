@@ -11,75 +11,66 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Reports the arrival of a route record command frame.
 /// Frame value: 0x0059
 /// </summary>
-public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus
+public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0059; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0059; }
     /// <summary>
     /// The source of the route record.
     /// </summary>
-	public ushort Source { get; set; }
+    public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the source.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] SourceEui;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] SourceEui;
     /// <summary>
     /// The link quality from the node that last relayed the route record.
     /// </summary>
-	public byte LastHopLqi { get; set; }
-
+    public byte LastHopLqi { get; set; }
     /// <summary>
     /// The energy level (in units of dBm) observed during the reception.
     /// </summary>
-	public sbyte LastHopRssi { get; set; }
-
+    public sbyte LastHopRssi { get; set; }
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
     /// </summary>
-	public byte RelayCount { get; set; }
+    public byte RelayCount { get; set; }
 
     /// <summary>
     /// The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
     /// </summary>
-	// Array field with symbolic size: relayCount*2
-	public byte[] RelayList;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.SourceEui = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.LastHopLqi = frameBytes[index];
-		index += 1;
-		frame.LastHopRssi = (sbyte)frameBytes[index];
-		index += 1;
-		frame.RelayCount = frameBytes[index];
-		index += 1;
-		frame.RelayList = frameBytes.Slice(index, frame.RelayCount2).ToArray();
-		index += frame.RelayCount2;
-
-		return frame;
-	}
+    public byte[] RelayList;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.SourceEui = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.LastHopLqi = frameBytes[index];
+        index += 1;
+        frame.LastHopRssi = (sbyte)frameBytes[index];
+        index += 1;
+        frame.RelayCount = frameBytes[index];
+        index += 1;
+        frame.RelayList = frameBytes.Slice(index, frame.RelayCount*2).ToArray();
+        index += frame.RelayCount*2;
+        return frame;
+    }
 }
-
 #endif

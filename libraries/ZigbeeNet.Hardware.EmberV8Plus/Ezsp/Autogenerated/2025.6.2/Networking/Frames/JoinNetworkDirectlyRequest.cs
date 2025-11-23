@@ -11,44 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Causes the stack to associate with the network using the specified network parameters in the beacon parameter. It can take several seconds for the stack to associate with the local network. Do not send messages until the &lt;i&gt;stackStatusHandler&lt;/i&gt; callback informs you that the stack is up. Unlike ::sli_zigbee_stack_join_network(), this function does not issue an active scan before joining. Instead, it will cause the local node to issue a MAC Association Request directly to the specified target node. It is assumed that the beacon parameter is an artifact after issuing an active scan. (For more information, see &lt;i&gt;sli_zigbee_stack_get_stored_beacon&lt;/i&gt;.)
 /// Frame value: 0x003B
 /// </summary>
-public class JoinNetworkDirectlyRequest : EzspFrameRequestV8Plus
+public class JoinNetworkDirectlyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x003B; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x003B; }
     /// <summary>
     /// Specifies the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.
     /// </summary>
-	public ZigbeeNodeType LocalNodeType { get; set; }
-
+    public ZigbeeNodeType LocalNodeType { get; set; }
     /// <summary>
     /// Specifies the network with which the node should associate.
     /// </summary>
-	public ZigbeeBeaconData Beacon { get; set; }
-
+    public ZigbeeBeaconData Beacon { get; set; }
     /// <summary>
     /// The radio transmit power to use, specified in dBm.
     /// </summary>
-	public sbyte RadioTxPower { get; set; }
-
+    public sbyte RadioTxPower { get; set; }
     /// <summary>
     /// If true, clear beacons in cache upon join success. If join fail, do nothing.
     /// </summary>
-	public bool ClearBeaconsAfterNetworkUp { get; set; }
+    public bool ClearBeaconsAfterNetworkUp { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

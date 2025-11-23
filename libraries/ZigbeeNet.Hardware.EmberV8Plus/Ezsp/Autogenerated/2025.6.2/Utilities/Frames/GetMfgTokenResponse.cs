@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Retrieves a manufacturing token from the Flash Information Area of the NCP (except for SL_ZIGBEE_EZSP_STACK_CAL_DATA which is managed by the stack).
 /// Frame value: 0x000B
 /// </summary>
-public class GetMfgTokenResponse : EzspFrameResponseV8Plus
+public class GetMfgTokenResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x000B; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x000B; }
     /// <summary>
     /// The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte TokenDataLength { get; set; }
+    public byte TokenDataLength { get; set; }
 
     /// <summary>
     /// The manufacturing token data.
     /// </summary>
-	// Array field with symbolic size: tokenDataLength
-	public byte[] TokenData;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetMfgTokenResponse frame = new GetMfgTokenResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.TokenDataLength = frameBytes[index];
-		index += 1;
-		frame.TokenData = frameBytes.Slice(index, frame.TokenDataLength).ToArray();
-		index += frame.TokenDataLength;
-
-		return frame;
-	}
+    public byte[] TokenData;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetMfgTokenResponse frame = new GetMfgTokenResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.TokenDataLength = frameBytes[index];
+        index += 1;
+        frame.TokenData = frameBytes.Slice(index, frame.TokenDataLength).ToArray();
+        index += frame.TokenDataLength;
+        return frame;
+    }
 }
-
 #endif

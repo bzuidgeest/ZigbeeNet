@@ -11,40 +11,45 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
-
 /// <summary>
 /// Sets the token data for a single token with provided key
 /// Frame value: 0x0103
 /// </summary>
-public class SetTokenDataRequest : EzspFrameRequestV8Plus
+public class SetTokenDataRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0103; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0103; }
     /// <summary>
     /// Key of the token in the token table for which data is to be set.
     /// </summary>
-	public uint Token { get; set; }
-
+    public uint Token { get; set; }
     /// <summary>
     /// Index in case of the indexed token.
     /// </summary>
-	public uint Index { get; set; }
-
+    public uint Index { get; set; }
     /// <summary>
     /// Token Data
     /// </summary>
-	public ZigbeeTokenData TokenData { get; set; }
+    public ZigbeeTokenData TokenData { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

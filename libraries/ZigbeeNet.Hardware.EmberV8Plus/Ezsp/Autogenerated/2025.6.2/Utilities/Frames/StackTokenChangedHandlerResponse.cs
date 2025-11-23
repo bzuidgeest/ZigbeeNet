@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// A callback invoked to inform the application that a stack token has changed.
 /// Frame value: 0x000D
 /// </summary>
-public class StackTokenChangedHandlerResponse : EzspFrameResponseV8Plus
+public class StackTokenChangedHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x000D; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x000D; }
     /// <summary>
     /// The address of the stack token that has changed.
     /// </summary>
-	public ushort TokenAddress { get; set; }
+    public ushort TokenAddress { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		StackTokenChangedHandlerResponse frame = new StackTokenChangedHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.TokenAddress = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        StackTokenChangedHandlerResponse frame = new StackTokenChangedHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.TokenAddress = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        return frame;
+    }
 }
-
 #endif

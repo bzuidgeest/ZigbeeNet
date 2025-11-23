@@ -16,6 +16,7 @@ using System.Globalization;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Services;
 using ZigBeeNet.EmberV8Plus.CodeGenerator.Models.TypeMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
@@ -106,7 +107,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         SimpleTypeDefinitionProcessorService simpleTypeDefinitionProcessorService = _serviceProvider.GetRequiredService<SimpleTypeDefinitionProcessorService>();
                         EnumDefinitionProcessorService enumDefinitionProcessorService = _serviceProvider.GetRequiredService<EnumDefinitionProcessorService>();
                         ComplexTypeDefinitionProcessorService complexTypeDefinitionProcessorService = _serviceProvider.GetRequiredService<ComplexTypeDefinitionProcessorService>();
-                        FrameDefinitionProcessorService frameDefinitionProcessorService = _serviceProvider.GetRequiredService<FrameDefinitionProcessorService>();
+                        //FrameDefinitionProcessorService frameDefinitionProcessorService = _serviceProvider.GetRequiredService<FrameDefinitionProcessorService>();
+                        FrameDefinitionGenerator frameDefinitionGenerator = _serviceProvider.GetRequiredService<FrameDefinitionGenerator>();
+                        FileService _fileService = _serviceProvider.GetRequiredService<FileService>();
 
                         string sanitizedSectionName = Sanitize.SectionName(section.Name);
 
@@ -168,8 +171,13 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     frameDefinition.CommandArguments?.Count ?? 0,
                                     frameDefinition.ResponseArguments?.Count ?? 0);
 
-                                frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
-                                frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
+                                //frameDefinitionProcessorService.ProcessFrameDefinitionForRequest(section.Name, frameDefinition);
+                                //frameDefinitionProcessorService.ProcessFrameDefinitionForResponse(section.Name, frameDefinition);
+                                CompilationUnitSyntax frameRequestClass =  frameDefinitionGenerator.GenerateFrameRequestClass(section.Name, frameDefinition);
+                                CompilationUnitSyntax frameResponseClass = frameDefinitionGenerator.GenerateFrameResponseClass(section.Name, frameDefinition);
+
+                                _fileService.SaveFrameFile(section.Name, Sanitize.FunctionName(frameDefinition.CommandName) + "Request", frameRequestClass.ToFullString());
+                                _fileService.SaveFrameFile(section.Name, Sanitize.FunctionName(frameDefinition.CommandName) + "Response", frameResponseClass.ToFullString());
 
                                 frameNumberResponses.Add(frameDefinition.Value, $"{Sanitize.FunctionName(frameDefinition.CommandName)}Response");
                             }

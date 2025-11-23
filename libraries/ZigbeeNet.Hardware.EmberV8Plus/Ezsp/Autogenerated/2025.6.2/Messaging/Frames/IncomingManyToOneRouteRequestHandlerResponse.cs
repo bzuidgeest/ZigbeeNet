@@ -11,54 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback indicating that a many-to-one route to the concentrator with the given short and long id is available for use.
 /// Frame value: 0x007D
 /// </summary>
-public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8Plus
+public class IncomingManyToOneRouteRequestHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x007D; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x007D; }
     /// <summary>
     /// The short id of the concentrator.
     /// </summary>
-	public ushort Source { get; set; }
+    public ushort Source { get; set; }
 
     /// <summary>
     /// The EUI64 of the concentrator.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] LongId;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] LongId;
     /// <summary>
     /// The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
     /// </summary>
-	public byte Cost { get; set; }
+    public byte Cost { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IncomingManyToOneRouteRequestHandlerResponse frame = new IncomingManyToOneRouteRequestHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.LongId = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.Cost = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IncomingManyToOneRouteRequestHandlerResponse frame = new IncomingManyToOneRouteRequestHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.LongId = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.Cost = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

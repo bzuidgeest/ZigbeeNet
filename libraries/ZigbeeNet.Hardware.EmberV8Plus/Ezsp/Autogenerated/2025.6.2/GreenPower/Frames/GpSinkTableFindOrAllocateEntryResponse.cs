@@ -11,40 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// Finds or allocates a sink entry
 /// Frame value: 0x00E1
 /// </summary>
-public class GpSinkTableFindOrAllocateEntryResponse : EzspFrameResponseV8Plus
+public class GpSinkTableFindOrAllocateEntryResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00E1; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00E1; }
     /// <summary>
     /// An index of found or allocated sink or 0xFF if failed.
     /// </summary>
-	public byte Index { get; set; }
+    public byte Index { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GpSinkTableFindOrAllocateEntryResponse frame = new GpSinkTableFindOrAllocateEntryResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Index = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GpSinkTableFindOrAllocateEntryResponse frame = new GpSinkTableFindOrAllocateEntryResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Index = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,46 +11,41 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Retrieves a token (8 bytes of non-volatile storage) from the Simulated EEPROM of the NCP.
 /// Frame value: 0x000A
 /// </summary>
-public class GetTokenResponse : EzspFrameResponseV8Plus
+public class GetTokenResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x000A; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x000A; }
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The contents of the token.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] TokenData;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetTokenResponse frame = new GetTokenResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.TokenData = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
-		index += 8;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] TokenData;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetTokenResponse frame = new GetTokenResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.TokenData = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
+        index += 8;
+        return frame;
+    }
 }
-
 #endif

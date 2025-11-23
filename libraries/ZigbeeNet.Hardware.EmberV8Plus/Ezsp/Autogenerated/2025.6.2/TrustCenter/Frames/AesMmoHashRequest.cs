@@ -11,44 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
-
 /// <summary>
 /// This routine processes the passed chunk of data and updates the hash context based on it. If the &apos;finalize&apos; parameter is not set, then the length of the data passed in must be a multiple of 16. If the &apos;finalize&apos; parameter is set then the length can be any value up 1-16, and the final hash value will be calculated.
 /// Frame value: 0x006F
 /// </summary>
-public class AesMmoHashRequest : EzspFrameRequestV8Plus
+public class AesMmoHashRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x006F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x006F; }
     /// <summary>
     /// The hash context to update.
     /// </summary>
-	public ZigbeeAesMmoHashContext Context { get; set; }
-
+    public ZigbeeAesMmoHashContext Context { get; set; }
     /// <summary>
     /// This indicates whether the final hash value should be calculated
     /// </summary>
-	public bool Finalize { get; set; }
-
+    public bool Finalize { get; set; }
     /// <summary>
     /// The length of the data to hash.
     /// </summary>
-	public byte Length { get; set; }
+    public byte Length { get; set; }
 
     /// <summary>
     /// The data to hash.
     /// </summary>
-	// Array field with symbolic size: length
-	public byte[] Data;
+    public byte[] Data;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

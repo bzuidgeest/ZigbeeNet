@@ -11,67 +11,58 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// A callback invoked by the EmberZNet stack when a raw MAC message that has matched one of the application&apos;s configured MAC filters.
 /// Frame value: 0x0046
 /// </summary>
-public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus
+public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0046; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0046; }
     /// <summary>
     /// The value of the filter that was matched.
     /// </summary>
-	public ushort FilterValueMatch { get; set; }
-
+    public ushort FilterValueMatch { get; set; }
     /// <summary>
     /// The type of MAC passthrough message received.
     /// </summary>
-	public ZigbeeMacPassthroughType LegacyPassthroughType { get; set; }
-
+    public ZigbeeMacPassthroughType LegacyPassthroughType { get; set; }
     /// <summary>
     /// Information about the incoming packet.
     /// </summary>
-	public ZigbeeRxPacketInfo PacketInfo { get; set; }
-
+    public ZigbeeRxPacketInfo PacketInfo { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The raw message that was received.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MacFilterMatchMessageHandlerResponse frame = new MacFilterMatchMessageHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.FilterValueMatch = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
-		index += 2;
-		frame.LegacyPassthroughType = (ZigbeeMacPassthroughType)frameBytes[index];
-		index += 1;
-		frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
-		index += 18;
-		frame.MessageLength = frameBytes[index];
-		index += 1;
-		frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
-		index += frame.MessageLength;
-
-		return frame;
-	}
+    public byte[] MessageContents;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MacFilterMatchMessageHandlerResponse frame = new MacFilterMatchMessageHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.FilterValueMatch = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
+        index += 2;
+        frame.LegacyPassthroughType = (ZigbeeMacPassthroughType)frameBytes[index];
+        index += 1;
+        frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));
+        index += 18;
+        frame.MessageLength = frameBytes[index];
+        index += 1;
+        frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();
+        index += frame.MessageLength;
+        return frame;
+    }
 }
-
 #endif

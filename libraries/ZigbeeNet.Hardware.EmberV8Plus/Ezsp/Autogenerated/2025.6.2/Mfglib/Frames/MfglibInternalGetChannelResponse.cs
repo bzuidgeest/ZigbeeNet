@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
-
 /// <summary>
 /// Returns the current radio channel, as previously set via mfglibInternalSetChannel().
 /// Frame value: 0x008b
 /// </summary>
-public class MfglibInternalGetChannelResponse : EzspFrameResponseV8Plus
+public class MfglibInternalGetChannelResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x008b; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x008b; }
     /// <summary>
     /// The current channel.
     /// </summary>
-	public byte Channel { get; set; }
+    public byte Channel { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		MfglibInternalGetChannelResponse frame = new MfglibInternalGetChannelResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Channel = frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        MfglibInternalGetChannelResponse frame = new MfglibInternalGetChannelResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Channel = frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

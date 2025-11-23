@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Supply a source route for the next outgoing message.
 /// Frame value: 0x00AE
 /// </summary>
-public class SetSourceRouteRequest : EzspFrameRequestV8Plus
+public class SetSourceRouteRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00AE; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00AE; }
     /// <summary>
     /// The destination of the source route.
     /// </summary>
-	public ushort Destination { get; set; }
-
+    public ushort Destination { get; set; }
     /// <summary>
     /// The number of relays in &lt;i&gt;relayList&lt;/i&gt;.
     /// </summary>
-	public byte RelayCount { get; set; }
+    public byte RelayCount { get; set; }
 
     /// <summary>
     /// The source route.
     /// </summary>
-	// Array field with symbolic size: relayCount
-	public ushort[] RelayList;
+    public ushort[] RelayList;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

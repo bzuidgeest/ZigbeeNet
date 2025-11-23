@@ -11,64 +11,64 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Configures endpoint information on the NCP. The NCP does not remember these settings after a reset. Endpoints can be added by the Host after the NCP has reset. Once the status of the stack changes to SL_STATUS_NETWORK_UP, endpoints can no longer be added and this command will respond with SL_ZIGBEE_EZSP_ERROR_INVALID_CALL.
 /// Frame value: 0x0002
 /// </summary>
-public class AddEndpointRequest : EzspFrameRequestV8Plus
+public class AddEndpointRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0002; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0002; }
     /// <summary>
     /// The application endpoint to be added.
     /// </summary>
-	public byte Endpoint { get; set; }
-
+    public byte Endpoint { get; set; }
     /// <summary>
     /// The endpoint&apos;s application profile.
     /// </summary>
-	public ushort ProfileId { get; set; }
-
+    public ushort ProfileId { get; set; }
     /// <summary>
     /// The endpoint&apos;s device ID within the application profile.
     /// </summary>
-	public ushort DeviceId { get; set; }
-
+    public ushort DeviceId { get; set; }
     /// <summary>
     /// The endpoint&apos;s device version.
     /// </summary>
-	public byte DeviceVersion { get; set; }
-
+    public byte DeviceVersion { get; set; }
     /// <summary>
     /// The number of cluster IDs in &lt;i&gt;inputClusterList&lt;/i&gt;.
     /// </summary>
-	public byte InputClusterCount { get; set; }
-
+    public byte InputClusterCount { get; set; }
     /// <summary>
     /// The number of cluster IDs in &lt;i&gt;outputClusterList&lt;/i&gt;.
     /// </summary>
-	public byte OutputClusterCount { get; set; }
+    public byte OutputClusterCount { get; set; }
 
     /// <summary>
     /// Input cluster IDs the endpoint will accept.
     /// </summary>
-	// Array field with symbolic size: inputClusterCount
-	public ushort[] InputClusterList;
+    public ushort[] InputClusterList;
     /// <summary>
     /// Output cluster IDs the endpoint may send.
     /// </summary>
-	// Array field with symbolic size: outputClusterCount
-	public ushort[] OutputClusterList;
+    public ushort[] OutputClusterList;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns a value indicating whether the node is joining, joined to, or leaving a network.
 /// Frame value: 0x0018
 /// </summary>
-public class NetworkStateResponse : EzspFrameResponseV8Plus
+public class NetworkStateResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0018; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0018; }
     /// <summary>
     /// An sl_zigbee_network_status_t value indicating the current join status.
     /// </summary>
-	public ZigbeeNetworkStatus Status { get; set; }
+    public ZigbeeNetworkStatus Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		NetworkStateResponse frame = new NetworkStateResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (ZigbeeNetworkStatus)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        NetworkStateResponse frame = new NetworkStateResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (ZigbeeNetworkStatus)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// A callback indicating a custom EZSP message has been received.
 /// Frame value: 0x0054
 /// </summary>
-public class CustomFrameHandlerResponse : EzspFrameResponseV8Plus
+public class CustomFrameHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0054; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0054; }
     /// <summary>
     /// The length of the custom frame payload.
     /// </summary>
-	public byte PayloadLength { get; set; }
+    public byte PayloadLength { get; set; }
 
     /// <summary>
     /// The payload of the custom frame.
     /// </summary>
-	// Array field with symbolic size: payloadLength
-	public byte[] Payload;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		CustomFrameHandlerResponse frame = new CustomFrameHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.PayloadLength = frameBytes[index];
-		index += 1;
-		frame.Payload = frameBytes.Slice(index, frame.PayloadLength).ToArray();
-		index += frame.PayloadLength;
-
-		return frame;
-	}
+    public byte[] Payload;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        CustomFrameHandlerResponse frame = new CustomFrameHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.PayloadLength = frameBytes[index];
+        index += 1;
+        frame.Payload = frameBytes.Slice(index, frame.PayloadLength).ToArray();
+        index += frame.PayloadLength;
+        return frame;
+    }
 }
-
 #endif

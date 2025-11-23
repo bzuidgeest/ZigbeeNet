@@ -11,53 +11,47 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
-
 /// <summary>
 /// A callback to be implemented on the Golden Node to process acknowledgements. If you supply a custom version of this handler, you must define SL_ZIGBEE_APPLICATION_HAS_INCOMING_MFG_TEST_MESSAGE_HANDLER in your application&apos;s CONFIGURATION_HEADER
 /// Frame value: 0x0147
 /// </summary>
-public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus
+public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0147; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0147; }
     /// <summary>
     /// The type of the incoming message. Currently, the only possibility is MFG_TEST_TYPE_ACK.
     /// </summary>
-	public byte MessageType { get; set; }
-
+    public byte MessageType { get; set; }
     /// <summary>
     /// The length of the incoming message.
     /// </summary>
-	public byte DataLength { get; set; }
+    public byte DataLength { get; set; }
 
     /// <summary>
     /// A pointer to the data received in the current message.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
-	public byte[] Data;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		IncomingMfgTestMessageHandlerResponse frame = new IncomingMfgTestMessageHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.MessageType = frameBytes[index];
-		index += 1;
-		frame.DataLength = frameBytes[index];
-		index += 1;
-		frame.Data = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 1)).ToArray();
-		index += 1;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+    public byte[] Data;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        IncomingMfgTestMessageHandlerResponse frame = new IncomingMfgTestMessageHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.MessageType = frameBytes[index];
+        index += 1;
+        frame.DataLength = frameBytes[index];
+        index += 1;
+        frame.Data = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 1)).ToArray();
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

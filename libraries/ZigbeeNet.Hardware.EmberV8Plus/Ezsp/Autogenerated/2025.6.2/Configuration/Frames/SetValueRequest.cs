@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Writes a value to the NCP.
 /// Frame value: 0x00AB
 /// </summary>
-public class SetValueRequest : EzspFrameRequestV8Plus
+public class SetValueRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00AB; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00AB; }
     /// <summary>
     /// Identifies which value to change.
     /// </summary>
-	public ZigbeeEzspValueId ValueId { get; set; }
-
+    public ZigbeeEzspValueId ValueId { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;value&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte ValueLength { get; set; }
+    public byte ValueLength { get; set; }
 
     /// <summary>
     /// The new value.
     /// </summary>
-	// Array field with symbolic size: valueLength
-	public byte[] Value;
+    public byte[] Value;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

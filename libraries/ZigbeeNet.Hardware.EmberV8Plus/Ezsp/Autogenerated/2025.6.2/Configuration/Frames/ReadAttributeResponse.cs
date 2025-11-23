@@ -11,60 +11,52 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Read attribute data on NCP endpoints.
 /// Frame value: 0x0108
 /// </summary>
-public class ReadAttributeResponse : EzspFrameResponseV8Plus
+public class ReadAttributeResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0108; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0108; }
     /// <summary>
     /// An sl_zigbee_af_status_t value indicating success or the reason for failure, handled by the EZSP layer as a uint8_t. 255 indicates an EZSP-specific error.
     /// </summary>
-	public ZigbeeAfStatus AfStatus { get; set; }
-
+    public ZigbeeAfStatus AfStatus { get; set; }
     /// <summary>
     /// Attribute data type.
     /// </summary>
-	public byte DataType { get; set; }
-
+    public byte DataType { get; set; }
     /// <summary>
     /// Length of attribute data.
     /// </summary>
-	public byte ReadLength { get; set; }
+    public byte ReadLength { get; set; }
 
     /// <summary>
     /// Attribute data.
     /// </summary>
-	// Array field with symbolic size: readLength
-	public byte[] DataPtr;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ReadAttributeResponse frame = new ReadAttributeResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
-		index += 1;
-		frame.DataType = frameBytes[index];
-		index += 1;
-		frame.ReadLength = frameBytes[index];
-		index += 1;
-		frame.DataPtr = frameBytes.Slice(index, frame.ReadLength).ToArray();
-		index += frame.ReadLength;
-
-		return frame;
-	}
+    public byte[] DataPtr;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ReadAttributeResponse frame = new ReadAttributeResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.AfStatus = (ZigbeeAfStatus)frameBytes[index];
+        index += 1;
+        frame.DataType = frameBytes[index];
+        index += 1;
+        frame.ReadLength = frameBytes[index];
+        index += 1;
+        frame.DataPtr = frameBytes.Slice(index, frame.ReadLength).ToArray();
+        index += frame.ReadLength;
+        return frame;
+    }
 }
-
 #endif

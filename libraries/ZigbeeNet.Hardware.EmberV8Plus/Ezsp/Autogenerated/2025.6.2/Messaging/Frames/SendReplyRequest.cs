@@ -11,44 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Sends a reply to a received unicast message. The &lt;i&gt;incomingMessageHandler&lt;/i&gt; callback for the unicast being replied to supplies the values for all the parameters except the reply itself.
 /// Frame value: 0x0039
 /// </summary>
-public class SendReplyRequest : EzspFrameRequestV8Plus
+public class SendReplyRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0039; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0039; }
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-	public ushort Sender { get; set; }
-
+    public ushort Sender { get; set; }
     /// <summary>
     /// Value supplied by incoming unicast.
     /// </summary>
-	public ZigbeeApsFrame ApsFrame { get; set; }
-
+    public ZigbeeApsFrame ApsFrame { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The reply message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 {
@@ -51,6 +52,6 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
          * @return {@link EmberStatus} indicating the transaction completion state or
          *         {@link EmberStatus#EMBED_UNKNOWN_STATUS} on error.
          */
-        EmberStatus GetStatus();
+        //Status GetStatus();
     }
 }

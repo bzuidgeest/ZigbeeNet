@@ -11,40 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// A callback invoked by the ZigBee GP stack when a GPDF is received.
 /// Frame value: 0x00C5
 /// </summary>
-public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus
+public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C5; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C5; }
     /// <summary>
     /// GP parameters list represented as a macro for GP endpoint incoming message handler and callbacks prototypes.
     /// </summary>
-	public ZigbeeGpParams Param { get; set; }
+    public ZigbeeGpParams Param { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GpepIncomingMessageHandlerResponse frame = new GpepIncomingMessageHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Param = MemoryMarshal.Read<ZigbeeGpParams>(frameBytes.Slice(index, 47));
-		index += 47;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GpepIncomingMessageHandlerResponse frame = new GpepIncomingMessageHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Param = MemoryMarshal.Read<ZigbeeGpParams>(frameBytes.Slice(index, 47));
+        index += 47;
+        return frame;
+    }
 }
-
 #endif

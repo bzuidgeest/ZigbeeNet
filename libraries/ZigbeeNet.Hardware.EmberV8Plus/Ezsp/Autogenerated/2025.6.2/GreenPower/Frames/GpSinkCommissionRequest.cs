@@ -11,45 +11,49 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// Puts the GPS in commissioning mode.
 /// Frame value: 0x010A
 /// </summary>
-public class GpSinkCommissionRequest : EzspFrameRequestV8Plus
+public class GpSinkCommissionRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x010A; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x010A; }
     /// <summary>
     /// commissioning options
     /// </summary>
-	public byte Options { get; set; }
-
+    public byte Options { get; set; }
     /// <summary>
     /// gpm address for security.
     /// </summary>
-	public ushort GpmAddrForSecurity { get; set; }
-
+    public ushort GpmAddrForSecurity { get; set; }
     /// <summary>
     /// gpm address for pairing.
     /// </summary>
-	public ushort GpmAddrForPairing { get; set; }
-
+    public ushort GpmAddrForPairing { get; set; }
     /// <summary>
     /// sink endpoint.
     /// </summary>
-	public byte SinkEndpoint { get; set; }
+    public byte SinkEndpoint { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

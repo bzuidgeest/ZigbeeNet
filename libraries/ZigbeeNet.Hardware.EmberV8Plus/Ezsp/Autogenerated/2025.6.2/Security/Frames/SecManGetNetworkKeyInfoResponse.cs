@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// Retrieve information about the current and alternate network key, excluding their contents.
 /// Frame value: 0x0116
 /// </summary>
-public class SecManGetNetworkKeyInfoResponse : EzspFrameResponseV8Plus
+public class SecManGetNetworkKeyInfoResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0116; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0116; }
     /// <summary>
     /// Success or failure of retrieving network key info.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// Information about current and alternate network keys.
     /// </summary>
-	public ZigbeeSecManNetworkKeyInfo NetworkKeyInfo { get; set; }
+    public ZigbeeSecManNetworkKeyInfo NetworkKeyInfo { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		SecManGetNetworkKeyInfoResponse frame = new SecManGetNetworkKeyInfoResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.NetworkKeyInfo = MemoryMarshal.Read<ZigbeeSecManNetworkKeyInfo>(frameBytes.Slice(index, 8));
-		index += 8;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        SecManGetNetworkKeyInfoResponse frame = new SecManGetNetworkKeyInfoResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.NetworkKeyInfo = MemoryMarshal.Read<ZigbeeSecManNetworkKeyInfo>(frameBytes.Slice(index, 8));
+        index += 8;
+        return frame;
+    }
 }
-
 #endif

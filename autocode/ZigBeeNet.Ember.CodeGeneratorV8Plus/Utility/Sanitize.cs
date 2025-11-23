@@ -132,7 +132,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Utility
                 propertyName = propertyName[..^2];
 
             // Split by underscores and non-alphanumeric characters
-            var parts = System.Text.RegularExpressions.Regex.Split(propertyName, @"[_\W]+");
+            var parts = System.Text.RegularExpressions.Regex.Split(propertyName, @"[_\W-[*]]+");
 
             // PascalCase: capitalize first letter of each part
             var pascalCased = string.Concat(parts.Select(part =>

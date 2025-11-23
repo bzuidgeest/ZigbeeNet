@@ -11,29 +11,36 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
-
 /// <summary>
 /// Returns the node ID for the binding&apos;s destination, if the ID is known. If a message is sent using the binding and the destination&apos;s ID is not known, the stack will discover the ID by broadcasting a ZDO address request. The application can avoid the need for this discovery by using &lt;i&gt;setBindingRemoteNodeId&lt;/i&gt; when it knows the correct ID via some other means. The destination&apos;s node ID is forgotten when the binding is changed, when the local node reboots or, much more rarely, when the destination node changes its ID in response to an ID conflict.
 /// Frame value: 0x002F
 /// </summary>
-public class GetBindingRemoteNodeIdRequest : EzspFrameRequestV8Plus
+public class GetBindingRemoteNodeIdRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x002F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x002F; }
     /// <summary>
     /// The index of a binding table entry.
     /// </summary>
-	public byte Index { get; set; }
+    public byte Index { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

@@ -11,65 +11,66 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
-
 /// <summary>
 /// Adds/removes an entry from the GP Tx Queue.
 /// Frame value: 0x00C6
 /// </summary>
-public class DGpSendRequest : EzspFrameRequestV8Plus
+public class DGpSendRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C6; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C6; }
     /// <summary>
     /// The action to perform on the GP TX queue (true to add, false to remove).
     /// </summary>
-	public bool Action { get; set; }
-
+    public bool Action { get; set; }
     /// <summary>
     /// Whether to use ClearChannelAssessment when transmitting the GPDF.
     /// </summary>
-	public bool UseCca { get; set; }
-
+    public bool UseCca { get; set; }
     /// <summary>
     /// The Address of the destination GPD.
     /// </summary>
-	public ZigbeeGpAddress Addr { get; set; }
-
+    public ZigbeeGpAddress Addr { get; set; }
     /// <summary>
     /// The GPD command ID to send.
     /// </summary>
-	public byte GpdCommandId { get; set; }
-
+    public byte GpdCommandId { get; set; }
     /// <summary>
     /// The length of the GP command payload.
     /// </summary>
-	public byte GpdAsduLength { get; set; }
+    public byte GpdAsduLength { get; set; }
 
     /// <summary>
     /// The GP command payload.
     /// </summary>
-	// Array field with symbolic size: gpdAsduLength
-	public byte[] GpdAsdu;
+    public byte[] GpdAsdu;
     /// <summary>
     /// The handle to refer to the GPDF.
     /// </summary>
-	public byte GpepHandle { get; set; }
-
+    public byte GpepHandle { get; set; }
     /// <summary>
     /// How long to keep the GPDF in the TX Queue.
     /// </summary>
-	public ushort GpTxQueueEntryLifetimeMs { get; set; }
+    public ushort GpTxQueueEntryLifetimeMs { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

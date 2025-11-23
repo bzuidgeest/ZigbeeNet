@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// Is the ZLL radio on when idle mode is active?
 /// Frame value: 0x00D8
 /// </summary>
-public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus
+public class ZllRxOnWhenIdleGetActiveResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00D8; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00D8; }
     /// <summary>
     /// ZLL radio on when idle mode is active?
     /// </summary>
-	public bool ZllRxOnWhenIdleGetActive { get; set; }
+    public bool ZllRxOnWhenIdleGetActive { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ZllRxOnWhenIdleGetActiveResponse frame = new ZllRxOnWhenIdleGetActiveResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ZllRxOnWhenIdleGetActive = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ZllRxOnWhenIdleGetActiveResponse frame = new ZllRxOnWhenIdleGetActiveResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ZllRxOnWhenIdleGetActive = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

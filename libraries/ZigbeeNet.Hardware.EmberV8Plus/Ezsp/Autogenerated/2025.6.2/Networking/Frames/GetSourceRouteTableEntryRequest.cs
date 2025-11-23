@@ -11,31 +11,38 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns information about a source route table entry
 /// Frame value: 0x00C1
 /// </summary>
-public class GetSourceRouteTableEntryRequest : EzspFrameRequestV8Plus
+public class GetSourceRouteTableEntryRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00C1; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00C1; }
     /// <summary>
     /// The index of the entry of interest in the
-	/// source route table. Possible indexes range from zero to
-	/// SOURCE_ROUTE_TABLE_FILLED_SIZE.
+    /// source route table. Possible indexes range from zero to
+    /// SOURCE_ROUTE_TABLE_FILLED_SIZE.
     /// </summary>
-	public byte Index { get; set; }
+    public byte Index { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

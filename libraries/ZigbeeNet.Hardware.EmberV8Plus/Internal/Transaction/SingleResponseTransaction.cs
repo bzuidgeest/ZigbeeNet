@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 {
@@ -23,7 +23,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 
         public bool IsMatch(EzspFrameResponseV8Plus response) 
         {
-            if (response.GetType() == _requiredResponse && _request.GetSequenceNumber() == response.GetSequenceNumber()) 
+            if (response.GetType() == _requiredResponse && _request.SequenceNumber == response.SequenceNumber) 
             {
                 this._response = response;
                 return true;
@@ -39,13 +39,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
             return _request;
         }
 
-        public EmberStatus GetStatus() 
+        public Status GetStatus() 
         {
             if (_response == null) 
-                return EmberStatus.UNKNOWN;
+                return Status.UNKNOWN;
 
             // TODO: Fix the response status!
-            return EmberStatus.UNKNOWN;
+            return Status.UNKNOWN;
         }
 
         public EzspFrameResponseV8Plus GetResponse() 

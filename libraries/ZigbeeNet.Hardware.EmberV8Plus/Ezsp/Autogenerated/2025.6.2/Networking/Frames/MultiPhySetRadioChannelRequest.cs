@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Sets the channel for desired phy interface to use for sending and receiving messages. For a list of available radio pages and channels, see the technical specification for the RF communication module in your Developer Kit. Note: Care should be taken when using this API, as all devices on a network must use the same page and channel.
 /// Frame value: 0x00FB
 /// </summary>
-public class MultiPhySetRadioChannelRequest : EzspFrameRequestV8Plus
+public class MultiPhySetRadioChannelRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00FB; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00FB; }
     /// <summary>
     /// Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.
     /// </summary>
-	public byte PhyIndex { get; set; }
-
+    public byte PhyIndex { get; set; }
     /// <summary>
     /// Desired radio channel page.
     /// </summary>
-	public byte Page { get; set; }
-
+    public byte Page { get; set; }
     /// <summary>
     /// Desired radio channel.
     /// </summary>
-	public byte Channel { get; set; }
+    public byte Channel { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

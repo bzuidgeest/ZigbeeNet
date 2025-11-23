@@ -11,74 +11,72 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
-
 /// <summary>
 /// Write attribute data on NCP endpoints.
 /// Frame value: 0x0109
 /// </summary>
-public class WriteAttributeRequest : EzspFrameRequestV8Plus
+public class WriteAttributeRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0109; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0109; }
     /// <summary>
     /// Endpoint
     /// </summary>
-	public byte Endpoint { get; set; }
-
+    public byte Endpoint { get; set; }
     /// <summary>
     /// Cluster.
     /// </summary>
-	public ushort Cluster { get; set; }
-
+    public ushort Cluster { get; set; }
     /// <summary>
     /// Attribute ID.
     /// </summary>
-	public ushort AttributeId { get; set; }
-
+    public ushort AttributeId { get; set; }
     /// <summary>
     /// Mask.
     /// </summary>
-	public byte Mask { get; set; }
-
+    public byte Mask { get; set; }
     /// <summary>
     /// Manufacturer code.
     /// </summary>
-	public ushort ManufacturerCode { get; set; }
-
+    public ushort ManufacturerCode { get; set; }
     /// <summary>
     /// Override read only and data type.
     /// </summary>
-	public bool OverrideReadOnlyAndDataType { get; set; }
-
+    public bool OverrideReadOnlyAndDataType { get; set; }
     /// <summary>
     /// Override read only and data type.
     /// </summary>
-	public bool JustTest { get; set; }
-
+    public bool JustTest { get; set; }
     /// <summary>
     /// Attribute data type.
     /// </summary>
-	public byte DataType { get; set; }
-
+    public byte DataType { get; set; }
     /// <summary>
     /// Attribute data length.
     /// </summary>
-	public byte DataLength { get; set; }
+    public byte DataLength { get; set; }
 
     /// <summary>
     /// Attribute data.
     /// </summary>
-	// Array field with symbolic size: dataLength
-	public byte[] Data;
+    public byte[] Data;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

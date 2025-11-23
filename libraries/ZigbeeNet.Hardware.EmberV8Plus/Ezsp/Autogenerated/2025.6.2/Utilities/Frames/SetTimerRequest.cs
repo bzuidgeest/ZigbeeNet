@@ -11,44 +11,48 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Sets a timer on the NCP. There are 2 independent timers available for use by the Host. A timer can be cancelled by setting &lt;i&gt;time&lt;/i&gt; to 0 or &lt;i&gt;units&lt;/i&gt; to SL_ZIGBEE_EVENT_INACTIVE.
 /// Frame value: 0x000E
 /// </summary>
-public class SetTimerRequest : EzspFrameRequestV8Plus
+public class SetTimerRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x000E; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x000E; }
     /// <summary>
     /// Which timer to set (0 or 1).
     /// </summary>
-	public byte TimerId { get; set; }
-
+    public byte TimerId { get; set; }
     /// <summary>
     /// The delay before the &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated. Note that the timer clock is free running and is not synchronized with this command. This means that the actual delay will be between &lt;i&gt;time&lt;/i&gt; and (&lt;i&gt;time&lt;/i&gt; - 1). The maximum delay is 32767.
     /// </summary>
-	public ushort Time { get; set; }
-
+    public ushort Time { get; set; }
     /// <summary>
     /// The units for &lt;i&gt;time&lt;/i&gt;.
     /// </summary>
-	public ZigbeeEventUnits Units { get; set; }
-
+    public ZigbeeEventUnits Units { get; set; }
     /// <summary>
     /// If true, a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. If false, only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.
     /// </summary>
-	public bool Repeat { get; set; }
+    public bool Repeat { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

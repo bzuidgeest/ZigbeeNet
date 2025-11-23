@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// Get the ZLL tokens.
 /// Frame value: 0x00BC
 /// </summary>
-public class ZllGetTokensResponse : EzspFrameResponseV8Plus
+public class ZllGetTokensResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00BC; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00BC; }
     /// <summary>
     /// Data token return value.
     /// </summary>
-	public ZigbeeTokTypeStackZllData Data { get; set; }
-
+    public ZigbeeTokTypeStackZllData Data { get; set; }
     /// <summary>
     /// Security token return value.
     /// </summary>
-	public ZigbeeTokTypeStackZllSecurity Security { get; set; }
+    public ZigbeeTokTypeStackZllSecurity Security { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ZllGetTokensResponse frame = new ZllGetTokensResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Data = MemoryMarshal.Read<ZigbeeTokTypeStackZllData>(frameBytes.Slice(index, 15));
-		index += 15;
-		frame.Security = MemoryMarshal.Read<ZigbeeTokTypeStackZllSecurity>(frameBytes.Slice(index, 37));
-		index += 37;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ZllGetTokensResponse frame = new ZllGetTokensResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Data = MemoryMarshal.Read<ZigbeeTokTypeStackZllData>(frameBytes.Slice(index, 15));
+        index += 15;
+        frame.Security = MemoryMarshal.Read<ZigbeeTokTypeStackZllSecurity>(frameBytes.Slice(index, 37));
+        index += 37;
+        return frame;
+    }
 }
-
 #endif

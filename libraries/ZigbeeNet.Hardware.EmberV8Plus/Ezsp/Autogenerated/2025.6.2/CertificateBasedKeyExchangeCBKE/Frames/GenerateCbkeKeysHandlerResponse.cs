@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// A callback by the Crypto Engine indicating that a new ephemeral public/private key pair has been generated. The public/private key pair is stored on the NCP, but only the associated public key is returned to the host. The node&apos;s associated certificate is also returned.
 /// Frame value: 0x009E
 /// </summary>
-public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus
+public class GenerateCbkeKeysHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x009E; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x009E; }
     /// <summary>
     /// The result of the CBKE operation.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The generated ephemeral public key.
     /// </summary>
-	public ZigbeePublicKeyData EphemeralPublicKey { get; set; }
+    public ZigbeePublicKeyData EphemeralPublicKey { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GenerateCbkeKeysHandlerResponse frame = new GenerateCbkeKeysHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.EphemeralPublicKey = MemoryMarshal.Read<ZigbeePublicKeyData>(frameBytes.Slice(index, 22));
-		index += 22;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GenerateCbkeKeysHandlerResponse frame = new GenerateCbkeKeysHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.EphemeralPublicKey = MemoryMarshal.Read<ZigbeePublicKeyData>(frameBytes.Slice(index, 22));
+        index += 22;
+        return frame;
+    }
 }
-
 #endif

@@ -11,47 +11,42 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
-
 /// <summary>
 /// This is a callback that indicates the success or failure of an attempt to establish a key with a partner device.
 /// Frame value: 0x009B
 /// </summary>
-public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus
+public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x009B; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x009B; }
 
     /// <summary>
     /// This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] Partner;
-
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] Partner;
     /// <summary>
     /// This is the status indicating what was established or why the key establishment failed.
     /// </summary>
-	public ZigbeeKeyStatus Status { get; set; }
+    public ZigbeeKeyStatus Status { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Partner = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-		frame.Status = (ZigbeeKeyStatus)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Partner = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        frame.Status = (ZigbeeKeyStatus)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Indicate the state of permit joining in MAC.
 /// Frame value: 0x011F
 /// </summary>
-public class GetPermitJoiningResponse : EzspFrameResponseV8Plus
+public class GetPermitJoiningResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x011F; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x011F; }
     /// <summary>
     /// Whether the current network permits joining.
     /// </summary>
-	public bool JoiningPermitted { get; set; }
+    public bool JoiningPermitted { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetPermitJoiningResponse frame = new GetPermitJoiningResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.JoiningPermitted = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetPermitJoiningResponse frame = new GetPermitJoiningResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.JoiningPermitted = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

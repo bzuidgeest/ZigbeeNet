@@ -11,67 +11,58 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Callback fires when the duty cycle state has changed
 /// Frame value: 0x004D
 /// </summary>
-public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus
+public class DutyCycleHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x004D; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x004D; }
     /// <summary>
     /// The channel page whose duty cycle state has changed.
     /// </summary>
-	public byte ChannelPage { get; set; }
-
+    public byte ChannelPage { get; set; }
     /// <summary>
     /// The channel number whose duty cycle state has changed.
     /// </summary>
-	public byte Channel { get; set; }
-
+    public byte Channel { get; set; }
     /// <summary>
     /// The current duty cycle state.
     /// </summary>
-	public ZigbeeDutyCycleState State { get; set; }
-
+    public ZigbeeDutyCycleState State { get; set; }
     /// <summary>
     /// The total number of connected end devices that are being monitored for duty cycle.
     /// </summary>
-	public byte TotalDevices { get; set; }
-
+    public byte TotalDevices { get; set; }
     /// <summary>
     /// Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack&apos;s nodeId, and thus the total aggregate duty cycle for the device.
     /// </summary>
-	public ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles { get; set; }
+    public ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		DutyCycleHandlerResponse frame = new DutyCycleHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ChannelPage = frameBytes[index];
-		index += 1;
-		frame.Channel = frameBytes[index];
-		index += 1;
-		frame.State = (ZigbeeDutyCycleState)frameBytes[index];
-		index += 1;
-		frame.TotalDevices = frameBytes[index];
-		index += 1;
-		frame.ArrayOfDeviceDutyCycles = MemoryMarshal.Read<ZigbeePerDeviceDutyCycle>(frameBytes.Slice(index, 4));
-		index += 4;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        DutyCycleHandlerResponse frame = new DutyCycleHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ChannelPage = frameBytes[index];
+        index += 1;
+        frame.Channel = frameBytes[index];
+        index += 1;
+        frame.State = (ZigbeeDutyCycleState)frameBytes[index];
+        index += 1;
+        frame.TotalDevices = frameBytes[index];
+        index += 1;
+        frame.ArrayOfDeviceDutyCycles = MemoryMarshal.Read<ZigbeePerDeviceDutyCycle>(frameBytes.Slice(index, 4));
+        index += 4;
+        return frame;
+    }
 }
-
 #endif

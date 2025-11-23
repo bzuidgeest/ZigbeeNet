@@ -11,39 +11,34 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Check if a particular counter can report on the destination node ID they have been triggered from.
 /// Frame value: 0x0133
 /// </summary>
-public class CounterRequiresDestinationNodeIdResponse : EzspFrameResponseV8Plus
+public class CounterRequiresDestinationNodeIdResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0133; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0133; }
     /// <summary>
     /// Whether this counter requires the destination node ID.
     /// </summary>
-	public bool Requires { get; set; }
+    public bool Requires { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		CounterRequiresDestinationNodeIdResponse frame = new CounterRequiresDestinationNodeIdResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Requires = ((frameBytes[index] & 1) == 1);
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        CounterRequiresDestinationNodeIdResponse frame = new CounterRequiresDestinationNodeIdResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Requires = (frameBytes[index] & 1) == 1;
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

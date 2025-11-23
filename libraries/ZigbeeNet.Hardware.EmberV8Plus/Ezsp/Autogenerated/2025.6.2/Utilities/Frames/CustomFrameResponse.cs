@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Provides the customer a custom EZSP frame. On the NCP, these frames are only handled if the XNCP library is included. On the NCP side these frames are handled in the sl_zigbee_xncp_incoming_custom_ezsp_message_cb() callback function.
 /// Frame value: 0x0047
 /// </summary>
-public class CustomFrameResponse : EzspFrameResponseV8Plus
+public class CustomFrameResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0047; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0047; }
     /// <summary>
     /// The status returned by the custom command.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The length of the response.
     /// </summary>
-	public byte ReplyLength { get; set; }
+    public byte ReplyLength { get; set; }
 
     /// <summary>
     /// The response.
     /// </summary>
-	// Array field with symbolic size: replyLength
-	public byte[] Reply;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		CustomFrameResponse frame = new CustomFrameResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.ReplyLength = frameBytes[index];
-		index += 1;
-		frame.Reply = frameBytes.Slice(index, frame.ReplyLength).ToArray();
-		index += frame.ReplyLength;
-
-		return frame;
-	}
+    public byte[] Reply;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        CustomFrameResponse frame = new CustomFrameResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.ReplyLength = frameBytes[index];
+        index += 1;
+        frame.Reply = frameBytes.Slice(index, frame.ReplyLength).ToArray();
+        index += frame.ReplyLength;
+        return frame;
+    }
 }
-
 #endif

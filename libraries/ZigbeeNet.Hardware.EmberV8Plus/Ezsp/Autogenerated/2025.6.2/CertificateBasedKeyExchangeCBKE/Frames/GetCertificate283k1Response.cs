@@ -11,43 +11,37 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
-
 /// <summary>
 /// Retrieves the 283k certificate installed on the NCP.
 /// Frame value: 0x00EC
 /// </summary>
-public class GetCertificate283k1Response : EzspFrameResponseV8Plus
+public class GetCertificate283k1Response : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00EC; } }
-
-	public Status Status { get; set; }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00EC; }
+    public Status Status { get; set; }
     /// <summary>
     /// The locally installed certificate.
     /// </summary>
-	public ZigbeeCertificate283k1Data LocalCert { get; set; }
+    public ZigbeeCertificate283k1Data LocalCert { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetCertificate283k1Response frame = new GetCertificate283k1Response();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));
-		index += 74;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetCertificate283k1Response frame = new GetCertificate283k1Response();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));
+        index += 74;
+        return frame;
+    }
 }
-
 #endif

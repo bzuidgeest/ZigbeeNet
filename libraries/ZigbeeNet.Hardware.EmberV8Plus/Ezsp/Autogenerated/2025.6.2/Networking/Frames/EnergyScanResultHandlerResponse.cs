@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Reports the result of an energy scan for a single channel. The scan is not complete until the &lt;i&gt;scanCompleteHandler&lt;/i&gt; callback is called.
 /// Frame value: 0x0048
 /// </summary>
-public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus
+public class EnergyScanResultHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0048; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0048; }
     /// <summary>
     /// The 802.15.4 channel number that was scanned.
     /// </summary>
-	public byte Channel { get; set; }
-
+    public byte Channel { get; set; }
     /// <summary>
     /// The maximum RSSI value found on the channel.
     /// </summary>
-	public sbyte MaxRssiValue { get; set; }
+    public sbyte MaxRssiValue { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		EnergyScanResultHandlerResponse frame = new EnergyScanResultHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Channel = frameBytes[index];
-		index += 1;
-		frame.MaxRssiValue = (sbyte)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        EnergyScanResultHandlerResponse frame = new EnergyScanResultHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Channel = frameBytes[index];
+        index += 1;
+        frame.MaxRssiValue = (sbyte)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

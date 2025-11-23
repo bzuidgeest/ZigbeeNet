@@ -11,47 +11,41 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Returns the EUI64 that corresponds to the specified node ID. The EUI64 is found by searching through all stack tables for the specified node ID.
 /// Frame value: 0x0061
 /// </summary>
-public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus
+public class LookupEui64ByNodeIdResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0061; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0061; }
     /// <summary>
     /// SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
     /// </summary>
-	public Status Status { get; set; }
+    public Status Status { get; set; }
 
     /// <summary>
     /// The EUI64 of the node.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] Eui64;
-
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		LookupEui64ByNodeIdResponse frame = new LookupEui64ByNodeIdResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
-		index += 8;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] Eui64;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        LookupEui64ByNodeIdResponse frame = new LookupEui64ByNodeIdResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Eui64 = frameBytes.Slice(index, 8).ToArray();
+        index += 8;
+        return frame;
+    }
 }
-
 #endif

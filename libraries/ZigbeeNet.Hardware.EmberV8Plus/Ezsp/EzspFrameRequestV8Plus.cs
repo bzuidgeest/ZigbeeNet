@@ -1,5 +1,7 @@
 using System;
+using System.Buffers.Binary;
 using System.Threading;
+using ZigbeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
@@ -45,36 +47,48 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         public int NetworkIndex { get; set; } = 0;
         public SleepMode SleepMode { get; set; } = SleepMode.Idle;
 
+        public bool SecurityEnabled { get; set; } = false;
+        public bool PaddingEnabled { get; set; } = false;
+
+        private const ushort frameVersion = 1;
+
         /**
          * Constructor used to create an outgoing frame
          */
         protected EzspFrameRequestV8Plus()
         {
-            _sequenceNumber = Interlocked.Increment(ref sequence) & 0xff;
+            SequenceNumber = Interlocked.Increment(ref sequence) & 0xff;
         }
 
-        protected void SerializeHeader(EzspSerializer serializer) 
+        protected byte[] CreateHeader(ushort frameId) 
         {
+            Span<byte> buffer = stackalloc byte[5];
             // Output sequence number
-            serializer.SerializeUInt8(_sequenceNumber);
-
+            buffer[0] = (byte)SequenceNumber;
             // Output Frame Control Bytes
-            // fix replace 0 with high byte properly.
-            serializer.SerializeUInt16(((0) << 8) | (EZSP_FC_REQUEST | ((NetworkIndex & 0x3) << 5) | (int)SleepMode));
-
+            buffer[1] = (byte)(EZSP_FC_REQUEST | ((NetworkIndex & 0x3) << 5) | (int)SleepMode);
+            buffer[2] = (byte)(((SecurityEnabled ? 1 : 0) << 7) | (PaddingEnabled ? (1 << 6) : 0) | frameVersion);
             // Output Frame ID
-            serializer.SerializeUInt16(_frameId);
+            BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(4), frameId);
+
+            return buffer.ToArray();
         }
 
-        public virtual int[] Serialize() 
+        protected abstract byte[] CreateParameters();
+       
+        public byte[] GetFrameBytes()
         {
-            EzspSerializer serializer = new EzspSerializer();
-            SerializeHeader(serializer);
-
-            return serializer.GetPayload();
+            ushort frameId = (this as IFrameIdentifier).FrameId;
+            byte[] header = CreateHeader(frameId);
+            byte[] parameters = CreateParameters();
+            byte[] frame = new byte[header.Length + parameters.Length];
+            Buffer.BlockCopy(header, 0, frame, 0, header.Length);
+            Buffer.BlockCopy(parameters, 0, frame, header.Length, parameters.Length);
+            return frame;
         }
 
-         
+
+
 
 
     }

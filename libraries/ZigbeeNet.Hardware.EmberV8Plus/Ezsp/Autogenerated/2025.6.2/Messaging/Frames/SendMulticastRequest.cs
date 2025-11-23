@@ -11,64 +11,64 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
-
 /// <summary>
 /// Sends a multicast message to all endpoints that share a specific multicast ID and are within a specified number of hops of the sender.
 /// Frame value: 0x0038
 /// </summary>
-public class SendMulticastRequest : EzspFrameRequestV8Plus
+public class SendMulticastRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0038; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0038; }
     /// <summary>
     /// The APS frame for the message. The multicast will be sent to the groupId in this frame.
     /// </summary>
-	public ZigbeeApsFrame ApsFrame { get; set; }
-
+    public ZigbeeApsFrame ApsFrame { get; set; }
     /// <summary>
     /// The message will be delivered to all nodes within this number of hops of the sender. A value of zero is converted to SL_ZIGBEE_MAX_HOPS.
     /// </summary>
-	public byte Hops { get; set; }
-
+    public byte Hops { get; set; }
     /// <summary>
     /// The number of hops that the message will be forwarded by devices that are not members of the group. A value of 7 or greater is treated as infinite.
     /// </summary>
-	public ushort BroadcastAddr { get; set; }
-
+    public ushort BroadcastAddr { get; set; }
     /// <summary>
     /// The alias source address
     /// </summary>
-	public ushort Alias { get; set; }
-
+    public ushort Alias { get; set; }
     /// <summary>
     /// the alias sequence number
     /// </summary>
-	public byte NwkSequence { get; set; }
-
+    public byte NwkSequence { get; set; }
     /// <summary>
     /// A value chosen by the Host. This value is used in the &lt;i&gt;sl_zigbee_ezsp_message_sent_handler&lt;/i&gt; response to refer to this message.
     /// </summary>
-	public ushort MessageTag { get; set; }
-
+    public ushort MessageTag { get; set; }
     /// <summary>
     /// The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.
     /// </summary>
-	public byte MessageLength { get; set; }
+    public byte MessageLength { get; set; }
 
     /// <summary>
     /// The multicast message.
     /// </summary>
-	// Array field with symbolic size: messageLength
-	public byte[] MessageContents;
+    public byte[] MessageContents;
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

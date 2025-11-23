@@ -11,35 +11,41 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
-
 /// <summary>
 /// Factory reset all configured zigbee tokens
 /// Frame value: 0x0077
 /// </summary>
-public class TokenFactoryResetRequest : EzspFrameRequestV8Plus
+public class TokenFactoryResetRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0077; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0077; }
     /// <summary>
     /// Exclude network and APS outgoing frame counter tokens.
     /// </summary>
-	public bool ExcludeOutgoingFC { get; set; }
-
+    public bool ExcludeOutgoingFC { get; set; }
     /// <summary>
     /// Exclude stack boot counter token.
     /// </summary>
-	public bool ExcludeBootCounter { get; set; }
+    public bool ExcludeBootCounter { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

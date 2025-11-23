@@ -11,39 +11,44 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
-
 /// <summary>
 /// This call will initiate a ZLL network scan on all the specified channels.
 /// Frame value: 0x00B4
 /// </summary>
-public class ZllStartScanRequest : EzspFrameRequestV8Plus
+public class ZllStartScanRequest : EzspFrameRequestV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x00B4; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x00B4; }
     /// <summary>
     /// The range of channels to scan.
     /// </summary>
-	public uint ChannelMask { get; set; }
-
+    public uint ChannelMask { get; set; }
     /// <summary>
     /// The radio output power used for the scan requests.
     /// </summary>
-	public sbyte RadioPowerForScan { get; set; }
-
+    public sbyte RadioPowerForScan { get; set; }
     /// <summary>
     /// The node type of the local device.
     /// </summary>
-	public ZigbeeNodeType NodeType { get; set; }
+    public ZigbeeNodeType NodeType { get; set; }
 
+    /// <summary>
+    /// Creates the parameters for this frame
+    /// </summary>
+    /// <returns>The frame parameters as a byte array</returns>
+    protected override byte[] CreateParameters()
+    {
+        return new byte[]
+        {
+        };
+    }
 }
-
 #endif

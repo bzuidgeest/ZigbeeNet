@@ -22,7 +22,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
         protected bool _nRdy;
 
         protected FrameType _frameType;
-        protected int[] _dataBuffer;
+        protected byte[] _dataBuffer;
 
         protected AshFrame() {
         }

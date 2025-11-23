@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Returns the current network parameters.
 /// Frame value: 0x0028
 /// </summary>
-public class GetNetworkParametersResponse : EzspFrameResponseV8Plus
+public class GetNetworkParametersResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0028; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0028; }
     /// <summary>
     /// An sl_status_t value indicating success or the reason for failure.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// An sl_zigbee_node_type_t value indicating the current node type.
     /// </summary>
-	public ZigbeeNodeType NodeType { get; set; }
-
+    public ZigbeeNodeType NodeType { get; set; }
     /// <summary>
     /// The current network parameters.
     /// </summary>
-	public ZigbeeNetworkParameters Parameters { get; set; }
+    public ZigbeeNetworkParameters Parameters { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetNetworkParametersResponse frame = new GetNetworkParametersResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.NodeType = (ZigbeeNodeType)frameBytes[index];
-		index += 1;
-		frame.Parameters = MemoryMarshal.Read<ZigbeeNetworkParameters>(frameBytes.Slice(index, 20));
-		index += 20;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetNetworkParametersResponse frame = new GetNetworkParametersResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.NodeType = (ZigbeeNodeType)frameBytes[index];
+        index += 1;
+        frame.Parameters = MemoryMarshal.Read<ZigbeeNetworkParameters>(frameBytes.Slice(index, 20));
+        index += 20;
+        return frame;
+    }
 }
-
 #endif

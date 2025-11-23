@@ -11,46 +11,40 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Fetches the specified beacon in the cache. Beacons are stored in cache after issuing an active scan.
 /// Frame value: 0x0004
 /// </summary>
-public class GetStoredBeaconResponse : EzspFrameResponseV8Plus
+public class GetStoredBeaconResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0004; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0004; }
     /// <summary>
     /// An appropriate sl_status_t status code.
     /// </summary>
-	public Status Status { get; set; }
-
+    public Status Status { get; set; }
     /// <summary>
     /// The beacon to populate upon success.
     /// </summary>
-	public ZigbeeBeaconData Beacon { get; set; }
+    public ZigbeeBeaconData Beacon { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetStoredBeaconResponse frame = new GetStoredBeaconResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
-		index += 4;
-		frame.Beacon = MemoryMarshal.Read<ZigbeeBeaconData>(frameBytes.Slice(index, 22));
-		index += 22;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetStoredBeaconResponse frame = new GetStoredBeaconResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
+        index += 4;
+        frame.Beacon = MemoryMarshal.Read<ZigbeeBeaconData>(frameBytes.Slice(index, 22));
+        index += 22;
+        return frame;
+    }
 }
-
 #endif

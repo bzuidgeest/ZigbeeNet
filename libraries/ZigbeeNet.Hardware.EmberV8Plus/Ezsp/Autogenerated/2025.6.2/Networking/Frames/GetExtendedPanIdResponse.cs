@@ -11,39 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Get the 8-byte extended PAN ID of this node.
 /// Frame value: 0x0127
 /// </summary>
-public class GetExtendedPanIdResponse : EzspFrameResponseV8Plus
+public class GetExtendedPanIdResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0127; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0127; }
 
     /// <summary>
     /// Extended PAN ID of this node.  Valid only if it is currently on a network.
     /// </summary>
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-	public byte[] ExtendedPanId;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		GetExtendedPanIdResponse frame = new GetExtendedPanIdResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.ExtendedPanId = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
-		index += 8;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public byte[] ExtendedPanId;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        GetExtendedPanIdResponse frame = new GetExtendedPanIdResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.ExtendedPanId = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 8)).ToArray();
+        index += 8;
+        return frame;
+    }
 }
-
 #endif

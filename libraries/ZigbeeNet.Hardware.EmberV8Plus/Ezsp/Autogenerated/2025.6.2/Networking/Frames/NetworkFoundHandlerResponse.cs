@@ -11,53 +11,46 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
-
 /// <summary>
 /// Reports that a network was found as a result of a prior call to startScan. Gives the network parameters useful for deciding which network to join.
 /// Frame value: 0x001B
 /// </summary>
-public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus
+public class NetworkFoundHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x001B; } }
-
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x001B; }
     /// <summary>
     /// The parameters associated with the network found.
     /// </summary>
-	public ZigbeeZigbeeNetwork NetworkFound { get; set; }
-
+    public ZigbeeZigbeeNetwork NetworkFound { get; set; }
     /// <summary>
     /// Link quality of incoming packet from network.
     /// </summary>
-	public byte LastHopLqi { get; set; }
-
+    public byte LastHopLqi { get; set; }
     /// <summary>
     /// Power (in dBm) of incoming packet.
     /// </summary>
-	public sbyte LastHopRssi { get; set; }
+    public sbyte LastHopRssi { get; set; }
 
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		NetworkFoundHandlerResponse frame = new NetworkFoundHandlerResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.NetworkFound = MemoryMarshal.Read<ZigbeeZigbeeNetwork>(frameBytes.Slice(index, 14));
-		index += 14;
-		frame.LastHopLqi = frameBytes[index];
-		index += 1;
-		frame.LastHopRssi = (sbyte)frameBytes[index];
-		index += 1;
-
-		return frame;
-	}
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        NetworkFoundHandlerResponse frame = new NetworkFoundHandlerResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.NetworkFound = MemoryMarshal.Read<ZigbeeZigbeeNetwork>(frameBytes.Slice(index, 14));
+        index += 14;
+        frame.LastHopLqi = frameBytes[index];
+        index += 1;
+        frame.LastHopRssi = (sbyte)frameBytes[index];
+        index += 1;
+        return frame;
+    }
 }
-
 #endif

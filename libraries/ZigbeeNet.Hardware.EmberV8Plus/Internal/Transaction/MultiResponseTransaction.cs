@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Structure;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
 {
@@ -74,19 +74,21 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Transaction
         {
             return _request;
         }
-        public EmberStatus GetStatus()
-        {
-            if (_responses.Count == 0)
-            {
-                return EmberStatus.UNKNOWN;
-            }
 
-            // TODO: Fix the response status! Needs a common response method?
-            // for(EzspFrameResponse response : responses) {
-            // }
+        //public Status GetStatus()
+        //{
+        //    if (_responses.Count == 0)
+        //    {
+        //        return Status.UNKNOWN;
+        //    }
 
-            return EmberStatus.UNKNOWN;
-        }
+        //    // TODO: Fix the response status! Needs a common response method?
+        //    // for(EzspFrameResponse response : responses) {
+        //    // }
+
+        //    return Status.UNKNOWN;
+        //}
+
         public EzspFrameResponseV8Plus GetResponse()
         {
             if (_responses.Count > 0)

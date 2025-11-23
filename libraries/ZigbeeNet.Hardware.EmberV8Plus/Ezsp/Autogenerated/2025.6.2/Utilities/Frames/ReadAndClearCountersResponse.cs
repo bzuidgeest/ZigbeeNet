@@ -11,40 +11,35 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using System.Runtime.InteropServices;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
-
 /// <summary>
 /// Retrieves and clears Ember counters. See the sl_zigbee_counter_type_t enumeration for the counter types.
 /// Frame value: 0x0065
 /// </summary>
-public class ReadAndClearCountersResponse : EzspFrameResponseV8Plus
+public class ReadAndClearCountersResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 {
-	/// <summary>
-	/// The frameId of the frame
-	/// </summary>
-	public static ushort FrameId { get { return 0x0065; } }
+    /// <summary>
+    /// The frameId of the frame
+    /// </summary>
+    public static ushort FrameId { get => 0x0065; }
 
     /// <summary>
     /// A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.
     /// </summary>
-	// Array field with symbolic size: SL_ZIGBEE_COUNTER_TYPE_COUNT
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
-	public ushort[] Values;
-	public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
-	{
-		ReadAndClearCountersResponse frame = new ReadAndClearCountersResponse();
-		int index = frame.ParseHeader(frameBytes);
-
-		frame.Values = MemoryMarshal.Cast<byte, ushort>(frameBytes.Slice(index, 80)).ToArray();
-		index += 80;
-
-		return frame;
-	}
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
+    public ushort[] Values;
+    public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
+    {
+        ReadAndClearCountersResponse frame = new ReadAndClearCountersResponse();
+        int index = frame.ParseHeader(frameBytes);
+        frame.Values = MemoryMarshal.Cast<byte, ushort>(frameBytes.Slice(index, 80)).ToArray();
+        index += 80;
+        return frame;
+    }
 }
-
 #endif
