@@ -1,0 +1,124 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+        type: string
+      project-path:
+        description: 'Path to .csproj file (optional, auto-detects if empty)'
+        required: false
+        type: string
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for Source Link
+    
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+          10.0.x
+    
+    - name: Find project file
+      id: find-project
+      run: |
+        if [ -n "${{ github.event.inputs.project-path }}" ]; then
+          PROJECT_PATH="${{ github.event.inputs.project-path }}"
+        else
+          # Find .csproj file (excluding test projects)
+          PROJECT_PATH=$(find . -name "*.csproj" -not -path "*/test/*" -not -path "*/tests/*" -not -name "*Test*.csproj" | head -n 1)
+        fi
+        
+        if [ -z "$PROJECT_PATH" ] || [ ! -f "$PROJECT_PATH" ]; then
+          echo "Error: No .csproj file found"
+          exit 1
+        fi
+        
+        echo "Found project: $PROJECT_PATH"
+        echo "project-path=$PROJECT_PATH" >> $GITHUB_OUTPUT
+        
+        # Extract project name
+        PROJECT_NAME=$(basename "$PROJECT_PATH" .csproj)
+        echo "project-name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+        
+        # Extract package ID from project file
+        PACKAGE_ID=$(grep -oP '<PackageId>\K[^<]+' "$PROJECT_PATH" || echo "$PROJECT_NAME")
+        echo "package-id=$PACKAGE_ID" >> $GITHUB_OUTPUT
+    
+    - name: Determine version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/v}"
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Building version: $VERSION"
+    
+    - name: Restore dependencies
+      run: dotnet restore ${{ steps.find-project.outputs.project-path }}
+    
+    - name: Build
+      run: dotnet build ${{ steps.find-project.outputs.project-path }} --configuration Release --no-restore /p:Version=${{ steps.version.outputs.VERSION }}
+    
+    - name: Run tests
+      run: dotnet test ${{ steps.find-project.outputs.project-path }} --configuration Release --no-build --verbosity normal
+    
+    - name: Pack NuGet package
+      run: dotnet pack ${{ steps.find-project.outputs.project-path }} --configuration Release --no-build /p:Version=${{ steps.version.outputs.VERSION }} --output ./artifacts
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ./artifacts/*.nupkg
+    
+    - name: Push to NuGet.org
+      run: |
+        dotnet nuget push ./artifacts/*.nupkg \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate
+    
+    - name: Push symbol packages
+      run: |
+        dotnet nuget push ./artifacts/*.snupkg \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate || true
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      if: github.event_name == 'push'
+      with:
+        files: ./artifacts/*
+        generate_release_notes: true
+        name: Release ${{ steps.version.outputs.VERSION }}
+        body: |
+          ## ${{ steps.find-project.outputs.package-id }} v${{ steps.version.outputs.VERSION }}
+          
+          ### Installation
+          ```
+          dotnet add package ${{ steps.find-project.outputs.package-id }} --version ${{ steps.version.outputs.VERSION }}
+          ```
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

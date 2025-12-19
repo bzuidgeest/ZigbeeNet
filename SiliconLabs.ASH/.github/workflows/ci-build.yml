@@ -1,0 +1,82 @@
+name: CI Build & Test
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+env:
+  # Auto-detect project - looks for .csproj in root or subdirectories
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  detect-project:
+    name: Detect Project
+    runs-on: ubuntu-latest
+    outputs:
+      project-path: ${{ steps.find-project.outputs.project-path }}
+      project-name: ${{ steps.find-project.outputs.project-name }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Find .csproj file
+      id: find-project
+      run: |
+        # Find .csproj file (excluding test projects)
+        CSPROJ=$(find . -name "*.csproj" -not -path "*/test/*" -not -path "*/tests/*" -not -name "*Test*.csproj" | head -n 1)
+        
+        if [ -z "$CSPROJ" ]; then
+          echo "Error: No .csproj file found"
+          exit 1
+        fi
+        
+        echo "Found project: $CSPROJ"
+        echo "project-path=$CSPROJ" >> $GITHUB_OUTPUT
+        
+        # Extract project name
+        PROJECT_NAME=$(basename "$CSPROJ" .csproj)
+        echo "project-name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build & Test
+    needs: detect-project
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet-version: ['8.0.x', '9.0.x', '10.0.x']
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+    
+    - name: Restore dependencies
+      run: dotnet restore ${{ needs.detect-project.outputs.project-path }}
+    
+    - name: Build
+      run: dotnet build ${{ needs.detect-project.outputs.project-path }} --configuration Release --no-restore
+    
+    - name: Run tests
+      run: dotnet test ${{ needs.detect-project.outputs.project-path }} --configuration Release --no-build --verbosity normal
+    
+    - name: Build Debug
+      run: dotnet build ${{ needs.detect-project.outputs.project-path }} --configuration Debug --no-restore
+    
+    - name: Pack (verify packaging works)
+      run: dotnet pack ${{ needs.detect-project.outputs.project-path }} --configuration Release --no-build --output ./test-artifacts
+    
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: matrix.os == 'ubuntu-latest' && matrix.dotnet-version == '10.0.x'
+      with:
+        

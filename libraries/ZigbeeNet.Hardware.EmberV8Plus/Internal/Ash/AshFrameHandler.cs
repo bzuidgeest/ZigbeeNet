@@ -261,12 +261,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal.Ash
 
             while (!_parserCancellationToken.IsCancellationRequested) 
             {
-                int? val = _port.Read();
+                byte? val = _port.Read();
                 if (val == null)
                     continue;
                 
                 _logger.LogTrace("ASH RX: {Byte}", val.Value.ToString("X2"));
-                switch (val.Value) 
+                switch (val) 
                 {
                     case ASH_CANCEL_BYTE:
                         // Cancel Byte: Terminates a frame in progress. A Cancel Byte causes all data received since the

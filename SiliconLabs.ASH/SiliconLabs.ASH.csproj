@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- NuGet Package Metadata -->
+    <PackageId>SiliconLabs.AshProtocol</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Your Name</Authors>
+    <Company>Your Company</Company>
+    <Product>ASH Protocol Library</Product>
+    <Description>C# implementation of Silicon Labs ASH (Asynchronous Serial Host) protocol for communicating with EmberZNet EZSP Network Co-Processors. Supports both ASH v2 (UG101) and v3 (UG115) with automatic version detection.</Description>
+    <PackageTags>SiliconLabs;ASH;EZSP;Ember;Zigbee;Serial;Protocol;NCP</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/yourusername/ash-protocol</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/ash-protocol</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>
+      Version 1.0.0:
+      - Initial release
+      - Support for ASH v2 (UG101) and v3 (UG115)
+      - Automatic version detection
+      - Clean namespace separation (V2, V3, Common)
+      - Async/await support with IAsyncEnumerable
+      - Comprehensive logging with ILoggerFactory
+    </PackageReleaseNotes>
+    
+    <!-- Symbol Package Configuration -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    
+    <!-- Strong Naming (Optional but recommended for libraries) -->
+    <!-- <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile> -->
+    <!-- <SignAssembly>true</SignAssembly> -->
+  </PropertyGroup>
+
+  <!-- Include README in package -->
+  <ItemGroup>
+    <None Include=".github\workflows\ci-build.yml" />
+    <None Include=".github\workflows\publish-nuget.yml" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Source Link for debugging -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.1" />
+  </ItemGroup>
+
+</Project>
