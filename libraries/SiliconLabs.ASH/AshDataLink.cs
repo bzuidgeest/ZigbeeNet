@@ -20,7 +20,7 @@ namespace SiliconLabs.ASH
         private readonly ILoggerFactory _loggerFactory;
         private readonly AshVersion _configuredVersion;
 
-        private AshVersion _detectedVersion = AshVersion.Unknown;
+        private AshVersion _version = AshVersion.Unknown;
         
         public event Action<byte[]>? OnDataReceived;
         public event Action<AshState>? OnStateChanged;
@@ -31,7 +31,7 @@ namespace SiliconLabs.ASH
         /// <summary>
         /// Detected protocol version (available after connection)
         /// </summary>
-        public AshVersion Version => _detectedVersion;
+        public AshVersion Version => _version;
         
         /// <summary>
         /// Create ASH data link layer with explicit version configuration
@@ -95,7 +95,7 @@ namespace SiliconLabs.ASH
             }
 
             // Initialize codec and state machine with configured version
-            _detectedVersion = _configuredVersion;
+            _version = _configuredVersion;
 
             _logger.LogInformation("Initiating ASH connection using {Version}", _configuredVersion.ToDisplayString());
 
@@ -128,7 +128,7 @@ namespace SiliconLabs.ASH
         {
             _logger.LogInformation("Disconnecting from NCP");
             _stateMachine?.Disconnect();
-            _detectedVersion = AshVersion.Unknown;
+            _version = AshVersion.Unknown;
         }
         
         /// <summary>

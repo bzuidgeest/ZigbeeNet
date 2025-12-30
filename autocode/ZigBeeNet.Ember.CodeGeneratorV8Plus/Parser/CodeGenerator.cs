@@ -55,26 +55,68 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
         private TypeSyntax DetermineReturnType(FrameDefinition frameDefinition, string sanitizedCommandName)
         {
-            if (frameDefinition.ResponseArguments.Count > 1)
+            // Separate Status and non-Status return parameters
+            var statusArg = frameDefinition.ResponseArguments.FirstOrDefault(arg => arg.Type == "sl_status_t");
+            var nonStatusResponseArgs = frameDefinition.ResponseArguments
+                .Where(arg => arg.Type != "sl_status_t")
+                .ToList();
+
+            // Case 1: No return values at all
+            if (frameDefinition.ResponseArguments.Count == 0)
             {
-                // Multiple return values - return tuple
-                var tupleElements = frameDefinition.ResponseArguments
-                    .Select(arg => TupleElement(
-                        ParseTypeName(_textService.GenerateVariableType(arg)),
-                        Identifier(Sanitize.AsPropertyName(arg.Name))))
-                    .ToArray();
-                return TupleType(SeparatedList(tupleElements));
-            }
-            else if (frameDefinition.ResponseArguments.Count == 1)
-            {
-                // Single return value
-                return ParseTypeName(_textService.GenerateVariableType(frameDefinition.ResponseArguments[0]));
-            }
-            else
-            {
-                // No return values - return response object
                 return ParseTypeName($"{sanitizedCommandName}Response");
             }
+
+            // Case 2: Only Status return value
+            if (statusArg != null && nonStatusResponseArgs.Count == 0)
+            {
+                return ParseTypeName(_textService.GenerateVariableType(statusArg));
+            }
+
+            // Case 3: Single non-Status return value (no Status)
+            if (statusArg == null && nonStatusResponseArgs.Count == 1)
+            {
+                return ParseTypeName(_textService.GenerateVariableType(nonStatusResponseArgs[0]));
+            }
+
+            // Case 4: Status + single other return value → tuple (Status, OtherType)
+            if (statusArg != null && nonStatusResponseArgs.Count == 1)
+            {
+                var tupleElements = new[]
+                {
+                    TupleElement(
+                        ParseTypeName(_textService.GenerateVariableType(statusArg)),
+                        Identifier(Sanitize.AsPropertyName(statusArg.Name))),
+                    TupleElement(
+                        ParseTypeName(_textService.GenerateVariableType(nonStatusResponseArgs[0])),
+                        Identifier(Sanitize.AsPropertyName(nonStatusResponseArgs[0].Name)))
+                };
+                return TupleType(SeparatedList(tupleElements));
+            }
+
+            // Case 5: Multiple non-Status returns (no Status) → RecordStruct
+            if (statusArg == null && nonStatusResponseArgs.Count > 1)
+            {
+                return ParseTypeName(sanitizedCommandName);
+            }
+
+            // Case 6: Status + multiple other returns → tuple (Status, RecordStruct)
+            if (statusArg != null && nonStatusResponseArgs.Count > 1)
+            {
+                var tupleElements = new[]
+                {
+                    TupleElement(
+                        ParseTypeName(_textService.GenerateVariableType(statusArg)),
+                        Identifier(Sanitize.AsPropertyName(statusArg.Name))),
+                    TupleElement(
+                        ParseTypeName(sanitizedCommandName),
+                        Identifier("Result"))
+                };
+                return TupleType(SeparatedList(tupleElements));
+            }
+
+            // Fallback (should not reach here)
+            return ParseTypeName($"{sanitizedCommandName}Response");
         }
 
         private List<ParameterSyntax> GenerateParameters(FrameDefinition frameDefinition)
@@ -153,28 +195,150 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
 
         private StatementSyntax GenerateReturnStatement(FrameDefinition frameDefinition)
         {
-            if (frameDefinition.ResponseArguments.Count > 1)
+            // Separate Status and non-Status return parameters
+            var statusArg = frameDefinition.ResponseArguments.FirstOrDefault(arg => arg.Type == "sl_status_t");
+            var nonStatusResponseArgs = frameDefinition.ResponseArguments
+                .Where(arg => arg.Type != "sl_status_t")
+                .ToList();
+
+            // Case 1: No return values at all
+            if (frameDefinition.ResponseArguments.Count == 0)
             {
-                // Return tuple
-                var tupleElements = frameDefinition.ResponseArguments
+                return ReturnStatement(IdentifierName("response"));
+            }
+
+            // Case 2: Only Status return value
+            if (statusArg != null && nonStatusResponseArgs.Count == 0)
+            {
+                return ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName("response"),
+                    IdentifierName(Sanitize.AsPropertyName(statusArg.Name))));
+            }
+
+            // Case 3: Single non-Status return value (no Status)
+            if (statusArg == null && nonStatusResponseArgs.Count == 1)
+            {
+                return ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName("response"),
+                    IdentifierName(Sanitize.AsPropertyName(nonStatusResponseArgs[0].Name))));
+            }
+
+            // Case 4: Status + single other return value → tuple (Status, OtherType)
+            if (statusArg != null && nonStatusResponseArgs.Count == 1)
+            {
+                var tupleElements = new[]
+                {
+                    Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("response"),
+                        IdentifierName(Sanitize.AsPropertyName(statusArg.Name)))),
+                    Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("response"),
+                        IdentifierName(Sanitize.AsPropertyName(nonStatusResponseArgs[0].Name))))
+                };
+                return ReturnStatement(TupleExpression(SeparatedList(tupleElements)));
+            }
+
+            // Case 5: Multiple non-Status returns (no Status) → RecordStruct
+            if (statusArg == null && nonStatusResponseArgs.Count > 1)
+            {
+                string sanitizedCommandName = Sanitize.FunctionName(frameDefinition.CommandName);
+                var arguments = nonStatusResponseArgs
                     .Select(arg => Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                         IdentifierName("response"),
                         IdentifierName(Sanitize.AsPropertyName(arg.Name)))))
                     .ToArray();
+
+                return ReturnStatement(
+                    ObjectCreationExpression(ParseTypeName(sanitizedCommandName))
+                        .WithArgumentList(ArgumentList(SeparatedList(arguments))));
+            }
+
+            // Case 6: Status + multiple other returns → tuple (Status, RecordStruct)
+            if (statusArg != null && nonStatusResponseArgs.Count > 1)
+            {
+                string sanitizedCommandName = Sanitize.FunctionName(frameDefinition.CommandName);
+                var recordArguments = nonStatusResponseArgs
+                    .Select(arg => Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("response"),
+                        IdentifierName(Sanitize.AsPropertyName(arg.Name)))))
+                    .ToArray();
+
+                var tupleElements = new[]
+                {
+                    Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("response"),
+                        IdentifierName(Sanitize.AsPropertyName(statusArg.Name)))),
+                    Argument(ObjectCreationExpression(ParseTypeName(sanitizedCommandName))
+                        .WithArgumentList(ArgumentList(SeparatedList(recordArguments))))
+                };
                 return ReturnStatement(TupleExpression(SeparatedList(tupleElements)));
             }
-            else if (frameDefinition.ResponseArguments.Count == 1)
+
+            // Fallback (should not reach here)
+            return ReturnStatement(IdentifierName("response"));
+        }
+
+        /// <summary>
+        /// Generates a readonly record struct with the specified name and properties.
+        /// </summary>
+        /// <param name="recordName">The name of the record struct</param>
+        /// <param name="properties">Dictionary of property names and their C# type names</param>
+        /// <param name="summary">Optional summary for XML documentation</param>
+        /// <param name="propertyDescriptions">Optional dictionary of property descriptions for XML documentation</param>
+        /// <param name="addLeadingBlankLine">Whether to add a leading blank line before the XML documentation</param>
+        /// <returns>A RecordDeclarationSyntax representing the readonly record struct</returns>
+        public RecordDeclarationSyntax GenerateRecordStruct(
+            string recordName,
+            Dictionary<string, string> properties,
+            string? summary = null,
+            Dictionary<string, string>? propertyDescriptions = null,
+            bool addLeadingBlankLine = false)
+        {
+            // Generate parameters for the record
+            var parameters = properties
+                .Select(prop => Parameter(Identifier(prop.Key))
+                    .WithType(ParseTypeName(prop.Value)))
+                .ToArray();
+
+            // Create record struct declaration with readonly modifier
+            var recordDeclaration = RecordDeclaration(
+                    Token(SyntaxKind.RecordKeyword)
+                        .WithTrailingTrivia(Space),
+                    recordName)
+                .AddModifiers(
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.ReadOnlyKeyword))
+                .WithClassOrStructKeyword(Token(SyntaxKind.StructKeyword))
+                .WithParameterList(ParameterList(SeparatedList(parameters)))
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            // Add XML documentation
+            var xmlDocComments = new List<SyntaxTrivia>();
+
+            // Add leading blank line if requested
+            if (addLeadingBlankLine)
             {
-                // Return single property
-                return ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("response"),
-                    IdentifierName(Sanitize.AsPropertyName(frameDefinition.ResponseArguments[0].Name))));
+                xmlDocComments.Add(CarriageReturnLineFeed);
             }
-            else
+
+            xmlDocComments.Add(Comment("/// <summary>"));
+            xmlDocComments.Add(Comment($"/// {summary ?? $"Result type for {recordName}."}"));
+            xmlDocComments.Add(Comment("/// </summary>"));
+
+            if (propertyDescriptions != null)
             {
-                // Return response object
-                return ReturnStatement(IdentifierName("response"));
+                foreach (var prop in properties)
+                {
+                    if (propertyDescriptions.TryGetValue(prop.Key, out var description))
+                    {
+                        xmlDocComments.Add(Comment($"/// <param name=\"{prop.Key}\">{description}</param>"));
+                    }
+                }
             }
+
+            recordDeclaration = recordDeclaration.WithLeadingTrivia(TriviaList(xmlDocComments));
+
+            return recordDeclaration;
         }
 
         private SyntaxTriviaList GenerateFunctionXmlDocumentation(FrameDefinition frameDefinition, string methodName)

@@ -1,11 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
-using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
-using ZigBeeNet.Transport;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
 {
@@ -15,9 +10,9 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
     public class EmberStackConfiguration
     {
         /**
-         * The {@link EmberNcp} used to send the EZSP frames to the NCP
+         * The {@link EmberNcp} used to send the Ezsp frames to the NCP
          */
-        private EmberNcp _ncp;
+        private readonly EmberNcp _ncp;
 
         /**
          * Constructor to set the {@link EmberNcp}
@@ -81,7 +76,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Internal
         {
             bool success = true;
 
-            foreach (var policy in policies) 
+            foreach (KeyValuePair<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId> policy in policies) 
             {
                 if (_ncp.SetPolicy(policy.Key, policy.Value) != Status.SL_STATUS_OK) 
                 {

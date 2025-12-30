@@ -17,6 +17,6 @@ namespace ZigBeeNet.Hardware.Ember
         /**
          * Asynchronous Serial Handler V2
          */
-        ASH2
+        Serial
     }
 }

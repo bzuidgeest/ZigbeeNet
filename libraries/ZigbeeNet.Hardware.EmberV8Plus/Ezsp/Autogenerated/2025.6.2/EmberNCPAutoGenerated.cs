@@ -25,6 +25,340 @@ using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
+    /// <summary>
+    /// Result type for Version method.
+    /// </summary>
+    /// <param name="ProtocolVersion">The EZSP version the NCP is using.</param>
+    /// <param name="StackType">The type of stack running on the NCP (2).</param>
+    /// <param name="StackVersion">The version number of the stack.</param>
+    public readonly record struct Version(byte ProtocolVersion, byte StackType, ushort StackVersion);
+    /// <summary>
+    /// Result type for ReadAttribute method.
+    /// </summary>
+    /// <param name="AfStatus">An sl_zigbee_af_status_t value indicating success or the reason for failure, handled by the EZSP layer as a uint8_t. 255 indicates an EZSP-specific error.</param>
+    /// <param name="DataType">Attribute data type.</param>
+    /// <param name="ReadLength">Length of attribute data.</param>
+    /// <param name="DataPtr">Attribute data.</param>
+    public readonly record struct ReadAttribute(ZigbeeAfStatus AfStatus, byte DataType, byte ReadLength, byte[] DataPtr);
+    /// <summary>
+    /// Result type for GetValue method.
+    /// </summary>
+    /// <param name="ValueLength">Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.</param>
+    /// <param name="Value">The value.</param>
+    public readonly record struct GetValue(byte ValueLength, byte[] Value);
+    /// <summary>
+    /// Result type for GetExtendedValue method.
+    /// </summary>
+    /// <param name="ValueLength">Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.</param>
+    /// <param name="Value">The value.</param>
+    public readonly record struct GetExtendedValue(byte ValueLength, byte[] Value);
+    /// <summary>
+    /// Result type for Echo method.
+    /// </summary>
+    /// <param name="EchoLength">The length of the <i>echo</i> parameter in bytes.</param>
+    /// <param name="Echo">The echo of the data.</param>
+    public readonly record struct Echo(byte EchoLength, byte[] Echo);
+    /// <summary>
+    /// Result type for GetMfgToken method.
+    /// </summary>
+    /// <param name="TokenDataLength">The length of the <i>tokenData</i> parameter in bytes.</param>
+    /// <param name="TokenData">The manufacturing token data.</param>
+    public readonly record struct GetMfgToken(byte TokenDataLength, byte[] TokenData);
+    /// <summary>
+    /// Result type for GetTimer method.
+    /// </summary>
+    /// <param name="Time">The delay before the <i>timerHandler</i> callback will be generated.</param>
+    /// <param name="Units">The units for <i>time</i>.</param>
+    /// <param name="Repeat">True if a <i>timerHandler</i> callback will be generated repeatedly. False if only a single <i>timerHandler</i> callback will be generated.</param>
+    public readonly record struct GetTimer(ushort Time, ZigbeeEventUnits Units, bool Repeat);
+    /// <summary>
+    /// Result type for MuxInvalidRxHandler method.
+    /// </summary>
+    /// <param name="NewRxChannel"></param>
+    /// <param name="OldRxChannel"></param>
+    public readonly record struct MuxInvalidRxHandler(byte NewRxChannel, byte OldRxChannel);
+    /// <summary>
+    /// Result type for GetXncpInfo method.
+    /// </summary>
+    /// <param name="ManufacturerId">The manufactured ID the user has defined in the XNCP application.</param>
+    /// <param name="VersionNumber">The version number of the XNCP application.</param>
+    public readonly record struct GetXncpInfo(ushort ManufacturerId, ushort VersionNumber);
+    /// <summary>
+    /// Result type for CustomFrame method.
+    /// </summary>
+    /// <param name="ReplyLength">The length of the response.</param>
+    /// <param name="Reply">The response.</param>
+    public readonly record struct CustomFrame(byte ReplyLength, byte[] Reply);
+    /// <summary>
+    /// Result type for CustomFrameHandler method.
+    /// </summary>
+    /// <param name="PayloadLength">The length of the custom frame payload.</param>
+    /// <param name="Payload">The payload of the custom frame.</param>
+    public readonly record struct CustomFrameHandler(byte PayloadLength, byte[] Payload);
+    /// <summary>
+    /// Result type for EnergyScanResultHandler method.
+    /// </summary>
+    /// <param name="Channel">The 802.15.4 channel number that was scanned.</param>
+    /// <param name="MaxRssiValue">The maximum RSSI value found on the channel.</param>
+    public readonly record struct EnergyScanResultHandler(byte Channel, sbyte MaxRssiValue);
+    /// <summary>
+    /// Result type for NetworkFoundHandler method.
+    /// </summary>
+    /// <param name="NetworkFound">The parameters associated with the network found.</param>
+    /// <param name="LastHopLqi">Link quality of incoming packet from network.</param>
+    /// <param name="LastHopRssi">Power (in dBm) of incoming packet.</param>
+    public readonly record struct NetworkFoundHandler(ZigbeeZigbeeNetwork NetworkFound, byte LastHopLqi, sbyte LastHopRssi);
+    /// <summary>
+    /// Result type for UnusedPanIdFoundHandler method.
+    /// </summary>
+    /// <param name="PanId">The unused panID which has been found.</param>
+    /// <param name="Channel">The channel that the unused panID was found on.</param>
+    public readonly record struct UnusedPanIdFoundHandler(ushort PanId, byte Channel);
+    /// <summary>
+    /// Result type for ChildJoinHandler method.
+    /// </summary>
+    /// <param name="Index">The index of the child of interest.</param>
+    /// <param name="Joining">True if the child is joining. False the child is leaving.</param>
+    /// <param name="ChildId">The node ID of the child.</param>
+    /// <param name="ChildEui64">The EUI64 of the child.</param>
+    /// <param name="ChildType">The node type of the child.</param>
+    public readonly record struct ChildJoinHandler(byte Index, bool Joining, ushort ChildId, byte[] ChildEui64, ZigbeeNodeType ChildType);
+    /// <summary>
+    /// Result type for GetNetworkParameters method.
+    /// </summary>
+    /// <param name="NodeType">An sl_zigbee_node_type_t value indicating the current node type.</param>
+    /// <param name="Parameters">The current network parameters.</param>
+    public readonly record struct GetNetworkParameters(ZigbeeNodeType NodeType, ZigbeeNetworkParameters Parameters);
+    /// <summary>
+    /// Result type for GetParentChildParameters method.
+    /// </summary>
+    /// <param name="ChildCount">The number of children the node currently has.</param>
+    /// <param name="ParentEui64">The parent's EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).</param>
+    /// <param name="ParentNodeId">The parent's node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).</param>
+    public readonly record struct GetParentChildParameters(byte ChildCount, byte[] ParentEui64, ushort ParentNodeId);
+    /// <summary>
+    /// Result type for GetSourceRouteTableEntry method.
+    /// </summary>
+    /// <param name="Destination">The node ID of the destination in that entry.</param>
+    /// <param name="CloserIndex">The closer node index for this source route table entry</param>
+    public readonly record struct GetSourceRouteTableEntry(ushort Destination, byte CloserIndex);
+    /// <summary>
+    /// Result type for DutyCycleHandler method.
+    /// </summary>
+    /// <param name="ChannelPage">The channel page whose duty cycle state has changed.</param>
+    /// <param name="Channel">The channel number whose duty cycle state has changed.</param>
+    /// <param name="State">The current duty cycle state.</param>
+    /// <param name="TotalDevices">The total number of connected end devices that are being monitored for duty cycle.</param>
+    /// <param name="ArrayOfDeviceDutyCycles">Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack's nodeId, and thus the total aggregate duty cycle for the device.</param>
+    public readonly record struct DutyCycleHandler(byte ChannelPage, byte Channel, ZigbeeDutyCycleState State, byte TotalDevices, ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles);
+    /// <summary>
+    /// Result type for RemoteSetBindingHandler method.
+    /// </summary>
+    /// <param name="Entry">The requested binding.</param>
+    /// <param name="Index">The index at which the binding was added.</param>
+    public readonly record struct RemoteSetBindingHandler(ZigbeeBindingTableEntry Entry, byte Index);
+    /// <summary>
+    /// Result type for MessageSentHandler method.
+    /// </summary>
+    /// <param name="Type">The type of message sent.</param>
+    /// <param name="IndexOrDestination">The destination to which the message was sent, for direct unicasts, or the address table or binding index for other unicasts. The value is unspecified for multicasts and broadcasts.</param>
+    /// <param name="ApsFrame">The APS frame for the message.</param>
+    /// <param name="MessageTag">The value supplied by the Host in the <i>sl_zigbee_ezsp_send_unicast</i>, <i>sl_zigbee_ezsp_send_broadcast</i> or <i>sl_zigbee_ezsp_send_multicast</i> command.</param>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.</param>
+    public readonly record struct MessageSentHandler(ZigbeeOutgoingMessageType Type, ushort IndexOrDestination, ZigbeeApsFrame ApsFrame, ushort MessageTag, byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for PollHandler method.
+    /// </summary>
+    /// <param name="ChildId">The node ID of the child that is requesting data.</param>
+    /// <param name="TransmitExpected">True if transmit is expected, false otherwise.</param>
+    public readonly record struct PollHandler(ushort ChildId, bool TransmitExpected);
+    /// <summary>
+    /// Result type for IncomingMessageHandler method.
+    /// </summary>
+    /// <param name="Type">The type of the incoming message. One of the following: SL_ZIGBEE_INCOMING_UNICAST, SL_ZIGBEE_INCOMING_UNICAST_REPLY, SL_ZIGBEE_INCOMING_MULTICAST, SL_ZIGBEE_INCOMING_MULTICAST_LOOPBACK, SL_ZIGBEE_INCOMING_BROADCAST, SL_ZIGBEE_INCOMING_BROADCAST_LOOPBACK</param>
+    /// <param name="ApsFrame">The APS frame from the incoming message.</param>
+    /// <param name="PacketInfo">Miscellanous message information.</param>
+    /// <param name="MessageLength">The length of the <i>message</i> parameter in bytes.</param>
+    /// <param name="Message">The incoming message.</param>
+    public readonly record struct IncomingMessageHandler(ZigbeeIncomingMessageType Type, ZigbeeApsFrame ApsFrame, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] Message);
+    /// <summary>
+    /// Result type for IncomingManyToOneRouteRequestHandler method.
+    /// </summary>
+    /// <param name="Source">The short id of the concentrator.</param>
+    /// <param name="LongId">The EUI64 of the concentrator.</param>
+    /// <param name="Cost">The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.</param>
+    public readonly record struct IncomingManyToOneRouteRequestHandler(ushort Source, byte[] LongId, byte Cost);
+    /// <summary>
+    /// Result type for IncomingNetworkStatusHandler method.
+    /// </summary>
+    /// <param name="ErrorCode">One byte over-the-air error code from network status message</param>
+    /// <param name="Target">The short ID of the remote node</param>
+    public readonly record struct IncomingNetworkStatusHandler(byte ErrorCode, ushort Target);
+    /// <summary>
+    /// Result type for IncomingRouteRecordHandler method.
+    /// </summary>
+    /// <param name="Source">The source of the route record.</param>
+    /// <param name="SourceEui">The EUI64 of the source.</param>
+    /// <param name="LastHopLqi">The link quality from the node that last relayed the route record.</param>
+    /// <param name="LastHopRssi">The energy level (in units of dBm) observed during the reception.</param>
+    /// <param name="RelayCount">The number of relays in <i>relayList</i>.</param>
+    /// <param name="RelayList">The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.</param>
+    public readonly record struct IncomingRouteRecordHandler(ushort Source, byte[] SourceEui, byte LastHopLqi, sbyte LastHopRssi, byte RelayCount, byte[] RelayList);
+    /// <summary>
+    /// Result type for GetAddressTableInfo method.
+    /// </summary>
+    /// <param name="NodeId">One of the following: The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index. SL_ZIGBEE_UNKNOWN_NODE_ID - Indicates that the EUI64 stored in the address table at the given index is valid but the short ID is currently unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID - Indicates that the EUI64 stored in the address table at the given location is valid and network address discovery is underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID - Indicates that the entry stored in the address table at the given index is not in use.</param>
+    /// <param name="Eui64">The EUI64 of the address table entry is copied to this location.</param>
+    public readonly record struct GetAddressTableInfo(ushort NodeId, byte[] Eui64);
+    /// <summary>
+    /// Result type for ReplaceAddressTableEntry method.
+    /// </summary>
+    /// <param name="OldEui64">The EUI64 of the address table entry before it was modified.</param>
+    /// <param name="OldId">One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.</param>
+    /// <param name="OldExtendedTimeout">true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.</param>
+    public readonly record struct ReplaceAddressTableEntry(byte[] OldEui64, ushort OldId, bool OldExtendedTimeout);
+    /// <summary>
+    /// Result type for MacPassthroughMessageHandler method.
+    /// </summary>
+    /// <param name="MessageType">The type of MAC passthrough message received.</param>
+    /// <param name="PacketInfo">Information about the incoming packet.</param>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The raw message that was received.</param>
+    public readonly record struct MacPassthroughMessageHandler(ZigbeeMacPassthroughType MessageType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for MacFilterMatchMessageHandler method.
+    /// </summary>
+    /// <param name="FilterValueMatch">The value of the filter that was matched.</param>
+    /// <param name="LegacyPassthroughType">The type of MAC passthrough message received.</param>
+    /// <param name="PacketInfo">Information about the incoming packet.</param>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The raw message that was received.</param>
+    public readonly record struct MacFilterMatchMessageHandler(ushort FilterValueMatch, ZigbeeMacPassthroughType LegacyPassthroughType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for RawTransmitCompleteHandler method.
+    /// </summary>
+    /// <param name="MessageLength">Length of the message that was transmitted.</param>
+    /// <param name="MessageContents">The message that was transmitted.</param>
+    public readonly record struct RawTransmitCompleteHandler(byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for ZigbeeKeyEstablishmentHandler method.
+    /// </summary>
+    /// <param name="Partner">This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.</param>
+    /// <param name="Status">This is the status indicating what was established or why the key establishment failed.</param>
+    public readonly record struct ZigbeeKeyEstablishmentHandler(byte[] Partner, ZigbeeKeyStatus Status);
+    /// <summary>
+    /// Result type for SecManExportLinkKeyByIndex method.
+    /// </summary>
+    /// <param name="Context">Context referencing the exported key.  Contains information like the EUI64 address it is associated with.</param>
+    /// <param name="PlaintextKey">The exported key.</param>
+    /// <param name="KeyData">Metadata about the key.</param>
+    public readonly record struct SecManExportLinkKeyByIndex(ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData);
+    /// <summary>
+    /// Result type for SecManExportLinkKeyByEui method.
+    /// </summary>
+    /// <param name="Context">Context referring to the exported key, containing the table index that this key is located in.</param>
+    /// <param name="PlaintextKey">The exported key.</param>
+    /// <param name="KeyData">Metadata about the key.</param>
+    public readonly record struct SecManExportLinkKeyByEui(ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData);
+    /// <summary>
+    /// Result type for SecManExportTransientKeyByIndex method.
+    /// </summary>
+    /// <param name="Context">Context struct for export operation.</param>
+    /// <param name="PlaintextKey">The exported key.</param>
+    /// <param name="KeyData">Metadata about the key.</param>
+    public readonly record struct SecManExportTransientKeyByIndex(ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData);
+    /// <summary>
+    /// Result type for SecManExportTransientKeyByEui method.
+    /// </summary>
+    /// <param name="Context">Context struct for export operation.</param>
+    /// <param name="PlaintextKey">The exported key.</param>
+    /// <param name="KeyData">Metadata about the key.</param>
+    public readonly record struct SecManExportTransientKeyByEui(ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData);
+    /// <summary>
+    /// Result type for TrustCenterPostJoinHandler method.
+    /// </summary>
+    /// <param name="NewNodeId">The Node Id of the node whose status changed</param>
+    /// <param name="NewNodeEui64">The EUI64 of the node whose status changed.</param>
+    /// <param name="Status">The status of the node: Secure Join/Rejoin, Unsecure Join/Rejoin, Device left.</param>
+    /// <param name="PolicyDecision">An sl_zigbee_join_decision_t reflecting the decision made.</param>
+    /// <param name="ParentOfNewNodeId">The parent of the node whose status has changed.</param>
+    public readonly record struct TrustCenterPostJoinHandler(ushort NewNodeId, byte[] NewNodeEui64, ZigbeeDeviceUpdate Status, ZigbeeJoinDecision PolicyDecision, ushort ParentOfNewNodeId);
+    /// <summary>
+    /// Result type for CalculateSmacsHandler method.
+    /// </summary>
+    /// <param name="InitiatorSmac">The calculated value of the initiator's SMAC</param>
+    /// <param name="ResponderSmac">The calculated value of the responder's SMAC</param>
+    public readonly record struct CalculateSmacsHandler(ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac);
+    /// <summary>
+    /// Result type for CalculateSmacs283k1Handler method.
+    /// </summary>
+    /// <param name="InitiatorSmac">The calculated value of the initiator's SMAC</param>
+    /// <param name="ResponderSmac">The calculated value of the responder's SMAC</param>
+    public readonly record struct CalculateSmacs283k1Handler(ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac);
+    /// <summary>
+    /// Result type for DsaSignHandler method.
+    /// </summary>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The message and attached which includes the original message and the appended signature.</param>
+    public readonly record struct DsaSignHandler(byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for MfglibRxHandler method.
+    /// </summary>
+    /// <param name="LinkQuality">The link quality observed during the reception</param>
+    /// <param name="Rssi">The energy level (in units of dBm) observed during the reception.</param>
+    /// <param name="PacketLength">The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.</param>
+    /// <param name="PacketContents">The received packet (last 2 bytes are not FCS / CRC and may be discarded)</param>
+    public readonly record struct MfglibRxHandler(byte LinkQuality, sbyte Rssi, byte PacketLength, byte[] PacketContents);
+    /// <summary>
+    /// Result type for GetStandaloneBootloaderVersionPlatMicroPhy method.
+    /// </summary>
+    /// <param name="BootloaderVersion">BOOTLOADER_INVALID_VERSION if the standalone bootloader is not present, or the version of the installed standalone bootloader.</param>
+    /// <param name="NodePlat">The value of PLAT on the node</param>
+    /// <param name="NodeMicro">The value of MICRO on the node</param>
+    /// <param name="NodePhy">The value of PHY on the node</param>
+    public readonly record struct GetStandaloneBootloaderVersionPlatMicroPhy(ushort BootloaderVersion, byte NodePlat, byte NodeMicro, byte NodePhy);
+    /// <summary>
+    /// Result type for IncomingBootloadMessageHandler method.
+    /// </summary>
+    /// <param name="LongId">The EUI64 of the sending node.</param>
+    /// <param name="PacketInfo">Information about the incoming packet.</param>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The bootload message that was sent.</param>
+    public readonly record struct IncomingBootloadMessageHandler(byte[] LongId, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for BootloadTransmitCompleteHandler method.
+    /// </summary>
+    /// <param name="MessageLength">The length of the <i>messageContents</i> parameter in bytes.</param>
+    /// <param name="MessageContents">The message that was sent.</param>
+    public readonly record struct BootloadTransmitCompleteHandler(byte MessageLength, byte[] MessageContents);
+    /// <summary>
+    /// Result type for IncomingMfgTestMessageHandler method.
+    /// </summary>
+    /// <param name="MessageType">The type of the incoming message. Currently, the only possibility is MFG_TEST_TYPE_ACK.</param>
+    /// <param name="DataLength">The length of the incoming message.</param>
+    /// <param name="Data">A pointer to the data received in the current message.</param>
+    public readonly record struct IncomingMfgTestMessageHandler(byte MessageType, byte DataLength, byte[] Data);
+    /// <summary>
+    /// Result type for ZllNetworkFoundHandler method.
+    /// </summary>
+    /// <param name="NetworkInfo">Information about the network.</param>
+    /// <param name="IsDeviceInfoNull">Used to interpret deviceInfo field.</param>
+    /// <param name="DeviceInfo">Device specific information.</param>
+    /// <param name="PacketInfo">Information about the incoming packet received from this network.</param>
+    public readonly record struct ZllNetworkFoundHandler(ZigbeeZllNetwork NetworkInfo, bool IsDeviceInfoNull, ZigbeeZllDeviceInfoRecord DeviceInfo, ZigbeeRxPacketInfo PacketInfo);
+    /// <summary>
+    /// Result type for ZllAddressAssignmentHandler method.
+    /// </summary>
+    /// <param name="AddressInfo">Address assignment information.</param>
+    /// <param name="PacketInfo">Information about the incoming packet.</param>
+    public readonly record struct ZllAddressAssignmentHandler(ZigbeeZllAddressAssignment AddressInfo, ZigbeeRxPacketInfo PacketInfo);
+    /// <summary>
+    /// Result type for ZllGetTokens method.
+    /// </summary>
+    /// <param name="Data">Data token return value.</param>
+    /// <param name="Security">Security token return value.</param>
+    public readonly record struct ZllGetTokens(ZigbeeTokTypeStackZllData Data, ZigbeeTokTypeStackZllSecurity Security);
     public partial class EmberNcp
     {
         static private readonly ILogger _logger = LogManager.GetLog<EmberNcp>();
@@ -53,14 +387,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - StackType: The type of stack running on the NCP (2).
         /// - StackVersion: The version number of the stack.
         /// </returns>
-        public (byte ProtocolVersion, byte StackType, ushort StackVersion) Version(byte desiredProtocolVersion)
+        public Version Version(byte desiredProtocolVersion)
         {
             VersionRequest request = new VersionRequest();
             request.DesiredProtocolVersion = desiredProtocolVersion;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(VersionResponse)));
             VersionResponse response = (VersionResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.ProtocolVersion, response.StackType, response.StackVersion);
+            return new Version(response.ProtocolVersion, response.StackType, response.StackVersion);
         }
 
         /// <summary>
@@ -112,7 +446,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReadLength: Length of attribute data.
         /// - DataPtr: Attribute data.
         /// </returns>
-        public (ZigbeeAfStatus AfStatus, byte DataType, byte ReadLength, byte[] DataPtr) ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
+        public ReadAttribute ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
         {
             ReadAttributeRequest request = new ReadAttributeRequest();
             request.Endpoint = endpoint;
@@ -123,7 +457,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadAttributeResponse)));
             ReadAttributeResponse response = (ReadAttributeResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.AfStatus, response.DataType, response.ReadLength, response.DataPtr);
+            return new ReadAttribute(response.AfStatus, response.DataType, response.ReadLength, response.DataPtr);
         }
 
         /// <summary>
@@ -247,14 +581,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, byte ValueLength, byte[] Value) GetValue(ZigbeeEzspValueId valueId)
+        public (Status Status, GetValue Result) GetValue(ZigbeeEzspValueId valueId)
         {
             GetValueRequest request = new GetValueRequest();
             request.ValueId = valueId;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetValueResponse)));
             GetValueResponse response = (GetValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.ValueLength, response.Value);
+            return (response.Status, new GetValue(response.ValueLength, response.Value));
         }
 
         /// <summary>
@@ -267,7 +601,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, byte ValueLength, byte[] Value) GetExtendedValue(ZigbeeEzspExtendedValueId valueId, uint characteristics)
+        public (Status Status, GetExtendedValue Result) GetExtendedValue(ZigbeeEzspExtendedValueId valueId, uint characteristics)
         {
             GetExtendedValueRequest request = new GetExtendedValueRequest();
             request.ValueId = valueId;
@@ -275,7 +609,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedValueResponse)));
             GetExtendedValueResponse response = (GetExtendedValueResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.ValueLength, response.Value);
+            return (response.Status, new GetExtendedValue(response.ValueLength, response.Value));
         }
 
         /// <summary>
@@ -413,7 +747,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - EchoLength: The length of the <i>echo</i> parameter in bytes.
         /// - Echo: The echo of the data.
         /// </returns>
-        public (byte EchoLength, byte[] Echo) Echo(byte dataLength, byte[] data)
+        public Echo Echo(byte dataLength, byte[] data)
         {
             EchoRequest request = new EchoRequest();
             request.DataLength = dataLength;
@@ -421,7 +755,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EchoResponse)));
             EchoResponse response = (EchoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.EchoLength, response.Echo);
+            return new Echo(response.EchoLength, response.Echo);
         }
 
         /// <summary>
@@ -506,14 +840,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - TokenDataLength: The length of the <i>tokenData</i> parameter in bytes.
         /// - TokenData: The manufacturing token data.
         /// </returns>
-        public (byte TokenDataLength, byte[] TokenData) GetMfgToken(ZigbeeEzspMfgTokenId tokenId)
+        public GetMfgToken GetMfgToken(ZigbeeEzspMfgTokenId tokenId)
         {
             GetMfgTokenRequest request = new GetMfgTokenRequest();
             request.TokenId = tokenId;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMfgTokenResponse)));
             GetMfgTokenResponse response = (GetMfgTokenResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.TokenDataLength, response.TokenData);
+            return new GetMfgToken(response.TokenDataLength, response.TokenData);
         }
 
         /// <summary>
@@ -594,14 +928,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Units: The units for <i>time</i>.
         /// - Repeat: True if a <i>timerHandler</i> callback will be generated repeatedly. False if only a single <i>timerHandler</i> callback will be generated.
         /// </returns>
-        public (ushort Time, ZigbeeEventUnits Units, bool Repeat) GetTimer(byte timerId)
+        public GetTimer GetTimer(byte timerId)
         {
             GetTimerRequest request = new GetTimerRequest();
             request.TimerId = timerId;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTimerResponse)));
             GetTimerResponse response = (GetTimerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Time, response.Units, response.Repeat);
+            return new GetTimer(response.Time, response.Units, response.Repeat);
         }
 
         /// <summary>
@@ -682,13 +1016,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NewRxChannel: 
         /// - OldRxChannel: 
         /// </returns>
-        public (byte NewRxChannel, byte OldRxChannel) MuxInvalidRxHandler()
+        public MuxInvalidRxHandler MuxInvalidRxHandler()
         {
             MuxInvalidRxHandlerRequest request = new MuxInvalidRxHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MuxInvalidRxHandlerResponse)));
             MuxInvalidRxHandlerResponse response = (MuxInvalidRxHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.NewRxChannel, response.OldRxChannel);
+            return new MuxInvalidRxHandler(response.NewRxChannel, response.OldRxChannel);
         }
 
         /// <summary>
@@ -729,13 +1063,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ManufacturerId: The manufactured ID the user has defined in the XNCP application.
         /// - VersionNumber: The version number of the XNCP application.
         /// </returns>
-        public (Status Status, ushort ManufacturerId, ushort VersionNumber) GetXncpInfo()
+        public (Status Status, GetXncpInfo Result) GetXncpInfo()
         {
             GetXncpInfoRequest request = new GetXncpInfoRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetXncpInfoResponse)));
             GetXncpInfoResponse response = (GetXncpInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.ManufacturerId, response.VersionNumber);
+            return (response.Status, new GetXncpInfo(response.ManufacturerId, response.VersionNumber));
         }
 
         /// <summary>
@@ -748,7 +1082,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReplyLength: The length of the response.
         /// - Reply: The response.
         /// </returns>
-        public (Status Status, byte ReplyLength, byte[] Reply) CustomFrame(byte payloadLength, byte[] payload)
+        public (Status Status, CustomFrame Result) CustomFrame(byte payloadLength, byte[] payload)
         {
             CustomFrameRequest request = new CustomFrameRequest();
             request.PayloadLength = payloadLength;
@@ -756,7 +1090,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameResponse)));
             CustomFrameResponse response = (CustomFrameResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.ReplyLength, response.Reply);
+            return (response.Status, new CustomFrame(response.ReplyLength, response.Reply));
         }
 
         /// <summary>
@@ -766,13 +1100,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PayloadLength: The length of the custom frame payload.
         /// - Payload: The payload of the custom frame.
         /// </returns>
-        public (byte PayloadLength, byte[] Payload) CustomFrameHandler()
+        public CustomFrameHandler CustomFrameHandler()
         {
             CustomFrameHandlerRequest request = new CustomFrameHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameHandlerResponse)));
             CustomFrameHandlerResponse response = (CustomFrameHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.PayloadLength, response.Payload);
+            return new CustomFrameHandler(response.PayloadLength, response.Payload);
         }
 
         /// <summary>
@@ -1038,13 +1372,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Channel: The 802.15.4 channel number that was scanned.
         /// - MaxRssiValue: The maximum RSSI value found on the channel.
         /// </returns>
-        public (byte Channel, sbyte MaxRssiValue) EnergyScanResultHandler()
+        public EnergyScanResultHandler EnergyScanResultHandler()
         {
             EnergyScanResultHandlerRequest request = new EnergyScanResultHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EnergyScanResultHandlerResponse)));
             EnergyScanResultHandlerResponse response = (EnergyScanResultHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Channel, response.MaxRssiValue);
+            return new EnergyScanResultHandler(response.Channel, response.MaxRssiValue);
         }
 
         /// <summary>
@@ -1055,13 +1389,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - LastHopLqi: Link quality of incoming packet from network.
         /// - LastHopRssi: Power (in dBm) of incoming packet.
         /// </returns>
-        public (ZigbeeZigbeeNetwork NetworkFound, byte LastHopLqi, sbyte LastHopRssi) NetworkFoundHandler()
+        public NetworkFoundHandler NetworkFoundHandler()
         {
             NetworkFoundHandlerRequest request = new NetworkFoundHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkFoundHandlerResponse)));
             NetworkFoundHandlerResponse response = (NetworkFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.NetworkFound, response.LastHopLqi, response.LastHopRssi);
+            return new NetworkFoundHandler(response.NetworkFound, response.LastHopLqi, response.LastHopRssi);
         }
 
         /// <summary>
@@ -1071,13 +1405,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Channel: The channel on which the current error occurred. Undefined for the case of SL_STATUS_OK.
         /// - Status: The error condition that occurred on the current channel. Value will be SL_STATUS_OK when the scan has completed.
         /// </returns>
-        public (byte Channel, Status Status) ScanCompleteHandler()
+        public (Status Status, byte Channel) ScanCompleteHandler()
         {
             ScanCompleteHandlerRequest request = new ScanCompleteHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ScanCompleteHandlerResponse)));
             ScanCompleteHandlerResponse response = (ScanCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Channel, response.Status);
+            return (response.Status, response.Channel);
         }
 
         /// <summary>
@@ -1087,13 +1421,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PanId: The unused panID which has been found.
         /// - Channel: The channel that the unused panID was found on.
         /// </returns>
-        public (ushort PanId, byte Channel) UnusedPanIdFoundHandler()
+        public UnusedPanIdFoundHandler UnusedPanIdFoundHandler()
         {
             UnusedPanIdFoundHandlerRequest request = new UnusedPanIdFoundHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnusedPanIdFoundHandlerResponse)));
             UnusedPanIdFoundHandlerResponse response = (UnusedPanIdFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.PanId, response.Channel);
+            return new UnusedPanIdFoundHandler(response.PanId, response.Channel);
         }
 
         /// <summary>
@@ -1240,13 +1574,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ChildEui64: The EUI64 of the child.
         /// - ChildType: The node type of the child.
         /// </returns>
-        public (byte Index, bool Joining, ushort ChildId, byte[] ChildEui64, ZigbeeNodeType ChildType) ChildJoinHandler()
+        public ChildJoinHandler ChildJoinHandler()
         {
             ChildJoinHandlerRequest request = new ChildJoinHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildJoinHandlerResponse)));
             ChildJoinHandlerResponse response = (ChildJoinHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Index, response.Joining, response.ChildId, response.ChildEui64, response.ChildType);
+            return new ChildJoinHandler(response.Index, response.Joining, response.ChildId, response.ChildEui64, response.ChildType);
         }
 
         /// <summary>
@@ -1278,13 +1612,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeType: An sl_zigbee_node_type_t value indicating the current node type.
         /// - Parameters: The current network parameters.
         /// </returns>
-        public (Status Status, ZigbeeNodeType NodeType, ZigbeeNetworkParameters Parameters) GetNetworkParameters()
+        public (Status Status, GetNetworkParameters Result) GetNetworkParameters()
         {
             GetNetworkParametersRequest request = new GetNetworkParametersRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNetworkParametersResponse)));
             GetNetworkParametersResponse response = (GetNetworkParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.NodeType, response.Parameters);
+            return (response.Status, new GetNetworkParameters(response.NodeType, response.Parameters));
         }
 
         /// <summary>
@@ -1313,13 +1647,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ParentEui64: The parent's EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
         /// - ParentNodeId: The parent's node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
         /// </returns>
-        public (byte ChildCount, byte[] ParentEui64, ushort ParentNodeId) GetParentChildParameters()
+        public GetParentChildParameters GetParentChildParameters()
         {
             GetParentChildParametersRequest request = new GetParentChildParametersRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetParentChildParametersResponse)));
             GetParentChildParametersResponse response = (GetParentChildParametersResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.ChildCount, response.ParentEui64, response.ParentNodeId);
+            return new GetParentChildParameters(response.ChildCount, response.ParentEui64, response.ParentNodeId);
         }
 
         /// <summary>
@@ -1610,14 +1944,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Destination: The node ID of the destination in that entry.
         /// - CloserIndex: The closer node index for this source route table entry
         /// </returns>
-        public (Status Status, ushort Destination, byte CloserIndex) GetSourceRouteTableEntry(byte index)
+        public (Status Status, GetSourceRouteTableEntry Result) GetSourceRouteTableEntry(byte index)
         {
             GetSourceRouteTableEntryRequest request = new GetSourceRouteTableEntryRequest();
             request.Index = index;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableEntryResponse)));
             GetSourceRouteTableEntryResponse response = (GetSourceRouteTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Destination, response.CloserIndex);
+            return (response.Status, new GetSourceRouteTableEntry(response.Destination, response.CloserIndex));
         }
 
         /// <summary>
@@ -2039,13 +2373,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - TotalDevices: The total number of connected end devices that are being monitored for duty cycle.
         /// - ArrayOfDeviceDutyCycles: Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack's nodeId, and thus the total aggregate duty cycle for the device.
         /// </returns>
-        public (byte ChannelPage, byte Channel, ZigbeeDutyCycleState State, byte TotalDevices, ZigbeePerDeviceDutyCycle ArrayOfDeviceDutyCycles) DutyCycleHandler()
+        public DutyCycleHandler DutyCycleHandler()
         {
             DutyCycleHandlerRequest request = new DutyCycleHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DutyCycleHandlerResponse)));
             DutyCycleHandlerResponse response = (DutyCycleHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.ChannelPage, response.Channel, response.State, response.TotalDevices, response.ArrayOfDeviceDutyCycles);
+            return new DutyCycleHandler(response.ChannelPage, response.Channel, response.State, response.TotalDevices, response.ArrayOfDeviceDutyCycles);
         }
 
         /// <summary>
@@ -2369,13 +2703,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Index: The index at which the binding was added.
         /// - PolicyDecision: SL_STATUS_OK if the binding was added to the table and any other status if not.
         /// </returns>
-        public (ZigbeeBindingTableEntry Entry, byte Index, Status PolicyDecision) RemoteSetBindingHandler()
+        public (Status PolicyDecision, RemoteSetBindingHandler Result) RemoteSetBindingHandler()
         {
             RemoteSetBindingHandlerRequest request = new RemoteSetBindingHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteSetBindingHandlerResponse)));
             RemoteSetBindingHandlerResponse response = (RemoteSetBindingHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Entry, response.Index, response.PolicyDecision);
+            return (response.PolicyDecision, new RemoteSetBindingHandler(response.Entry, response.Index));
         }
 
         /// <summary>
@@ -2385,13 +2719,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Index: The index of the binding whose deletion was requested.
         /// - PolicyDecision: SL_STATUS_OK if the binding was removed from the table and any other status if not.
         /// </returns>
-        public (byte Index, Status PolicyDecision) RemoteDeleteBindingHandler()
+        public (Status PolicyDecision, byte Index) RemoteDeleteBindingHandler()
         {
             RemoteDeleteBindingHandlerRequest request = new RemoteDeleteBindingHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteDeleteBindingHandlerResponse)));
             RemoteDeleteBindingHandlerResponse response = (RemoteDeleteBindingHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Index, response.PolicyDecision);
+            return (response.PolicyDecision, response.Index);
         }
 
         /// <summary>
@@ -2547,13 +2881,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
         /// </returns>
-        public (Status Status, ZigbeeOutgoingMessageType Type, ushort IndexOrDestination, ZigbeeApsFrame ApsFrame, ushort MessageTag, byte MessageLength, byte[] MessageContents) MessageSentHandler()
+        public (Status Status, MessageSentHandler Result) MessageSentHandler()
         {
             MessageSentHandlerRequest request = new MessageSentHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MessageSentHandlerResponse)));
             MessageSentHandlerResponse response = (MessageSentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Type, response.IndexOrDestination, response.ApsFrame, response.MessageTag, response.MessageLength, response.MessageContents);
+            return (response.Status, new MessageSentHandler(response.Type, response.IndexOrDestination, response.ApsFrame, response.MessageTag, response.MessageLength, response.MessageContents));
         }
 
         /// <summary>
@@ -2642,13 +2976,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ChildId: The node ID of the child that is requesting data.
         /// - TransmitExpected: True if transmit is expected, false otherwise.
         /// </returns>
-        public (ushort ChildId, bool TransmitExpected) PollHandler()
+        public PollHandler PollHandler()
         {
             PollHandlerRequest request = new PollHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollHandlerResponse)));
             PollHandlerResponse response = (PollHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.ChildId, response.TransmitExpected);
+            return new PollHandler(response.ChildId, response.TransmitExpected);
         }
 
         /// <summary>
@@ -2712,13 +3046,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>message</i> parameter in bytes.
         /// - Message: The incoming message.
         /// </returns>
-        public (ZigbeeIncomingMessageType Type, ZigbeeApsFrame ApsFrame, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] Message) IncomingMessageHandler()
+        public IncomingMessageHandler IncomingMessageHandler()
         {
             IncomingMessageHandlerRequest request = new IncomingMessageHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMessageHandlerResponse)));
             IncomingMessageHandlerResponse response = (IncomingMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Type, response.ApsFrame, response.PacketInfo, response.MessageLength, response.Message);
+            return new IncomingMessageHandler(response.Type, response.ApsFrame, response.PacketInfo, response.MessageLength, response.Message);
         }
 
         /// <summary>
@@ -2744,13 +3078,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - LongId: The EUI64 of the concentrator.
         /// - Cost: The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
         /// </returns>
-        public (ushort Source, byte[] LongId, byte Cost) IncomingManyToOneRouteRequestHandler()
+        public IncomingManyToOneRouteRequestHandler IncomingManyToOneRouteRequestHandler()
         {
             IncomingManyToOneRouteRequestHandlerRequest request = new IncomingManyToOneRouteRequestHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingManyToOneRouteRequestHandlerResponse)));
             IncomingManyToOneRouteRequestHandlerResponse response = (IncomingManyToOneRouteRequestHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Source, response.LongId, response.Cost);
+            return new IncomingManyToOneRouteRequestHandler(response.Source, response.LongId, response.Cost);
         }
 
         /// <summary>
@@ -2776,13 +3110,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ErrorCode: One byte over-the-air error code from network status message
         /// - Target: The short ID of the remote node
         /// </returns>
-        public (byte ErrorCode, ushort Target) IncomingNetworkStatusHandler()
+        public IncomingNetworkStatusHandler IncomingNetworkStatusHandler()
         {
             IncomingNetworkStatusHandlerRequest request = new IncomingNetworkStatusHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingNetworkStatusHandlerResponse)));
             IncomingNetworkStatusHandlerResponse response = (IncomingNetworkStatusHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.ErrorCode, response.Target);
+            return new IncomingNetworkStatusHandler(response.ErrorCode, response.Target);
         }
 
         /// <summary>
@@ -2796,13 +3130,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - RelayCount: The number of relays in <i>relayList</i>.
         /// - RelayList: The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
         /// </returns>
-        public (ushort Source, byte[] SourceEui, byte LastHopLqi, sbyte LastHopRssi, byte RelayCount, byte[] RelayList) IncomingRouteRecordHandler()
+        public IncomingRouteRecordHandler IncomingRouteRecordHandler()
         {
             IncomingRouteRecordHandlerRequest request = new IncomingRouteRecordHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingRouteRecordHandlerResponse)));
             IncomingRouteRecordHandlerResponse response = (IncomingRouteRecordHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Source, response.SourceEui, response.LastHopLqi, response.LastHopRssi, response.RelayCount, response.RelayList);
+            return new IncomingRouteRecordHandler(response.Source, response.SourceEui, response.LastHopLqi, response.LastHopRssi, response.RelayCount, response.RelayList);
         }
 
         /// <summary>
@@ -2886,14 +3220,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeId: One of the following: The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index. SL_ZIGBEE_UNKNOWN_NODE_ID - Indicates that the EUI64 stored in the address table at the given index is valid but the short ID is currently unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID - Indicates that the EUI64 stored in the address table at the given location is valid and network address discovery is underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID - Indicates that the entry stored in the address table at the given index is not in use.
         /// - Eui64: The EUI64 of the address table entry is copied to this location.
         /// </returns>
-        public (Status Status, ushort NodeId, byte[] Eui64) GetAddressTableInfo(byte addressTableIndex)
+        public (Status Status, GetAddressTableInfo Result) GetAddressTableInfo(byte addressTableIndex)
         {
             GetAddressTableInfoRequest request = new GetAddressTableInfoRequest();
             request.AddressTableIndex = addressTableIndex;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetAddressTableInfoResponse)));
             GetAddressTableInfoResponse response = (GetAddressTableInfoResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.NodeId, response.Eui64);
+            return (response.Status, new GetAddressTableInfo(response.NodeId, response.Eui64));
         }
 
         /// <summary>
@@ -2941,7 +3275,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - OldId: One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
         /// - OldExtendedTimeout: true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
         /// </returns>
-        public (Status Status, byte[] OldEui64, ushort OldId, bool OldExtendedTimeout) ReplaceAddressTableEntry(byte addressTableIndex, byte[] newEui64, ushort newId, bool newExtendedTimeout)
+        public (Status Status, ReplaceAddressTableEntry Result) ReplaceAddressTableEntry(byte addressTableIndex, byte[] newEui64, ushort newId, bool newExtendedTimeout)
         {
             ReplaceAddressTableEntryRequest request = new ReplaceAddressTableEntryRequest();
             request.AddressTableIndex = addressTableIndex;
@@ -2951,7 +3285,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReplaceAddressTableEntryResponse)));
             ReplaceAddressTableEntryResponse response = (ReplaceAddressTableEntryResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.OldEui64, response.OldId, response.OldExtendedTimeout);
+            return (response.Status, new ReplaceAddressTableEntry(response.OldEui64, response.OldId, response.OldExtendedTimeout));
         }
 
         /// <summary>
@@ -3083,13 +3417,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
-        public (ZigbeeMacPassthroughType MessageType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacPassthroughMessageHandler()
+        public MacPassthroughMessageHandler MacPassthroughMessageHandler()
         {
             MacPassthroughMessageHandlerRequest request = new MacPassthroughMessageHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacPassthroughMessageHandlerResponse)));
             MacPassthroughMessageHandlerResponse response = (MacPassthroughMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.MessageType, response.PacketInfo, response.MessageLength, response.MessageContents);
+            return new MacPassthroughMessageHandler(response.MessageType, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
         /// <summary>
@@ -3102,13 +3436,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
-        public (ushort FilterValueMatch, ZigbeeMacPassthroughType LegacyPassthroughType, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) MacFilterMatchMessageHandler()
+        public MacFilterMatchMessageHandler MacFilterMatchMessageHandler()
         {
             MacFilterMatchMessageHandlerRequest request = new MacFilterMatchMessageHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacFilterMatchMessageHandlerResponse)));
             MacFilterMatchMessageHandlerResponse response = (MacFilterMatchMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.FilterValueMatch, response.LegacyPassthroughType, response.PacketInfo, response.MessageLength, response.MessageContents);
+            return new MacFilterMatchMessageHandler(response.FilterValueMatch, response.LegacyPassthroughType, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
         /// <summary>
@@ -3119,13 +3453,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageContents: The message that was transmitted.
         /// - Status: SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
         /// </returns>
-        public (byte MessageLength, byte[] MessageContents, Status Status) RawTransmitCompleteHandler()
+        public (Status Status, RawTransmitCompleteHandler Result) RawTransmitCompleteHandler()
         {
             RawTransmitCompleteHandlerRequest request = new RawTransmitCompleteHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RawTransmitCompleteHandlerResponse)));
             RawTransmitCompleteHandlerResponse response = (RawTransmitCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.MessageLength, response.MessageContents, response.Status);
+            return (response.Status, new RawTransmitCompleteHandler(response.MessageLength, response.MessageContents));
         }
 
         /// <summary>
@@ -3409,13 +3743,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Partner: This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
         /// - Status: This is the status indicating what was established or why the key establishment failed.
         /// </returns>
-        public (byte[] Partner, ZigbeeKeyStatus Status) ZigbeeKeyEstablishmentHandler()
+        public ZigbeeKeyEstablishmentHandler ZigbeeKeyEstablishmentHandler()
         {
             ZigbeeKeyEstablishmentHandlerRequest request = new ZigbeeKeyEstablishmentHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZigbeeKeyEstablishmentHandlerResponse)));
             ZigbeeKeyEstablishmentHandlerResponse response = (ZigbeeKeyEstablishmentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Partner, response.Status);
+            return new ZigbeeKeyEstablishmentHandler(response.Partner, response.Status);
         }
 
         /// <summary>
@@ -3494,14 +3828,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByIndex(byte index)
+        public (Status Status, SecManExportLinkKeyByIndex Result) SecManExportLinkKeyByIndex(byte index)
         {
             SecManExportLinkKeyByIndexRequest request = new SecManExportLinkKeyByIndexRequest();
             request.Index = index;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByIndexResponse)));
             SecManExportLinkKeyByIndexResponse response = (SecManExportLinkKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
+            return (response.Status, new SecManExportLinkKeyByIndex(response.Context, response.PlaintextKey, response.KeyData));
         }
 
         /// <summary>
@@ -3514,14 +3848,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportLinkKeyByEui(byte[] eui)
+        public (Status Status, SecManExportLinkKeyByEui Result) SecManExportLinkKeyByEui(byte[] eui)
         {
             SecManExportLinkKeyByEuiRequest request = new SecManExportLinkKeyByEuiRequest();
             request.Eui = eui;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByEuiResponse)));
             SecManExportLinkKeyByEuiResponse response = (SecManExportLinkKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
+            return (response.Status, new SecManExportLinkKeyByEui(response.Context, response.PlaintextKey, response.KeyData));
         }
 
         /// <summary>
@@ -3566,14 +3900,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByIndex(byte index)
+        public (Status Status, SecManExportTransientKeyByIndex Result) SecManExportTransientKeyByIndex(byte index)
         {
             SecManExportTransientKeyByIndexRequest request = new SecManExportTransientKeyByIndexRequest();
             request.Index = index;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByIndexResponse)));
             SecManExportTransientKeyByIndexResponse response = (SecManExportTransientKeyByIndexResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
+            return (response.Status, new SecManExportTransientKeyByIndex(response.Context, response.PlaintextKey, response.KeyData));
         }
 
         /// <summary>
@@ -3586,14 +3920,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, ZigbeeSecManContext Context, ZigbeeSecManKey PlaintextKey, ZigbeeSecManApsKeyMetadata KeyData) SecManExportTransientKeyByEui(byte[] eui)
+        public (Status Status, SecManExportTransientKeyByEui Result) SecManExportTransientKeyByEui(byte[] eui)
         {
             SecManExportTransientKeyByEuiRequest request = new SecManExportTransientKeyByEuiRequest();
             request.Eui = eui;
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByEuiResponse)));
             SecManExportTransientKeyByEuiResponse response = (SecManExportTransientKeyByEuiResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.Context, response.PlaintextKey, response.KeyData);
+            return (response.Status, new SecManExportTransientKeyByEui(response.Context, response.PlaintextKey, response.KeyData));
         }
 
         /// <summary>
@@ -3644,13 +3978,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PolicyDecision: An sl_zigbee_join_decision_t reflecting the decision made.
         /// - ParentOfNewNodeId: The parent of the node whose status has changed.
         /// </returns>
-        public (ushort NewNodeId, byte[] NewNodeEui64, ZigbeeDeviceUpdate Status, ZigbeeJoinDecision PolicyDecision, ushort ParentOfNewNodeId) TrustCenterPostJoinHandler()
+        public TrustCenterPostJoinHandler TrustCenterPostJoinHandler()
         {
             TrustCenterPostJoinHandlerRequest request = new TrustCenterPostJoinHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TrustCenterPostJoinHandlerResponse)));
             TrustCenterPostJoinHandlerResponse response = (TrustCenterPostJoinHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.NewNodeId, response.NewNodeEui64, response.Status, response.PolicyDecision, response.ParentOfNewNodeId);
+            return new TrustCenterPostJoinHandler(response.NewNodeId, response.NewNodeEui64, response.Status, response.PolicyDecision, response.ParentOfNewNodeId);
         }
 
         /// <summary>
@@ -3799,13 +4133,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - InitiatorSmac: The calculated value of the initiator's SMAC
         /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
-        public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacsHandler()
+        public (Status Status, CalculateSmacsHandler Result) CalculateSmacsHandler()
         {
             CalculateSmacsHandlerRequest request = new CalculateSmacsHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacsHandlerResponse)));
             CalculateSmacsHandlerResponse response = (CalculateSmacsHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.InitiatorSmac, response.ResponderSmac);
+            return (response.Status, new CalculateSmacsHandler(response.InitiatorSmac, response.ResponderSmac));
         }
 
         /// <summary>
@@ -3864,13 +4198,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - InitiatorSmac: The calculated value of the initiator's SMAC
         /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
-        public (Status Status, ZigbeeSmacData InitiatorSmac, ZigbeeSmacData ResponderSmac) CalculateSmacs283k1Handler()
+        public (Status Status, CalculateSmacs283k1Handler Result) CalculateSmacs283k1Handler()
         {
             CalculateSmacs283k1HandlerRequest request = new CalculateSmacs283k1HandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacs283k1HandlerResponse)));
             CalculateSmacs283k1HandlerResponse response = (CalculateSmacs283k1HandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.InitiatorSmac, response.ResponderSmac);
+            return (response.Status, new CalculateSmacs283k1Handler(response.InitiatorSmac, response.ResponderSmac));
         }
 
         /// <summary>
@@ -3960,13 +4294,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message and attached which includes the original message and the appended signature.
         /// </returns>
-        public (Status Status, byte MessageLength, byte[] MessageContents) DsaSignHandler()
+        public (Status Status, DsaSignHandler Result) DsaSignHandler()
         {
             DsaSignHandlerRequest request = new DsaSignHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaSignHandlerResponse)));
             DsaSignHandlerResponse response = (DsaSignHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.MessageLength, response.MessageContents);
+            return (response.Status, new DsaSignHandler(response.MessageLength, response.MessageContents));
         }
 
         /// <summary>
@@ -4216,13 +4550,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PacketLength: The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
         /// - PacketContents: The received packet (last 2 bytes are not FCS / CRC and may be discarded)
         /// </returns>
-        public (byte LinkQuality, sbyte Rssi, byte PacketLength, byte[] PacketContents) MfglibRxHandler()
+        public MfglibRxHandler MfglibRxHandler()
         {
             MfglibRxHandlerRequest request = new MfglibRxHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibRxHandlerResponse)));
             MfglibRxHandlerResponse response = (MfglibRxHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.LinkQuality, response.Rssi, response.PacketLength, response.PacketContents);
+            return new MfglibRxHandler(response.LinkQuality, response.Rssi, response.PacketLength, response.PacketContents);
         }
 
         /// <summary>
@@ -4270,13 +4604,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeMicro: The value of MICRO on the node
         /// - NodePhy: The value of PHY on the node
         /// </returns>
-        public (ushort BootloaderVersion, byte NodePlat, byte NodeMicro, byte NodePhy) GetStandaloneBootloaderVersionPlatMicroPhy()
+        public GetStandaloneBootloaderVersionPlatMicroPhy GetStandaloneBootloaderVersionPlatMicroPhy()
         {
             GetStandaloneBootloaderVersionPlatMicroPhyRequest request = new GetStandaloneBootloaderVersionPlatMicroPhyRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetStandaloneBootloaderVersionPlatMicroPhyResponse)));
             GetStandaloneBootloaderVersionPlatMicroPhyResponse response = (GetStandaloneBootloaderVersionPlatMicroPhyResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.BootloaderVersion, response.NodePlat, response.NodeMicro, response.NodePhy);
+            return new GetStandaloneBootloaderVersionPlatMicroPhy(response.BootloaderVersion, response.NodePlat, response.NodeMicro, response.NodePhy);
         }
 
         /// <summary>
@@ -4288,13 +4622,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The bootload message that was sent.
         /// </returns>
-        public (byte[] LongId, ZigbeeRxPacketInfo PacketInfo, byte MessageLength, byte[] MessageContents) IncomingBootloadMessageHandler()
+        public IncomingBootloadMessageHandler IncomingBootloadMessageHandler()
         {
             IncomingBootloadMessageHandlerRequest request = new IncomingBootloadMessageHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingBootloadMessageHandlerResponse)));
             IncomingBootloadMessageHandlerResponse response = (IncomingBootloadMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.LongId, response.PacketInfo, response.MessageLength, response.MessageContents);
+            return new IncomingBootloadMessageHandler(response.LongId, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
         /// <summary>
@@ -4305,13 +4639,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message that was sent.
         /// </returns>
-        public (Status Status, byte MessageLength, byte[] MessageContents) BootloadTransmitCompleteHandler()
+        public (Status Status, BootloadTransmitCompleteHandler Result) BootloadTransmitCompleteHandler()
         {
             BootloadTransmitCompleteHandlerRequest request = new BootloadTransmitCompleteHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BootloadTransmitCompleteHandlerResponse)));
             BootloadTransmitCompleteHandlerResponse response = (BootloadTransmitCompleteHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Status, response.MessageLength, response.MessageContents);
+            return (response.Status, new BootloadTransmitCompleteHandler(response.MessageLength, response.MessageContents));
         }
 
         /// <summary>
@@ -4339,13 +4673,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - DataLength: The length of the incoming message.
         /// - Data: A pointer to the data received in the current message.
         /// </returns>
-        public (byte MessageType, byte DataLength, byte[] Data) IncomingMfgTestMessageHandler()
+        public IncomingMfgTestMessageHandler IncomingMfgTestMessageHandler()
         {
             IncomingMfgTestMessageHandlerRequest request = new IncomingMfgTestMessageHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMfgTestMessageHandlerResponse)));
             IncomingMfgTestMessageHandlerResponse response = (IncomingMfgTestMessageHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.MessageType, response.DataLength, response.Data);
+            return new IncomingMfgTestMessageHandler(response.MessageType, response.DataLength, response.Data);
         }
 
         /// <summary>
@@ -4532,13 +4866,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - DeviceInfo: Device specific information.
         /// - PacketInfo: Information about the incoming packet received from this network.
         /// </returns>
-        public (ZigbeeZllNetwork NetworkInfo, bool IsDeviceInfoNull, ZigbeeZllDeviceInfoRecord DeviceInfo, ZigbeeRxPacketInfo PacketInfo) ZllNetworkFoundHandler()
+        public ZllNetworkFoundHandler ZllNetworkFoundHandler()
         {
             ZllNetworkFoundHandlerRequest request = new ZllNetworkFoundHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllNetworkFoundHandlerResponse)));
             ZllNetworkFoundHandlerResponse response = (ZllNetworkFoundHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.NetworkInfo, response.IsDeviceInfoNull, response.DeviceInfo, response.PacketInfo);
+            return new ZllNetworkFoundHandler(response.NetworkInfo, response.IsDeviceInfoNull, response.DeviceInfo, response.PacketInfo);
         }
 
         /// <summary>
@@ -4561,13 +4895,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - AddressInfo: Address assignment information.
         /// - PacketInfo: Information about the incoming packet.
         /// </returns>
-        public (ZigbeeZllAddressAssignment AddressInfo, ZigbeeRxPacketInfo PacketInfo) ZllAddressAssignmentHandler()
+        public ZllAddressAssignmentHandler ZllAddressAssignmentHandler()
         {
             ZllAddressAssignmentHandlerRequest request = new ZllAddressAssignmentHandlerRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllAddressAssignmentHandlerResponse)));
             ZllAddressAssignmentHandlerResponse response = (ZllAddressAssignmentHandlerResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.AddressInfo, response.PacketInfo);
+            return new ZllAddressAssignmentHandler(response.AddressInfo, response.PacketInfo);
         }
 
         /// <summary>
@@ -4590,13 +4924,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Data: Data token return value.
         /// - Security: Security token return value.
         /// </returns>
-        public (ZigbeeTokTypeStackZllData Data, ZigbeeTokTypeStackZllSecurity Security) ZllGetTokens()
+        public ZllGetTokens ZllGetTokens()
         {
             ZllGetTokensRequest request = new ZllGetTokensRequest();
             ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllGetTokensResponse)));
             ZllGetTokensResponse response = (ZllGetTokensResponse)transaction.GetResponse();
             _logger.LogDebug(response.ToString());
-            return (response.Data, response.Security);
+            return new ZllGetTokens(response.Data, response.Security);
         }
 
         /// <summary>

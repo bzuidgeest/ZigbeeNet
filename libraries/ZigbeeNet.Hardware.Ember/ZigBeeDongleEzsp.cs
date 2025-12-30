@@ -314,7 +314,7 @@ namespace ZigBeeNet.Hardware.Ember
             this._defaultDeviceId = defaultDeviceId;
         }
 
-        public ZigBeeStatus Initialize() 
+        public Task<ZigBeeStatus> Initialize() 
         {
             _logger.LogDebug("EZSP Dongle: Initialize with protocol {Protocol}.", _protocol);
             _zigbeeTransportReceive.SetTransportState(ZigBeeTransportState.INITIALISING);
@@ -1256,11 +1256,11 @@ namespace ZigBeeNet.Hardware.Ember
         private ZigBeeStatus SetConcentrator(ConcentratorConfig concentratorConfig) 
         {
             EzspSetConcentratorRequest concentratorRequest = new EzspSetConcentratorRequest();
-            concentratorRequest.SetMinTime(concentratorConfig.RefreshMinimum);
-            concentratorRequest.SetMaxTime(concentratorConfig.RefreshMaximum);
+            concentratorRequest.SetMinTime(concentratorConfig.MinTime);
+            concentratorRequest.SetMaxTime(concentratorConfig.MaxTime);
             concentratorRequest.SetMaxHops(concentratorConfig.MaxHops);
-            concentratorRequest.SetRouteErrorThreshold(concentratorConfig.MaxFailures);
-            concentratorRequest.SetDeliveryFailureThreshold(concentratorConfig.MaxFailures);
+            concentratorRequest.SetRouteErrorThreshold(concentratorConfig.DeliveryFailureThreshold);
+            concentratorRequest.SetDeliveryFailureThreshold(concentratorConfig.DeliveryFailureThreshold);
             switch (concentratorConfig.Type) 
             {
                 case ConcentratorType.DISABLED:

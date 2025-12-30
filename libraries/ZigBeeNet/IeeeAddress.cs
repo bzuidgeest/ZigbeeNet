@@ -62,10 +62,10 @@ namespace ZigBeeNet
         /// Gets the address.
         /// </summary>
         /// <returns></returns>
-        public byte[] GetAddress()
-        {   
-            return ByteHelper.FromUInt64(Value);
-        }
+        // public byte[] GetAddress()
+        // {   
+        //     return ByteHelper.FromUInt64(Value);
+        // }
 
         public override int GetHashCode()
         {

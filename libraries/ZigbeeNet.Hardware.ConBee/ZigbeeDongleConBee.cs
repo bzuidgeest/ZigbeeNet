@@ -48,7 +48,7 @@ namespace ZigbeeNet.Hardware.ConBee
         public IeeeAddress IeeeAddress { get; set; }
         public ushort NwkAddress { get; set; }
 
-        public ZigBeeStatus Initialize()
+        public Task<ZigBeeStatus> Initialize()
         {
             _conbeeInterface.Initialize();
 

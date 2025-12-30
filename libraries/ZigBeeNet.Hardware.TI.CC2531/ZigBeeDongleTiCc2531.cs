@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ZigBeeNet.Hardware.TI.CC2531.Frame;
 using ZigBeeNet.Hardware.TI.CC2531.Implementation;
 using ZigBeeNet.Hardware.TI.CC2531.Network;
@@ -86,7 +87,7 @@ namespace ZigBeeNet.Hardware.TI.CC2531
             _networkManager.SetMagicNumber(magicNumber);
         }
 
-        public ZigBeeStatus Initialize()
+        public Task<ZigBeeStatus> Initialize()
         {
             _logger.LogDebug("CC2531 transport initialize");
 

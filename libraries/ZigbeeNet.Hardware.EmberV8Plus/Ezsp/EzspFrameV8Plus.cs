@@ -49,26 +49,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     ///   bit 1 : frameFormatVersion[1]
     ///   bit 0 : frameFormatVersion[0]
     /// </summary>
-    public abstract partial class EzspFrameV8Plus 
+    public abstract partial class EzspFrameV8Plus
     {
         static private readonly ILogger _logger = LogManager.GetLog<EzspFrameV8Plus>();
 
         //public abstract ushort FrameId { get; }
-
-        /**
-         * The minimum supported version of EZSP
-         */
-        private const int EZSP_MIN_VERSION = 8;
-
-        /**
-         * The maximum supported version of EZSP
-         */
-        private const int EZSP_MAX_VERSION = 14;
-
-        /**
-         * The current version of EZSP being used
-         */
-        protected static byte ezspVersion = EZSP_MIN_VERSION;
 
         /**
          * EZSP Frame Control Request flag
@@ -82,6 +67,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 
         protected int _frameControl;
         protected bool _isResponse = false;
+		
 
         /**
          * Sets the 8 bit transaction sequence number
@@ -100,15 +86,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             return _isResponse;
         }
 
-        /**
-         * Gets the Ember frame ID for this frame
-         *
-         * @return the Ember frame Id
-         */
-        public int GetFrameId()
-        {
-            return _frameId;
-        }
+        
 
         public bool IsSecurityEnabled => (_frameControl & 0x8000) != 0;
 
@@ -154,31 +132,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         //    return ezspFrame;
         //}
 
-        /**
-         * Set the EZSP version to use
-         *
-         * @param ezspVersion the EZSP protocol version
-         * @return true if the version is supported
-         */
-        public static bool SetEzspVersion(byte ezspVersion)
-        {
-            if (ezspVersion <= EZSP_MAX_VERSION && ezspVersion >= EZSP_MIN_VERSION)
-            {
-                EzspFrameV8Plus.ezspVersion = ezspVersion;
-                return true;
-            }
 
-            return false;
-        }
 
-        /**
-         * Gets the current version of EZSP that is in use. This will default to the minimum supported version on startup
-         *
-         * @return the current version of EZSP
-         */
-        public static byte GetEzspVersion()
-        {
-            return EzspFrameV8Plus.ezspVersion;
-        }
-    }
+	}
 }

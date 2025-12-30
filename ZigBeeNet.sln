@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B668AD02-69CA-43EA-ACDD-AE0DD4D2C598}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{ABCECF51-68A9-44EE-B8BA-73969C9B3895}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{ABCECF51-68A9-44EE-B8BA-73969C9B3895}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		appveyor.yml = appveyor.yml
@@ -60,9 +60,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		SiliconLabs.ASH\ug101-uart-gateway-protocol-reference.pdf = SiliconLabs.ASH\ug101-uart-gateway-protocol-reference.pdf
 		Documentation\ug115-ashv3-protocol-reference.pdf = Documentation\ug115-ashv3-protocol-reference.pdf
+		Documentation\ug600-ezsp-reference-guide.pdf = Documentation\ug600-ezsp-reference-guide.pdf
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconLabs.ASH", "SiliconLabs.ASH\SiliconLabs.ASH.csproj", "{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconLabs.ASH", "libraries\SiliconLabs.ASH\SiliconLabs.ASH.csproj", "{51BA8514-723C-A908-66AF-3150D92EB26F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,10 +143,10 @@ Global
 		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{754A5D2F-3FD9-8979-7010-8A5D108C38B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51BA8514-723C-A908-66AF-3150D92EB26F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51BA8514-723C-A908-66AF-3150D92EB26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51BA8514-723C-A908-66AF-3150D92EB26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51BA8514-723C-A908-66AF-3150D92EB26F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,7 +170,7 @@ Global
 		{8A491892-6F3B-4284-A4A3-0E30F29EF36F} = {603D29D9-83CE-4B81-BD59-A77F529E4494}
 		{D826CC17-9DDB-4A1C-8DB4-B5F71CE97CB8} = {695B6CC9-6267-41E3-A086-3C6B9A180A34}
 		{754A5D2F-3FD9-8979-7010-8A5D108C38B0} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
-		{9BED1F8E-8FA0-1CBB-EF3A-6FBA6CAE6B8F} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
+		{51BA8514-723C-A908-66AF-3150D92EB26F} = {7FF7F314-871A-4B42-ABCB-9D2FB5D14188}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {080E7EAE-7559-464B-9A8F-F5218D35AB8A}

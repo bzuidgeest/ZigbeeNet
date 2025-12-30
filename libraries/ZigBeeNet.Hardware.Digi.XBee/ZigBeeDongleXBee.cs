@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using ZigBeeNet.Hardware.Digi.XBee.Internal;
 using ZigBeeNet.Hardware.Digi.XBee.Internal.Protocol;
 using ZigBeeNet.Security;
@@ -70,7 +71,7 @@ namespace ZigBeeNet.Hardware.Digi.XBee
 
         #region methods
 
-        public ZigBeeStatus Initialize()
+        public Task<ZigBeeStatus> Initialize()
         {
             Logger.LogDebug("XBee device initialize.");
 

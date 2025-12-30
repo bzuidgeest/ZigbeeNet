@@ -17,12 +17,12 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
     internal class EmberNCPGenerator
     {
         private readonly CodeGenerator _generator;
-        private readonly CSharpLanguageService _textService;
+        private readonly CSharpLanguageService _cSharpLanguageService;
 
-        public EmberNCPGenerator(CSharpLanguageService textService, TypeMapperService typeMapperService)
+        public EmberNCPGenerator(CSharpLanguageService cSharpLanguageService, TypeMapperService typeMapperService)
         {
-            _textService = textService;
-            _generator = new CodeGenerator(textService, typeMapperService);
+            _cSharpLanguageService = cSharpLanguageService;
+            _generator = new CodeGenerator(cSharpLanguageService, typeMapperService);
         }
 
         /// <summary>
@@ -96,8 +96,48 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             // Add GetLastStatus method
             classMembers.Add(GenerateGetLastStatusMethod());
 
+            // Collect all frame definitions
+            var allFrameDefinitions = sections.SelectMany(x => x.Frames ?? new List<FrameDefinition>()).ToList();
+
+            // Generate readonly record structs for functions with multiple return parameters (excluding Status)
+            var recordStructs = new List<MemberDeclarationSyntax>();
+            foreach (var frameDefinition in allFrameDefinitions)
+            {
+                var nonStatusResponseArgs = frameDefinition.ResponseArguments
+                    .Where(arg => arg.Type != "sl_status_t")
+                    .ToList();
+
+                if (nonStatusResponseArgs.Count > 1)
+                {
+                    string sanitizedCommandName = Sanitize.FunctionName(frameDefinition.CommandName);
+                    string recordName = sanitizedCommandName;
+
+                    // Build properties dictionary
+                    var properties = new Dictionary<string, string>();
+                    var propertyDescriptions = new Dictionary<string, string>();
+
+                    foreach (var arg in nonStatusResponseArgs)
+                    {
+                        string propertyName = Sanitize.AsPropertyName(arg.Name);
+                        string propertyType = _cSharpLanguageService.GenerateVariableType(arg);
+                        properties[propertyName] = propertyType;
+                        propertyDescriptions[propertyName] = arg.Description ?? arg.Name;
+                    }
+
+                    // Add blank line before all record structs except the first one
+                    bool addLeadingBlankLine = recordStructs.Count > 0;
+
+                    recordStructs.Add(_generator.GenerateRecordStruct(
+                        recordName,
+                        properties,
+                        $"Result type for {sanitizedCommandName} method.",
+                        propertyDescriptions,
+                        addLeadingBlankLine));
+                }
+            }
+
             // Add frame methods
-            foreach (var frameDefinition in sections.SelectMany(x => x.Frames ?? new List<FrameDefinition>()))
+            foreach (var frameDefinition in allFrameDefinitions)
             {
                 classMembers.Add(_generator.GenerateFrameMethod(frameDefinition));
             }
@@ -107,9 +147,23 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword))
                 .AddMembers(classMembers.ToArray());
 
+            // Create namespace members list (record structs + class)
+            var namespaceMembers = new List<MemberDeclarationSyntax>();
+            namespaceMembers.AddRange(recordStructs);
+
+            // Add extra line break before the class declaration if there are record structs
+            if (recordStructs.Count > 0)
+            {
+                classDeclaration = classDeclaration.WithLeadingTrivia(
+                    CarriageReturnLineFeed,
+                    CarriageReturnLineFeed);
+            }
+
+            namespaceMembers.Add(classDeclaration);
+
             // Create namespace
             var namespaceDeclaration = NamespaceDeclaration(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp"))
-                .AddMembers(classDeclaration);
+                .AddMembers(namespaceMembers.ToArray());
 
             // Create compilation unit
             return CompilationUnit()

@@ -78,7 +78,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
        
         public byte[] GetFrameBytes()
         {
-            ushort frameId = (this as IFrameIdentifier).FrameId;
+            ushort frameId = _frameId;
             byte[] header = CreateHeader(frameId);
             byte[] parameters = CreateParameters();
             byte[] frame = new byte[header.Length + parameters.Length];

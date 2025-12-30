@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using ZigBeeNet.Security;
 using ZigBeeNet.ZCL;
 
@@ -19,7 +20,7 @@ namespace ZigBeeNet.Transport
         /// for the coordinator.
         /// </summary>
         /// <returns></returns>
-        ZigBeeStatus Initialize();
+        Task<ZigBeeStatus> Initialize();
 
         /// <summary>
         /// Starts the transport interface.

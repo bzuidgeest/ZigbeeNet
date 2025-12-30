@@ -17,12 +17,12 @@ namespace ZigBeeNet.Transport
         /// <summary>
         /// The minimum time between MTORR transmissions
         /// </summary>
-        public int RefreshMinimum { get; set; }
+        public ushort MinTime { get; set; }
 
         /// <summary>
         /// The maximum time between MTORR transmissions
         /// </summary>
-        public int RefreshMaximum { get; set; }
+        public ushort MaxTime { get; set; }
 
         /// <summary>
         /// The maximum number of hops the MTORR will be sent to
@@ -30,9 +30,14 @@ namespace ZigBeeNet.Transport
         public int MaxHops { get; set; }
 
         /// <summary>
-        /// Maximum number of errors that will trigger a re-broadcast of the MTORR
+        /// 
         /// </summary>
-        public int MaxFailures { get; set; }
+        public byte DeliveryFailureThreshold { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte RouteErrorThreshold { get; set; }
 
     }
 
