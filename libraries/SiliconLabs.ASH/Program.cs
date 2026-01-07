@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Logging;
 using SiliconLabs.ASH.V2;
 using SiliconLabs.ASH.V3;
-using System;
-using System.Threading.Tasks;
 
 namespace SiliconLabs.ASH
 {
@@ -43,9 +41,9 @@ namespace SiliconLabs.ASH
             using var ashHost = new AshHost(portName, 115200, loggerFactory, AshVersion.V2);
             
             // Wire up event handlers
-            ashHost.PayloadReceived += (data) =>
+            ashHost.IncomingFrameReceived += (sender, eventArgs) =>
             {
-                Console.WriteLine($"?? Received payload: {AshHost.ToHexString(data)}");
+                Console.WriteLine($"?? Received payload: {AshHost.ToHexString(eventArgs.Frame.Data)}");
             };
             
             ashHost.StateChanged += (state) =>
@@ -103,9 +101,9 @@ namespace SiliconLabs.ASH
             
             try
             {
-                await foreach (var payload in ashHost.GetPayloadStream(cts.Token))
+                await foreach (var ashFrame in ashHost.GetIncomingFrameStream(cts.Token))
                 {
-                    Console.WriteLine($"?? Received: {AshHost.ToHexString(payload)} ({payload.Length} bytes)");
+                    Console.WriteLine($"?? Received: {AshHost.ToHexString(ashFrame.Data)} ({ashFrame.Data.Length} bytes)");
                     
                     // Process payload here
                     // For example, decode EZSP frame:
@@ -142,7 +140,7 @@ namespace SiliconLabs.ASH
             var codec = new AshFrameCodecV2(logger);
             
             // Create and encode DATA frame
-            byte[] testData = { 0x01, 0x02, 0x03 };
+            byte[] testData = [0x01, 0x02, 0x03];
             var frame = AshFrameV2.CreateDataFrame(frmNum: 1, ackNum: 1, testData);
             
             Console.WriteLine($"Original frame: {frame}");
@@ -179,7 +177,7 @@ namespace SiliconLabs.ASH
             var codec = new AshFrameCodecV3(logger);
             
             // Create and encode ACK frame with data (v3 carries data in ACK frames)
-            byte[] testData = { 0xAA, 0xBB, 0xCC };
+            byte[] testData = [0xAA, 0xBB, 0xCC];
             var frame = AshFrameV3.CreateAckFrame(ofc: 1, afc: 1, testData);
             
             Console.WriteLine($"Original frame: {frame}");

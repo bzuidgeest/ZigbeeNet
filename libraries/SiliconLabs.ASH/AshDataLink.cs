@@ -22,7 +22,7 @@ namespace SiliconLabs.ASH
 
         private AshVersion _version = AshVersion.Unknown;
         
-        public event Action<byte[]>? OnDataReceived;
+        public event Action<IAshFrame>? OnDataReceived;
         public event Action<AshState>? OnStateChanged;
         public event Action<string>? OnError;
         

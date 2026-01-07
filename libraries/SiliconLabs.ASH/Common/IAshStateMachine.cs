@@ -22,7 +22,7 @@ namespace SiliconLabs.ASH.Common
         /// <summary>
         /// Data received event (application payload)
         /// </summary>
-        event Action<byte[]>? OnDataReceived;
+        event Action<IAshFrame>? OnDataReceived;
         
         /// <summary>
         /// State changed event

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Channels;
-using SiliconLabs.ASH.V2;
+using SiliconLabs.ASH.Common;
 
 namespace SiliconLabs.ASH
 {
@@ -14,7 +14,7 @@ namespace SiliconLabs.ASH
         private readonly ILogger<AshHost> _logger;
         
         // Channel for async stream consumption
-        private readonly Channel<byte[]> _payloadChannel;
+        private readonly Channel<IAshFrame> _incomingFrameChannel;
         
         /// <summary>
         /// Fired when application payload data is received from the NCP.
@@ -22,7 +22,8 @@ namespace SiliconLabs.ASH
         /// with all ASH protocol overhead (frame headers, sequence numbers, CRC, byte stuffing) removed.
         /// This is NOT the raw frame data.
         /// </summary>
-        public event Action<byte[]>? PayloadReceived;
+        //public event Action<byte[]>? PayloadReceived;
+		public event EventHandler<AshFrameReceivedEventArgs>? IncomingFrameReceived;
         
         /// <summary>
         /// Fired when the ASH connection state changes.
@@ -76,26 +77,26 @@ namespace SiliconLabs.ASH
                 SingleReader = false, // Allow multiple consumers
                 SingleWriter = true   // Only one writer (the ASH layer)
             };
-            _payloadChannel = Channel.CreateBounded<byte[]>(channelOptions);
+            _incomingFrameChannel = Channel.CreateBounded<IAshFrame>(channelOptions);
 
             _dataLink = new AshDataLink(portName, baudRate, loggerFactory, version);
             
             // Wire up events
-            _dataLink.OnDataReceived += (data) =>
+            _dataLink.OnDataReceived += (ashFrame) =>
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Data received: {ByteCount} bytes", data.Length);
+                    _logger.LogInformation("Data received: {ByteCount} bytes", ashFrame.Data.Length);
                 }
                 
                 // Fire traditional event (for backward compatibility)
-                PayloadReceived?.Invoke(data);
+				IncomingFrameReceived?.Invoke(this, new AshFrameReceivedEventArgs(ashFrame));
                 
                 // Write to channel for async stream consumers (non-blocking with backpressure)
-                if (!_payloadChannel.Writer.TryWrite(data))
+                if (!_incomingFrameChannel.Writer.TryWrite(ashFrame))
                 {
                     // Channel is full - backpressure is active
-                    int channelCount = _payloadChannel.Reader.Count;
+                    int channelCount = _incomingFrameChannel.Reader.Count;
                     _logger.LogWarning("Payload channel full ({Count} items), backpressure active - consumer too slow", channelCount);
                     
                     // Notify application via event
@@ -109,9 +110,6 @@ namespace SiliconLabs.ASH
                 _logger.LogError("Error: {ErrorMessage}", error);
                 ErrorOccurred?.Invoke(error);
             };
-            
-            // Note: Channel monitoring removed - it was incorrectly completing the channel
-            // The channel will remain open until Dispose() is called
         }
         
         /// <summary>
@@ -241,9 +239,9 @@ namespace SiliconLabs.ASH
         /// }
         /// </code>
         /// </example>
-        public async IAsyncEnumerable<byte[]> GetPayloadStream([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IAshFrame> GetIncomingFrameStream([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var payload in _payloadChannel.Reader.ReadAllAsync(cancellationToken))
+            await foreach (var payload in _incomingFrameChannel.Reader.ReadAllAsync(cancellationToken))
             {
                 yield return payload;
             }
@@ -255,11 +253,11 @@ namespace SiliconLabs.ASH
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the read operation</param>
         /// <returns>Payload data if available, null if channel is completed</returns>
-        public async ValueTask<byte[]?> TryReadPayloadAsync(CancellationToken cancellationToken = default)
+        public async ValueTask<IAshFrame?> TryReadIncomingFrameAsync(CancellationToken cancellationToken = default)
         {
-            if (await _payloadChannel.Reader.WaitToReadAsync(cancellationToken))
+            if (await _incomingFrameChannel.Reader.WaitToReadAsync(cancellationToken))
             {
-                if (_payloadChannel.Reader.TryRead(out var payload))
+                if (_incomingFrameChannel.Reader.TryRead(out var payload))
                 {
                     return payload;
                 }
@@ -273,11 +271,11 @@ namespace SiliconLabs.ASH
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the read operation</param>
         /// <returns>Payload data, or null if channel is completed</returns>
-        public async ValueTask<byte[]?> ReadPayloadAsync(CancellationToken cancellationToken = default)
+        public async ValueTask<IAshFrame?> ReadIncomingFrameAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _payloadChannel.Reader.ReadAsync(cancellationToken);
+                return await _incomingFrameChannel.Reader.ReadAsync(cancellationToken);
             }
             catch (ChannelClosedException)
             {
@@ -333,10 +331,10 @@ namespace SiliconLabs.ASH
         public void Dispose()
         {
             // Complete the channel to signal end of stream (use TryComplete to avoid exception if already completed)
-            _payloadChannel.Writer.TryComplete();
+            _incomingFrameChannel.Writer.TryComplete();
 
-            _dataLink?.Dispose();
-            _connectionSemaphore?.Dispose();
+            _dataLink.Dispose();
+            _connectionSemaphore.Dispose();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace SiliconLabs.ASH.V2
         
         public AshVersion Version => AshVersion.V2;
         
-        public event Action<byte[]>? OnDataReceived;
+        public event Action<IAshFrame>? OnDataReceived;
         public event Action<AshState>? OnStateChanged;
         public event Action<string>? OnError;
         public event Action<IAshFrame>? OnFrameToSend;
@@ -307,7 +307,7 @@ namespace SiliconLabs.ASH.V2
                         frame.OutgoingFrameCounter, frame.Data.Length);
                 }
                 
-                OnDataReceived?.Invoke(frame.Data);
+                OnDataReceived?.Invoke(frame);
                 _rxAckNum = IncrementCounter(_rxAckNum);
                 SendEmptyAck();
             }

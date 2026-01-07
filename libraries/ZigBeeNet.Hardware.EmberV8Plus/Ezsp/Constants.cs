@@ -1,6 +1,6 @@
 ﻿namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 
-public class Constants
+public static class Constants
 {
 	/**
 	* The minimum supported version of EZSP
@@ -11,4 +11,9 @@ public class Constants
 	* The maximum supported version of EZSP
 	*/
 	internal const int EMBER_MAX_VERSION = 16;
+	
+	/**
+	* The length of the EZSP frame header
+	*/
+	internal const int EmberFrameHeaderLength = 5;
 }

@@ -7,10 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using SiliconLabs.ASH;
+using ZigBeeNet.Hardware.Ember;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
-using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TrustCenter.Frames;
@@ -19,11 +19,10 @@ using ZigBeeNet.Hardware.EmberV8Plus.Internal;
 //using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
 using ZigBeeNet.Security;
 using ZigBeeNet.Transport;
-using ZigBeeNet.Util;
 using ZigBeeNet.ZDO.Field;
-using Version = ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Version;
+//using Version = ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Version;
 
-namespace ZigBeeNet.Hardware.Ember
+namespace ZigBeeNet.Hardware.EmberV8Plus
 {
 	public class ZigBeeDongleEzsp : IZigBeeTransportTransmit, IEzspFrameHandler
 	{
@@ -46,12 +45,6 @@ namespace ZigBeeNet.Hardware.Ember
 		* The protocol handler used to send and receive EZSP packets
 		*/
 		private IEzspProtocolHandler? _frameHandler;
-
-		/**
-		* The Ember bootload handler
-		*/
-		//Not implemented yet
-		//private EmberFirmwareUpdateHandler bootloadHandler;
 
 		/**
 		* The stack configuration we need for the NCP
@@ -81,7 +74,7 @@ namespace ZigBeeNet.Hardware.Ember
 		/**
 		* The current network parameters as {@link EmberNetworkParameters}
 		*/
-		private ZigbeeNetworkParameters _networkParameters = new ZigbeeNetworkParameters();
+		private ZigbeeNetworkParameters _networkParameters;
 
 		/**
 		* The IeeeAddress of the Ember NCP
@@ -104,7 +97,7 @@ namespace ZigBeeNet.Hardware.Ember
 		private EmberSerialProtocol _protocol;
 
 		/**
-		* The Ember version used in this system. Set during initialisation and saved in case the client is interested.
+		* The Ember version used in this system. Set during initialization and saved in case the client is interested.
 		*/
 		public string VersionString { get; set; } = "Unknown";
 
@@ -114,7 +107,7 @@ namespace ZigBeeNet.Hardware.Ember
 		private bool _networkStateUp = false;
 
 		/**
-		* Boolean to hold initialisation state. Set to true after {@link #startup()} completes.
+		* Boolean to hold initialization state. Set to true after {@link #startup()} completes.
 		*/
 		private bool _initialised = false;
 
@@ -143,33 +136,21 @@ namespace ZigBeeNet.Hardware.Ember
 
 		/**
 		* The time the last command was sent from the {@link ZigBeeNetworkManager}. This is used by the dongle polling task
-		* to not poll if commands are otherwise being sent so as to reduce unnecessary communications with the dongle.
+		* to not poll if commands are otherwise being sent to reduce unnecessary communications with the dongle.
 		*/
 		private DateTime _lastSendCommand;
 
-		/**
-		* If the dongle is being used with the manufacturing library, then this records the listener to be called when
-		* packets are received.
-		*/
-		//TODO
-		//private EmberMfglibListener mfglibListener;
 
-		/**
-		* The {@link EmberNcpResetProvider} used to perform a hardware reset. If not set, no hardware reset will be
-		* attempted.
-		*/
-		//TODO
-		//private EmberNcpResetProvider resetProvider;
 
 		/**
 		* List of input clusters supported - this will be added to the endpoint definition
 		*/
-		private ushort[] _inputClusters = new ushort[] { 0 };
+		private ushort[] _inputClusters = [0];
 
 		/**
 		* List of output clusters supported - this will be added to the endpoint definition
 		*/
-		private ushort[] _outputClusters = new ushort[] { 0 };
+		private ushort[] _outputClusters = [0];
 
 		/**
 		* We need to retain the transaction ID returned by the NCP when we're sending fragments so that we can use this in
@@ -202,64 +183,52 @@ namespace ZigBeeNet.Hardware.Ember
 			}
 
 			// Define the default configuration
-			_stackConfiguration = new Dictionary<ZigbeeEzspConfigId, ushort>();
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ROUTE_TABLE_SIZE, 16);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SECURITY_LEVEL, 5);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ADDRESS_TABLE_SIZE, 8);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TRUST_CENTER_ADDRESS_CACHE_SIZE, 2);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_STACK_PROFILE, 2);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_INDIRECT_TRANSMISSION_TIMEOUT, 7680);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_HOPS, 30);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TX_POWER_MODE, 0);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SUPPORTED_NETWORKS, 1);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_KEY_TABLE_SIZE, 4);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APPLICATION_ZDO_FLAGS,
-				(int)ZigbeeZdoConfigurationFlags.SL_ZIGBEE_APP_RECEIVES_SUPPORTED_ZDO_REQUESTS);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_END_DEVICE_CHILDREN, 16);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APS_UNICAST_MESSAGE_COUNT, 10);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_BROADCAST_TABLE_SIZE, 15);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_NEIGHBOR_TABLE_SIZE, 16);
-			//Fragmentation not implemented yet
-			//stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_WINDOW_SIZE, 1);
-			//stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_DELAY_MS, 50);
-			_stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_PACKET_BUFFER_HEAP_SIZE, 255);
+			_stackConfiguration = new Dictionary<ZigbeeEzspConfigId, ushort>
+			{
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ROUTE_TABLE_SIZE, 16 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SECURITY_LEVEL, 5 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_ADDRESS_TABLE_SIZE, 8 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TRUST_CENTER_ADDRESS_CACHE_SIZE, 2 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_STACK_PROFILE, 2 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_INDIRECT_TRANSMISSION_TIMEOUT, 7680 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_HOPS, 30 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_TX_POWER_MODE, 0 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_SUPPORTED_NETWORKS, 1 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_KEY_TABLE_SIZE, 4 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APPLICATION_ZDO_FLAGS, (int)ZigbeeZdoConfigurationFlags.SL_ZIGBEE_APP_RECEIVES_SUPPORTED_ZDO_REQUESTS },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_MAX_END_DEVICE_CHILDREN, 16 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_APS_UNICAST_MESSAGE_COUNT, 10 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_BROADCAST_TABLE_SIZE, 15 },
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_NEIGHBOR_TABLE_SIZE, 16 },
+				//Fragmentation not implemented yet
+				//stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_WINDOW_SIZE, 1);
+				//stackConfiguration.Add(ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_FRAGMENT_DELAY_MS, 50);
+				{ ZigbeeEzspConfigId.SL_ZIGBEE_EZSP_CONFIG_PACKET_BUFFER_HEAP_SIZE, 255 }
+			};
 
 			// Define the default policies
-			_stackPolicies = new Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId>();
-			_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TC_KEY_REQUEST_POLICY,
-				ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_TC_KEY_REQUESTS);
-			//_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TRUST_CENTER_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_ALLOW_PRECONFIGURED_KEY_JOINS);
-			_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_MESSAGE_CONTENTS_IN_CALLBACK_POLICY,
-				ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_MESSAGE_TAG_ONLY_IN_CALLBACK);
-			_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_APP_KEY_REQUEST_POLICY,
-				ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_APP_KEY_REQUESTS);
-			_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_BINDING_MODIFICATION_POLICY,
-				ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_CHECK_BINDING_MODIFICATIONS_ARE_VALID_ENDPOINT_CLUSTERS);
+			_stackPolicies = new Dictionary<ZigbeeEzspPolicyId, ZigbeeEzspDecisionId>
+			{
+				{ ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TC_KEY_REQUEST_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_TC_KEY_REQUESTS },
+				//_stackPolicies.Add(ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_TRUST_CENTER_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_ALLOW_PRECONFIGURED_KEY_JOINS);
+				{ ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_MESSAGE_CONTENTS_IN_CALLBACK_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_MESSAGE_TAG_ONLY_IN_CALLBACK },
+				{ ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_APP_KEY_REQUEST_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_DENY_APP_KEY_REQUESTS },
+				{ ZigbeeEzspPolicyId.SL_ZIGBEE_EZSP_BINDING_MODIFICATION_POLICY, ZigbeeEzspDecisionId.SL_ZIGBEE_EZSP_CHECK_BINDING_MODIFICATIONS_ARE_VALID_ENDPOINT_CLUSTERS }
+			};
 
 			_networkKey = new ZigBeeKey();
 		}
 
-		/**
-		* Sets the hardware reset provider if the dongle supports a hardware reset. If this is not set, the dongle driver
-		* will not attempt a hardware reset and will attempt to use other software methods to reset the dongle as may be
-		* available by the low level protocol.
-		*
-		* @param resetProvider the {@link EmberNcpResetProvider} to be called to perform the reset
-		*/
-		/*
-		public void setEmberNcpResetProvider(EmberNcpResetProvider resetProvider) {
-			this.resetProvider = resetProvider;
-		}
-		*/
+		
 
 		/**
 		* Update the Ember configuration that will be sent to the dongle during the initialization.
-		* <p>
+		* <p/>
 		* Note that this must be called prior to {@link #initialize()} for the configuration to be effective.
 		*
 		* @param configId the {@link ZigbeeEzspConfigId} to be updated.
-		* @param value the value to set (as {@link Integer}. Setting this to null will remove the configuration Id from the
-		*            list of configuration to be sent during NCP initialisation.
+		* @param value the value to set (as {@link Integer}). Setting this to null will remove the configurationId from the
+		*            list of configuration to be sent during NCP initialization.
 		* @return the previously configured value, or null if no value was set for the {@link ZigbeeEzspConfigId}
 		*/
 		public int? UpdateDefaultConfiguration(ZigbeeEzspConfigId configId, ushort? value)
@@ -274,21 +243,19 @@ namespace ZigBeeNet.Hardware.Ember
 		}
 
 		/**
-		* Update the Ember policies that will be sent to the dongle during the initialisation.
+		* Update the Ember policies that will be sent to the dongle during the initialization.
 		* <p>
 		* Note that this must be called prior to {@link #initialize()} for the configuration to be effective.
 		*
 		* @param policyId the {@link ZigbeeEzspPolicyId} to be updated
-		* @param decisionId the (as {@link ZigbeeEzspDecisionId} to set. Setting this to null will remove the policy from
-		*            the list of policies to be sent during NCP initialisation.
+		* @param decisionId the (as {@link ZigbeeEzspDecisionId}) to set. Setting this to null will remove the policy from
+		*            the list of policies to be sent during NCP initialization.
 		* @return the previously configured {@link ZigbeeEzspDecisionId}, or null if no value was set for the
 		*         {@link ZigbeeEzspPolicyId}
 		*/
 		public ZigbeeEzspDecisionId? UpdateDefaultPolicy(ZigbeeEzspPolicyId policyId, ZigbeeEzspDecisionId? decisionId)
 		{
-			ZigbeeEzspDecisionId? previousValue = _stackPolicies.ContainsKey(policyId)
-				? (ZigbeeEzspDecisionId?)_stackPolicies[policyId]
-				: null;
+			_stackPolicies.TryGetValue(policyId, out ZigbeeEzspDecisionId previousValue);
 
 			if (decisionId == null)
 				_stackPolicies.Remove(policyId);
@@ -298,25 +265,7 @@ namespace ZigBeeNet.Hardware.Ember
 			return previousValue;
 		}
 
-		/**
-		* Gets an {@link EmberMfglib} instance that can be used for low level testing of the Ember dongle.
-		* <p>
-		* This may only be used if the {@link ZigBeeDongleEmber} instance has not been initialized on a ZigBee network.
-		*
-		* @param mfglibListener a {@link EmberMfglibListener} to receive packets received. May be null.
-		* @return the {@link EmberMfglib} instance, or null on error
-		*/
-		/*
-		public EmberMfglib getEmberMfglib(EmberMfglibListener mfglibListener) {
-			if (frameHandler == null && !initialiseEzspProtocol()) {
-				return null;
-			}
-
-			this.mfglibListener = mfglibListener;
-
-			return new EmberMfglib(frameHandler);
-		}
-		*/
+		
 		public void SetDefaultProfileId(ushort defaultProfileId)
 		{
 			this._defaultProfileId = defaultProfileId;
@@ -329,7 +278,7 @@ namespace ZigBeeNet.Hardware.Ember
 
 		public async Task<ZigBeeStatus> Initialize()
 		{
-			_logger.LogDebug("EZSP Dongle: Initialize with protocol {Protocol}.", _protocol);
+			_logger.LogDebug("Ember Dongle: Initialize with protocol {Protocol}.", _protocol);
 			_zigbeeTransportReceive.SetTransportState(ZigBeeTransportState.INITIALISING);
 
 			if (_protocol != EmberSerialProtocol.NONE && !(await InitialiseEzspProtocol()))
@@ -367,13 +316,21 @@ namespace ZigBeeNet.Hardware.Ember
 			EmberNcp ncp = GetEmberNcp();
 
 			// Get the current network parameters so that any configuration updates start from here
-			_networkParameters = ncp.GetNetworkParameters().Parameters;
+			
+			_logger.LogDebug("EZSP Dongle: Initialize - getting network parameters");
+			(Status status, GetNetworkParameters result) = ncp.GetNetworkParameters();
+			if (status != Status.SL_STATUS_OK)
+			{
+				_logger.LogDebug("EZSP Dongle: Initialize - getting network parameters failed with {Status}", status);
+				return ZigBeeStatus.FAILURE;
+			}
+
+			_networkParameters = result.Parameters;
 			_logger.LogDebug("Ember initial network parameters are {NetworkParameters}", _networkParameters);
+			_logger.LogDebug("Ember initial node type is {nodeType}", result.NodeType.ToString());
 
 			IeeeAddress = new IeeeAddress(ncp.GetEui64());
 			_logger.LogDebug("Ember local IEEE Address is {IeeeAddress}", IeeeAddress);
-
-			ncp.GetNetworkParameters();
 
 			_logger.LogDebug("EZSP Dongle: initialize done");
 
@@ -384,7 +341,7 @@ namespace ZigBeeNet.Hardware.Ember
 		{
 			_logger.LogDebug("EZSP Dongle: Startup - reinitialize={Reinitialize}", reinitialize);
 
-			// If frameHandler is null then the serial port didn't initialise or startup has not been called
+			// If frameHandler is null then the serial port didn't initialize or startup has not been called
 			if (_frameHandler == null)
 			{
 				_logger.LogError("EZSP Dongle: Startup found low level handler is not initialised.");
@@ -401,7 +358,7 @@ namespace ZigBeeNet.Hardware.Ember
 			ncp.AddEndpoint(1, _defaultProfileId, _defaultDeviceId, 0, (byte)_inputClusters.Count(),
 				(byte)_outputClusters.Count(), _inputClusters, _outputClusters);
 
-			// Now initialise the network
+			// Now initialize the network
 			Status initResponse = ncp.NetworkInit(new ZigbeeNetworkInitStruct()
 				{ bitmask = ZigbeeNetworkInitBitmask.SL_ZIGBEE_NETWORK_INIT_NO_OPTIONS });
 			if (initResponse == Status.SL_STATUS_NOT_JOINED)
@@ -414,7 +371,7 @@ namespace ZigBeeNet.Hardware.Ember
 
 			ScheduleNetworkStatePolling();
 
-			// Check if the network is initialised
+			// Check if the network is initialized
 			ZigbeeNetworkStatus networkState = ncp.NetworkState();
 			_logger.LogDebug("EZSP networkStateResponse {State}", networkState);
 
@@ -456,7 +413,7 @@ namespace ZigBeeNet.Hardware.Ember
 			if (address != 0xFFFE)
 				NwkAddress = address;
 
-			_logger.LogDebug("EZSP Dongle: Startup complete. NWK Address = {NwkAddress}, State = {NetworkState}",
+			_logger.LogDebug("Ember Dongle: Startup complete. NWK Address = {NwkAddress}, State = {NetworkState}",
 				NwkAddress.ToString("X4"), networkState);
 
 			// At this stage, we will now take note of the StackStatusHandler notifications
@@ -470,10 +427,10 @@ namespace ZigBeeNet.Hardware.Ember
 
 		/**
 		* Waits for the network to start. This periodically polls the network state waiting for the network to come online.
-		* If a terminal state is observed (eg SL_ZIGBEE_JOINED_NETWORK or SL_ZIGBEE_LEAVING_NETWORK) whereby the network cannot
+		* If a terminal state is observed (e.g. SL_ZIGBEE_JOINED_NETWORK or SL_ZIGBEE_LEAVING_NETWORK) whereby the network cannot
 		* start, then this method will return.
 		* <p>
-		* If the network start starts to join, but then shows SL_ZIGBEE_NO_NETWORK, it will return. Otherwise it will wait for
+		* If the network start starts to join, but then shows SL_ZIGBEE_NO_NETWORK, it will return. Otherwise, it will wait for
 		* the timeout.
 		*
 		* @param ncp
@@ -501,8 +458,6 @@ namespace ZigBeeNet.Hardware.Ember
 					case ZigbeeNetworkStatus.SL_ZIGBEE_JOINED_NETWORK_NO_PARENT:
 					case ZigbeeNetworkStatus.SL_ZIGBEE_LEAVING_NETWORK:
 						return networkState;
-					default:
-						break;
 				}
 
 				Thread.Sleep(250);
@@ -514,7 +469,7 @@ namespace ZigBeeNet.Hardware.Ember
 		/**
 		* This method schedules sending a status request frame on the interval specified by pollRate. If the frameHandler
 		* does not receive a response after a certain amount of retries, the state will be set to OFFLINE.
-		* The poll will not be sent if other commands have been sent to the dongle within the pollRate period so as to
+		* The poll will not be sent if other commands have been sent to the dongle within the pollRate period to
 		* eliminate any unnecessary traffic with the dongle.
 		*/
 		private void ScheduleNetworkStatePolling()
@@ -540,7 +495,7 @@ namespace ZigBeeNet.Hardware.Ember
 		{
 			try
 			{
-				// Don't poll the state if the network is down
+				// Don't poll the state if the network is down,
 				// or we've sent a command to the dongle within the pollRate
 				if (!_networkStateUp || (DateTime.Now - _lastSendCommand).TotalMilliseconds < _pollRate)
 				{
@@ -559,7 +514,6 @@ namespace ZigBeeNet.Hardware.Ember
 		/**
 		* Set the polling rate at which the handler will poll the NCP to ensure it is still responding.
 		* If the NCP fails to respond within a fixed time the driver will be set to OFFLINE.
-		* <p>
 		* Setting the rate to 0 will disable polling
 		*
 		* @param pollRate the polling rate in milliseconds. 0 will disable polling.
@@ -600,7 +554,7 @@ namespace ZigBeeNet.Hardware.Ember
 		/**
 		* Configures the driver to pass or drop loopback messages received from the NCP. These are MUTICAST or BROADCAST
 		* messages that were sent by the framework, and retransmitted by the NCP.
-		* <p>
+		* <p/>
 		* This defaults to passing the loopback frames back to the framework
 		*
 		* @param passLoopbackMessages true if the driver should pass loopback messages back as a received frame
@@ -639,15 +593,17 @@ namespace ZigBeeNet.Hardware.Ember
 
 			ITransaction transaction;
 
-			ZigbeeApsFrame zigbeeApsFrame = new ZigbeeApsFrame();
-			zigbeeApsFrame.clusterId = apsFrame.Cluster;
-			zigbeeApsFrame.profileId = apsFrame.Profile;
-			zigbeeApsFrame.sourceEndpoint = apsFrame.SourceEndpoint;
-			zigbeeApsFrame.destinationEndpoint = apsFrame.DestinationEndpoint;
-			zigbeeApsFrame.sequence = apsFrame.ApsCounter;
-			zigbeeApsFrame.options = ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_RETRY |
-									ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ROUTE_DISCOVERY |
-									ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ADDRESS_DISCOVERY;
+			ZigbeeApsFrame zigbeeApsFrame = new ZigbeeApsFrame
+			{
+				clusterId = apsFrame.Cluster,
+				profileId = apsFrame.Profile,
+				sourceEndpoint = apsFrame.SourceEndpoint,
+				destinationEndpoint = apsFrame.DestinationEndpoint,
+				sequence = apsFrame.ApsCounter,
+				options = ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_RETRY |
+						ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ROUTE_DISCOVERY |
+						ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENABLE_ADDRESS_DISCOVERY
+			};
 
 			if (apsFrame.SecurityEnabled)
 			{
@@ -657,13 +613,15 @@ namespace ZigBeeNet.Hardware.Ember
 			if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Device &&
 				!ZigBeeBroadcastDestinationHelper.IsBroadcast(apsFrame.DestinationAddress))
 			{
-				SendUnicastRequest emberUnicast = new SendUnicastRequest();
-				emberUnicast.IndexOrDestination = apsFrame.DestinationAddress;
-				//emberUnicast.SetMessageTag(msgTag);
-				emberUnicast.SequenceNumber = apsFrame.ApsCounter;
-				emberUnicast.Type = ZigbeeOutgoingMessageType.SL_ZIGBEE_OUTGOING_DIRECT;
-				emberUnicast.ApsFrame = zigbeeApsFrame;
-				emberUnicast.MessageContents = apsFrame.Payload;
+				SendUnicastRequest emberUnicast = new SendUnicastRequest
+				{
+					IndexOrDestination = apsFrame.DestinationAddress,
+					//emberUnicast.SetMessageTag(msgTag);
+					SequenceNumber = apsFrame.ApsCounter,
+					Type = ZigbeeOutgoingMessageType.SL_ZIGBEE_OUTGOING_DIRECT,
+					ApsFrame = zigbeeApsFrame,
+					MessageContents = apsFrame.Payload
+				};
 
 				//Fragmentation not implemented yet
 				/*
@@ -686,13 +644,15 @@ namespace ZigBeeNet.Hardware.Ember
 			else if (apsFrame.AddressMode == ZigBeeNwkAddressMode.Device &&
 					ZigBeeBroadcastDestinationHelper.IsBroadcast(apsFrame.DestinationAddress))
 			{
-				SendBroadcastRequest emberBroadcast = new SendBroadcastRequest();
-				emberBroadcast.Destination = apsFrame.DestinationAddress;
-				//emberMulticast.MessageTag = msgTag;
-				emberBroadcast.SequenceNumber = apsFrame.ApsCounter;
-				emberBroadcast.ApsFrame = zigbeeApsFrame;
-				emberBroadcast.Radius = (byte)apsFrame.Radius;
-				emberBroadcast.MessageContents = apsFrame.Payload;
+				SendBroadcastRequest emberBroadcast = new SendBroadcastRequest
+				{
+					Destination = apsFrame.DestinationAddress,
+					//emberMulticast.MessageTag = msgTag;
+					SequenceNumber = apsFrame.ApsCounter,
+					ApsFrame = zigbeeApsFrame,
+					Radius = (byte)apsFrame.Radius,
+					MessageContents = apsFrame.Payload
+				};
 
 				transaction = new SingleResponseTransaction(emberBroadcast, typeof(SendBroadcastResponse));
 			}
@@ -700,12 +660,14 @@ namespace ZigBeeNet.Hardware.Ember
 			{
 				zigbeeApsFrame.groupId = apsFrame.GroupAddress;
 
-				SendMulticastRequest emberMulticast = new SendMulticastRequest();
-				emberMulticast.ApsFrame = zigbeeApsFrame;
-				emberMulticast.Hops = (byte)apsFrame.Radius;
-				//emberMulticast.NonmemberRadius = apsFrame.NonMemberRadius;
-				//emberMulticast.MessageTag = msgTag;
-				emberMulticast.MessageContents = apsFrame.Payload;
+				SendMulticastRequest emberMulticast = new SendMulticastRequest
+				{
+					ApsFrame = zigbeeApsFrame,
+					Hops = (byte)apsFrame.Radius,
+					//emberMulticast.NonmemberRadius = apsFrame.NonMemberRadius;
+					//emberMulticast.MessageTag = msgTag;
+					MessageContents = apsFrame.Payload
+				};
 
 				transaction = new SingleResponseTransaction(emberMulticast, typeof(SendMulticastResponse));
 			}
@@ -843,16 +805,16 @@ namespace ZigBeeNet.Hardware.Ember
 						return;
 				}
 
-				apsFrame.ApsCounter = (byte)emberApsFrame.sequence;
-				apsFrame.Cluster = (ushort)emberApsFrame.clusterId;
-				apsFrame.Profile = (ushort)emberApsFrame.profileId;
+				apsFrame.ApsCounter = emberApsFrame.sequence;
+				apsFrame.Cluster = emberApsFrame.clusterId;
+				apsFrame.Profile = emberApsFrame.profileId;
 				apsFrame.SecurityEnabled =
 					emberApsFrame.options.HasFlag(ZigbeeApsOption.SL_ZIGBEE_APS_OPTION_ENCRYPTION);
 
 				apsFrame.DestinationAddress = NwkAddress;
-				apsFrame.DestinationEndpoint = (byte)emberApsFrame.destinationEndpoint;
+				apsFrame.DestinationEndpoint = emberApsFrame.destinationEndpoint;
 				apsFrame.SourceAddress = incomingMessage.PacketInfo.sender_short_id;
-				apsFrame.SourceEndpoint = (byte)emberApsFrame.sourceEndpoint;
+				apsFrame.SourceEndpoint = emberApsFrame.sourceEndpoint;
 
 				apsFrame.Payload = incomingMessage.Message;
 				_zigbeeTransportReceive.ReceiveCommand(apsFrame);
@@ -893,8 +855,6 @@ namespace ZigBeeNet.Hardware.Ember
 					case Status.SL_STATUS_NETWORK_UP:
 						HandleLinkStateChange(true);
 						break;
-					default:
-						break;
 				}
 
 				return;
@@ -927,7 +887,7 @@ namespace ZigBeeNet.Hardware.Ember
 						return;
 				}
 
-				_zigbeeTransportReceive.NodeStatusUpdate(status, (ushort)joinHandler.NewNodeId,
+				_zigbeeTransportReceive.NodeStatusUpdate(status, joinHandler.NewNodeId,
 					new IeeeAddress(joinHandler.NewNodeEui64));
 				return;
 			}
@@ -937,7 +897,7 @@ namespace ZigBeeNet.Hardware.Ember
 				ChildJoinHandlerResponse joinHandler = (ChildJoinHandlerResponse)response;
 				_zigbeeTransportReceive.NodeStatusUpdate(
 					joinHandler.Joining ? ZigBeeNodeStatus.UNSECURED_JOIN : ZigBeeNodeStatus.DEVICE_LEFT,
-					(ushort)joinHandler.ChildId, new IeeeAddress(joinHandler.ChildEui64));
+					joinHandler.ChildId, new IeeeAddress(joinHandler.ChildEui64));
 				return;
 			}
 
@@ -959,8 +919,8 @@ namespace ZigBeeNet.Hardware.Ember
 				"Ember: Link State change to {LinkState}, initialised={Initialised}, networkStateUp={NetworkStateUp}",
 				linkState, _initialised, _networkStateUp);
 
-			// Only act on changes to OFFLINE once we have completed initialisation
-			// changes to ONLINE have to work during init because they mark the end of the initialisation
+			// Only act on changes to OFFLINE once we have completed initialization
+			// changes to ONLINE have to work during init because they mark the end of the initialization
 			if (!_initialised || linkState == _networkStateUp)
 			{
 				_logger.LogDebug("Ember: Link State change to {LinkState} ignored.", linkState);
@@ -990,10 +950,7 @@ namespace ZigBeeNet.Hardware.Ember
 			});
 		}
 
-		public ZigBeeChannel ZigBeeChannel
-		{
-			get { return (ZigBeeChannel)(1 << _networkParameters.radioChannel); }
-		}
+		public ZigBeeChannel ZigBeeChannel => (ZigBeeChannel)(1 << _networkParameters.radioChannel);
 
 		public ZigBeeStatus SetZigBeeChannel(ZigBeeChannel channel)
 		{
@@ -1007,10 +964,7 @@ namespace ZigBeeNet.Hardware.Ember
 			return ZigBeeStatus.SUCCESS;
 		}
 
-		public ushort PanID
-		{
-			get { return (ushort)_networkParameters.panId; }
-		}
+		public ushort PanID => (ushort)_networkParameters.panId;
 
 		public ZigBeeStatus SetZigBeePanId(ushort panId)
 		{
@@ -1271,7 +1225,7 @@ namespace ZigBeeNet.Hardware.Ember
 			{
 				// The device supports a different version that we currently have set
 				_logger.LogError(
-					"EZSP Dongle: NCP requires unsupported version of EZSP (required = V{RequiredVersion}, supported = V{minversion} to V{maxversion})",
+					"Ember Dongle: NCP requires unsupported version of Ember (required = V{requiredVersion}, supported = V{minVersion} to V{maxVersion})",
 					ncp.CurrentNCPVersion.ProtocolVersion, Constants.EMBER_MIN_VERSION, Constants.EMBER_MAX_VERSION);
 				_logger.LogDebug(ncp.CurrentNCPVersion.ToString());
 				
@@ -1375,31 +1329,6 @@ namespace ZigBeeNet.Hardware.Ember
 				return _frameHandler.GetCounters();
 
 			return new Dictionary<string, long>();
-		}
-
-		/**
-		* Converts from an {@link EmberKeyStruct} to {@link ZigBeeKey}
-		*
-		* @param emberKey the {@link EmberKeyStruct} read from the NCP
-		* @return the {@link ZigBeeKey} used by the framework. May be null if the key is invalid.
-		*/
-		private ZigBeeKey EmberKeyToZigBeeKey(ZigbeeKeyStruct zigbeeKey)
-		{
-			ZigBeeKey key = new ZigBeeKey(zigbeeKey.key.contents);
-
-			if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_PARTNER_EUI64))
-				key.address = new IeeeAddress(zigbeeKey.partnerEUI64);
-
-			if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_SEQUENCE_NUMBER))
-				key.SequenceNumber = (byte)zigbeeKey.sequenceNumber;
-
-			if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_OUTGOING_FRAME_COUNTER))
-				key.OutgoingFrameCounter = (byte)zigbeeKey.outgoingFrameCounter;
-
-			if (zigbeeKey.bitmask.HasFlag(ZigbeeKeyStructBitmask.SL_ZIGBEE_KEY_HAS_INCOMING_FRAME_COUNTER))
-				key.IncomingFrameCounter = (byte)zigbeeKey.incomingFrameCounter;
-
-			return key;
 		}
 
 		/**

@@ -28,7 +28,7 @@ namespace SiliconLabs.ASH.V3
         
         public AshVersion Version => AshVersion.V3;
         
-        public event Action<byte[]>? OnDataReceived;
+        public event Action<IAshFrame>? OnDataReceived;
         public event Action<AshState>? OnStateChanged;
         public event Action<string>? OnError;
         public event Action<IAshFrame>? OnFrameToSend;
@@ -178,7 +178,7 @@ namespace SiliconLabs.ASH.V3
                             
                             if (frame.HasPayload)
                             {
-                                OnDataReceived?.Invoke(frame.Data);
+                                OnDataReceived?.Invoke(frame);
                                 SendEmptyAck();
                             }
                         }
@@ -195,7 +195,7 @@ namespace SiliconLabs.ASH.V3
                             {
                                 if (frame.OutgoingFrameCounter == _rxAfc)
                                 {
-                                    OnDataReceived?.Invoke(frame.Data);
+                                    OnDataReceived?.Invoke(frame);
                                     _rxAfc = IncrementCounter(_rxAfc);
                                     SendEmptyAck();
                                 }

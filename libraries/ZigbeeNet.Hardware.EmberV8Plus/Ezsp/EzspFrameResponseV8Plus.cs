@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Linq;
 using System.Threading;
 using ZigbeeNet.Hardware.EmberV8Plus.Ezsp.Enumerations;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
 {
@@ -63,17 +64,19 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param frameBytes the input array to deserialize
          * @return the index after parsing the header
          */
-        protected int ParseHeader(ReadOnlySpan<byte> frameBytes)
+        internal static EmberResponseHeader ParseHeader(ReadOnlySpan<byte> frameBytes)
         {
-            
-            SequenceNumber = frameBytes[0];
-            _frameControl = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
-            _frameId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2));
+            return new EmberResponseHeader(
+				frameBytes[0], 
+				BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(1, 2)), 
+				BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(3, 2)));
 
+			// Fix -> move to frame parser or somthing
+			/*
             _isResponse = (_frameControl & EZSP_FC_RESPONSE) != 0;
             _callbackPending = (_frameControl & EZSP_FC_CB_PENDING) != 0;
 
-            return 5;
+            */
         }
 
 
