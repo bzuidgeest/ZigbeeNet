@@ -64,7 +64,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
          * @param frameBytes the input array to deserialize
          * @return the index after parsing the header
          */
-        internal static EmberResponseHeader ParseHeader(ReadOnlySpan<byte> frameBytes)
+        public static EmberResponseHeader ParseHeader(ReadOnlySpan<byte> frameBytes)
         {
             return new EmberResponseHeader(
 				frameBytes[0], 

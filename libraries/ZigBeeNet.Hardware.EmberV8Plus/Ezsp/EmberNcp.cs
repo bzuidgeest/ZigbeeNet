@@ -34,7 +34,7 @@ public partial class EmberNcp
 		_incomingFrameTask = Task.Run(() => HandleIncomingFrame(_shutDownCancellationToken.Token));
 	}
 
-	public async Task<Version> Version2(byte desiredProtocolVersion, CancellationToken cancellationToken = default)
+	/*public async Task<Version> Version2(byte desiredProtocolVersion, CancellationToken cancellationToken = default)
 	{
 		VersionRequest request = new VersionRequest
 		{
@@ -46,7 +46,7 @@ public partial class EmberNcp
 		//VersionResponse? response = VersionResponse.Parse(result[0]) as VersionResponse;
 		_logger.LogDebug(response?.ToString());
 		return new Version(response.ProtocolVersion, response.StackType, response.StackVersion);
-	}
+	}*/
 
 	private async Task<EzspFrameResponseV8Plus> SendFrameAsync(
 		int sequence,

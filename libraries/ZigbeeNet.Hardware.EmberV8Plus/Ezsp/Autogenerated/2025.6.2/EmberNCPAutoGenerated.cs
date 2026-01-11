@@ -1,8 +1,8 @@
 #if VERSION_2025_6_2
 using System;
 using System.Collections.Generic;
-using ZigBeeNet.Hardware.EmberV8Plus.Transaction;
-using ZigBeeNet.Hardware.EmberV8Plus.Internal;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ZigBeeNet.Util;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
@@ -362,22 +362,6 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
     public partial class EmberNcp
     {
         static private readonly ILogger _logger = LogManager.GetLog<EmberNcp>();
-        private IEzspProtocolHandler _protocolHandler;
-        private ZigbeeEzspStatus _lastStatus;
-        public EmberNcp(IEzspProtocolHandler protocolHandler)
-        {
-            this._protocolHandler = protocolHandler;
-        }
-
-        /// <summary>
-        /// Returns the status from the last request.
-        /// </summary>
-        /// <returns>The last status value</returns>
-        public ZigbeeEzspStatus GetLastStatus()
-        {
-            return _lastStatus;
-        }
-
         /// <summary>
         /// The command allows the Host to specify the desired EZSP version and must be sent before any other command. The response provides information about the firmware running on the NCP.
         /// </summary>
@@ -387,13 +371,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - StackType: The type of stack running on the NCP (2).
         /// - StackVersion: The version number of the stack.
         /// </returns>
-        public Version Version(byte desiredProtocolVersion)
+        public async Task<Version> Version(byte desiredProtocolVersion, CancellationToken cancellationToken = default)
         {
             VersionRequest request = new VersionRequest();
             request.DesiredProtocolVersion = desiredProtocolVersion;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(VersionResponse)));
-            VersionResponse response = (VersionResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            VersionResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as VersionResponse;
+            _logger.LogDebug(response?.ToString());
             return new Version(response.ProtocolVersion, response.StackType, response.StackVersion);
         }
 
@@ -405,13 +388,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK if the value was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize <i>configId</i>.
         /// - Value: The configuration value.
         /// </returns>
-        public (Status Status, ushort Value) GetConfigurationValue(ZigbeeEzspConfigId configId)
+        public async Task<(Status Status, ushort Value)> GetConfigurationValue(ZigbeeEzspConfigId configId, CancellationToken cancellationToken = default)
         {
             GetConfigurationValueRequest request = new GetConfigurationValueRequest();
             request.ConfigId = configId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetConfigurationValueResponse)));
-            GetConfigurationValueResponse response = (GetConfigurationValueResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetConfigurationValueResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetConfigurationValueResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -421,14 +403,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ConfigId">Identifies which configuration value to change.</param>
         /// <param name="Value">The new configuration value.</param>
         /// <returns>SL_STATUS_OK if the configuration value was changed, SL_STATUS_ZIGBEE_EZSP_ERROR if there was an error. Retrievable EZSP errors can be SL_ZIGBEE_EZSP_ERROR_OUT_OF_MEMORY if the new value exceeded the available memory, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the new value was out of bounds, SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;configId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if configuration values can no longer be modified.</returns>
-        public Status SetConfigurationValue(ZigbeeEzspConfigId configId, ushort value)
+        public async Task<Status> SetConfigurationValue(ZigbeeEzspConfigId configId, ushort value, CancellationToken cancellationToken = default)
         {
             SetConfigurationValueRequest request = new SetConfigurationValueRequest();
             request.ConfigId = configId;
             request.Value = value;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetConfigurationValueResponse)));
-            SetConfigurationValueResponse response = (SetConfigurationValueResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetConfigurationValueResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetConfigurationValueResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -446,7 +427,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReadLength: Length of attribute data.
         /// - DataPtr: Attribute data.
         /// </returns>
-        public ReadAttribute ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode)
+        public async Task<ReadAttribute> ReadAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode, CancellationToken cancellationToken = default)
         {
             ReadAttributeRequest request = new ReadAttributeRequest();
             request.Endpoint = endpoint;
@@ -454,9 +435,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.AttributeId = attributeId;
             request.Mask = mask;
             request.ManufacturerCode = manufacturerCode;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadAttributeResponse)));
-            ReadAttributeResponse response = (ReadAttributeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ReadAttributeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ReadAttributeResponse;
+            _logger.LogDebug(response?.ToString());
             return new ReadAttribute(response.AfStatus, response.DataType, response.ReadLength, response.DataPtr);
         }
 
@@ -474,7 +454,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DataLength">Attribute data length.</param>
         /// <param name="Data">Attribute data.</param>
         /// <returns>An sl_zigbee_af_status_t value indicating success or the reason for failure.</returns>
-        public ZigbeeAfStatus WriteAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode, bool overrideReadOnlyAndDataType, bool justTest, byte dataType, byte dataLength, byte[] data)
+        public async Task<ZigbeeAfStatus> WriteAttribute(byte endpoint, ushort cluster, ushort attributeId, byte mask, ushort manufacturerCode, bool overrideReadOnlyAndDataType, bool justTest, byte dataType, byte dataLength, byte[] data, CancellationToken cancellationToken = default)
         {
             WriteAttributeRequest request = new WriteAttributeRequest();
             request.Endpoint = endpoint;
@@ -487,9 +467,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.DataType = dataType;
             request.DataLength = dataLength;
             request.Data = data;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(WriteAttributeResponse)));
-            WriteAttributeResponse response = (WriteAttributeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            WriteAttributeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as WriteAttributeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.AfStatus;
         }
 
@@ -505,7 +484,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="InputClusterList">Input cluster IDs the endpoint will accept.</param>
         /// <param name="OutputClusterList">Output cluster IDs the endpoint may send.</param>
         /// <returns>SL_STATUS_OK if the endpoint was added, SL_STATUS_ZIGBEE_EZSP_ERROR if there was an error. Errors could be SL_ZIGBEE_EZSP_ERROR_OUT_OF_MEMORY if there is not enough memory available to add the endpoint, SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the endpoint already exists, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if endpoints can no longer be added.</returns>
-        public Status AddEndpoint(byte endpoint, ushort profileId, ushort deviceId, byte deviceVersion, byte inputClusterCount, byte outputClusterCount, ushort[] inputClusterList, ushort[] outputClusterList)
+        public async Task<Status> AddEndpoint(byte endpoint, ushort profileId, ushort deviceId, byte deviceVersion, byte inputClusterCount, byte outputClusterCount, ushort[] inputClusterList, ushort[] outputClusterList, CancellationToken cancellationToken = default)
         {
             AddEndpointRequest request = new AddEndpointRequest();
             request.Endpoint = endpoint;
@@ -516,9 +495,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.OutputClusterCount = outputClusterCount;
             request.InputClusterList = inputClusterList;
             request.OutputClusterList = outputClusterList;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddEndpointResponse)));
-            AddEndpointResponse response = (AddEndpointResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            AddEndpointResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as AddEndpointResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -528,14 +506,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PolicyId">Identifies which policy to modify.</param>
         /// <param name="DecisionId">The new decision for the specified policy.</param>
         /// <returns>SL_STATUS_OK if the policy was changed, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize &lt;i&gt;policyId&lt;/i&gt;.</returns>
-        public Status SetPolicy(ZigbeeEzspPolicyId policyId, ZigbeeEzspDecisionId decisionId)
+        public async Task<Status> SetPolicy(ZigbeeEzspPolicyId policyId, ZigbeeEzspDecisionId decisionId, CancellationToken cancellationToken = default)
         {
             SetPolicyRequest request = new SetPolicyRequest();
             request.PolicyId = policyId;
             request.DecisionId = decisionId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPolicyResponse)));
-            SetPolicyResponse response = (SetPolicyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetPolicyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetPolicyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -547,13 +524,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK if the policy was read successfully, SL_STATUS_ZIGBEE_EZSP_ERROR (for SL_ZIGBEE_EZSP_ERROR_INVALID_ID) if the NCP does not recognize <i>policyId</i>.
         /// - DecisionId: The current decision for the specified policy.
         /// </returns>
-        public (Status Status, ZigbeeEzspDecisionId DecisionId) GetPolicy(ZigbeeEzspPolicyId policyId)
+        public async Task<(Status Status, ZigbeeEzspDecisionId DecisionId)> GetPolicy(ZigbeeEzspPolicyId policyId, CancellationToken cancellationToken = default)
         {
             GetPolicyRequest request = new GetPolicyRequest();
             request.PolicyId = policyId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPolicyResponse)));
-            GetPolicyResponse response = (GetPolicyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetPolicyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetPolicyResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.DecisionId);
         }
 
@@ -562,13 +538,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NewPan">The new Pan Id</param>
         /// <returns>true if the request was successfully handed to the stack, false otherwise</returns>
-        public bool SendPanIdUpdate(ushort newPan)
+        public async Task<bool> SendPanIdUpdate(ushort newPan, CancellationToken cancellationToken = default)
         {
             SendPanIdUpdateRequest request = new SendPanIdUpdateRequest();
             request.NewPan = newPan;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendPanIdUpdateResponse)));
-            SendPanIdUpdateResponse response = (SendPanIdUpdateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendPanIdUpdateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendPanIdUpdateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -581,13 +556,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, GetValue Result) GetValue(ZigbeeEzspValueId valueId)
+        public async Task<(Status Status, GetValue Result)> GetValue(ZigbeeEzspValueId valueId, CancellationToken cancellationToken = default)
         {
             GetValueRequest request = new GetValueRequest();
             request.ValueId = valueId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetValueResponse)));
-            GetValueResponse response = (GetValueResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetValueResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetValueResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetValue(response.ValueLength, response.Value));
         }
 
@@ -601,14 +575,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ValueLength: Both a command and response parameter. On command, the maximum size in bytes of local storage allocated to receive the returned <i>value</i>. On response, the actual length in bytes of the returned <i>value</i>.
         /// - Value: The value.
         /// </returns>
-        public (Status Status, GetExtendedValue Result) GetExtendedValue(ZigbeeEzspExtendedValueId valueId, uint characteristics)
+        public async Task<(Status Status, GetExtendedValue Result)> GetExtendedValue(ZigbeeEzspExtendedValueId valueId, uint characteristics, CancellationToken cancellationToken = default)
         {
             GetExtendedValueRequest request = new GetExtendedValueRequest();
             request.ValueId = valueId;
             request.Characteristics = characteristics;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedValueResponse)));
-            GetExtendedValueResponse response = (GetExtendedValueResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetExtendedValueResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetExtendedValueResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetExtendedValue(response.ValueLength, response.Value));
         }
 
@@ -619,15 +592,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ValueLength">The length of the &lt;i&gt;value&lt;/i&gt; parameter in bytes.</param>
         /// <param name="Value">The new value.</param>
         /// <returns>SL_STATUS_OK if the value was changed, SL_STATUS_ZIGBEE_EZSP_ERROR otherwise.  Errors could be SL_ZIGBEE_EZSP_ERROR_INVALID_VALUE if the new value was out of bounds, SL_ZIGBEE_EZSP_ERROR_INVALID_ID if the NCP does not recognize &lt;i&gt;valueId&lt;/i&gt;, SL_ZIGBEE_EZSP_ERROR_INVALID_CALL if the value could not be modified.</returns>
-        public Status SetValue(ZigbeeEzspValueId valueId, byte valueLength, byte[] value)
+        public async Task<Status> SetValue(ZigbeeEzspValueId valueId, byte valueLength, byte[] value, CancellationToken cancellationToken = default)
         {
             SetValueRequest request = new SetValueRequest();
             request.ValueId = valueId;
             request.ValueLength = valueLength;
             request.Value = value;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetValueResponse)));
-            SetValueResponse response = (SetValueResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetValueResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetValueResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -637,14 +609,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Config">Passive ack config enum.</param>
         /// <param name="MinAcksNeeded">The minimum number of acknowledgments (re-broadcasts) to wait for until deeming the broadcast transmission complete.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetPassiveAckConfig(byte config, byte minAcksNeeded)
+        public async Task<Status> SetPassiveAckConfig(byte config, byte minAcksNeeded, CancellationToken cancellationToken = default)
         {
             SetPassiveAckConfigRequest request = new SetPassiveAckConfigRequest();
             request.Config = config;
             request.MinAcksNeeded = minAcksNeeded;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPassiveAckConfigResponse)));
-            SetPassiveAckConfigResponse response = (SetPassiveAckConfigResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetPassiveAckConfigResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetPassiveAckConfigResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -653,13 +624,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="PanId">PAN ID to be accepted in a network update.</param>
         /// <returns>The SetPendingNetworkUpdatePanIdResponse object from the NCP</returns>
-        public SetPendingNetworkUpdatePanIdResponse SetPendingNetworkUpdatePanId(ushort panId)
+        public async Task<SetPendingNetworkUpdatePanIdResponse> SetPendingNetworkUpdatePanId(ushort panId, CancellationToken cancellationToken = default)
         {
             SetPendingNetworkUpdatePanIdRequest request = new SetPendingNetworkUpdatePanIdRequest();
             request.PanId = panId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPendingNetworkUpdatePanIdResponse)));
-            SetPendingNetworkUpdatePanIdResponse response = (SetPendingNetworkUpdatePanIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetPendingNetworkUpdatePanIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetPendingNetworkUpdatePanIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -668,13 +638,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">Index to retrieve the endpoint number for.</param>
         /// <returns>Endpoint number at the index.</returns>
-        public byte GetEndpoint(byte index)
+        public async Task<byte> GetEndpoint(byte index, CancellationToken cancellationToken = default)
         {
             GetEndpointRequest request = new GetEndpointRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointResponse)));
-            GetEndpointResponse response = (GetEndpointResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetEndpointResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetEndpointResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Endpoint;
         }
 
@@ -682,12 +651,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the number of configured endpoints.
         /// </summary>
         /// <returns>Number of configured endpoints.</returns>
-        public byte GetEndpointCount()
+        public async Task<byte> GetEndpointCount(CancellationToken cancellationToken = default)
         {
             GetEndpointCountRequest request = new GetEndpointCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointCountResponse)));
-            GetEndpointCountResponse response = (GetEndpointCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetEndpointCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetEndpointCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Count;
         }
 
@@ -696,13 +664,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Endpoint">Endpoint number to get the description of.</param>
         /// <returns>Description of this endpoint.</returns>
-        public ZigbeeEndpointDescription GetEndpointDescription(byte endpoint)
+        public async Task<ZigbeeEndpointDescription> GetEndpointDescription(byte endpoint, CancellationToken cancellationToken = default)
         {
             GetEndpointDescriptionRequest request = new GetEndpointDescriptionRequest();
             request.Endpoint = endpoint;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointDescriptionResponse)));
-            GetEndpointDescriptionResponse response = (GetEndpointDescriptionResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetEndpointDescriptionResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetEndpointDescriptionResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Result;
         }
 
@@ -713,15 +680,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ListId">Which list to get the cluster ID from.  (0 for input, 1 for output).</param>
         /// <param name="ListIndex">Index from requested list to look at the cluster ID of.</param>
         /// <returns>ID of the requested cluster.</returns>
-        public ushort GetEndpointCluster(byte endpoint, byte listId, byte listIndex)
+        public async Task<ushort> GetEndpointCluster(byte endpoint, byte listId, byte listIndex, CancellationToken cancellationToken = default)
         {
             GetEndpointClusterRequest request = new GetEndpointClusterRequest();
             request.Endpoint = endpoint;
             request.ListId = listId;
             request.ListIndex = listIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEndpointClusterResponse)));
-            GetEndpointClusterResponse response = (GetEndpointClusterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetEndpointClusterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetEndpointClusterResponse;
+            _logger.LogDebug(response?.ToString());
             return response.EndpointCluster;
         }
 
@@ -729,12 +695,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A command which does nothing. The Host can use this to set the sleep mode or to check the status of the NCP.
         /// </summary>
         /// <returns>The NopResponse object from the NCP</returns>
-        public NopResponse Nop()
+        public async Task<NopResponse> Nop(CancellationToken cancellationToken = default)
         {
             NopRequest request = new NopRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NopResponse)));
-            NopResponse response = (NopResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NopResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NopResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -747,14 +712,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - EchoLength: The length of the <i>echo</i> parameter in bytes.
         /// - Echo: The echo of the data.
         /// </returns>
-        public Echo Echo(byte dataLength, byte[] data)
+        public async Task<Echo> Echo(byte dataLength, byte[] data, CancellationToken cancellationToken = default)
         {
             EchoRequest request = new EchoRequest();
             request.DataLength = dataLength;
             request.Data = data;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EchoResponse)));
-            EchoResponse response = (EchoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            EchoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as EchoResponse;
+            _logger.LogDebug(response?.ToString());
             return new Echo(response.EchoLength, response.Echo);
         }
 
@@ -762,12 +726,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicates that the NCP received an invalid command.
         /// </summary>
         /// <returns>The reason why the command was invalid.</returns>
-        public ZigbeeEzspStatus InvalidCommand()
+        public async Task<ZigbeeEzspStatus> InvalidCommand(CancellationToken cancellationToken = default)
         {
             InvalidCommandRequest request = new InvalidCommandRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(InvalidCommandResponse)));
-            InvalidCommandResponse response = (InvalidCommandResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            InvalidCommandResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as InvalidCommandResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Reason;
         }
 
@@ -775,12 +738,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Allows the NCP to respond with a pending callback.
         /// </summary>
         /// <returns>The CallbackResponse object from the NCP</returns>
-        public CallbackResponse Callback()
+        public async Task<CallbackResponse> Callback(CancellationToken cancellationToken = default)
         {
             CallbackRequest request = new CallbackRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CallbackResponse)));
-            CallbackResponse response = (CallbackResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CallbackResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CallbackResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -788,12 +750,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicates that there are currently no pending callbacks.
         /// </summary>
         /// <returns>The NoCallbacksResponse object from the NCP</returns>
-        public NoCallbacksResponse NoCallbacks()
+        public async Task<NoCallbacksResponse> NoCallbacks(CancellationToken cancellationToken = default)
         {
             NoCallbacksRequest request = new NoCallbacksRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NoCallbacksResponse)));
-            NoCallbacksResponse response = (NoCallbacksResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NoCallbacksResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NoCallbacksResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -803,14 +764,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TokenId">Which token to set</param>
         /// <param name="TokenData">The data to write to the token.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetToken(byte tokenId, byte[] tokenData)
+        public async Task<Status> SetToken(byte tokenId, byte[] tokenData, CancellationToken cancellationToken = default)
         {
             SetTokenRequest request = new SetTokenRequest();
             request.TokenId = tokenId;
             request.TokenData = tokenData;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTokenResponse)));
-            SetTokenResponse response = (SetTokenResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetTokenResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetTokenResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -822,13 +782,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenData: The contents of the token.
         /// </returns>
-        public (Status Status, byte[] TokenData) GetToken(byte tokenId)
+        public async Task<(Status Status, byte[] TokenData)> GetToken(byte tokenId, CancellationToken cancellationToken = default)
         {
             GetTokenRequest request = new GetTokenRequest();
             request.TokenId = tokenId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenResponse)));
-            GetTokenResponse response = (GetTokenResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTokenResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTokenResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.TokenData);
         }
 
@@ -840,13 +799,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - TokenDataLength: The length of the <i>tokenData</i> parameter in bytes.
         /// - TokenData: The manufacturing token data.
         /// </returns>
-        public GetMfgToken GetMfgToken(ZigbeeEzspMfgTokenId tokenId)
+        public async Task<GetMfgToken> GetMfgToken(ZigbeeEzspMfgTokenId tokenId, CancellationToken cancellationToken = default)
         {
             GetMfgTokenRequest request = new GetMfgTokenRequest();
             request.TokenId = tokenId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMfgTokenResponse)));
-            GetMfgTokenResponse response = (GetMfgTokenResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetMfgTokenResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetMfgTokenResponse;
+            _logger.LogDebug(response?.ToString());
             return new GetMfgToken(response.TokenDataLength, response.TokenData);
         }
 
@@ -857,15 +815,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TokenDataLength">The length of the &lt;i&gt;tokenData&lt;/i&gt; parameter in bytes.</param>
         /// <param name="TokenData">The manufacturing token data.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetMfgToken(ZigbeeEzspMfgTokenId tokenId, byte tokenDataLength, byte[] tokenData)
+        public async Task<Status> SetMfgToken(ZigbeeEzspMfgTokenId tokenId, byte tokenDataLength, byte[] tokenData, CancellationToken cancellationToken = default)
         {
             SetMfgTokenRequest request = new SetMfgTokenRequest();
             request.TokenId = tokenId;
             request.TokenDataLength = tokenDataLength;
             request.TokenData = tokenData;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMfgTokenResponse)));
-            SetMfgTokenResponse response = (SetMfgTokenResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetMfgTokenResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetMfgTokenResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -873,12 +830,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback invoked to inform the application that a stack token has changed.
         /// </summary>
         /// <returns>The address of the stack token that has changed.</returns>
-        public ushort StackTokenChangedHandler()
+        public async Task<ushort> StackTokenChangedHandler(CancellationToken cancellationToken = default)
         {
             StackTokenChangedHandlerRequest request = new StackTokenChangedHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackTokenChangedHandlerResponse)));
-            StackTokenChangedHandlerResponse response = (StackTokenChangedHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StackTokenChangedHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StackTokenChangedHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.TokenAddress;
         }
 
@@ -889,12 +845,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: Always returns SL_STATUS_OK.
         /// - Value: A pseudorandom number.
         /// </returns>
-        public (Status Status, ushort Value) GetRandomNumber()
+        public async Task<(Status Status, ushort Value)> GetRandomNumber(CancellationToken cancellationToken = default)
         {
             GetRandomNumberRequest request = new GetRandomNumberRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRandomNumberResponse)));
-            GetRandomNumberResponse response = (GetRandomNumberResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetRandomNumberResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetRandomNumberResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -906,16 +861,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Units">The units for &lt;i&gt;time&lt;/i&gt;.</param>
         /// <param name="Repeat">If true, a &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated repeatedly. If false, only a single &lt;i&gt;timerHandler&lt;/i&gt; callback will be generated.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetTimer(byte timerId, ushort time, ZigbeeEventUnits units, bool repeat)
+        public async Task<Status> SetTimer(byte timerId, ushort time, ZigbeeEventUnits units, bool repeat, CancellationToken cancellationToken = default)
         {
             SetTimerRequest request = new SetTimerRequest();
             request.TimerId = timerId;
             request.Time = time;
             request.Units = units;
             request.Repeat = repeat;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTimerResponse)));
-            SetTimerResponse response = (SetTimerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetTimerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetTimerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -928,13 +882,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Units: The units for <i>time</i>.
         /// - Repeat: True if a <i>timerHandler</i> callback will be generated repeatedly. False if only a single <i>timerHandler</i> callback will be generated.
         /// </returns>
-        public GetTimer GetTimer(byte timerId)
+        public async Task<GetTimer> GetTimer(byte timerId, CancellationToken cancellationToken = default)
         {
             GetTimerRequest request = new GetTimerRequest();
             request.TimerId = timerId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTimerResponse)));
-            GetTimerResponse response = (GetTimerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTimerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTimerResponse;
+            _logger.LogDebug(response?.ToString());
             return new GetTimer(response.Time, response.Units, response.Repeat);
         }
 
@@ -942,12 +895,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback from the timer.
         /// </summary>
         /// <returns>Which timer generated the callback (0 or 1).</returns>
-        public byte TimerHandler()
+        public async Task<byte> TimerHandler(CancellationToken cancellationToken = default)
         {
             TimerHandlerRequest request = new TimerHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TimerHandlerResponse)));
-            TimerHandlerResponse response = (TimerHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            TimerHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as TimerHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.TimerId;
         }
 
@@ -958,15 +910,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The binary message.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DebugWrite(bool binaryMessage, byte messageLength, byte[] messageContents)
+        public async Task<Status> DebugWrite(bool binaryMessage, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             DebugWriteRequest request = new DebugWriteRequest();
             request.BinaryMessage = binaryMessage;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DebugWriteResponse)));
-            DebugWriteResponse response = (DebugWriteResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DebugWriteResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DebugWriteResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -974,12 +925,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Retrieves and clears Ember counters. See the sl_zigbee_counter_type_t enumeration for the counter types.
         /// </summary>
         /// <returns>A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.</returns>
-        public ushort[] ReadAndClearCounters()
+        public async Task<ushort[]> ReadAndClearCounters(CancellationToken cancellationToken = default)
         {
             ReadAndClearCountersRequest request = new ReadAndClearCountersRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadAndClearCountersResponse)));
-            ReadAndClearCountersResponse response = (ReadAndClearCountersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ReadAndClearCountersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ReadAndClearCountersResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Values;
         }
 
@@ -987,12 +937,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Retrieves Ember counters. See the sl_zigbee_counter_type_t enumeration for the counter types.
         /// </summary>
         /// <returns>A list of all counter values ordered according to the sl_zigbee_counter_type_t enumeration.</returns>
-        public ushort[] ReadCounters()
+        public async Task<ushort[]> ReadCounters(CancellationToken cancellationToken = default)
         {
             ReadCountersRequest request = new ReadCountersRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReadCountersResponse)));
-            ReadCountersResponse response = (ReadCountersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ReadCountersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ReadCountersResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Values;
         }
 
@@ -1000,12 +949,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call is fired when a counter exceeds its threshold
         /// </summary>
         /// <returns>Type of Counter</returns>
-        public ZigbeeCounterType CounterRolloverHandler()
+        public async Task<ZigbeeCounterType> CounterRolloverHandler(CancellationToken cancellationToken = default)
         {
             CounterRolloverHandlerRequest request = new CounterRolloverHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRolloverHandlerResponse)));
-            CounterRolloverHandlerResponse response = (CounterRolloverHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CounterRolloverHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CounterRolloverHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Type;
         }
 
@@ -1016,12 +964,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NewRxChannel: 
         /// - OldRxChannel: 
         /// </returns>
-        public MuxInvalidRxHandler MuxInvalidRxHandler()
+        public async Task<MuxInvalidRxHandler> MuxInvalidRxHandler(CancellationToken cancellationToken = default)
         {
             MuxInvalidRxHandlerRequest request = new MuxInvalidRxHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MuxInvalidRxHandlerResponse)));
-            MuxInvalidRxHandlerResponse response = (MuxInvalidRxHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MuxInvalidRxHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MuxInvalidRxHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new MuxInvalidRxHandler(response.NewRxChannel, response.OldRxChannel);
         }
 
@@ -1030,13 +977,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Delay">Data will not be read from the host for this many milliseconds.</param>
         /// <returns>The DelayTestResponse object from the NCP</returns>
-        public DelayTestResponse DelayTest(ushort delay)
+        public async Task<DelayTestResponse> DelayTest(ushort delay, CancellationToken cancellationToken = default)
         {
             DelayTestRequest request = new DelayTestRequest();
             request.Delay = delay;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DelayTestResponse)));
-            DelayTestResponse response = (DelayTestResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DelayTestResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DelayTestResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1045,13 +991,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="LibraryId">The ID of the library being queried.</param>
         /// <returns>The status of the library being queried.</returns>
-        public byte GetLibraryStatus(byte libraryId)
+        public async Task<byte> GetLibraryStatus(byte libraryId, CancellationToken cancellationToken = default)
         {
             GetLibraryStatusRequest request = new GetLibraryStatusRequest();
             request.LibraryId = libraryId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetLibraryStatusResponse)));
-            GetLibraryStatusResponse response = (GetLibraryStatusResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetLibraryStatusResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetLibraryStatusResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1063,12 +1008,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ManufacturerId: The manufactured ID the user has defined in the XNCP application.
         /// - VersionNumber: The version number of the XNCP application.
         /// </returns>
-        public (Status Status, GetXncpInfo Result) GetXncpInfo()
+        public async Task<(Status Status, GetXncpInfo Result)> GetXncpInfo(CancellationToken cancellationToken = default)
         {
             GetXncpInfoRequest request = new GetXncpInfoRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetXncpInfoResponse)));
-            GetXncpInfoResponse response = (GetXncpInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetXncpInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetXncpInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetXncpInfo(response.ManufacturerId, response.VersionNumber));
         }
 
@@ -1082,14 +1026,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ReplyLength: The length of the response.
         /// - Reply: The response.
         /// </returns>
-        public (Status Status, CustomFrame Result) CustomFrame(byte payloadLength, byte[] payload)
+        public async Task<(Status Status, CustomFrame Result)> CustomFrame(byte payloadLength, byte[] payload, CancellationToken cancellationToken = default)
         {
             CustomFrameRequest request = new CustomFrameRequest();
             request.PayloadLength = payloadLength;
             request.Payload = payload;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameResponse)));
-            CustomFrameResponse response = (CustomFrameResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CustomFrameResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CustomFrameResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new CustomFrame(response.ReplyLength, response.Reply));
         }
 
@@ -1100,12 +1043,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PayloadLength: The length of the custom frame payload.
         /// - Payload: The payload of the custom frame.
         /// </returns>
-        public CustomFrameHandler CustomFrameHandler()
+        public async Task<CustomFrameHandler> CustomFrameHandler(CancellationToken cancellationToken = default)
         {
             CustomFrameHandlerRequest request = new CustomFrameHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CustomFrameHandlerResponse)));
-            CustomFrameHandlerResponse response = (CustomFrameHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CustomFrameHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CustomFrameHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new CustomFrameHandler(response.PayloadLength, response.Payload);
         }
 
@@ -1113,12 +1055,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the EUI64 ID of the local node.
         /// </summary>
         /// <returns>The 64-bit ID.</returns>
-        public byte[] GetEui64()
+        public async Task<byte[]> GetEui64(CancellationToken cancellationToken = default)
         {
             GetEui64Request request = new GetEui64Request();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetEui64Response)));
-            GetEui64Response response = (GetEui64Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetEui64Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetEui64Response;
+            _logger.LogDebug(response?.ToString());
             return response.Eui64;
         }
 
@@ -1126,12 +1067,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the 16-bit node ID of the local node.
         /// </summary>
         /// <returns>The 16-bit ID.</returns>
-        public ushort GetNodeId()
+        public async Task<ushort> GetNodeId(CancellationToken cancellationToken = default)
         {
             GetNodeIdRequest request = new GetNodeIdRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNodeIdResponse)));
-            GetNodeIdResponse response = (GetNodeIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetNodeIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetNodeIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.NodeId;
         }
 
@@ -1139,12 +1079,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns number of phy interfaces present.
         /// </summary>
         /// <returns>Value indicate how many phy interfaces present.</returns>
-        public byte GetPhyInterfaceCount()
+        public async Task<byte> GetPhyInterfaceCount(CancellationToken cancellationToken = default)
         {
             GetPhyInterfaceCountRequest request = new GetPhyInterfaceCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPhyInterfaceCountResponse)));
-            GetPhyInterfaceCountResponse response = (GetPhyInterfaceCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetPhyInterfaceCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetPhyInterfaceCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.InterfaceCount;
         }
 
@@ -1152,12 +1091,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the entropy source used for true random number generation.
         /// </summary>
         /// <returns>Value indicates the used entropy source.</returns>
-        public ZigbeeEntropySource GetTrueRandomEntropySource()
+        public async Task<ZigbeeEntropySource> GetTrueRandomEntropySource(CancellationToken cancellationToken = default)
         {
             GetTrueRandomEntropySourceRequest request = new GetTrueRandomEntropySourceRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTrueRandomEntropySourceResponse)));
-            GetTrueRandomEntropySourceResponse response = (GetTrueRandomEntropySourceResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTrueRandomEntropySourceResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTrueRandomEntropySourceResponse;
+            _logger.LogDebug(response?.ToString());
             return response.EntropySource;
         }
 
@@ -1166,13 +1104,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NetworkKeyTimeoutS">Network key timeout</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetupDelayedJoin(byte networkKeyTimeoutS)
+        public async Task<Status> SetupDelayedJoin(byte networkKeyTimeoutS, CancellationToken cancellationToken = default)
         {
             SetupDelayedJoinRequest request = new SetupDelayedJoinRequest();
             request.NetworkKeyTimeoutS = networkKeyTimeoutS;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetupDelayedJoinResponse)));
-            SetupDelayedJoinResponse response = (SetupDelayedJoinResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetupDelayedJoinResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetupDelayedJoinResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1180,12 +1117,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the current scheduler priorities for radio operations
         /// </summary>
         /// <returns>The current priorities.</returns>
-        public _802154RadioPriorities RadioGetSchedulerPriorities()
+        public async Task<_802154RadioPriorities> RadioGetSchedulerPriorities(CancellationToken cancellationToken = default)
         {
             RadioGetSchedulerPrioritiesRequest request = new RadioGetSchedulerPrioritiesRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioGetSchedulerPrioritiesResponse)));
-            RadioGetSchedulerPrioritiesResponse response = (RadioGetSchedulerPrioritiesResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RadioGetSchedulerPrioritiesResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RadioGetSchedulerPrioritiesResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Priorities;
         }
 
@@ -1194,13 +1130,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Priorities">The current priorities.</param>
         /// <returns>The RadioSetSchedulerPrioritiesResponse object from the NCP</returns>
-        public RadioSetSchedulerPrioritiesResponse RadioSetSchedulerPriorities(_802154RadioPriorities priorities)
+        public async Task<RadioSetSchedulerPrioritiesResponse> RadioSetSchedulerPriorities(_802154RadioPriorities priorities, CancellationToken cancellationToken = default)
         {
             RadioSetSchedulerPrioritiesRequest request = new RadioSetSchedulerPrioritiesRequest();
             request.Priorities = priorities;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioSetSchedulerPrioritiesResponse)));
-            RadioSetSchedulerPrioritiesResponse response = (RadioSetSchedulerPrioritiesResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RadioSetSchedulerPrioritiesResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RadioSetSchedulerPrioritiesResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1208,12 +1143,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the current multiprotocol sliptime
         /// </summary>
         /// <returns>Value of the current slip time.</returns>
-        public uint[] RadioGetSchedulerSliptime()
+        public async Task<uint[]> RadioGetSchedulerSliptime(CancellationToken cancellationToken = default)
         {
             RadioGetSchedulerSliptimeRequest request = new RadioGetSchedulerSliptimeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioGetSchedulerSliptimeResponse)));
-            RadioGetSchedulerSliptimeResponse response = (RadioGetSchedulerSliptimeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RadioGetSchedulerSliptimeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RadioGetSchedulerSliptimeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.SlipTime;
         }
 
@@ -1222,13 +1156,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="SlipTime">Value of the current slip time.</param>
         /// <returns>The RadioSetSchedulerSliptimeResponse object from the NCP</returns>
-        public RadioSetSchedulerSliptimeResponse RadioSetSchedulerSliptime(uint slipTime)
+        public async Task<RadioSetSchedulerSliptimeResponse> RadioSetSchedulerSliptime(uint slipTime, CancellationToken cancellationToken = default)
         {
             RadioSetSchedulerSliptimeRequest request = new RadioSetSchedulerSliptimeRequest();
             request.SlipTime = slipTime;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RadioSetSchedulerSliptimeResponse)));
-            RadioSetSchedulerSliptimeResponse response = (RadioSetSchedulerSliptimeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RadioSetSchedulerSliptimeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RadioSetSchedulerSliptimeResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1237,13 +1170,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Counter">The counter to be checked.</param>
         /// <returns>Whether this counter requires a PHY index when operating on a dual-PHY system.</returns>
-        public bool CounterRequiresPhyIndex(ZigbeeCounterType counter)
+        public async Task<bool> CounterRequiresPhyIndex(ZigbeeCounterType counter, CancellationToken cancellationToken = default)
         {
             CounterRequiresPhyIndexRequest request = new CounterRequiresPhyIndexRequest();
             request.Counter = counter;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRequiresPhyIndexResponse)));
-            CounterRequiresPhyIndexResponse response = (CounterRequiresPhyIndexResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CounterRequiresPhyIndexResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CounterRequiresPhyIndexResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Requires;
         }
 
@@ -1252,13 +1184,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Counter">The counter to be checked.</param>
         /// <returns>Whether this counter requires the destination node ID.</returns>
-        public bool CounterRequiresDestinationNodeId(ZigbeeCounterType counter)
+        public async Task<bool> CounterRequiresDestinationNodeId(ZigbeeCounterType counter, CancellationToken cancellationToken = default)
         {
             CounterRequiresDestinationNodeIdRequest request = new CounterRequiresDestinationNodeIdRequest();
             request.Counter = counter;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CounterRequiresDestinationNodeIdResponse)));
-            CounterRequiresDestinationNodeIdResponse response = (CounterRequiresDestinationNodeIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CounterRequiresDestinationNodeIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CounterRequiresDestinationNodeIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Requires;
         }
 
@@ -1267,13 +1198,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Code">The manufacturer code for the local node.</param>
         /// <returns></returns>
-        public Status SetManufacturerCode(ushort code)
+        public async Task<Status> SetManufacturerCode(ushort code, CancellationToken cancellationToken = default)
         {
             SetManufacturerCodeRequest request = new SetManufacturerCodeRequest();
             request.Code = code;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetManufacturerCodeResponse)));
-            SetManufacturerCodeResponse response = (SetManufacturerCodeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetManufacturerCodeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetManufacturerCodeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1281,12 +1211,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Gets the manufacturer code to the specified value. The manufacturer code is one of the fields of the node descriptor.
         /// </summary>
         /// <returns>The manufacturer code for the local node.</returns>
-        public ushort GetManufacturerCode()
+        public async Task<ushort> GetManufacturerCode(CancellationToken cancellationToken = default)
         {
             GetManufacturerCodeRequest request = new GetManufacturerCodeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetManufacturerCodeResponse)));
-            GetManufacturerCodeResponse response = (GetManufacturerCodeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetManufacturerCodeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetManufacturerCodeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Code;
         }
 
@@ -1295,13 +1224,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Descriptor">The new power descriptor for the local node.</param>
         /// <returns></returns>
-        public Status SetPowerDescriptor(ushort descriptor)
+        public async Task<Status> SetPowerDescriptor(ushort descriptor, CancellationToken cancellationToken = default)
         {
             SetPowerDescriptorRequest request = new SetPowerDescriptorRequest();
             request.Descriptor = descriptor;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPowerDescriptorResponse)));
-            SetPowerDescriptorResponse response = (SetPowerDescriptorResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetPowerDescriptorResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetPowerDescriptorResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1310,13 +1238,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NetworkInitStruct">An sl_zigbee_network_init_struct_t containing the options for initialization.</param>
         /// <returns>An sl_status_t value that indicates one of the following: successful initialization, SL_STATUS_NOT_JOINED if the node is not part of a network, or the reason for failure.</returns>
-        public Status NetworkInit(ZigbeeNetworkInitStruct networkInitStruct)
+        public async Task<Status> NetworkInit(ZigbeeNetworkInitStruct networkInitStruct, CancellationToken cancellationToken = default)
         {
             NetworkInitRequest request = new NetworkInitRequest();
             request.NetworkInitStruct = networkInitStruct;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkInitResponse)));
-            NetworkInitResponse response = (NetworkInitResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NetworkInitResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NetworkInitResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1324,12 +1251,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns a value indicating whether the node is joining, joined to, or leaving a network.
         /// </summary>
         /// <returns>An sl_zigbee_network_status_t value indicating the current join status.</returns>
-        public ZigbeeNetworkStatus NetworkState()
+        public async Task<ZigbeeNetworkStatus> NetworkState(CancellationToken cancellationToken = default)
         {
             NetworkStateRequest request = new NetworkStateRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkStateResponse)));
-            NetworkStateResponse response = (NetworkStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NetworkStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NetworkStateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1337,12 +1263,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback invoked when the status of the stack changes. If the status parameter equals SL_STATUS_NETWORK_UP, then the &lt;i&gt;getNetworkParameters&lt;/i&gt; command can be called to obtain the new network parameters. If any of the parameters are being stored in nonvolatile memory by the Host, the stored values should be updated.
         /// </summary>
         /// <returns>Stack status</returns>
-        public Status StackStatusHandler()
+        public async Task<Status> StackStatusHandler(CancellationToken cancellationToken = default)
         {
             StackStatusHandlerRequest request = new StackStatusHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackStatusHandlerResponse)));
-            StackStatusHandlerResponse response = (StackStatusHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StackStatusHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StackStatusHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1353,15 +1278,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ChannelMask">Bits set as 1 indicate that this particular channel should be scanned. Bits set to 0 indicate that this particular channel should not be scanned. For example, a channelMask value of 0x00000001 would indicate that only channel 0 should be scanned. Valid channels range from 11 to 26 inclusive. This translates to a channel mask value of 0x07FFF800. As a convenience, a value of 0 is reinterpreted as the mask for the current channel.</param>
         /// <param name="Duration">Sets the exponent of the number of scan periods, where a scan period is 960 symbols. The scan will occur for ((2^duration) + 1) scan periods.</param>
         /// <returns>SL_STATUS_OK signals that the scan successfully started. Possible error responses and their meanings: SL_STATUS_MAC_SCANNING, we are already scanning; SL_STATUS_BAD_SCAN_DURATION, we have set a duration value that is not 0..14 inclusive; SL_STATUS_MAC_INCORRECT_SCAN_TYPE, we have requested an undefined scanning type; SL_STATUS_INVALID_CHANNEL_MASK, our channel mask did not specify any valid channels.</returns>
-        public Status StartScan(ZigbeeEzspNetworkScanType scanType, uint channelMask, byte duration)
+        public async Task<Status> StartScan(ZigbeeEzspNetworkScanType scanType, uint channelMask, byte duration, CancellationToken cancellationToken = default)
         {
             StartScanRequest request = new StartScanRequest();
             request.ScanType = scanType;
             request.ChannelMask = channelMask;
             request.Duration = duration;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StartScanResponse)));
-            StartScanResponse response = (StartScanResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StartScanResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StartScanResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1372,12 +1296,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Channel: The 802.15.4 channel number that was scanned.
         /// - MaxRssiValue: The maximum RSSI value found on the channel.
         /// </returns>
-        public EnergyScanResultHandler EnergyScanResultHandler()
+        public async Task<EnergyScanResultHandler> EnergyScanResultHandler(CancellationToken cancellationToken = default)
         {
             EnergyScanResultHandlerRequest request = new EnergyScanResultHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EnergyScanResultHandlerResponse)));
-            EnergyScanResultHandlerResponse response = (EnergyScanResultHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            EnergyScanResultHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as EnergyScanResultHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new EnergyScanResultHandler(response.Channel, response.MaxRssiValue);
         }
 
@@ -1389,12 +1312,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - LastHopLqi: Link quality of incoming packet from network.
         /// - LastHopRssi: Power (in dBm) of incoming packet.
         /// </returns>
-        public NetworkFoundHandler NetworkFoundHandler()
+        public async Task<NetworkFoundHandler> NetworkFoundHandler(CancellationToken cancellationToken = default)
         {
             NetworkFoundHandlerRequest request = new NetworkFoundHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NetworkFoundHandlerResponse)));
-            NetworkFoundHandlerResponse response = (NetworkFoundHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NetworkFoundHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NetworkFoundHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new NetworkFoundHandler(response.NetworkFound, response.LastHopLqi, response.LastHopRssi);
         }
 
@@ -1405,12 +1327,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Channel: The channel on which the current error occurred. Undefined for the case of SL_STATUS_OK.
         /// - Status: The error condition that occurred on the current channel. Value will be SL_STATUS_OK when the scan has completed.
         /// </returns>
-        public (Status Status, byte Channel) ScanCompleteHandler()
+        public async Task<(Status Status, byte Channel)> ScanCompleteHandler(CancellationToken cancellationToken = default)
         {
             ScanCompleteHandlerRequest request = new ScanCompleteHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ScanCompleteHandlerResponse)));
-            ScanCompleteHandlerResponse response = (ScanCompleteHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ScanCompleteHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ScanCompleteHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Channel);
         }
 
@@ -1421,12 +1342,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PanId: The unused panID which has been found.
         /// - Channel: The channel that the unused panID was found on.
         /// </returns>
-        public UnusedPanIdFoundHandler UnusedPanIdFoundHandler()
+        public async Task<UnusedPanIdFoundHandler> UnusedPanIdFoundHandler(CancellationToken cancellationToken = default)
         {
             UnusedPanIdFoundHandlerRequest request = new UnusedPanIdFoundHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnusedPanIdFoundHandlerResponse)));
-            UnusedPanIdFoundHandlerResponse response = (UnusedPanIdFoundHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            UnusedPanIdFoundHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as UnusedPanIdFoundHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new UnusedPanIdFoundHandler(response.PanId, response.Channel);
         }
 
@@ -1436,14 +1356,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ChannelMask">The channels that will be scanned for available panIds.</param>
         /// <param name="Duration">The duration of the procedure.</param>
         /// <returns>The error condition that occurred during the scan. Value will be SL_STATUS_OK if there are no errors.</returns>
-        public Status FindUnusedPanId(uint channelMask, byte duration)
+        public async Task<Status> FindUnusedPanId(uint channelMask, byte duration, CancellationToken cancellationToken = default)
         {
             FindUnusedPanIdRequest request = new FindUnusedPanIdRequest();
             request.ChannelMask = channelMask;
             request.Duration = duration;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindUnusedPanIdResponse)));
-            FindUnusedPanIdResponse response = (FindUnusedPanIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            FindUnusedPanIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as FindUnusedPanIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1451,12 +1370,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Terminates a scan in progress.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status StopScan()
+        public async Task<Status> StopScan(CancellationToken cancellationToken = default)
         {
             StopScanRequest request = new StopScanRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StopScanResponse)));
-            StopScanResponse response = (StopScanResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StopScanResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StopScanResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1465,13 +1383,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Parameters">Specification of the new network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status FormNetwork(ZigbeeNetworkParameters parameters)
+        public async Task<Status> FormNetwork(ZigbeeNetworkParameters parameters, CancellationToken cancellationToken = default)
         {
             FormNetworkRequest request = new FormNetworkRequest();
             request.Parameters = parameters;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FormNetworkResponse)));
-            FormNetworkResponse response = (FormNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            FormNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as FormNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1481,14 +1398,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="NodeType">Specification of the role that this node will have in the network. This role must not be SL_ZIGBEE_COORDINATOR. To be a coordinator, use the &lt;i&gt;formNetwork&lt;/i&gt; command.</param>
         /// <param name="Parameters">Specification of the network with which the node should associate.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status JoinNetwork(ZigbeeNodeType nodeType, ZigbeeNetworkParameters parameters)
+        public async Task<Status> JoinNetwork(ZigbeeNodeType nodeType, ZigbeeNetworkParameters parameters, CancellationToken cancellationToken = default)
         {
             JoinNetworkRequest request = new JoinNetworkRequest();
             request.NodeType = nodeType;
             request.Parameters = parameters;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(JoinNetworkResponse)));
-            JoinNetworkResponse response = (JoinNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            JoinNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as JoinNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1500,16 +1416,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="RadioTxPower">The radio transmit power to use, specified in dBm.</param>
         /// <param name="ClearBeaconsAfterNetworkUp">If true, clear beacons in cache upon join success. If join fail, do nothing.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status JoinNetworkDirectly(ZigbeeNodeType localNodeType, ZigbeeBeaconData beacon, sbyte radioTxPower, bool clearBeaconsAfterNetworkUp)
+        public async Task<Status> JoinNetworkDirectly(ZigbeeNodeType localNodeType, ZigbeeBeaconData beacon, sbyte radioTxPower, bool clearBeaconsAfterNetworkUp, CancellationToken cancellationToken = default)
         {
             JoinNetworkDirectlyRequest request = new JoinNetworkDirectlyRequest();
             request.LocalNodeType = localNodeType;
             request.Beacon = beacon;
             request.RadioTxPower = radioTxPower;
             request.ClearBeaconsAfterNetworkUp = clearBeaconsAfterNetworkUp;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(JoinNetworkDirectlyResponse)));
-            JoinNetworkDirectlyResponse response = (JoinNetworkDirectlyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            JoinNetworkDirectlyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as JoinNetworkDirectlyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1518,13 +1433,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Options">This parameter gives options when leave network</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status LeaveNetwork(ZigbeeLeaveNetworkOption options)
+        public async Task<Status> LeaveNetwork(ZigbeeLeaveNetworkOption options, CancellationToken cancellationToken = default)
         {
             LeaveNetworkRequest request = new LeaveNetworkRequest();
             request.Options = options;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LeaveNetworkResponse)));
-            LeaveNetworkResponse response = (LeaveNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            LeaveNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as LeaveNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1536,16 +1450,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Reason">A sl_zigbee_rejoin_reason_t variable which could be passed in if there is actually a reason for rejoin, or could be left at 0xFF</param>
         /// <param name="NodeType">The rejoin could be triggered with a different nodeType. This value could be set to 0 or SL_ZIGBEE_DEVICE_TYPE_UNCHANGED if not needed.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status FindAndRejoinNetwork(bool haveCurrentNetworkKey, uint channelMask, byte reason, byte nodeType)
+        public async Task<Status> FindAndRejoinNetwork(bool haveCurrentNetworkKey, uint channelMask, byte reason, byte nodeType, CancellationToken cancellationToken = default)
         {
             FindAndRejoinNetworkRequest request = new FindAndRejoinNetworkRequest();
             request.HaveCurrentNetworkKey = haveCurrentNetworkKey;
             request.ChannelMask = channelMask;
             request.Reason = reason;
             request.NodeType = nodeType;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindAndRejoinNetworkResponse)));
-            FindAndRejoinNetworkResponse response = (FindAndRejoinNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            FindAndRejoinNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as FindAndRejoinNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1554,13 +1467,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Duration">A value of 0x00 disables joining. A value of 0xFF enables joining. Any other value enables joining for that number of seconds.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status PermitJoining(byte duration)
+        public async Task<Status> PermitJoining(byte duration, CancellationToken cancellationToken = default)
         {
             PermitJoiningRequest request = new PermitJoiningRequest();
             request.Duration = duration;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PermitJoiningResponse)));
-            PermitJoiningResponse response = (PermitJoiningResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            PermitJoiningResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as PermitJoiningResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1574,12 +1486,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ChildEui64: The EUI64 of the child.
         /// - ChildType: The node type of the child.
         /// </returns>
-        public ChildJoinHandler ChildJoinHandler()
+        public async Task<ChildJoinHandler> ChildJoinHandler(CancellationToken cancellationToken = default)
         {
             ChildJoinHandlerRequest request = new ChildJoinHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildJoinHandlerResponse)));
-            ChildJoinHandlerResponse response = (ChildJoinHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ChildJoinHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ChildJoinHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new ChildJoinHandler(response.Index, response.Joining, response.ChildId, response.ChildEui64, response.ChildType);
         }
 
@@ -1591,16 +1502,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ScanDuration">How long to scan on each channel. Allowed values are 0..5, with the scan times as specified by 802.15.4 (0 = 31ms, 1 = 46ms, 2 = 77ms, 3 = 138ms, 4 = 261ms, 5 = 507ms).</param>
         /// <param name="ScanCount">The number of scans to be performed on each channel (1..8).</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status EnergyScanRequest(ushort target, uint scanChannels, byte scanDuration, ushort scanCount)
+        public async Task<Status> EnergyScanRequest(ushort target, uint scanChannels, byte scanDuration, ushort scanCount, CancellationToken cancellationToken = default)
         {
             EnergyScanRequestRequest request = new EnergyScanRequestRequest();
             request.Target = target;
             request.ScanChannels = scanChannels;
             request.ScanDuration = scanDuration;
             request.ScanCount = scanCount;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EnergyScanRequestResponse)));
-            EnergyScanRequestResponse response = (EnergyScanRequestResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            EnergyScanRequestResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as EnergyScanRequestResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1612,12 +1522,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeType: An sl_zigbee_node_type_t value indicating the current node type.
         /// - Parameters: The current network parameters.
         /// </returns>
-        public (Status Status, GetNetworkParameters Result) GetNetworkParameters()
+        public async Task<(Status Status, GetNetworkParameters Result)> GetNetworkParameters(CancellationToken cancellationToken = default)
         {
             GetNetworkParametersRequest request = new GetNetworkParametersRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNetworkParametersResponse)));
-            GetNetworkParametersResponse response = (GetNetworkParametersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetNetworkParametersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetNetworkParametersResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetNetworkParameters(response.NodeType, response.Parameters));
         }
 
@@ -1629,13 +1538,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Parameters: The current radio parameters based on provided phy index.
         /// </returns>
-        public (Status Status, ZigbeeMultiPhyRadioParameters Parameters) GetRadioParameters(byte phyIndex)
+        public async Task<(Status Status, ZigbeeMultiPhyRadioParameters Parameters)> GetRadioParameters(byte phyIndex, CancellationToken cancellationToken = default)
         {
             GetRadioParametersRequest request = new GetRadioParametersRequest();
             request.PhyIndex = phyIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRadioParametersResponse)));
-            GetRadioParametersResponse response = (GetRadioParametersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetRadioParametersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetRadioParametersResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Parameters);
         }
 
@@ -1647,12 +1555,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ParentEui64: The parent's EUI64. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
         /// - ParentNodeId: The parent's node ID. The value is undefined for nodes without parents (coordinators and nodes that are not joined to a network).
         /// </returns>
-        public GetParentChildParameters GetParentChildParameters()
+        public async Task<GetParentChildParameters> GetParentChildParameters(CancellationToken cancellationToken = default)
         {
             GetParentChildParametersRequest request = new GetParentChildParametersRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetParentChildParametersResponse)));
-            GetParentChildParametersResponse response = (GetParentChildParametersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetParentChildParametersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetParentChildParametersResponse;
+            _logger.LogDebug(response?.ToString());
             return new GetParentChildParameters(response.ChildCount, response.ParentEui64, response.ParentNodeId);
         }
 
@@ -1660,12 +1567,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Return the number of router children that the node currently has.
         /// </summary>
         /// <returns>The number of router children.</returns>
-        public byte RouterChildCount()
+        public async Task<byte> RouterChildCount(CancellationToken cancellationToken = default)
         {
             RouterChildCountRequest request = new RouterChildCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RouterChildCountResponse)));
-            RouterChildCountResponse response = (RouterChildCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RouterChildCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RouterChildCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.RouterChildCount;
         }
 
@@ -1673,12 +1579,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Return the maximum number of children for this node. The return value is undefined for nodes that are not joined to a network.
         /// </summary>
         /// <returns>The maximum number of children.</returns>
-        public byte MaxChildCount()
+        public async Task<byte> MaxChildCount(CancellationToken cancellationToken = default)
         {
             MaxChildCountRequest request = new MaxChildCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaxChildCountResponse)));
-            MaxChildCountResponse response = (MaxChildCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MaxChildCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MaxChildCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.MaxChildCount;
         }
 
@@ -1686,31 +1591,28 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Return the maximum number of router children for this node. The return value is undefined for nodes that are not joined to a network.
         /// </summary>
         /// <returns>The maximum number of router children.</returns>
-        public byte MaxRouterChildCount()
+        public async Task<byte> MaxRouterChildCount(CancellationToken cancellationToken = default)
         {
             MaxRouterChildCountRequest request = new MaxRouterChildCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaxRouterChildCountResponse)));
-            MaxRouterChildCountResponse response = (MaxRouterChildCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MaxRouterChildCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MaxRouterChildCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.MaxRouterChildCount;
         }
 
-        public uint GetParentIncomingNwkFrameCounter()
+        public async Task<uint> GetParentIncomingNwkFrameCounter(CancellationToken cancellationToken = default)
         {
             GetParentIncomingNwkFrameCounterRequest request = new GetParentIncomingNwkFrameCounterRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetParentIncomingNwkFrameCounterResponse)));
-            GetParentIncomingNwkFrameCounterResponse response = (GetParentIncomingNwkFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetParentIncomingNwkFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetParentIncomingNwkFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ParentIncomingNwkFrameCounter;
         }
 
-        public Status SetParentIncomingNwkFrameCounter(uint value)
+        public async Task<Status> SetParentIncomingNwkFrameCounter(uint value, CancellationToken cancellationToken = default)
         {
             SetParentIncomingNwkFrameCounterRequest request = new SetParentIncomingNwkFrameCounterRequest();
             request.Value = value;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetParentIncomingNwkFrameCounterResponse)));
-            SetParentIncomingNwkFrameCounterResponse response = (SetParentIncomingNwkFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetParentIncomingNwkFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetParentIncomingNwkFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1718,12 +1620,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Return a bitmask indicating the stack&apos;s current tasks. The mask ::SL_ZIGBEE_HIGH_PRIORITY_TASKS defines which tasks are high priority.  Devices should not sleep if any high priority tasks are active. Active tasks that are not high priority are waiting for messages to arrive from other devices.  If there are active tasks, but no high priority ones, the device may sleep but should periodically wake up and call ::emberPollForData() in order to receive messages.  Parents will hold messages for ::SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT milliseconds before discarding them.
         /// </summary>
         /// <returns>A bitmask of the stack&apos;s active tasks.</returns>
-        public ushort CurrentStackTasks()
+        public async Task<ushort> CurrentStackTasks(CancellationToken cancellationToken = default)
         {
             CurrentStackTasksRequest request = new CurrentStackTasksRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CurrentStackTasksResponse)));
-            CurrentStackTasksResponse response = (CurrentStackTasksResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CurrentStackTasksResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CurrentStackTasksResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ActiveTasks;
         }
 
@@ -1732,12 +1633,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// There may be tasks expecting incoming messages, in which case the device should periodically wake up and call ::emberPollForData() in order to receive messages. This function can only be called when the node type is ::SL_ZIGBEE_SLEEPY_END_DEVICE
         /// </summary>
         /// <returns>True if the application may sleep but the stack may be expecting incoming messages.</returns>
-        public bool OkToNap()
+        public async Task<bool> OkToNap(CancellationToken cancellationToken = default)
         {
             OkToNapRequest request = new OkToNapRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToNapResponse)));
-            OkToNapResponse response = (OkToNapResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            OkToNapResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as OkToNapResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Value;
         }
 
@@ -1745,12 +1645,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicate whether the parent token has been set by association.
         /// </summary>
         /// <returns>True if the parent token has been set.</returns>
-        public bool ParentTokenSet()
+        public async Task<bool> ParentTokenSet(CancellationToken cancellationToken = default)
         {
             ParentTokenSetRequest request = new ParentTokenSetRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ParentTokenSetResponse)));
-            ParentTokenSetResponse response = (ParentTokenSetResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ParentTokenSetResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ParentTokenSetResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Indicator;
         }
 
@@ -1758,12 +1657,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicate whether the stack currently has any tasks pending. If no tasks are pending, ::emberTick() does not need to be called until the next time a stack API function is called. This function can only be called when the node type is ::SL_ZIGBEE_SLEEPY_END_DEVICE.
         /// </summary>
         /// <returns>True if the application may sleep for as long as it wishes.</returns>
-        public bool OkToHibernate()
+        public async Task<bool> OkToHibernate(CancellationToken cancellationToken = default)
         {
             OkToHibernateRequest request = new OkToHibernateRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToHibernateResponse)));
-            OkToHibernateResponse response = (OkToHibernateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            OkToHibernateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as OkToHibernateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Indicator;
         }
 
@@ -1771,12 +1669,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicate whether the stack is currently in a state that does not require the application to periodically poll.
         /// </summary>
         /// <returns>True if the device may poll less frequently.</returns>
-        public bool OkToLongPoll()
+        public async Task<bool> OkToLongPoll(CancellationToken cancellationToken = default)
         {
             OkToLongPollRequest request = new OkToLongPollRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(OkToLongPollResponse)));
-            OkToLongPollResponse response = (OkToLongPollResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            OkToLongPollResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as OkToLongPollResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Indicator;
         }
 
@@ -1784,12 +1681,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Calling this function will render all other stack functions except sli_zigbee_stack_stack_power_up() non-functional until the radio is powered back on.
         /// </summary>
         /// <returns>The StackPowerDownResponse object from the NCP</returns>
-        public StackPowerDownResponse StackPowerDown()
+        public async Task<StackPowerDownResponse> StackPowerDown(CancellationToken cancellationToken = default)
         {
             StackPowerDownRequest request = new StackPowerDownRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackPowerDownResponse)));
-            StackPowerDownResponse response = (StackPowerDownResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StackPowerDownResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StackPowerDownResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1797,12 +1693,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Initialize the radio.  Typically called coming out of deep sleep. For non-sleepy devices, also turns the radio on and leaves it in RX mode.
         /// </summary>
         /// <returns>The StackPowerUpResponse object from the NCP</returns>
-        public StackPowerUpResponse StackPowerUp()
+        public async Task<StackPowerUpResponse> StackPowerUp(CancellationToken cancellationToken = default)
         {
             StackPowerUpRequest request = new StackPowerUpRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(StackPowerUpResponse)));
-            StackPowerUpResponse response = (StackPowerUpResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            StackPowerUpResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as StackPowerUpResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1814,13 +1709,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK if there is a child at <i>index</i>. SL_STATUS_NOT_JOINED if there is no child at <i>index</i>.
         /// - ChildData: The data of the child.
         /// </returns>
-        public (Status Status, ZigbeeChildData ChildData) GetChildData(byte index)
+        public async Task<(Status Status, ZigbeeChildData ChildData)> GetChildData(byte index, CancellationToken cancellationToken = default)
         {
             GetChildDataRequest request = new GetChildDataRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetChildDataResponse)));
-            GetChildDataResponse response = (GetChildDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetChildDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetChildDataResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ChildData);
         }
 
@@ -1830,14 +1724,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">The index of the child of interest in the child table. Possible indexes range from zero to (SL_ZIGBEE_CHILD_TABLE_SIZE - 1).</param>
         /// <param name="ChildData">The data of the child.</param>
         /// <returns>SL_STATUS_OK if the child data is set successfully at &lt;i&gt;index&lt;/i&gt;. SL_STATUS_INVALID_INDEX if provided &lt;i&gt;index&lt;/i&gt; is out of range.</returns>
-        public Status SetChildData(byte index, ZigbeeChildData childData)
+        public async Task<Status> SetChildData(byte index, ZigbeeChildData childData, CancellationToken cancellationToken = default)
         {
             SetChildDataRequest request = new SetChildDataRequest();
             request.Index = index;
             request.ChildData = childData;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetChildDataResponse)));
-            SetChildDataResponse response = (SetChildDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetChildDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetChildDataResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -1846,13 +1739,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildIndex">The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.</param>
         /// <returns>The node ID of the child or SL_ZIGBEE_NULL_NODE_ID if there isn&apos;t a child at the childIndex specified</returns>
-        public ushort ChildId(byte childIndex)
+        public async Task<ushort> ChildId(byte childIndex, CancellationToken cancellationToken = default)
         {
             ChildIdRequest request = new ChildIdRequest();
             request.ChildIndex = childIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildIdResponse)));
-            ChildIdResponse response = (ChildIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ChildIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ChildIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ChildId;
         }
 
@@ -1861,13 +1753,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildIndex">The index of the child of interest in the child table. Possible indexes range from zero to SL_ZIGBEE_CHILD_TABLE_SIZE.</param>
         /// <returns>The power of the child or maximum radio power, which is the power value provided by the user while forming/joining a network if there isn&apos;t a child at the childIndex specified</returns>
-        public sbyte ChildPower(byte childIndex)
+        public async Task<sbyte> ChildPower(byte childIndex, CancellationToken cancellationToken = default)
         {
             ChildPowerRequest request = new ChildPowerRequest();
             request.ChildIndex = childIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildPowerResponse)));
-            ChildPowerResponse response = (ChildPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ChildPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ChildPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ChildPower;
         }
 
@@ -1877,14 +1768,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ChildIndex">The index.</param>
         /// <param name="NewPower">The new power value.</param>
         /// <returns>The SetChildPowerResponse object from the NCP</returns>
-        public SetChildPowerResponse SetChildPower(byte childIndex, sbyte newPower)
+        public async Task<SetChildPowerResponse> SetChildPower(byte childIndex, sbyte newPower, CancellationToken cancellationToken = default)
         {
             SetChildPowerRequest request = new SetChildPowerRequest();
             request.ChildIndex = childIndex;
             request.NewPower = newPower;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetChildPowerResponse)));
-            SetChildPowerResponse response = (SetChildPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetChildPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetChildPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -1893,13 +1783,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildId">The node ID of the child</param>
         /// <returns>The child index or 0xFF if the node ID doesn&apos;t belong to a child</returns>
-        public byte ChildIndex(ushort childId)
+        public async Task<byte> ChildIndex(ushort childId, CancellationToken cancellationToken = default)
         {
             ChildIndexRequest request = new ChildIndexRequest();
             request.ChildId = childId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ChildIndexResponse)));
-            ChildIndexResponse response = (ChildIndexResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ChildIndexResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ChildIndexResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ChildIndex;
         }
 
@@ -1907,12 +1796,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the source route table total size.
         /// </summary>
         /// <returns>Total size of source route table.</returns>
-        public byte GetSourceRouteTableTotalSize()
+        public async Task<byte> GetSourceRouteTableTotalSize(CancellationToken cancellationToken = default)
         {
             GetSourceRouteTableTotalSizeRequest request = new GetSourceRouteTableTotalSizeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableTotalSizeResponse)));
-            GetSourceRouteTableTotalSizeResponse response = (GetSourceRouteTableTotalSizeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetSourceRouteTableTotalSizeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetSourceRouteTableTotalSizeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.SourceRouteTableTotalSize;
         }
 
@@ -1920,12 +1808,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the number of filled entries in source route table.
         /// </summary>
         /// <returns>The number of filled entries in source route table.</returns>
-        public byte GetSourceRouteTableFilledSize()
+        public async Task<byte> GetSourceRouteTableFilledSize(CancellationToken cancellationToken = default)
         {
             GetSourceRouteTableFilledSizeRequest request = new GetSourceRouteTableFilledSizeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableFilledSizeResponse)));
-            GetSourceRouteTableFilledSizeResponse response = (GetSourceRouteTableFilledSizeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetSourceRouteTableFilledSizeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetSourceRouteTableFilledSizeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.SourceRouteTableFilledSize;
         }
 
@@ -1944,13 +1831,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Destination: The node ID of the destination in that entry.
         /// - CloserIndex: The closer node index for this source route table entry
         /// </returns>
-        public (Status Status, GetSourceRouteTableEntry Result) GetSourceRouteTableEntry(byte index)
+        public async Task<(Status Status, GetSourceRouteTableEntry Result)> GetSourceRouteTableEntry(byte index, CancellationToken cancellationToken = default)
         {
             GetSourceRouteTableEntryRequest request = new GetSourceRouteTableEntryRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetSourceRouteTableEntryResponse)));
-            GetSourceRouteTableEntryResponse response = (GetSourceRouteTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetSourceRouteTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetSourceRouteTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetSourceRouteTableEntry(response.Destination, response.CloserIndex));
         }
 
@@ -1962,13 +1848,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_FAIL if the index is greater or equal to the number of active neighbors, or if the device is an end device. Returns SL_STATUS_OK otherwise.
         /// - Value: The contents of the neighbor table entry.
         /// </returns>
-        public (Status Status, ZigbeeNeighborTableEntry Value) GetNeighbor(byte index)
+        public async Task<(Status Status, ZigbeeNeighborTableEntry Value)> GetNeighbor(byte index, CancellationToken cancellationToken = default)
         {
             GetNeighborRequest request = new GetNeighborRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNeighborResponse)));
-            GetNeighborResponse response = (GetNeighborResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetNeighborResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetNeighborResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -1980,13 +1865,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise
         /// - ReturnFrameCounter: Return the frame counter of the node from the neighbor or child table
         /// </returns>
-        public (Status Status, uint ReturnFrameCounter) GetNeighborFrameCounter(byte[] eui64)
+        public async Task<(Status Status, uint ReturnFrameCounter)> GetNeighborFrameCounter(byte[] eui64, CancellationToken cancellationToken = default)
         {
             GetNeighborFrameCounterRequest request = new GetNeighborFrameCounterRequest();
             request.Eui64 = eui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNeighborFrameCounterResponse)));
-            GetNeighborFrameCounterResponse response = (GetNeighborFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetNeighborFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetNeighborFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ReturnFrameCounter);
         }
 
@@ -1996,14 +1880,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Eui64">eui64 of the node</param>
         /// <param name="FrameCounter">Return the frame counter of the node from the neighbor or child table</param>
         /// <returns>Return SL_STATUS_NOT_FOUND if the node is not found in the neighbor or child table. Returns SL_STATUS_OK otherwise</returns>
-        public Status SetNeighborFrameCounter(byte[] eui64, uint frameCounter)
+        public async Task<Status> SetNeighborFrameCounter(byte[] eui64, uint frameCounter, CancellationToken cancellationToken = default)
         {
             SetNeighborFrameCounterRequest request = new SetNeighborFrameCounterRequest();
             request.Eui64 = eui64;
             request.FrameCounter = frameCounter;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNeighborFrameCounterResponse)));
-            SetNeighborFrameCounterResponse response = (SetNeighborFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetNeighborFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetNeighborFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2012,13 +1895,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="CostThresh">The routing shortcut threshold to configure.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetRoutingShortcutThreshold(byte costThresh)
+        public async Task<Status> SetRoutingShortcutThreshold(byte costThresh, CancellationToken cancellationToken = default)
         {
             SetRoutingShortcutThresholdRequest request = new SetRoutingShortcutThresholdRequest();
             request.CostThresh = costThresh;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRoutingShortcutThresholdResponse)));
-            SetRoutingShortcutThresholdResponse response = (SetRoutingShortcutThresholdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetRoutingShortcutThresholdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetRoutingShortcutThresholdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2026,12 +1908,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Gets the routing shortcut threshold used to differentiate between directly using a neighbor vs. performing routing.
         /// </summary>
         /// <returns>The routing shortcut threshold</returns>
-        public byte GetRoutingShortcutThreshold()
+        public async Task<byte> GetRoutingShortcutThreshold(CancellationToken cancellationToken = default)
         {
             GetRoutingShortcutThresholdRequest request = new GetRoutingShortcutThresholdRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRoutingShortcutThresholdResponse)));
-            GetRoutingShortcutThresholdResponse response = (GetRoutingShortcutThresholdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetRoutingShortcutThresholdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetRoutingShortcutThresholdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.RoutingShortcutThresh;
         }
 
@@ -2039,12 +1920,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the number of active entries in the neighbor table.
         /// </summary>
         /// <returns>The number of active entries in the neighbor table.</returns>
-        public byte NeighborCount()
+        public async Task<byte> NeighborCount(CancellationToken cancellationToken = default)
         {
             NeighborCountRequest request = new NeighborCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(NeighborCountResponse)));
-            NeighborCountResponse response = (NeighborCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            NeighborCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as NeighborCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Value;
         }
 
@@ -2056,13 +1936,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_FAIL if the index is out of range or the device is an end device, and SL_STATUS_OK otherwise.
         /// - Value: The contents of the route table entry.
         /// </returns>
-        public (Status Status, ZigbeeRouteTableEntry Value) GetRouteTableEntry(byte index)
+        public async Task<(Status Status, ZigbeeRouteTableEntry Value)> GetRouteTableEntry(byte index, CancellationToken cancellationToken = default)
         {
             GetRouteTableEntryRequest request = new GetRouteTableEntryRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRouteTableEntryResponse)));
-            GetRouteTableEntryResponse response = (GetRouteTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetRouteTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetRouteTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -2071,13 +1950,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioPower(sbyte power)
+        public async Task<Status> SetRadioPower(sbyte power, CancellationToken cancellationToken = default)
         {
             SetRadioPowerRequest request = new SetRadioPowerRequest();
             request.Power = power;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioPowerResponse)));
-            SetRadioPowerResponse response = (SetRadioPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetRadioPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetRadioPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2086,13 +1964,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Channel">Desired radio channel.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioChannel(byte channel)
+        public async Task<Status> SetRadioChannel(byte channel, CancellationToken cancellationToken = default)
         {
             SetRadioChannelRequest request = new SetRadioChannelRequest();
             request.Channel = channel;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioChannelResponse)));
-            SetRadioChannelResponse response = (SetRadioChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetRadioChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetRadioChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2100,12 +1977,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Gets the channel in use for sending and receiving messages.
         /// </summary>
         /// <returns>Current radio channel.</returns>
-        public byte GetRadioChannel()
+        public async Task<byte> GetRadioChannel(CancellationToken cancellationToken = default)
         {
             GetRadioChannelRequest request = new GetRadioChannelRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetRadioChannelResponse)));
-            GetRadioChannelResponse response = (GetRadioChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetRadioChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetRadioChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Channel;
         }
 
@@ -2114,13 +1990,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="CcaMode">A RAIL_IEEE802154_CcaMode_t value.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetRadioIeee802154CcaMode(byte ccaMode)
+        public async Task<Status> SetRadioIeee802154CcaMode(byte ccaMode, CancellationToken cancellationToken = default)
         {
             SetRadioIeee802154CcaModeRequest request = new SetRadioIeee802154CcaModeRequest();
             request.CcaMode = ccaMode;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetRadioIeee802154CcaModeResponse)));
-            SetRadioIeee802154CcaModeResponse response = (SetRadioIeee802154CcaModeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetRadioIeee802154CcaModeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetRadioIeee802154CcaModeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2135,7 +2010,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DeliveryFailureThreshold">The number of APS delivery failures that will trigger a re-broadcast of the MTORR.</param>
         /// <param name="MaxHops">The maximum number of hops that the MTORR broadcast will be allowed to have. A value of 0 will be converted to the SL_ZIGBEE_MAX_HOPS value set by the stack.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetConcentrator(bool on, ushort concentratorType, ushort minTime, ushort maxTime, byte routeErrorThreshold, byte deliveryFailureThreshold, byte maxHops)
+        public async Task<Status> SetConcentrator(bool on, ushort concentratorType, ushort minTime, ushort maxTime, byte routeErrorThreshold, byte deliveryFailureThreshold, byte maxHops, CancellationToken cancellationToken = default)
         {
             SetConcentratorRequest request = new SetConcentratorRequest();
             request.On = on;
@@ -2145,9 +2020,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.RouteErrorThreshold = routeErrorThreshold;
             request.DeliveryFailureThreshold = deliveryFailureThreshold;
             request.MaxHops = maxHops;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetConcentratorResponse)));
-            SetConcentratorResponse response = (SetConcentratorResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetConcentratorResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetConcentratorResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2155,12 +2029,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Starts periodic many-to-one route discovery. Periodic discovery is started by default on bootup, but this function may be used if discovery has been stopped by a call to ::emberConcentratorStopDiscovery().
         /// </summary>
         /// <returns>The ConcentratorStartDiscoveryResponse object from the NCP</returns>
-        public ConcentratorStartDiscoveryResponse ConcentratorStartDiscovery()
+        public async Task<ConcentratorStartDiscoveryResponse> ConcentratorStartDiscovery(CancellationToken cancellationToken = default)
         {
             ConcentratorStartDiscoveryRequest request = new ConcentratorStartDiscoveryRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorStartDiscoveryResponse)));
-            ConcentratorStartDiscoveryResponse response = (ConcentratorStartDiscoveryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ConcentratorStartDiscoveryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ConcentratorStartDiscoveryResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -2168,12 +2041,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Stops periodic many-to-one route discovery.
         /// </summary>
         /// <returns>The ConcentratorStopDiscoveryResponse object from the NCP</returns>
-        public ConcentratorStopDiscoveryResponse ConcentratorStopDiscovery()
+        public async Task<ConcentratorStopDiscoveryResponse> ConcentratorStopDiscovery(CancellationToken cancellationToken = default)
         {
             ConcentratorStopDiscoveryRequest request = new ConcentratorStopDiscoveryRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorStopDiscoveryResponse)));
-            ConcentratorStopDiscoveryResponse response = (ConcentratorStopDiscoveryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ConcentratorStopDiscoveryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ConcentratorStopDiscoveryResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -2185,14 +2057,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="NodeId">
         /// </param>
         /// <returns>The ConcentratorNoteRouteErrorResponse object from the NCP</returns>
-        public ConcentratorNoteRouteErrorResponse ConcentratorNoteRouteError(Status status, ushort nodeId)
+        public async Task<ConcentratorNoteRouteErrorResponse> ConcentratorNoteRouteError(Status status, ushort nodeId, CancellationToken cancellationToken = default)
         {
             ConcentratorNoteRouteErrorRequest request = new ConcentratorNoteRouteErrorRequest();
             request.Status = status;
             request.NodeId = nodeId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ConcentratorNoteRouteErrorResponse)));
-            ConcentratorNoteRouteErrorResponse response = (ConcentratorNoteRouteErrorResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ConcentratorNoteRouteErrorResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ConcentratorNoteRouteErrorResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -2201,13 +2072,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ErrorCode">Desired error code.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status SetBrokenRouteErrorCode(byte errorCode)
+        public async Task<Status> SetBrokenRouteErrorCode(byte errorCode, CancellationToken cancellationToken = default)
         {
             SetBrokenRouteErrorCodeRequest request = new SetBrokenRouteErrorCodeRequest();
             request.ErrorCode = errorCode;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBrokenRouteErrorCodeResponse)));
-            SetBrokenRouteErrorCodeResponse response = (SetBrokenRouteErrorCodeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetBrokenRouteErrorCodeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetBrokenRouteErrorCodeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2220,7 +2090,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <param name="Bitmask">Network configuration bitmask.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MultiPhyStart(byte phyIndex, byte page, byte channel, sbyte power, ZigbeeMultiPhyNwkConfig bitmask)
+        public async Task<Status> MultiPhyStart(byte phyIndex, byte page, byte channel, sbyte power, ZigbeeMultiPhyNwkConfig bitmask, CancellationToken cancellationToken = default)
         {
             MultiPhyStartRequest request = new MultiPhyStartRequest();
             request.PhyIndex = phyIndex;
@@ -2228,9 +2098,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Channel = channel;
             request.Power = power;
             request.Bitmask = bitmask;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhyStartResponse)));
-            MultiPhyStartResponse response = (MultiPhyStartResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MultiPhyStartResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MultiPhyStartResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2239,13 +2108,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="PhyIndex">Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MultiPhyStop(byte phyIndex)
+        public async Task<Status> MultiPhyStop(byte phyIndex, CancellationToken cancellationToken = default)
         {
             MultiPhyStopRequest request = new MultiPhyStopRequest();
             request.PhyIndex = phyIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhyStopResponse)));
-            MultiPhyStopResponse response = (MultiPhyStopResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MultiPhyStopResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MultiPhyStopResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2255,14 +2123,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PhyIndex">Index of phy interface. The native phy index would be always zero hence valid phy index starts from one.</param>
         /// <param name="Power">Desired radio output power, in dBm.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status MultiPhySetRadioPower(byte phyIndex, sbyte power)
+        public async Task<Status> MultiPhySetRadioPower(byte phyIndex, sbyte power, CancellationToken cancellationToken = default)
         {
             MultiPhySetRadioPowerRequest request = new MultiPhySetRadioPowerRequest();
             request.PhyIndex = phyIndex;
             request.Power = power;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhySetRadioPowerResponse)));
-            MultiPhySetRadioPowerResponse response = (MultiPhySetRadioPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MultiPhySetRadioPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MultiPhySetRadioPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2270,12 +2137,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Send Link Power Delta Request from a child to its parent
         /// </summary>
         /// <returns>An sl_status_t value indicating the success or failure of sending the request.</returns>
-        public Status SendLinkPowerDeltaRequest()
+        public async Task<Status> SendLinkPowerDeltaRequest(CancellationToken cancellationToken = default)
         {
             SendLinkPowerDeltaRequestRequest request = new SendLinkPowerDeltaRequestRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendLinkPowerDeltaRequestResponse)));
-            SendLinkPowerDeltaRequestResponse response = (SendLinkPowerDeltaRequestResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendLinkPowerDeltaRequestResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendLinkPowerDeltaRequestResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2286,15 +2152,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Page">Desired radio channel page.</param>
         /// <param name="Channel">Desired radio channel.</param>
         /// <returns>An sl_status_t value indicating the success or failure of the command.</returns>
-        public Status MultiPhySetRadioChannel(byte phyIndex, byte page, byte channel)
+        public async Task<Status> MultiPhySetRadioChannel(byte phyIndex, byte page, byte channel, CancellationToken cancellationToken = default)
         {
             MultiPhySetRadioChannelRequest request = new MultiPhySetRadioChannelRequest();
             request.PhyIndex = phyIndex;
             request.Page = page;
             request.Channel = channel;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MultiPhySetRadioChannelResponse)));
-            MultiPhySetRadioChannelResponse response = (MultiPhySetRadioChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MultiPhySetRadioChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MultiPhySetRadioChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2305,12 +2170,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating the success or failure of the command.
         /// - ReturnedState: The current duty cycle state in effect.
         /// </returns>
-        public (Status Status, ZigbeeDutyCycleState ReturnedState) GetDutyCycleState()
+        public async Task<(Status Status, ZigbeeDutyCycleState ReturnedState)> GetDutyCycleState(CancellationToken cancellationToken = default)
         {
             GetDutyCycleStateRequest request = new GetDutyCycleStateRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetDutyCycleStateResponse)));
-            GetDutyCycleStateResponse response = (GetDutyCycleStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetDutyCycleStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetDutyCycleStateResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ReturnedState);
         }
 
@@ -2319,13 +2183,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Limits">The duty cycle limits configuration to utilize.</param>
         /// <returns>SL_STATUS_OK  if the duty cycle limit configurations set successfully, SL_STATUS_INVALID_PARAMETER if set illegal value such as setting only one of the limits to default or violates constraints Susp &gt; Crit &gt; Limi, SL_STATUS_INVALID_STATE if device is operating on 2.4Ghz</returns>
-        public Status SetDutyCycleLimitsInStack(ZigbeeDutyCycleLimits limits)
+        public async Task<Status> SetDutyCycleLimitsInStack(ZigbeeDutyCycleLimits limits, CancellationToken cancellationToken = default)
         {
             SetDutyCycleLimitsInStackRequest request = new SetDutyCycleLimitsInStackRequest();
             request.Limits = limits;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetDutyCycleLimitsInStackResponse)));
-            SetDutyCycleLimitsInStackResponse response = (SetDutyCycleLimitsInStackResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetDutyCycleLimitsInStackResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetDutyCycleLimitsInStackResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2336,12 +2199,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating the success or failure of the command.
         /// - ReturnedLimits: Return current duty cycle limits if returnedLimits is not NULL
         /// </returns>
-        public (Status Status, ZigbeeDutyCycleLimits ReturnedLimits) GetDutyCycleLimits()
+        public async Task<(Status Status, ZigbeeDutyCycleLimits ReturnedLimits)> GetDutyCycleLimits(CancellationToken cancellationToken = default)
         {
             GetDutyCycleLimitsRequest request = new GetDutyCycleLimitsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetDutyCycleLimitsResponse)));
-            GetDutyCycleLimitsResponse response = (GetDutyCycleLimitsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetDutyCycleLimitsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetDutyCycleLimitsResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ReturnedLimits);
         }
 
@@ -2353,13 +2215,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK  if the duty cycles were read successfully, SL_STATUS_INVALID_PARAMETER maxDevices is greater than SL_ZIGBEE_MAX_END_DEVICE_CHILDREN + 1.
         /// - ArrayOfDeviceDutyCycles: Consumed duty cycles up to maxDevices. When the number of children that are being monitored is less than maxDevices, the sl_802154_short_addr_t element in the sl_zigbee_per_device_duty_cycle_t will be 0xFFFF.
         /// </returns>
-        public (Status Status, byte[] ArrayOfDeviceDutyCycles) GetCurrentDutyCycle(byte maxDevices)
+        public async Task<(Status Status, byte[] ArrayOfDeviceDutyCycles)> GetCurrentDutyCycle(byte maxDevices, CancellationToken cancellationToken = default)
         {
             GetCurrentDutyCycleRequest request = new GetCurrentDutyCycleRequest();
             request.MaxDevices = maxDevices;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentDutyCycleResponse)));
-            GetCurrentDutyCycleResponse response = (GetCurrentDutyCycleResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetCurrentDutyCycleResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetCurrentDutyCycleResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ArrayOfDeviceDutyCycles);
         }
 
@@ -2373,12 +2234,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - TotalDevices: The total number of connected end devices that are being monitored for duty cycle.
         /// - ArrayOfDeviceDutyCycles: Consumed duty cycles of end devices that are being monitored. The first entry always be the local stack's nodeId, and thus the total aggregate duty cycle for the device.
         /// </returns>
-        public DutyCycleHandler DutyCycleHandler()
+        public async Task<DutyCycleHandler> DutyCycleHandler(CancellationToken cancellationToken = default)
         {
             DutyCycleHandlerRequest request = new DutyCycleHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DutyCycleHandlerResponse)));
-            DutyCycleHandlerResponse response = (DutyCycleHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DutyCycleHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DutyCycleHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new DutyCycleHandler(response.ChannelPage, response.Channel, response.State, response.TotalDevices, response.ArrayOfDeviceDutyCycles);
         }
 
@@ -2387,13 +2247,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NumBeacons">The number of beacons to cache when scanning.</param>
         /// <returns>SL_STATUS_INVALID_PARAMETER if numBeacons is greater than SL_ZIGBEE_MAX_BEACONS_TO_STORE, otherwise SL_STATUS_OK</returns>
-        public Status SetNumBeaconsToStore(byte numBeacons)
+        public async Task<Status> SetNumBeaconsToStore(byte numBeacons, CancellationToken cancellationToken = default)
         {
             SetNumBeaconsToStoreRequest request = new SetNumBeaconsToStoreRequest();
             request.NumBeacons = numBeacons;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNumBeaconsToStoreResponse)));
-            SetNumBeaconsToStoreResponse response = (SetNumBeaconsToStoreResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetNumBeaconsToStoreResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetNumBeaconsToStoreResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2405,13 +2264,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An appropriate sl_status_t status code.
         /// - Beacon: The beacon to populate upon success.
         /// </returns>
-        public (Status Status, ZigbeeBeaconData Beacon) GetStoredBeacon(byte beaconNumber)
+        public async Task<(Status Status, ZigbeeBeaconData Beacon)> GetStoredBeacon(byte beaconNumber, CancellationToken cancellationToken = default)
         {
             GetStoredBeaconRequest request = new GetStoredBeaconRequest();
             request.BeaconNumber = beaconNumber;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetStoredBeaconResponse)));
-            GetStoredBeaconResponse response = (GetStoredBeaconResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetStoredBeaconResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetStoredBeaconResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Beacon);
         }
 
@@ -2419,12 +2277,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the number of cached beacons that have been collected from a scan.
         /// </summary>
         /// <returns>The number of cached beacons that have been collected from a scan.</returns>
-        public byte GetNumStoredBeacons()
+        public async Task<byte> GetNumStoredBeacons(CancellationToken cancellationToken = default)
         {
             GetNumStoredBeaconsRequest request = new GetNumStoredBeaconsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetNumStoredBeaconsResponse)));
-            GetNumStoredBeaconsResponse response = (GetNumStoredBeaconsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetNumStoredBeaconsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetNumStoredBeaconsResponse;
+            _logger.LogDebug(response?.ToString());
             return response.NumBeacons;
         }
 
@@ -2432,12 +2289,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clears all cached beacons that have been collected from a scan.
         /// </summary>
         /// <returns></returns>
-        public Status ClearStoredBeacons()
+        public async Task<Status> ClearStoredBeacons(CancellationToken cancellationToken = default)
         {
             ClearStoredBeaconsRequest request = new ClearStoredBeaconsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearStoredBeaconsResponse)));
-            ClearStoredBeaconsResponse response = (ClearStoredBeaconsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearStoredBeaconsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearStoredBeaconsResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2446,13 +2302,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="RadioChannel">The radio channel to be set.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetLogicalAndRadioChannel(byte radioChannel)
+        public async Task<Status> SetLogicalAndRadioChannel(byte radioChannel, CancellationToken cancellationToken = default)
         {
             SetLogicalAndRadioChannelRequest request = new SetLogicalAndRadioChannelRequest();
             request.RadioChannel = radioChannel;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetLogicalAndRadioChannelResponse)));
-            SetLogicalAndRadioChannelResponse response = (SetLogicalAndRadioChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetLogicalAndRadioChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetLogicalAndRadioChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2462,14 +2317,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Parameters">Specification of the new network.</param>
         /// <param name="Initiator">Whether this device is initiating or joining the network.</param>
         /// <returns>An sl_status_t value indicating success or a reason for failure.</returns>
-        public Status SleepyToSleepyNetworkStart(ZigbeeNetworkParameters parameters, bool initiator)
+        public async Task<Status> SleepyToSleepyNetworkStart(ZigbeeNetworkParameters parameters, bool initiator, CancellationToken cancellationToken = default)
         {
             SleepyToSleepyNetworkStartRequest request = new SleepyToSleepyNetworkStartRequest();
             request.Parameters = parameters;
             request.Initiator = initiator;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SleepyToSleepyNetworkStartResponse)));
-            SleepyToSleepyNetworkStartResponse response = (SleepyToSleepyNetworkStartResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SleepyToSleepyNetworkStartResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SleepyToSleepyNetworkStartResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2479,14 +2333,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Destination">Node ID of the device being told to leave.</param>
         /// <param name="Flags">Bitmask indicating additional considerations for the leave request.</param>
         /// <returns>Status indicating success or a reason for failure. Call is invalid if destination is on network or is the local node.</returns>
-        public Status SendZigbeeLeave(ushort destination, ZigbeeLeaveRequestFlags flags)
+        public async Task<Status> SendZigbeeLeave(ushort destination, ZigbeeLeaveRequestFlags flags, CancellationToken cancellationToken = default)
         {
             SendZigbeeLeaveRequest request = new SendZigbeeLeaveRequest();
             request.Destination = destination;
             request.Flags = flags;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendZigbeeLeaveResponse)));
-            SendZigbeeLeaveResponse response = (SendZigbeeLeaveResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendZigbeeLeaveResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendZigbeeLeaveResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2494,12 +2347,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicate the state of permit joining in MAC.
         /// </summary>
         /// <returns>Whether the current network permits joining.</returns>
-        public bool GetPermitJoining()
+        public async Task<bool> GetPermitJoining(CancellationToken cancellationToken = default)
         {
             GetPermitJoiningRequest request = new GetPermitJoiningRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetPermitJoiningResponse)));
-            GetPermitJoiningResponse response = (GetPermitJoiningResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetPermitJoiningResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetPermitJoiningResponse;
+            _logger.LogDebug(response?.ToString());
             return response.JoiningPermitted;
         }
 
@@ -2507,12 +2359,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the 8-byte extended PAN ID of this node.
         /// </summary>
         /// <returns>Extended PAN ID of this node.  Valid only if it is currently on a network.</returns>
-        public byte[] GetExtendedPanId()
+        public async Task<byte[]> GetExtendedPanId(CancellationToken cancellationToken = default)
         {
             GetExtendedPanIdRequest request = new GetExtendedPanIdRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedPanIdResponse)));
-            GetExtendedPanIdResponse response = (GetExtendedPanIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetExtendedPanIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetExtendedPanIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ExtendedPanId;
         }
 
@@ -2520,12 +2371,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the current network.
         /// </summary>
         /// <returns>Return the current network index.</returns>
-        public byte GetCurrentNetwork()
+        public async Task<byte> GetCurrentNetwork(CancellationToken cancellationToken = default)
         {
             GetCurrentNetworkRequest request = new GetCurrentNetworkRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentNetworkResponse)));
-            GetCurrentNetworkResponse response = (GetCurrentNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetCurrentNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetCurrentNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Index;
         }
 
@@ -2534,13 +2384,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Cost">The new default cost. Valid values are 0, 1, 3, 5, and 7.</param>
         /// <returns>Whether or not initial cost was successfully set.</returns>
-        public Status SetInitialNeighborOutgoingCost(byte cost)
+        public async Task<Status> SetInitialNeighborOutgoingCost(byte cost, CancellationToken cancellationToken = default)
         {
             SetInitialNeighborOutgoingCostRequest request = new SetInitialNeighborOutgoingCostRequest();
             request.Cost = cost;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetInitialNeighborOutgoingCostResponse)));
-            SetInitialNeighborOutgoingCostResponse response = (SetInitialNeighborOutgoingCostResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetInitialNeighborOutgoingCostResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetInitialNeighborOutgoingCostResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2548,12 +2397,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get initial outgoing link cost for neighbor.
         /// </summary>
         /// <returns>The default cost associated with new neighbor&apos;s outgoing links.</returns>
-        public byte GetInitialNeighborOutgoingCost()
+        public async Task<byte> GetInitialNeighborOutgoingCost(CancellationToken cancellationToken = default)
         {
             GetInitialNeighborOutgoingCostRequest request = new GetInitialNeighborOutgoingCostRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetInitialNeighborOutgoingCostResponse)));
-            GetInitialNeighborOutgoingCostResponse response = (GetInitialNeighborOutgoingCostResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetInitialNeighborOutgoingCostResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetInitialNeighborOutgoingCostResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Cost;
         }
 
@@ -2562,13 +2410,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Reset">Whether or not a neighbor&apos;s incoming FC should be reset upon rejoining (true or false).</param>
         /// <returns>The ResetRejoiningNeighborsFrameCounterResponse object from the NCP</returns>
-        public ResetRejoiningNeighborsFrameCounterResponse ResetRejoiningNeighborsFrameCounter(bool reset)
+        public async Task<ResetRejoiningNeighborsFrameCounterResponse> ResetRejoiningNeighborsFrameCounter(bool reset, CancellationToken cancellationToken = default)
         {
             ResetRejoiningNeighborsFrameCounterRequest request = new ResetRejoiningNeighborsFrameCounterRequest();
             request.Reset = reset;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ResetRejoiningNeighborsFrameCounterResponse)));
-            ResetRejoiningNeighborsFrameCounterResponse response = (ResetRejoiningNeighborsFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ResetRejoiningNeighborsFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ResetRejoiningNeighborsFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -2576,12 +2423,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Check whether a rejoining neighbor will have its incoming frame counter reset based on the currently set policy.
         /// </summary>
         /// <returns>Whether or not a rejoining neighbor&apos;s incoming FC gets reset (true or false).</returns>
-        public bool IsResetRejoiningNeighborsFrameCounterEnabled()
+        public async Task<bool> IsResetRejoiningNeighborsFrameCounterEnabled(CancellationToken cancellationToken = default)
         {
             IsResetRejoiningNeighborsFrameCounterEnabledRequest request = new IsResetRejoiningNeighborsFrameCounterEnabledRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IsResetRejoiningNeighborsFrameCounterEnabledResponse)));
-            IsResetRejoiningNeighborsFrameCounterEnabledResponse response = (IsResetRejoiningNeighborsFrameCounterEnabledResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IsResetRejoiningNeighborsFrameCounterEnabledResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IsResetRejoiningNeighborsFrameCounterEnabledResponse;
+            _logger.LogDebug(response?.ToString());
             return response.GetsReset;
         }
 
@@ -2589,12 +2435,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Deletes all binding table entries.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ClearBindingTable()
+        public async Task<Status> ClearBindingTable(CancellationToken cancellationToken = default)
         {
             ClearBindingTableRequest request = new ClearBindingTableRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearBindingTableResponse)));
-            ClearBindingTableResponse response = (ClearBindingTableResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearBindingTableResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearBindingTableResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2604,14 +2449,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">The index of a binding table entry.</param>
         /// <param name="Value">The contents of the binding entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetBinding(byte index, ZigbeeBindingTableEntry value)
+        public async Task<Status> SetBinding(byte index, ZigbeeBindingTableEntry value, CancellationToken cancellationToken = default)
         {
             SetBindingRequest request = new SetBindingRequest();
             request.Index = index;
             request.Value = value;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBindingResponse)));
-            SetBindingResponse response = (SetBindingResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetBindingResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetBindingResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2623,13 +2467,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Value: The contents of the binding entry.
         /// </returns>
-        public (Status Status, ZigbeeBindingTableEntry Value) GetBinding(byte index)
+        public async Task<(Status Status, ZigbeeBindingTableEntry Value)> GetBinding(byte index, CancellationToken cancellationToken = default)
         {
             GetBindingRequest request = new GetBindingRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBindingResponse)));
-            GetBindingResponse response = (GetBindingResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetBindingResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetBindingResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -2638,13 +2481,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DeleteBinding(byte index)
+        public async Task<Status> DeleteBinding(byte index, CancellationToken cancellationToken = default)
         {
             DeleteBindingRequest request = new DeleteBindingRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DeleteBindingResponse)));
-            DeleteBindingResponse response = (DeleteBindingResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DeleteBindingResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DeleteBindingResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2653,13 +2495,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>True if the binding table entry is active, false otherwise.</returns>
-        public bool BindingIsActive(byte index)
+        public async Task<bool> BindingIsActive(byte index, CancellationToken cancellationToken = default)
         {
             BindingIsActiveRequest request = new BindingIsActiveRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BindingIsActiveResponse)));
-            BindingIsActiveResponse response = (BindingIsActiveResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            BindingIsActiveResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as BindingIsActiveResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Active;
         }
 
@@ -2668,13 +2509,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">The index of a binding table entry.</param>
         /// <returns>The short ID of the destination node or SL_ZIGBEE_NULL_NODE_ID if no destination is known.</returns>
-        public ushort GetBindingRemoteNodeId(byte index)
+        public async Task<ushort> GetBindingRemoteNodeId(byte index, CancellationToken cancellationToken = default)
         {
             GetBindingRemoteNodeIdRequest request = new GetBindingRemoteNodeIdRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBindingRemoteNodeIdResponse)));
-            GetBindingRemoteNodeIdResponse response = (GetBindingRemoteNodeIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetBindingRemoteNodeIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetBindingRemoteNodeIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.NodeId;
         }
 
@@ -2684,14 +2524,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">The index of a binding table entry.</param>
         /// <param name="NodeId">The short ID of the destination node.</param>
         /// <returns>The SetBindingRemoteNodeIdResponse object from the NCP</returns>
-        public SetBindingRemoteNodeIdResponse SetBindingRemoteNodeId(byte index, ushort nodeId)
+        public async Task<SetBindingRemoteNodeIdResponse> SetBindingRemoteNodeId(byte index, ushort nodeId, CancellationToken cancellationToken = default)
         {
             SetBindingRemoteNodeIdRequest request = new SetBindingRemoteNodeIdRequest();
             request.Index = index;
             request.NodeId = nodeId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBindingRemoteNodeIdResponse)));
-            SetBindingRemoteNodeIdResponse response = (SetBindingRemoteNodeIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetBindingRemoteNodeIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetBindingRemoteNodeIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -2703,12 +2542,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Index: The index at which the binding was added.
         /// - PolicyDecision: SL_STATUS_OK if the binding was added to the table and any other status if not.
         /// </returns>
-        public (Status PolicyDecision, RemoteSetBindingHandler Result) RemoteSetBindingHandler()
+        public async Task<(Status PolicyDecision, RemoteSetBindingHandler Result)> RemoteSetBindingHandler(CancellationToken cancellationToken = default)
         {
             RemoteSetBindingHandlerRequest request = new RemoteSetBindingHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteSetBindingHandlerResponse)));
-            RemoteSetBindingHandlerResponse response = (RemoteSetBindingHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RemoteSetBindingHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RemoteSetBindingHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.PolicyDecision, new RemoteSetBindingHandler(response.Entry, response.Index));
         }
 
@@ -2719,12 +2557,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Index: The index of the binding whose deletion was requested.
         /// - PolicyDecision: SL_STATUS_OK if the binding was removed from the table and any other status if not.
         /// </returns>
-        public (Status PolicyDecision, byte Index) RemoteDeleteBindingHandler()
+        public async Task<(Status PolicyDecision, byte Index)> RemoteDeleteBindingHandler(CancellationToken cancellationToken = default)
         {
             RemoteDeleteBindingHandlerRequest request = new RemoteDeleteBindingHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoteDeleteBindingHandlerResponse)));
-            RemoteDeleteBindingHandlerResponse response = (RemoteDeleteBindingHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RemoteDeleteBindingHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RemoteDeleteBindingHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.PolicyDecision, response.Index);
         }
 
@@ -2732,12 +2569,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the maximum size of the payload. The size depends on the security level in use.
         /// </summary>
         /// <returns>The maximum APS payload length.</returns>
-        public byte MaximumPayloadLength()
+        public async Task<byte> MaximumPayloadLength(CancellationToken cancellationToken = default)
         {
             MaximumPayloadLengthRequest request = new MaximumPayloadLengthRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MaximumPayloadLengthResponse)));
-            MaximumPayloadLengthResponse response = (MaximumPayloadLengthResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MaximumPayloadLengthResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MaximumPayloadLengthResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ApsLength;
         }
 
@@ -2754,7 +2590,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Sequence: The sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte Sequence) SendUnicast(ZigbeeOutgoingMessageType type, ushort indexOrDestination, ZigbeeApsFrame apsFrame, ushort messageTag, byte messageLength, byte[] messageContents)
+        public async Task<(Status Status, byte Sequence)> SendUnicast(ZigbeeOutgoingMessageType type, ushort indexOrDestination, ZigbeeApsFrame apsFrame, ushort messageTag, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             SendUnicastRequest request = new SendUnicastRequest();
             request.Type = type;
@@ -2763,9 +2599,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendUnicastResponse)));
-            SendUnicastResponse response = (SendUnicastResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendUnicastResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendUnicastResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Sequence);
         }
 
@@ -2784,7 +2619,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - ApsSequence: The APS sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte ApsSequence) SendBroadcast(ushort alias, ushort destination, byte nwkSequence, ZigbeeApsFrame apsFrame, byte radius, ushort messageTag, byte messageLength, byte[] messageContents)
+        public async Task<(Status Status, byte ApsSequence)> SendBroadcast(ushort alias, ushort destination, byte nwkSequence, ZigbeeApsFrame apsFrame, byte radius, ushort messageTag, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             SendBroadcastRequest request = new SendBroadcastRequest();
             request.Alias = alias;
@@ -2795,9 +2630,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendBroadcastResponse)));
-            SendBroadcastResponse response = (SendBroadcastResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendBroadcastResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendBroadcastResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ApsSequence);
         }
 
@@ -2806,13 +2640,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="EuiSource">The long source from which to send the broadcast</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ProxyNextBroadcastFromLong(byte[] euiSource)
+        public async Task<Status> ProxyNextBroadcastFromLong(byte[] euiSource, CancellationToken cancellationToken = default)
         {
             ProxyNextBroadcastFromLongRequest request = new ProxyNextBroadcastFromLongRequest();
             request.EuiSource = euiSource;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ProxyNextBroadcastFromLongResponse)));
-            ProxyNextBroadcastFromLongResponse response = (ProxyNextBroadcastFromLongResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ProxyNextBroadcastFromLongResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ProxyNextBroadcastFromLongResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2831,7 +2664,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value. For any result other than SL_STATUS_OK, the message will not be sent. SL_STATUS_OK - The message has been submitted for transmission. SL_STATUS_INVALID_INDEX - The bindingTableIndex refers to a non-multicast binding. SL_STATUS_NETWORK_DOWN - The node is not part of a network. SL_STATUS_MESSAGE_TOO_LONG - The message is too large to fit in a MAC layer frame. SL_STATUS_ALLOCATION_FAILED - The free packet buffer pool is empty. SL_STATUS_BUSY - Insufficient resources available in Network or MAC layers to send message.
         /// - Sequence: The sequence number that will be used when this message is transmitted.
         /// </returns>
-        public (Status Status, byte Sequence) SendMulticast(ZigbeeApsFrame apsFrame, byte hops, ushort broadcastAddr, ushort alias, byte nwkSequence, ushort messageTag, byte messageLength, byte[] messageContents)
+        public async Task<(Status Status, byte Sequence)> SendMulticast(ZigbeeApsFrame apsFrame, byte hops, ushort broadcastAddr, ushort alias, byte nwkSequence, ushort messageTag, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             SendMulticastRequest request = new SendMulticastRequest();
             request.ApsFrame = apsFrame;
@@ -2842,9 +2675,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.MessageTag = messageTag;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendMulticastResponse)));
-            SendMulticastResponse response = (SendMulticastResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendMulticastResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendMulticastResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Sequence);
         }
 
@@ -2856,16 +2688,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The reply message.</param>
         /// <returns>An sl_status_t value. SL_STATUS_INVALID_STATE - The SL_ZIGBEE_EZSP_UNICAST_REPLIES_POLICY is set to SL_ZIGBEE_EZSP_HOST_WILL_NOT_SUPPLY_REPLY. This means the NCP will automatically send an empty reply. The Host must change the policy to SL_ZIGBEE_EZSP_HOST_WILL_SUPPLY_REPLY before it can supply the reply. There is one exception to this rule: In the case of responses to message fragments, the host must call sendReply when a message fragment is received. In this case, the policy set on the NCP does not matter. The NCP expects a sendReply call from the Host for message fragments regardless of the current policy settings. SL_STATUS_ALLOCATION_FAILED - Not enough memory was available to send the reply. SL_STATUS_BUSY - Either no route or insufficient resources available. SL_STATUS_OK - The reply was successfully queued for transmission.</returns>
-        public Status SendReply(ushort sender, ZigbeeApsFrame apsFrame, byte messageLength, byte[] messageContents)
+        public async Task<Status> SendReply(ushort sender, ZigbeeApsFrame apsFrame, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             SendReplyRequest request = new SendReplyRequest();
             request.Sender = sender;
             request.ApsFrame = apsFrame;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendReplyResponse)));
-            SendReplyResponse response = (SendReplyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendReplyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendReplyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2881,12 +2712,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The unicast message supplied by the Host. The message contents are only included here if the decision for the messageContentsInCallback policy is messageTagAndContentsInCallback.
         /// </returns>
-        public (Status Status, MessageSentHandler Result) MessageSentHandler()
+        public async Task<(Status Status, MessageSentHandler Result)> MessageSentHandler(CancellationToken cancellationToken = default)
         {
             MessageSentHandlerRequest request = new MessageSentHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MessageSentHandlerResponse)));
-            MessageSentHandlerResponse response = (MessageSentHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MessageSentHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MessageSentHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new MessageSentHandler(response.Type, response.IndexOrDestination, response.ApsFrame, response.MessageTag, response.MessageLength, response.MessageContents));
         }
 
@@ -2896,14 +2726,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ConcentratorType">Must be either SL_ZIGBEE_HIGH_RAM_CONCENTRATOR or SL_ZIGBEE_LOW_RAM_CONCENTRATOR. The former is used when the caller has enough memory to store source routes for the whole network. In that case, remote nodes stop sending route records once the concentrator has successfully received one. The latter is used when the concentrator has insufficient RAM to store all outbound source routes. In that case, route records are sent to the concentrator prior to every inbound APS unicast.</param>
         /// <param name="Radius">The maximum number of hops the route request will be relayed. A radius of zero is converted to SL_ZIGBEE_MAX_HOPS</param>
         /// <returns>SL_STATUS_OK if the route request was successfully submitted to the transmit queue, and SL_STATUS_FAIL otherwise.</returns>
-        public Status SendManyToOneRouteRequest(ushort concentratorType, byte radius)
+        public async Task<Status> SendManyToOneRouteRequest(ushort concentratorType, byte radius, CancellationToken cancellationToken = default)
         {
             SendManyToOneRouteRequestRequest request = new SendManyToOneRouteRequestRequest();
             request.ConcentratorType = concentratorType;
             request.Radius = radius;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendManyToOneRouteRequestResponse)));
-            SendManyToOneRouteRequestResponse response = (SendManyToOneRouteRequestResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendManyToOneRouteRequestResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendManyToOneRouteRequestResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2914,15 +2743,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Units">The units for &lt;i&gt;interval&lt;/i&gt;.</param>
         /// <param name="FailureLimit">The number of poll failures that will be tolerated before a &lt;i&gt;pollCompleteHandler&lt;/i&gt; callback is generated. A value of zero will result in a callback for every poll. Any status value apart from SL_STATUS_OK and SL_STATUS_MAC_NO_DATA is counted as a failure.</param>
         /// <returns>The result of sending the first poll.</returns>
-        public Status PollForData(ushort interval, ZigbeeEventUnits units, byte failureLimit)
+        public async Task<Status> PollForData(ushort interval, ZigbeeEventUnits units, byte failureLimit, CancellationToken cancellationToken = default)
         {
             PollForDataRequest request = new PollForDataRequest();
             request.Interval = interval;
             request.Units = units;
             request.FailureLimit = failureLimit;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollForDataResponse)));
-            PollForDataResponse response = (PollForDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            PollForDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as PollForDataResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2930,12 +2758,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicates the result of a data poll to the parent of the local node.
         /// </summary>
         /// <returns>An sl_status_t value: SL_STATUS_OK - Data was received in response to the poll. SL_STATUS_MAC_NO_DATA - No data was pending. SL_STATUS_ZIGBEE_DELIVERY_FAILED - The poll message could not be sent. SL_STATUS_MAC_NO_ACK_RECEIVED - The poll message was sent but not acknowledged by the parent.</returns>
-        public Status PollCompleteHandler()
+        public async Task<Status> PollCompleteHandler(CancellationToken cancellationToken = default)
         {
             PollCompleteHandlerRequest request = new PollCompleteHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollCompleteHandlerResponse)));
-            PollCompleteHandlerResponse response = (PollCompleteHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            PollCompleteHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as PollCompleteHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2944,13 +2771,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildId">The ID of the child that just polled for data.</param>
         /// <returns>SL_STATUS_OK - The next time that the child polls, it will be informed that it has pending data. SL_STATUS_NOT_JOINED - The child identified by childId is not our child.</returns>
-        public Status SetMessageFlag(ushort childId)
+        public async Task<Status> SetMessageFlag(ushort childId, CancellationToken cancellationToken = default)
         {
             SetMessageFlagRequest request = new SetMessageFlagRequest();
             request.ChildId = childId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMessageFlagResponse)));
-            SetMessageFlagResponse response = (SetMessageFlagResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetMessageFlagResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetMessageFlagResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2959,13 +2785,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildId">The ID of the child that no longer has pending messages.</param>
         /// <returns>SL_STATUS_OK - The next time that the child polls, it will be informed that it does not have any pending messages. SL_STATUS_NOT_JOINED - The child identified by childId is not our child.</returns>
-        public Status ClearMessageFlag(ushort childId)
+        public async Task<Status> ClearMessageFlag(ushort childId, CancellationToken cancellationToken = default)
         {
             ClearMessageFlagRequest request = new ClearMessageFlagRequest();
             request.ChildId = childId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearMessageFlagResponse)));
-            ClearMessageFlagResponse response = (ClearMessageFlagResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearMessageFlagResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearMessageFlagResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -2976,12 +2801,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ChildId: The node ID of the child that is requesting data.
         /// - TransmitExpected: True if transmit is expected, false otherwise.
         /// </returns>
-        public PollHandler PollHandler()
+        public async Task<PollHandler> PollHandler(CancellationToken cancellationToken = default)
         {
             PollHandlerRequest request = new PollHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PollHandlerResponse)));
-            PollHandlerResponse response = (PollHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            PollHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as PollHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new PollHandler(response.ChildId, response.TransmitExpected);
         }
 
@@ -2992,15 +2816,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="LongId">The long ID of the node.</param>
         /// <param name="NodeType">The nodetype e.g., SL_ZIGBEE_ROUTER defining, if this would be added to the child table or neighbor table.</param>
         /// <returns>SL_STATUS_OK - This node has been successfully added. SL_STATUS_FAIL - The child was not added to the child/neighbor table.</returns>
-        public Status AddChild(ushort shortId, byte[] longId, ZigbeeNodeType nodeType)
+        public async Task<Status> AddChild(ushort shortId, byte[] longId, ZigbeeNodeType nodeType, CancellationToken cancellationToken = default)
         {
             AddChildRequest request = new AddChildRequest();
             request.ShortId = shortId;
             request.LongId = longId;
             request.NodeType = nodeType;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddChildResponse)));
-            AddChildResponse response = (AddChildResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            AddChildResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as AddChildResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3009,13 +2832,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ChildEui64">The long ID of the node.</param>
         /// <returns>SL_STATUS_OK - This node has been successfully removed. SL_STATUS_FAIL - The node was not found in either of the child or neighbor tables.</returns>
-        public Status RemoveChild(byte[] childEui64)
+        public async Task<Status> RemoveChild(byte[] childEui64, CancellationToken cancellationToken = default)
         {
             RemoveChildRequest request = new RemoveChildRequest();
             request.ChildEui64 = childEui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveChildResponse)));
-            RemoveChildResponse response = (RemoveChildResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RemoveChildResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RemoveChildResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3025,14 +2847,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ShortId">The short ID of the neighbor.</param>
         /// <param name="LongId">The long ID of the neighbor.</param>
         /// <returns>The RemoveNeighborResponse object from the NCP</returns>
-        public RemoveNeighborResponse RemoveNeighbor(ushort shortId, byte[] longId)
+        public async Task<RemoveNeighborResponse> RemoveNeighbor(ushort shortId, byte[] longId, CancellationToken cancellationToken = default)
         {
             RemoveNeighborRequest request = new RemoveNeighborRequest();
             request.ShortId = shortId;
             request.LongId = longId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveNeighborResponse)));
-            RemoveNeighborResponse response = (RemoveNeighborResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RemoveNeighborResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RemoveNeighborResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -3046,12 +2867,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>message</i> parameter in bytes.
         /// - Message: The incoming message.
         /// </returns>
-        public IncomingMessageHandler IncomingMessageHandler()
+        public async Task<IncomingMessageHandler> IncomingMessageHandler(CancellationToken cancellationToken = default)
         {
             IncomingMessageHandlerRequest request = new IncomingMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMessageHandlerResponse)));
-            IncomingMessageHandlerResponse response = (IncomingMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingMessageHandler(response.Type, response.ApsFrame, response.PacketInfo, response.MessageLength, response.Message);
         }
 
@@ -3060,13 +2880,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Mode">Source route discovery mode: off:0, on:1, reschedule:2</param>
         /// <returns>Remaining time(ms) until next MTORR broadcast if the mode is on, MAX_INT32U_VALUE if the mode is off</returns>
-        public uint SetSourceRouteDiscoveryMode(byte mode)
+        public async Task<uint> SetSourceRouteDiscoveryMode(byte mode, CancellationToken cancellationToken = default)
         {
             SetSourceRouteDiscoveryModeRequest request = new SetSourceRouteDiscoveryModeRequest();
             request.Mode = mode;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetSourceRouteDiscoveryModeResponse)));
-            SetSourceRouteDiscoveryModeResponse response = (SetSourceRouteDiscoveryModeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetSourceRouteDiscoveryModeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetSourceRouteDiscoveryModeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.RemainingTime;
         }
 
@@ -3078,12 +2897,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - LongId: The EUI64 of the concentrator.
         /// - Cost: The path cost to the concentrator. The cost may decrease as additional route request packets for this discovery arrive, but the callback is made only once.
         /// </returns>
-        public IncomingManyToOneRouteRequestHandler IncomingManyToOneRouteRequestHandler()
+        public async Task<IncomingManyToOneRouteRequestHandler> IncomingManyToOneRouteRequestHandler(CancellationToken cancellationToken = default)
         {
             IncomingManyToOneRouteRequestHandlerRequest request = new IncomingManyToOneRouteRequestHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingManyToOneRouteRequestHandlerResponse)));
-            IncomingManyToOneRouteRequestHandlerResponse response = (IncomingManyToOneRouteRequestHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingManyToOneRouteRequestHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingManyToOneRouteRequestHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingManyToOneRouteRequestHandler(response.Source, response.LongId, response.Cost);
         }
 
@@ -3094,12 +2912,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_ZIGBEE_SOURCE_ROUTE_FAILURE or SL_STATUS_ZIGBEE_MANY_TO_ONE_ROUTE_FAILURE.
         /// - Target: The short id of the remote node.
         /// </returns>
-        public (Status Status, ushort Target) IncomingRouteErrorHandler()
+        public async Task<(Status Status, ushort Target)> IncomingRouteErrorHandler(CancellationToken cancellationToken = default)
         {
             IncomingRouteErrorHandlerRequest request = new IncomingRouteErrorHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingRouteErrorHandlerResponse)));
-            IncomingRouteErrorHandlerResponse response = (IncomingRouteErrorHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingRouteErrorHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingRouteErrorHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Target);
         }
 
@@ -3110,12 +2927,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - ErrorCode: One byte over-the-air error code from network status message
         /// - Target: The short ID of the remote node
         /// </returns>
-        public IncomingNetworkStatusHandler IncomingNetworkStatusHandler()
+        public async Task<IncomingNetworkStatusHandler> IncomingNetworkStatusHandler(CancellationToken cancellationToken = default)
         {
             IncomingNetworkStatusHandlerRequest request = new IncomingNetworkStatusHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingNetworkStatusHandlerResponse)));
-            IncomingNetworkStatusHandlerResponse response = (IncomingNetworkStatusHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingNetworkStatusHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingNetworkStatusHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingNetworkStatusHandler(response.ErrorCode, response.Target);
         }
 
@@ -3130,12 +2946,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - RelayCount: The number of relays in <i>relayList</i>.
         /// - RelayList: The route record. Each relay in the list is an uint16_t node ID. The list is passed as uint8_t * to avoid alignment problems.
         /// </returns>
-        public IncomingRouteRecordHandler IncomingRouteRecordHandler()
+        public async Task<IncomingRouteRecordHandler> IncomingRouteRecordHandler(CancellationToken cancellationToken = default)
         {
             IncomingRouteRecordHandlerRequest request = new IncomingRouteRecordHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingRouteRecordHandlerResponse)));
-            IncomingRouteRecordHandlerResponse response = (IncomingRouteRecordHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingRouteRecordHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingRouteRecordHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingRouteRecordHandler(response.Source, response.SourceEui, response.LastHopLqi, response.LastHopRssi, response.RelayCount, response.RelayList);
         }
 
@@ -3146,15 +2961,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="RelayCount">The number of relays in &lt;i&gt;relayList&lt;/i&gt;.</param>
         /// <param name="RelayList">The source route.</param>
         /// <returns>SL_STATUS_OK if the source route was successfully stored, and SL_STATUS_ALLOCATION_FAILED otherwise.</returns>
-        public Status SetSourceRoute(ushort destination, byte relayCount, ushort[] relayList)
+        public async Task<Status> SetSourceRoute(ushort destination, byte relayCount, ushort[] relayList, CancellationToken cancellationToken = default)
         {
             SetSourceRouteRequest request = new SetSourceRouteRequest();
             request.Destination = destination;
             request.RelayCount = relayCount;
             request.RelayList = relayList;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetSourceRouteResponse)));
-            SetSourceRouteResponse response = (SetSourceRouteResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetSourceRouteResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetSourceRouteResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3165,15 +2979,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TargetLong">The long address of the destination node.</param>
         /// <param name="ParentShortId">The parent node of the destination node.</param>
         /// <returns>SL_STATUS_OK if send was successful</returns>
-        public Status UnicastCurrentNetworkKey(ushort targetShort, byte[] targetLong, ushort parentShortId)
+        public async Task<Status> UnicastCurrentNetworkKey(ushort targetShort, byte[] targetLong, ushort parentShortId, CancellationToken cancellationToken = default)
         {
             UnicastCurrentNetworkKeyRequest request = new UnicastCurrentNetworkKeyRequest();
             request.TargetShort = targetShort;
             request.TargetLong = targetLong;
             request.ParentShortId = parentShortId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnicastCurrentNetworkKeyResponse)));
-            UnicastCurrentNetworkKeyResponse response = (UnicastCurrentNetworkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            UnicastCurrentNetworkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as UnicastCurrentNetworkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3182,13 +2995,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="AddressTableIndex">The index of an address table entry.</param>
         /// <returns>True if the address table entry is active, false otherwise.</returns>
-        public bool AddressTableEntryIsActive(byte addressTableIndex)
+        public async Task<bool> AddressTableEntryIsActive(byte addressTableIndex, CancellationToken cancellationToken = default)
         {
             AddressTableEntryIsActiveRequest request = new AddressTableEntryIsActiveRequest();
             request.AddressTableIndex = addressTableIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AddressTableEntryIsActiveResponse)));
-            AddressTableEntryIsActiveResponse response = (AddressTableEntryIsActiveResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            AddressTableEntryIsActiveResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as AddressTableEntryIsActiveResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Active;
         }
 
@@ -3199,15 +3011,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Eui64">The EUI64 to use for the address table entry.</param>
         /// <param name="Id">The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index or SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID which indicates that the entry stored in the address table at the given index is not in use.</param>
         /// <returns>SL_STATUS_OK if the information was successfully set, and SL_STATUS_ZIGBEE_ADDRESS_TABLE_ENTRY_IS_ACTIVE otherwise.</returns>
-        public Status SetAddressTableInfo(byte addressTableIndex, byte[] eui64, ushort id)
+        public async Task<Status> SetAddressTableInfo(byte addressTableIndex, byte[] eui64, ushort id, CancellationToken cancellationToken = default)
         {
             SetAddressTableInfoRequest request = new SetAddressTableInfoRequest();
             request.AddressTableIndex = addressTableIndex;
             request.Eui64 = eui64;
             request.Id = id;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetAddressTableInfoResponse)));
-            SetAddressTableInfoResponse response = (SetAddressTableInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetAddressTableInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetAddressTableInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3220,13 +3031,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeId: One of the following: The short ID corresponding to the remote node whose EUI64 is stored in the address table at the given index. SL_ZIGBEE_UNKNOWN_NODE_ID - Indicates that the EUI64 stored in the address table at the given index is valid but the short ID is currently unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID - Indicates that the EUI64 stored in the address table at the given location is valid and network address discovery is underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID - Indicates that the entry stored in the address table at the given index is not in use.
         /// - Eui64: The EUI64 of the address table entry is copied to this location.
         /// </returns>
-        public (Status Status, GetAddressTableInfo Result) GetAddressTableInfo(byte addressTableIndex)
+        public async Task<(Status Status, GetAddressTableInfo Result)> GetAddressTableInfo(byte addressTableIndex, CancellationToken cancellationToken = default)
         {
             GetAddressTableInfoRequest request = new GetAddressTableInfoRequest();
             request.AddressTableIndex = addressTableIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetAddressTableInfoResponse)));
-            GetAddressTableInfoResponse response = (GetAddressTableInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetAddressTableInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetAddressTableInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new GetAddressTableInfo(response.NodeId, response.Eui64));
         }
 
@@ -3236,14 +3046,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="RemoteEui64">The address of the node for which the timeout is to be set.</param>
         /// <param name="ExtendedTimeout">true if the retry interval should be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval should be used.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure  </returns>
-        public Status SetExtendedTimeout(byte[] remoteEui64, bool extendedTimeout)
+        public async Task<Status> SetExtendedTimeout(byte[] remoteEui64, bool extendedTimeout, CancellationToken cancellationToken = default)
         {
             SetExtendedTimeoutRequest request = new SetExtendedTimeoutRequest();
             request.RemoteEui64 = remoteEui64;
             request.ExtendedTimeout = extendedTimeout;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetExtendedTimeoutResponse)));
-            SetExtendedTimeoutResponse response = (SetExtendedTimeoutResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetExtendedTimeoutResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetExtendedTimeoutResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3252,13 +3061,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="RemoteEui64">The address of the node for which the timeout is to be returned.</param>
         /// <returns>SL_STATUS_OK if the retry interval will be increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT and SL_STATUS_FAIL if the normal retry interval will be used.</returns>
-        public Status GetExtendedTimeout(byte[] remoteEui64)
+        public async Task<Status> GetExtendedTimeout(byte[] remoteEui64, CancellationToken cancellationToken = default)
         {
             GetExtendedTimeoutRequest request = new GetExtendedTimeoutRequest();
             request.RemoteEui64 = remoteEui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetExtendedTimeoutResponse)));
-            GetExtendedTimeoutResponse response = (GetExtendedTimeoutResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetExtendedTimeoutResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetExtendedTimeoutResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3275,16 +3083,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - OldId: One of the following: The short ID corresponding to the EUI64 before it was modified. SL_ZIGBEE_UNKNOWN_NODE_ID if the short ID was unknown. SL_ZIGBEE_DISCOVERY_ACTIVE_NODE_ID if discovery of the short ID was underway. SL_ZIGBEE_TABLE_ENTRY_UNUSED_NODE_ID if the address table entry was unused.
         /// - OldExtendedTimeout: true if the retry interval was being increased by SL_ZIGBEE_INDIRECT_TRANSMISSION_TIMEOUT. false if the normal retry interval was being used.
         /// </returns>
-        public (Status Status, ReplaceAddressTableEntry Result) ReplaceAddressTableEntry(byte addressTableIndex, byte[] newEui64, ushort newId, bool newExtendedTimeout)
+        public async Task<(Status Status, ReplaceAddressTableEntry Result)> ReplaceAddressTableEntry(byte addressTableIndex, byte[] newEui64, ushort newId, bool newExtendedTimeout, CancellationToken cancellationToken = default)
         {
             ReplaceAddressTableEntryRequest request = new ReplaceAddressTableEntryRequest();
             request.AddressTableIndex = addressTableIndex;
             request.NewEui64 = newEui64;
             request.NewId = newId;
             request.NewExtendedTimeout = newExtendedTimeout;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ReplaceAddressTableEntryResponse)));
-            ReplaceAddressTableEntryResponse response = (ReplaceAddressTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ReplaceAddressTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ReplaceAddressTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new ReplaceAddressTableEntry(response.OldEui64, response.OldId, response.OldExtendedTimeout));
         }
 
@@ -3296,13 +3103,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK if the short ID was found, SL_STATUS_FAIL if the short ID is not known.
         /// - NodeId: The short ID of the node or SL_ZIGBEE_NULL_NODE_ID if the short ID is not known.
         /// </returns>
-        public (Status Status, ushort NodeId) LookupNodeIdByEui64(byte[] eui64)
+        public async Task<(Status Status, ushort NodeId)> LookupNodeIdByEui64(byte[] eui64, CancellationToken cancellationToken = default)
         {
             LookupNodeIdByEui64Request request = new LookupNodeIdByEui64Request();
             request.Eui64 = eui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LookupNodeIdByEui64Response)));
-            LookupNodeIdByEui64Response response = (LookupNodeIdByEui64Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            LookupNodeIdByEui64Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as LookupNodeIdByEui64Response;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.NodeId);
         }
 
@@ -3314,13 +3120,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: SL_STATUS_OK if the EUI64 was found, SL_STATUS_FAIL if the EUI64 is not known.
         /// - Eui64: The EUI64 of the node.
         /// </returns>
-        public (Status Status, byte[] Eui64) LookupEui64ByNodeId(ushort nodeId)
+        public async Task<(Status Status, byte[] Eui64)> LookupEui64ByNodeId(ushort nodeId, CancellationToken cancellationToken = default)
         {
             LookupEui64ByNodeIdRequest request = new LookupEui64ByNodeIdRequest();
             request.NodeId = nodeId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LookupEui64ByNodeIdResponse)));
-            LookupEui64ByNodeIdResponse response = (LookupEui64ByNodeIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            LookupEui64ByNodeIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as LookupEui64ByNodeIdResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Eui64);
         }
 
@@ -3332,13 +3137,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Value: The contents of the multicast entry.
         /// </returns>
-        public (Status Status, ZigbeeMulticastTableEntry Value) GetMulticastTableEntry(byte index)
+        public async Task<(Status Status, ZigbeeMulticastTableEntry Value)> GetMulticastTableEntry(byte index, CancellationToken cancellationToken = default)
         {
             GetMulticastTableEntryRequest request = new GetMulticastTableEntryRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMulticastTableEntryResponse)));
-            GetMulticastTableEntryResponse response = (GetMulticastTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetMulticastTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetMulticastTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Value);
         }
 
@@ -3348,14 +3152,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">The index of a multicast table entry</param>
         /// <param name="Value">The contents of the multicast entry.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetMulticastTableEntry(byte index, ZigbeeMulticastTableEntry value)
+        public async Task<Status> SetMulticastTableEntry(byte index, ZigbeeMulticastTableEntry value, CancellationToken cancellationToken = default)
         {
             SetMulticastTableEntryRequest request = new SetMulticastTableEntryRequest();
             request.Index = index;
             request.Value = value;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMulticastTableEntryResponse)));
-            SetMulticastTableEntryResponse response = (SetMulticastTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetMulticastTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetMulticastTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3363,12 +3166,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback invoked by the EmberZNet stack when an id conflict is discovered, that is, two different nodes in the network were found to be using the same short id. The stack automatically removes the conflicting short id from its internal tables (address, binding, route, neighbor, and child tables). The application should discontinue any other use of the id.
         /// </summary>
         /// <returns>The short id for which a conflict was detected</returns>
-        public ushort IdConflictHandler()
+        public async Task<ushort> IdConflictHandler(CancellationToken cancellationToken = default)
         {
             IdConflictHandlerRequest request = new IdConflictHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IdConflictHandlerResponse)));
-            IdConflictHandlerResponse response = (IdConflictHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IdConflictHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IdConflictHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Id;
         }
 
@@ -3377,13 +3179,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Erase">Erase the node type or not</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status WriteNodeData(bool erase)
+        public async Task<Status> WriteNodeData(bool erase, CancellationToken cancellationToken = default)
         {
             WriteNodeDataRequest request = new WriteNodeDataRequest();
             request.Erase = erase;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(WriteNodeDataResponse)));
-            WriteNodeDataResponse response = (WriteNodeDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            WriteNodeDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as WriteNodeDataResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3395,16 +3196,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Priority">transmit priority.</param>
         /// <param name="UseCca">Should we enable CCA or not.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SendRawMessage(byte messageLength, byte[] messageContents, byte priority, bool useCca)
+        public async Task<Status> SendRawMessage(byte messageLength, byte[] messageContents, byte priority, bool useCca, CancellationToken cancellationToken = default)
         {
             SendRawMessageRequest request = new SendRawMessageRequest();
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
             request.Priority = priority;
             request.UseCca = useCca;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendRawMessageResponse)));
-            SendRawMessageResponse response = (SendRawMessageResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendRawMessageResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendRawMessageResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3417,12 +3217,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
-        public MacPassthroughMessageHandler MacPassthroughMessageHandler()
+        public async Task<MacPassthroughMessageHandler> MacPassthroughMessageHandler(CancellationToken cancellationToken = default)
         {
             MacPassthroughMessageHandlerRequest request = new MacPassthroughMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacPassthroughMessageHandlerResponse)));
-            MacPassthroughMessageHandlerResponse response = (MacPassthroughMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MacPassthroughMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MacPassthroughMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new MacPassthroughMessageHandler(response.MessageType, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
@@ -3436,12 +3235,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The raw message that was received.
         /// </returns>
-        public MacFilterMatchMessageHandler MacFilterMatchMessageHandler()
+        public async Task<MacFilterMatchMessageHandler> MacFilterMatchMessageHandler(CancellationToken cancellationToken = default)
         {
             MacFilterMatchMessageHandlerRequest request = new MacFilterMatchMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MacFilterMatchMessageHandlerResponse)));
-            MacFilterMatchMessageHandlerResponse response = (MacFilterMatchMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MacFilterMatchMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MacFilterMatchMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new MacFilterMatchMessageHandler(response.FilterValueMatch, response.LegacyPassthroughType, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
@@ -3453,12 +3251,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageContents: The message that was transmitted.
         /// - Status: SL_STATUS_OK if the transmission was successful, or SL_STATUS_ZIGBEE_DELIVERY_FAILED if not
         /// </returns>
-        public (Status Status, RawTransmitCompleteHandler Result) RawTransmitCompleteHandler()
+        public async Task<(Status Status, RawTransmitCompleteHandler Result)> RawTransmitCompleteHandler(CancellationToken cancellationToken = default)
         {
             RawTransmitCompleteHandlerRequest request = new RawTransmitCompleteHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RawTransmitCompleteHandlerResponse)));
-            RawTransmitCompleteHandlerResponse response = (RawTransmitCompleteHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RawTransmitCompleteHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RawTransmitCompleteHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new RawTransmitCompleteHandler(response.MessageLength, response.MessageContents));
         }
 
@@ -3467,13 +3264,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="WaitBeforeRetryIntervalMs">Time in milliseconds the device waits before retrying a data poll when a MAC level data poll fails for any reason.</param>
         /// <returns>The SetMacPollFailureWaitTimeResponse object from the NCP</returns>
-        public SetMacPollFailureWaitTimeResponse SetMacPollFailureWaitTime(uint waitBeforeRetryIntervalMs)
+        public async Task<SetMacPollFailureWaitTimeResponse> SetMacPollFailureWaitTime(uint waitBeforeRetryIntervalMs, CancellationToken cancellationToken = default)
         {
             SetMacPollFailureWaitTimeRequest request = new SetMacPollFailureWaitTimeRequest();
             request.WaitBeforeRetryIntervalMs = waitBeforeRetryIntervalMs;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetMacPollFailureWaitTimeResponse)));
-            SetMacPollFailureWaitTimeResponse response = (SetMacPollFailureWaitTimeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetMacPollFailureWaitTimeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetMacPollFailureWaitTimeResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -3481,12 +3277,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the maximum number of no-ack retries that will be attempted
         /// </summary>
         /// <returns>Max MAC retries</returns>
-        public byte GetMaxMacRetries()
+        public async Task<byte> GetMaxMacRetries(CancellationToken cancellationToken = default)
         {
             GetMaxMacRetriesRequest request = new GetMaxMacRetriesRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetMaxMacRetriesResponse)));
-            GetMaxMacRetriesResponse response = (GetMaxMacRetriesResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetMaxMacRetriesResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetMaxMacRetriesResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Retries;
         }
 
@@ -3497,12 +3292,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The attempt to set the pramaters returns SL_STATUS_OK
         /// - Param: Gets the beacon prioritization related variable
         /// </returns>
-        public (Status Status, ZigbeeBeaconClassificationParams Param) SetBeaconClassificationParams()
+        public async Task<(Status Status, ZigbeeBeaconClassificationParams Param)> SetBeaconClassificationParams(CancellationToken cancellationToken = default)
         {
             SetBeaconClassificationParamsRequest request = new SetBeaconClassificationParamsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetBeaconClassificationParamsResponse)));
-            SetBeaconClassificationParamsResponse response = (SetBeaconClassificationParamsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetBeaconClassificationParamsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetBeaconClassificationParamsResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Param);
         }
 
@@ -3513,12 +3307,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The attempt to get the pramaters returns SL_STATUS_OK
         /// - Param: Gets the beacon prioritization related variable
         /// </returns>
-        public (Status Status, ZigbeeBeaconClassificationParams Param) GetBeaconClassificationParams()
+        public async Task<(Status Status, ZigbeeBeaconClassificationParams Param)> GetBeaconClassificationParams(CancellationToken cancellationToken = default)
         {
             GetBeaconClassificationParamsRequest request = new GetBeaconClassificationParamsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetBeaconClassificationParamsResponse)));
-            GetBeaconClassificationParamsResponse response = (GetBeaconClassificationParamsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetBeaconClassificationParamsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetBeaconClassificationParamsResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Param);
         }
 
@@ -3526,12 +3319,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Indicate whether there are pending messages in the APS retry queue.
         /// </summary>
         /// <returns>True if there is a pending message for this network in the APS retry queue, false if not.</returns>
-        public bool PendingAckedMessages()
+        public async Task<bool> PendingAckedMessages(CancellationToken cancellationToken = default)
         {
             PendingAckedMessagesRequest request = new PendingAckedMessagesRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(PendingAckedMessagesResponse)));
-            PendingAckedMessagesResponse response = (PendingAckedMessagesResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            PendingAckedMessagesResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as PendingAckedMessagesResponse;
+            _logger.LogDebug(response?.ToString());
             return response.PendingMessages;
         }
 
@@ -3539,12 +3331,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Reschedule sending link status message, with first one being sent immediately.
         /// </summary>
         /// <returns></returns>
-        public Status RescheduleLinkStatusMsg()
+        public async Task<Status> RescheduleLinkStatusMsg(CancellationToken cancellationToken = default)
         {
             RescheduleLinkStatusMsgRequest request = new RescheduleLinkStatusMsgRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RescheduleLinkStatusMsgResponse)));
-            RescheduleLinkStatusMsgResponse response = (RescheduleLinkStatusMsgResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RescheduleLinkStatusMsgResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RescheduleLinkStatusMsgResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3554,14 +3345,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="NwkUpdateId">Desired value of the network update ID.</param>
         /// <param name="SetWhenOnNetwork">Set to true in case change should also apply when on network.</param>
         /// <returns>Status of set operation for the network update ID.</returns>
-        public Status SetNwkUpdateId(byte nwkUpdateId, bool setWhenOnNetwork)
+        public async Task<Status> SetNwkUpdateId(byte nwkUpdateId, bool setWhenOnNetwork, CancellationToken cancellationToken = default)
         {
             SetNwkUpdateIdRequest request = new SetNwkUpdateIdRequest();
             request.NwkUpdateId = nwkUpdateId;
             request.SetWhenOnNetwork = setWhenOnNetwork;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetNwkUpdateIdResponse)));
-            SetNwkUpdateIdResponse response = (SetNwkUpdateIdResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetNwkUpdateIdResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetNwkUpdateIdResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3570,13 +3360,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="State">The security configuration to be set.</param>
         /// <returns>The success or failure code of the operation.</returns>
-        public Status SetInitialSecurityState(ZigbeeInitialSecurityState state)
+        public async Task<Status> SetInitialSecurityState(ZigbeeInitialSecurityState state, CancellationToken cancellationToken = default)
         {
             SetInitialSecurityStateRequest request = new SetInitialSecurityStateRequest();
             request.State = state;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetInitialSecurityStateResponse)));
-            SetInitialSecurityStateResponse response = (SetInitialSecurityStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetInitialSecurityStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetInitialSecurityStateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Success;
         }
 
@@ -3587,12 +3376,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The success or failure code of the operation.
         /// - State: The security configuration in use by the stack.
         /// </returns>
-        public (Status Status, ZigbeeCurrentSecurityState State) GetCurrentSecurityState()
+        public async Task<(Status Status, ZigbeeCurrentSecurityState State)> GetCurrentSecurityState(CancellationToken cancellationToken = default)
         {
             GetCurrentSecurityStateRequest request = new GetCurrentSecurityStateRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCurrentSecurityStateResponse)));
-            GetCurrentSecurityStateResponse response = (GetCurrentSecurityStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetCurrentSecurityStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetCurrentSecurityStateResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.State);
         }
 
@@ -3604,13 +3392,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The success or failure code of the operation.
         /// - Key: Data to store the exported key in.
         /// </returns>
-        public (Status Status, ZigbeeSecManKey Key) SecManExportKey(ZigbeeSecManContext context)
+        public async Task<(Status Status, ZigbeeSecManKey Key)> SecManExportKey(ZigbeeSecManContext context, CancellationToken cancellationToken = default)
         {
             SecManExportKeyRequest request = new SecManExportKeyRequest();
             request.Context = context;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportKeyResponse)));
-            SecManExportKeyResponse response = (SecManExportKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManExportKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManExportKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Key);
         }
 
@@ -3620,14 +3407,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Context">Metadata to identify where the imported key should be stored.</param>
         /// <param name="Key">The key to be imported.</param>
         /// <returns>The success or failure code of the operation.</returns>
-        public Status SecManImportKey(ZigbeeSecManContext context, ZigbeeSecManKey key)
+        public async Task<Status> SecManImportKey(ZigbeeSecManContext context, ZigbeeSecManKey key, CancellationToken cancellationToken = default)
         {
             SecManImportKeyRequest request = new SecManImportKeyRequest();
             request.Context = context;
             request.Key = key;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportKeyResponse)));
-            SecManImportKeyResponse response = (SecManImportKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManImportKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManImportKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3635,12 +3421,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback to inform the application that the Network Key has been updated and the node has been switched over to use the new key. The actual key being used is not passed up, but the sequence number is.
         /// </summary>
         /// <returns>The sequence number of the new network key.</returns>
-        public byte SwitchNetworkKeyHandler()
+        public async Task<byte> SwitchNetworkKeyHandler(CancellationToken cancellationToken = default)
         {
             SwitchNetworkKeyHandlerRequest request = new SwitchNetworkKeyHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SwitchNetworkKeyHandlerResponse)));
-            SwitchNetworkKeyHandlerResponse response = (SwitchNetworkKeyHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SwitchNetworkKeyHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SwitchNetworkKeyHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.SequenceNumber;
         }
 
@@ -3650,14 +3435,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Address">The address to search for. Alternatively, all zeros may be passed in to search for the first empty entry.</param>
         /// <param name="LinkKey">This indicates whether to search for an entry that contains a link key or a master key. true means to search for an entry with a Link Key.</param>
         /// <returns>This indicates the index of the entry that matches the search criteria. A value of 0xFF is returned if not matching entry is found.</returns>
-        public byte FindKeyTableEntry(byte[] address, bool linkKey)
+        public async Task<byte> FindKeyTableEntry(byte[] address, bool linkKey, CancellationToken cancellationToken = default)
         {
             FindKeyTableEntryRequest request = new FindKeyTableEntryRequest();
             request.Address = address;
             request.LinkKey = linkKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(FindKeyTableEntryResponse)));
-            FindKeyTableEntryResponse response = (FindKeyTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            FindKeyTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as FindKeyTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Index;
         }
 
@@ -3667,14 +3451,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DestinationNodeId">The short address of the node to which this command will be sent</param>
         /// <param name="DestinationEui64">The long address of the node to which this command will be sent</param>
         /// <returns>An sl_status_t value indicating success of failure of the operation</returns>
-        public Status SendTrustCenterLinkKey(ushort destinationNodeId, byte[] destinationEui64)
+        public async Task<Status> SendTrustCenterLinkKey(ushort destinationNodeId, byte[] destinationEui64, CancellationToken cancellationToken = default)
         {
             SendTrustCenterLinkKeyRequest request = new SendTrustCenterLinkKeyRequest();
             request.DestinationNodeId = destinationNodeId;
             request.DestinationEui64 = destinationEui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendTrustCenterLinkKeyResponse)));
-            SendTrustCenterLinkKeyResponse response = (SendTrustCenterLinkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendTrustCenterLinkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendTrustCenterLinkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3683,13 +3466,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Index">This indicates the index of entry to erase.</param>
         /// <returns>The success or failure of the operation.</returns>
-        public Status EraseKeyTableEntry(byte index)
+        public async Task<Status> EraseKeyTableEntry(byte index, CancellationToken cancellationToken = default)
         {
             EraseKeyTableEntryRequest request = new EraseKeyTableEntryRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(EraseKeyTableEntryResponse)));
-            EraseKeyTableEntryResponse response = (EraseKeyTableEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            EraseKeyTableEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as EraseKeyTableEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3697,12 +3479,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This function clears the key table of the current network.
         /// </summary>
         /// <returns>The success or failure of the operation.</returns>
-        public Status ClearKeyTable()
+        public async Task<Status> ClearKeyTable(CancellationToken cancellationToken = default)
         {
             ClearKeyTableRequest request = new ClearKeyTableRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearKeyTableResponse)));
-            ClearKeyTableResponse response = (ClearKeyTableResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearKeyTableResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearKeyTableResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3711,13 +3492,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Partner">This is the IEEE address of the partner device that will share the link key.</param>
         /// <returns>The success or failure of sending the request. This is not the final result of the attempt. sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will return that.</returns>
-        public Status RequestLinkKey(byte[] partner)
+        public async Task<Status> RequestLinkKey(byte[] partner, CancellationToken cancellationToken = default)
         {
             RequestLinkKeyRequest request = new RequestLinkKeyRequest();
             request.Partner = partner;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RequestLinkKeyResponse)));
-            RequestLinkKeyResponse response = (RequestLinkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RequestLinkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RequestLinkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3726,13 +3506,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="MaxAttempts">The maximum number of attempts a node should make when sending the Node Descriptor, Request Key, and Verify Key Confirm messages. The number of attempts resets for each message type sent (e.g., if maxAttempts is 3, up to 3 Node Descriptors are sent, up to 3 Request Keys, and up to 3 Verify Key Confirm messages are sent).</param>
         /// <returns>The success or failure of sending the request. If the Node Descriptor is successfully transmitted, sl_zigbee_ezsp_zigbee_key_establishment_handler(...) will be called at a later time with a final status result.</returns>
-        public Status UpdateTcLinkKey(byte maxAttempts)
+        public async Task<Status> UpdateTcLinkKey(byte maxAttempts, CancellationToken cancellationToken = default)
         {
             UpdateTcLinkKeyRequest request = new UpdateTcLinkKeyRequest();
             request.MaxAttempts = maxAttempts;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UpdateTcLinkKeyResponse)));
-            UpdateTcLinkKeyResponse response = (UpdateTcLinkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            UpdateTcLinkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as UpdateTcLinkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3743,12 +3522,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Partner: This is the IEEE address of the partner that the device successfully established a key with. This value is all zeros on a failure.
         /// - Status: This is the status indicating what was established or why the key establishment failed.
         /// </returns>
-        public ZigbeeKeyEstablishmentHandler ZigbeeKeyEstablishmentHandler()
+        public async Task<ZigbeeKeyEstablishmentHandler> ZigbeeKeyEstablishmentHandler(CancellationToken cancellationToken = default)
         {
             ZigbeeKeyEstablishmentHandlerRequest request = new ZigbeeKeyEstablishmentHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZigbeeKeyEstablishmentHandlerResponse)));
-            ZigbeeKeyEstablishmentHandlerResponse response = (ZigbeeKeyEstablishmentHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZigbeeKeyEstablishmentHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZigbeeKeyEstablishmentHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new ZigbeeKeyEstablishmentHandler(response.Partner, response.Status);
         }
 
@@ -3756,12 +3534,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clear all of the transient link keys from RAM.
         /// </summary>
         /// <returns>The ClearTransientLinkKeysResponse object from the NCP</returns>
-        public ClearTransientLinkKeysResponse ClearTransientLinkKeys()
+        public async Task<ClearTransientLinkKeysResponse> ClearTransientLinkKeys(CancellationToken cancellationToken = default)
         {
             ClearTransientLinkKeysRequest request = new ClearTransientLinkKeysRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTransientLinkKeysResponse)));
-            ClearTransientLinkKeysResponse response = (ClearTransientLinkKeysResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearTransientLinkKeysResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearTransientLinkKeysResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -3772,12 +3549,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: Success or failure of retrieving network key info.
         /// - NetworkKeyInfo: Information about current and alternate network keys.
         /// </returns>
-        public (Status Status, ZigbeeSecManNetworkKeyInfo NetworkKeyInfo) SecManGetNetworkKeyInfo()
+        public async Task<(Status Status, ZigbeeSecManNetworkKeyInfo NetworkKeyInfo)> SecManGetNetworkKeyInfo(CancellationToken cancellationToken = default)
         {
             SecManGetNetworkKeyInfoRequest request = new SecManGetNetworkKeyInfoRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManGetNetworkKeyInfoResponse)));
-            SecManGetNetworkKeyInfoResponse response = (SecManGetNetworkKeyInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManGetNetworkKeyInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManGetNetworkKeyInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.NetworkKeyInfo);
         }
 
@@ -3789,13 +3565,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: Status of metadata retrieval operation.
         /// - KeyData: Metadata about the referenced key.
         /// </returns>
-        public (Status Status, ZigbeeSecManApsKeyMetadata KeyData) SecManGetApsKeyInfo(ZigbeeSecManContext context)
+        public async Task<(Status Status, ZigbeeSecManApsKeyMetadata KeyData)> SecManGetApsKeyInfo(ZigbeeSecManContext context, CancellationToken cancellationToken = default)
         {
             SecManGetApsKeyInfoRequest request = new SecManGetApsKeyInfoRequest();
             request.Context = context;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManGetApsKeyInfoResponse)));
-            SecManGetApsKeyInfoResponse response = (SecManGetApsKeyInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManGetApsKeyInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManGetApsKeyInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.KeyData);
         }
 
@@ -3806,15 +3581,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Address">EUI64 this key is associated with.</param>
         /// <param name="PlaintextKey">The key data to be imported.</param>
         /// <returns>Status of key import operation.</returns>
-        public Status SecManImportLinkKey(byte index, byte[] address, ZigbeeSecManKey plaintextKey)
+        public async Task<Status> SecManImportLinkKey(byte index, byte[] address, ZigbeeSecManKey plaintextKey, CancellationToken cancellationToken = default)
         {
             SecManImportLinkKeyRequest request = new SecManImportLinkKeyRequest();
             request.Index = index;
             request.Address = address;
             request.PlaintextKey = plaintextKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportLinkKeyResponse)));
-            SecManImportLinkKeyResponse response = (SecManImportLinkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManImportLinkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManImportLinkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3828,13 +3602,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, SecManExportLinkKeyByIndex Result) SecManExportLinkKeyByIndex(byte index)
+        public async Task<(Status Status, SecManExportLinkKeyByIndex Result)> SecManExportLinkKeyByIndex(byte index, CancellationToken cancellationToken = default)
         {
             SecManExportLinkKeyByIndexRequest request = new SecManExportLinkKeyByIndexRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByIndexResponse)));
-            SecManExportLinkKeyByIndexResponse response = (SecManExportLinkKeyByIndexResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManExportLinkKeyByIndexResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManExportLinkKeyByIndexResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new SecManExportLinkKeyByIndex(response.Context, response.PlaintextKey, response.KeyData));
         }
 
@@ -3848,13 +3621,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, SecManExportLinkKeyByEui Result) SecManExportLinkKeyByEui(byte[] eui)
+        public async Task<(Status Status, SecManExportLinkKeyByEui Result)> SecManExportLinkKeyByEui(byte[] eui, CancellationToken cancellationToken = default)
         {
             SecManExportLinkKeyByEuiRequest request = new SecManExportLinkKeyByEuiRequest();
             request.Eui = eui;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportLinkKeyByEuiResponse)));
-            SecManExportLinkKeyByEuiResponse response = (SecManExportLinkKeyByEuiResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManExportLinkKeyByEuiResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManExportLinkKeyByEuiResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new SecManExportLinkKeyByEui(response.Context, response.PlaintextKey, response.KeyData));
         }
 
@@ -3863,13 +3635,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Context">Context struct to check the validity of.</param>
         /// <returns>Validity of the checked context.</returns>
-        public Status SecManCheckKeyContext(ZigbeeSecManContext context)
+        public async Task<Status> SecManCheckKeyContext(ZigbeeSecManContext context, CancellationToken cancellationToken = default)
         {
             SecManCheckKeyContextRequest request = new SecManCheckKeyContextRequest();
             request.Context = context;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManCheckKeyContextResponse)));
-            SecManCheckKeyContextResponse response = (SecManCheckKeyContextResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManCheckKeyContextResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManCheckKeyContextResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3879,14 +3650,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Eui64">EUI64 associated with this transient key.</param>
         /// <param name="PlaintextKey">The key to import.</param>
         /// <returns>Status of key import operation.</returns>
-        public Status SecManImportTransientKey(byte[] eui64, ZigbeeSecManKey plaintextKey)
+        public async Task<Status> SecManImportTransientKey(byte[] eui64, ZigbeeSecManKey plaintextKey, CancellationToken cancellationToken = default)
         {
             SecManImportTransientKeyRequest request = new SecManImportTransientKeyRequest();
             request.Eui64 = eui64;
             request.PlaintextKey = plaintextKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManImportTransientKeyResponse)));
-            SecManImportTransientKeyResponse response = (SecManImportTransientKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManImportTransientKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManImportTransientKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3900,13 +3670,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, SecManExportTransientKeyByIndex Result) SecManExportTransientKeyByIndex(byte index)
+        public async Task<(Status Status, SecManExportTransientKeyByIndex Result)> SecManExportTransientKeyByIndex(byte index, CancellationToken cancellationToken = default)
         {
             SecManExportTransientKeyByIndexRequest request = new SecManExportTransientKeyByIndexRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByIndexResponse)));
-            SecManExportTransientKeyByIndexResponse response = (SecManExportTransientKeyByIndexResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManExportTransientKeyByIndexResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManExportTransientKeyByIndexResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new SecManExportTransientKeyByIndex(response.Context, response.PlaintextKey, response.KeyData));
         }
 
@@ -3920,13 +3689,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PlaintextKey: The exported key.
         /// - KeyData: Metadata about the key.
         /// </returns>
-        public (Status Status, SecManExportTransientKeyByEui Result) SecManExportTransientKeyByEui(byte[] eui)
+        public async Task<(Status Status, SecManExportTransientKeyByEui Result)> SecManExportTransientKeyByEui(byte[] eui, CancellationToken cancellationToken = default)
         {
             SecManExportTransientKeyByEuiRequest request = new SecManExportTransientKeyByEuiRequest();
             request.Eui = eui;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SecManExportTransientKeyByEuiResponse)));
-            SecManExportTransientKeyByEuiResponse response = (SecManExportTransientKeyByEuiResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SecManExportTransientKeyByEuiResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SecManExportTransientKeyByEuiResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new SecManExportTransientKeyByEui(response.Context, response.PlaintextKey, response.KeyData));
         }
 
@@ -3935,13 +3703,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="FrameCounter">Value to set the frame counter to.</param>
         /// <returns>The SetIncomingTcLinkKeyFrameCounterResponse object from the NCP</returns>
-        public SetIncomingTcLinkKeyFrameCounterResponse SetIncomingTcLinkKeyFrameCounter(uint frameCounter)
+        public async Task<SetIncomingTcLinkKeyFrameCounterResponse> SetIncomingTcLinkKeyFrameCounter(uint frameCounter, CancellationToken cancellationToken = default)
         {
             SetIncomingTcLinkKeyFrameCounterRequest request = new SetIncomingTcLinkKeyFrameCounterRequest();
             request.FrameCounter = frameCounter;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetIncomingTcLinkKeyFrameCounterResponse)));
-            SetIncomingTcLinkKeyFrameCounterResponse response = (SetIncomingTcLinkKeyFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetIncomingTcLinkKeyFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetIncomingTcLinkKeyFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -3954,7 +3721,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ApsHeaderEndIndex">Index just past the APS frame.</param>
         /// <param name="RemoteEui64">IEEE address of the device this message is associated with.</param>
         /// <returns>Status of the encryption/decryption call.</returns>
-        public Status ApsCryptMessage(bool encrypt, byte lengthCombinedArg, byte[] message, byte apsHeaderEndIndex, byte[] remoteEui64)
+        public async Task<Status> ApsCryptMessage(bool encrypt, byte lengthCombinedArg, byte[] message, byte apsHeaderEndIndex, byte[] remoteEui64, CancellationToken cancellationToken = default)
         {
             ApsCryptMessageRequest request = new ApsCryptMessageRequest();
             request.Encrypt = encrypt;
@@ -3962,9 +3729,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.Message = message;
             request.ApsHeaderEndIndex = apsHeaderEndIndex;
             request.RemoteEui64 = remoteEui64;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ApsCryptMessageResponse)));
-            ApsCryptMessageResponse response = (ApsCryptMessageResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ApsCryptMessageResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ApsCryptMessageResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -3978,12 +3744,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PolicyDecision: An sl_zigbee_join_decision_t reflecting the decision made.
         /// - ParentOfNewNodeId: The parent of the node whose status has changed.
         /// </returns>
-        public TrustCenterPostJoinHandler TrustCenterPostJoinHandler()
+        public async Task<TrustCenterPostJoinHandler> TrustCenterPostJoinHandler(CancellationToken cancellationToken = default)
         {
             TrustCenterPostJoinHandlerRequest request = new TrustCenterPostJoinHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TrustCenterPostJoinHandlerResponse)));
-            TrustCenterPostJoinHandlerResponse response = (TrustCenterPostJoinHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            TrustCenterPostJoinHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as TrustCenterPostJoinHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new TrustCenterPostJoinHandler(response.NewNodeId, response.NewNodeEui64, response.Status, response.PolicyDecision, response.ParentOfNewNodeId);
         }
 
@@ -3992,13 +3757,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Key">An optional pointer to a 16-byte encryption key (SL_ZIGBEE_ENCRYPTION_KEY_SIZE). An all zero key may be passed in, which will cause the stack to randomly generate a new key.</param>
         /// <returns>sl_status_t value that indicates the success or failure of the command.</returns>
-        public Status BroadcastNextNetworkKey(ZigbeeKeyData key)
+        public async Task<Status> BroadcastNextNetworkKey(ZigbeeKeyData key, CancellationToken cancellationToken = default)
         {
             BroadcastNextNetworkKeyRequest request = new BroadcastNextNetworkKeyRequest();
             request.Key = key;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BroadcastNextNetworkKeyResponse)));
-            BroadcastNextNetworkKeyResponse response = (BroadcastNextNetworkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            BroadcastNextNetworkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as BroadcastNextNetworkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4006,12 +3770,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This function broadcasts a switch key message to tell all nodes to change to the sequence number of the previously sent Alternate Encryption Key.
         /// </summary>
         /// <returns>sl_status_t value that indicates the success or failure of the command.</returns>
-        public Status BroadcastNetworkKeySwitch()
+        public async Task<Status> BroadcastNetworkKeySwitch(CancellationToken cancellationToken = default)
         {
             BroadcastNetworkKeySwitchRequest request = new BroadcastNetworkKeySwitchRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BroadcastNetworkKeySwitchResponse)));
-            BroadcastNetworkKeySwitchResponse response = (BroadcastNetworkKeySwitchResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            BroadcastNetworkKeySwitchResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as BroadcastNetworkKeySwitchResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4026,16 +3789,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The result of the operation
         /// - ReturnContext: The updated hash context.
         /// </returns>
-        public (Status Status, ZigbeeAesMmoHashContext ReturnContext) AesMmoHash(ZigbeeAesMmoHashContext context, bool finalize, byte length, byte[] data)
+        public async Task<(Status Status, ZigbeeAesMmoHashContext ReturnContext)> AesMmoHash(ZigbeeAesMmoHashContext context, bool finalize, byte length, byte[] data, CancellationToken cancellationToken = default)
         {
             AesMmoHashRequest request = new AesMmoHashRequest();
             request.Context = context;
             request.Finalize = finalize;
             request.Length = length;
             request.Data = data;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AesMmoHashResponse)));
-            AesMmoHashResponse response = (AesMmoHashResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            AesMmoHashResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as AesMmoHashResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.ReturnContext);
         }
 
@@ -4046,15 +3808,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DestLong">The long address (EUI64) of the device that will receive the message.</param>
         /// <param name="TargetLong">The long address (EUI64) of the device to be removed.</param>
         /// <returns>An sl_status_t value indicating success, or the reason for failure</returns>
-        public Status RemoveDevice(ushort destShort, byte[] destLong, byte[] targetLong)
+        public async Task<Status> RemoveDevice(ushort destShort, byte[] destLong, byte[] targetLong, CancellationToken cancellationToken = default)
         {
             RemoveDeviceRequest request = new RemoveDeviceRequest();
             request.DestShort = destShort;
             request.DestLong = destLong;
             request.TargetLong = targetLong;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(RemoveDeviceResponse)));
-            RemoveDeviceResponse response = (RemoveDeviceResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            RemoveDeviceResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as RemoveDeviceResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4065,15 +3826,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="DestLong">The long address (EUI64) of the device that will receive the message.</param>
         /// <param name="Key">The NWK key to send to the new device.</param>
         /// <returns>An sl_status_t value indicating success, or the reason for failure</returns>
-        public Status UnicastNwkKeyUpdate(ushort destShort, byte[] destLong, ZigbeeKeyData key)
+        public async Task<Status> UnicastNwkKeyUpdate(ushort destShort, byte[] destLong, ZigbeeKeyData key, CancellationToken cancellationToken = default)
         {
             UnicastNwkKeyUpdateRequest request = new UnicastNwkKeyUpdateRequest();
             request.DestShort = destShort;
             request.DestLong = destLong;
             request.Key = key;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(UnicastNwkKeyUpdateResponse)));
-            UnicastNwkKeyUpdateResponse response = (UnicastNwkKeyUpdateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            UnicastNwkKeyUpdateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as UnicastNwkKeyUpdateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4081,12 +3841,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call starts the generation of the ECC Ephemeral Public/Private key pair. When complete it stores the private key. The results are returned via sl_zigbee_ezsp_generate_cbke_keys_handler().
         /// </summary>
         /// <returns></returns>
-        public Status GenerateCbkeKeys()
+        public async Task<Status> GenerateCbkeKeys(CancellationToken cancellationToken = default)
         {
             GenerateCbkeKeysRequest request = new GenerateCbkeKeysRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeysResponse)));
-            GenerateCbkeKeysResponse response = (GenerateCbkeKeysResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GenerateCbkeKeysResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GenerateCbkeKeysResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4097,12 +3856,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The result of the CBKE operation.
         /// - EphemeralPublicKey: The generated ephemeral public key.
         /// </returns>
-        public (Status Status, ZigbeePublicKeyData EphemeralPublicKey) GenerateCbkeKeysHandler()
+        public async Task<(Status Status, ZigbeePublicKeyData EphemeralPublicKey)> GenerateCbkeKeysHandler(CancellationToken cancellationToken = default)
         {
             GenerateCbkeKeysHandlerRequest request = new GenerateCbkeKeysHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeysHandlerResponse)));
-            GenerateCbkeKeysHandlerResponse response = (GenerateCbkeKeysHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GenerateCbkeKeysHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GenerateCbkeKeysHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.EphemeralPublicKey);
         }
 
@@ -4113,15 +3871,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PartnerCertificate">The key establishment partner&apos;s implicit certificate.</param>
         /// <param name="PartnerEphemeralPublicKey">The key establishment partner&apos;s ephemeral public key</param>
         /// <returns></returns>
-        public Status CalculateSmacs(bool amInitiator, ZigbeeCertificateData partnerCertificate, ZigbeePublicKeyData partnerEphemeralPublicKey)
+        public async Task<Status> CalculateSmacs(bool amInitiator, ZigbeeCertificateData partnerCertificate, ZigbeePublicKeyData partnerEphemeralPublicKey, CancellationToken cancellationToken = default)
         {
             CalculateSmacsRequest request = new CalculateSmacsRequest();
             request.AmInitiator = amInitiator;
             request.PartnerCertificate = partnerCertificate;
             request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacsResponse)));
-            CalculateSmacsResponse response = (CalculateSmacsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CalculateSmacsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CalculateSmacsResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4133,12 +3890,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - InitiatorSmac: The calculated value of the initiator's SMAC
         /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
-        public (Status Status, CalculateSmacsHandler Result) CalculateSmacsHandler()
+        public async Task<(Status Status, CalculateSmacsHandler Result)> CalculateSmacsHandler(CancellationToken cancellationToken = default)
         {
             CalculateSmacsHandlerRequest request = new CalculateSmacsHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacsHandlerResponse)));
-            CalculateSmacsHandlerResponse response = (CalculateSmacsHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CalculateSmacsHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CalculateSmacsHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new CalculateSmacsHandler(response.InitiatorSmac, response.ResponderSmac));
         }
 
@@ -4146,12 +3902,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call starts the generation of the ECC 283k1 curve Ephemeral Public/Private key pair. When complete it stores the private key. The results are returned via sl_zigbee_ezsp_generate_cbke_keys_283k1_handler().
         /// </summary>
         /// <returns></returns>
-        public Status GenerateCbkeKeys283k1()
+        public async Task<Status> GenerateCbkeKeys283k1(CancellationToken cancellationToken = default)
         {
             GenerateCbkeKeys283k1Request request = new GenerateCbkeKeys283k1Request();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1Response)));
-            GenerateCbkeKeys283k1Response response = (GenerateCbkeKeys283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GenerateCbkeKeys283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GenerateCbkeKeys283k1Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4162,12 +3917,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: The result of the CBKE operation.
         /// - EphemeralPublicKey: The generated ephemeral public key.
         /// </returns>
-        public (Status Status, ZigbeePublicKey283k1Data EphemeralPublicKey) GenerateCbkeKeys283k1Handler()
+        public async Task<(Status Status, ZigbeePublicKey283k1Data EphemeralPublicKey)> GenerateCbkeKeys283k1Handler(CancellationToken cancellationToken = default)
         {
             GenerateCbkeKeys283k1HandlerRequest request = new GenerateCbkeKeys283k1HandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GenerateCbkeKeys283k1HandlerResponse)));
-            GenerateCbkeKeys283k1HandlerResponse response = (GenerateCbkeKeys283k1HandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GenerateCbkeKeys283k1HandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GenerateCbkeKeys283k1HandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.EphemeralPublicKey);
         }
 
@@ -4178,15 +3932,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PartnerCertificate">The key establishment partner&apos;s implicit certificate.</param>
         /// <param name="PartnerEphemeralPublicKey">The key establishment partner&apos;s ephemeral public key</param>
         /// <returns></returns>
-        public Status CalculateSmacs283k1(bool amInitiator, ZigbeeCertificate283k1Data partnerCertificate, ZigbeePublicKey283k1Data partnerEphemeralPublicKey)
+        public async Task<Status> CalculateSmacs283k1(bool amInitiator, ZigbeeCertificate283k1Data partnerCertificate, ZigbeePublicKey283k1Data partnerEphemeralPublicKey, CancellationToken cancellationToken = default)
         {
             CalculateSmacs283k1Request request = new CalculateSmacs283k1Request();
             request.AmInitiator = amInitiator;
             request.PartnerCertificate = partnerCertificate;
             request.PartnerEphemeralPublicKey = partnerEphemeralPublicKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacs283k1Response)));
-            CalculateSmacs283k1Response response = (CalculateSmacs283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CalculateSmacs283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CalculateSmacs283k1Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4198,12 +3951,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - InitiatorSmac: The calculated value of the initiator's SMAC
         /// - ResponderSmac: The calculated value of the responder's SMAC
         /// </returns>
-        public (Status Status, CalculateSmacs283k1Handler Result) CalculateSmacs283k1Handler()
+        public async Task<(Status Status, CalculateSmacs283k1Handler Result)> CalculateSmacs283k1Handler(CancellationToken cancellationToken = default)
         {
             CalculateSmacs283k1HandlerRequest request = new CalculateSmacs283k1HandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(CalculateSmacs283k1HandlerResponse)));
-            CalculateSmacs283k1HandlerResponse response = (CalculateSmacs283k1HandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            CalculateSmacs283k1HandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as CalculateSmacs283k1HandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new CalculateSmacs283k1Handler(response.InitiatorSmac, response.ResponderSmac));
         }
 
@@ -4212,13 +3964,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="StoreLinkKey">A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.</param>
         /// <returns></returns>
-        public Status ClearTemporaryDataMaybeStoreLinkKey(bool storeLinkKey)
+        public async Task<Status> ClearTemporaryDataMaybeStoreLinkKey(bool storeLinkKey, CancellationToken cancellationToken = default)
         {
             ClearTemporaryDataMaybeStoreLinkKeyRequest request = new ClearTemporaryDataMaybeStoreLinkKeyRequest();
             request.StoreLinkKey = storeLinkKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKeyResponse)));
-            ClearTemporaryDataMaybeStoreLinkKeyResponse response = (ClearTemporaryDataMaybeStoreLinkKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearTemporaryDataMaybeStoreLinkKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearTemporaryDataMaybeStoreLinkKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4227,13 +3978,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="StoreLinkKey">A bool indicating whether to store (true) or discard (false) the unverified link key derived when sl_zigbee_ezsp_calculate_smacs() was previously called.</param>
         /// <returns></returns>
-        public Status ClearTemporaryDataMaybeStoreLinkKey283k1(bool storeLinkKey)
+        public async Task<Status> ClearTemporaryDataMaybeStoreLinkKey283k1(bool storeLinkKey, CancellationToken cancellationToken = default)
         {
             ClearTemporaryDataMaybeStoreLinkKey283k1Request request = new ClearTemporaryDataMaybeStoreLinkKey283k1Request();
             request.StoreLinkKey = storeLinkKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ClearTemporaryDataMaybeStoreLinkKey283k1Response)));
-            ClearTemporaryDataMaybeStoreLinkKey283k1Response response = (ClearTemporaryDataMaybeStoreLinkKey283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ClearTemporaryDataMaybeStoreLinkKey283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ClearTemporaryDataMaybeStoreLinkKey283k1Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4244,12 +3994,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: 
         /// - LocalCert: The locally installed certificate.
         /// </returns>
-        public (Status Status, ZigbeeCertificateData LocalCert) GetCertificate()
+        public async Task<(Status Status, ZigbeeCertificateData LocalCert)> GetCertificate(CancellationToken cancellationToken = default)
         {
             GetCertificateRequest request = new GetCertificateRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCertificateResponse)));
-            GetCertificateResponse response = (GetCertificateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetCertificateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetCertificateResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.LocalCert);
         }
 
@@ -4260,12 +4009,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: 
         /// - LocalCert: The locally installed certificate.
         /// </returns>
-        public (Status Status, ZigbeeCertificate283k1Data LocalCert) GetCertificate283k1()
+        public async Task<(Status Status, ZigbeeCertificate283k1Data LocalCert)> GetCertificate283k1(CancellationToken cancellationToken = default)
         {
             GetCertificate283k1Request request = new GetCertificate283k1Request();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetCertificate283k1Response)));
-            GetCertificate283k1Response response = (GetCertificate283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetCertificate283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetCertificate283k1Response;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.LocalCert);
         }
 
@@ -4275,14 +4023,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The message contents for which to create a signature. Per above notes, this may include a leading portion of data not included in the signature, in which case the last byte of this array should be set to the index of the first byte to be considered for signing. Otherwise, the last byte of messageContents should be 0x00 to indicate that a signature should occur across the entire contents.</param>
         /// <returns>SL_STATUS_IN_PROGRESS if the stack has queued up the operation for execution. SL_STATUS_INVALID_STATE if the operation can&apos;t be performed in this context, possibly because another ECC operation is pending.</returns>
-        public Status DsaSign(byte messageLength, byte[] messageContents)
+        public async Task<Status> DsaSign(byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             DsaSignRequest request = new DsaSignRequest();
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaSignResponse)));
-            DsaSignResponse response = (DsaSignResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DsaSignResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DsaSignResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4294,12 +4041,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message and attached which includes the original message and the appended signature.
         /// </returns>
-        public (Status Status, DsaSignHandler Result) DsaSignHandler()
+        public async Task<(Status Status, DsaSignHandler Result)> DsaSignHandler(CancellationToken cancellationToken = default)
         {
             DsaSignHandlerRequest request = new DsaSignHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaSignHandlerResponse)));
-            DsaSignHandlerResponse response = (DsaSignHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DsaSignHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DsaSignHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new DsaSignHandler(response.MessageLength, response.MessageContents));
         }
 
@@ -4310,15 +4056,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="SignerCertificate">The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.</param>
         /// <param name="ReceivedSig">The signature of the signed data.</param>
         /// <returns></returns>
-        public Status DsaVerify(ZigbeeMessageDigest digest, ZigbeeCertificateData signerCertificate, ZigbeeSignatureData receivedSig)
+        public async Task<Status> DsaVerify(ZigbeeMessageDigest digest, ZigbeeCertificateData signerCertificate, ZigbeeSignatureData receivedSig, CancellationToken cancellationToken = default)
         {
             DsaVerifyRequest request = new DsaVerifyRequest();
             request.Digest = digest;
             request.SignerCertificate = signerCertificate;
             request.ReceivedSig = receivedSig;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerifyResponse)));
-            DsaVerifyResponse response = (DsaVerifyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DsaVerifyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DsaVerifyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4326,12 +4071,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This callback is executed by the stack when the DSA verification has completed and has a result. If the result is SL_STATUS_OK, the signature is valid. If the result is SL_STATUS_ZIGBEE_SIGNATURE_VERIFY_FAILURE then the signature is invalid. If the result is anything else then the signature verify operation failed and the validity is unknown.
         /// </summary>
         /// <returns>The result of the DSA verification operation.</returns>
-        public Status DsaVerifyHandler()
+        public async Task<Status> DsaVerifyHandler(CancellationToken cancellationToken = default)
         {
             DsaVerifyHandlerRequest request = new DsaVerifyHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerifyHandlerResponse)));
-            DsaVerifyHandlerResponse response = (DsaVerifyHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DsaVerifyHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DsaVerifyHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4342,15 +4086,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="SignerCertificate">The certificate of the signer. Note that the signer&apos;s certificate and the verifier&apos;s certificate must both be issued by the same Certificate Authority, so they should share the same CA Public Key.</param>
         /// <param name="ReceivedSig">The signature of the signed data.</param>
         /// <returns></returns>
-        public Status DsaVerify283k1(ZigbeeMessageDigest digest, ZigbeeCertificate283k1Data signerCertificate, ZigbeeSignature283k1Data receivedSig)
+        public async Task<Status> DsaVerify283k1(ZigbeeMessageDigest digest, ZigbeeCertificate283k1Data signerCertificate, ZigbeeSignature283k1Data receivedSig, CancellationToken cancellationToken = default)
         {
             DsaVerify283k1Request request = new DsaVerify283k1Request();
             request.Digest = digest;
             request.SignerCertificate = signerCertificate;
             request.ReceivedSig = receivedSig;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DsaVerify283k1Response)));
-            DsaVerify283k1Response response = (DsaVerify283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DsaVerify283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DsaVerify283k1Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4361,15 +4104,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MyCert">The node&apos;s new certificate signed by the CA.</param>
         /// <param name="MyKey">The node&apos;s new static private key.</param>
         /// <returns></returns>
-        public Status SetPreinstalledCbkeData(ZigbeePublicKeyData caPublic, ZigbeeCertificateData myCert, ZigbeePrivateKeyData myKey)
+        public async Task<Status> SetPreinstalledCbkeData(ZigbeePublicKeyData caPublic, ZigbeeCertificateData myCert, ZigbeePrivateKeyData myKey, CancellationToken cancellationToken = default)
         {
             SetPreinstalledCbkeDataRequest request = new SetPreinstalledCbkeDataRequest();
             request.CaPublic = caPublic;
             request.MyCert = myCert;
             request.MyKey = myKey;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetPreinstalledCbkeDataResponse)));
-            SetPreinstalledCbkeDataResponse response = (SetPreinstalledCbkeDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetPreinstalledCbkeDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetPreinstalledCbkeDataResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4377,12 +4119,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Sets the device&apos;s 283k1 curve CA public key, local certificate, and static private key on the NCP associated with this node.
         /// </summary>
         /// <returns></returns>
-        public Status SavePreinstalledCbkeData283k1()
+        public async Task<Status> SavePreinstalledCbkeData283k1(CancellationToken cancellationToken = default)
         {
             SavePreinstalledCbkeData283k1Request request = new SavePreinstalledCbkeData283k1Request();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SavePreinstalledCbkeData283k1Response)));
-            SavePreinstalledCbkeData283k1Response response = (SavePreinstalledCbkeData283k1Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SavePreinstalledCbkeData283k1Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SavePreinstalledCbkeData283k1Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4391,13 +4132,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="RxCallback">true to generate a mfglibRxHandler callback when a packet is received.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStart(bool rxCallback)
+        public async Task<Status> MfglibInternalStart(bool rxCallback, CancellationToken cancellationToken = default)
         {
             MfglibInternalStartRequest request = new MfglibInternalStartRequest();
             request.RxCallback = rxCallback;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartResponse)));
-            MfglibInternalStartResponse response = (MfglibInternalStartResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalStartResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalStartResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4405,12 +4145,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Deactivate use of mfglib test routines; restores the hardware to the state it was in prior to mfglibInternalStart() and stops receiving packets started by mfglibInternalStart() at the same time.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalEnd()
+        public async Task<Status> MfglibInternalEnd(CancellationToken cancellationToken = default)
         {
             MfglibInternalEndRequest request = new MfglibInternalEndRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalEndResponse)));
-            MfglibInternalEndResponse response = (MfglibInternalEndResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalEndResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalEndResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4418,12 +4157,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Starts transmitting an unmodulated tone on the currently set channel and power level. Upon successful return, the tone will be transmitting. To stop transmitting tone, application must call mfglibInternalStopTone(), allowing it the flexibility to determine its own criteria for tone duration (time, event, etc.)
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStartTone()
+        public async Task<Status> MfglibInternalStartTone(CancellationToken cancellationToken = default)
         {
             MfglibInternalStartToneRequest request = new MfglibInternalStartToneRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartToneResponse)));
-            MfglibInternalStartToneResponse response = (MfglibInternalStartToneResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalStartToneResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalStartToneResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4431,12 +4169,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Stops transmitting tone started by mfglibInternalStartTone().
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStopTone()
+        public async Task<Status> MfglibInternalStopTone(CancellationToken cancellationToken = default)
         {
             MfglibInternalStopToneRequest request = new MfglibInternalStopToneRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStopToneResponse)));
-            MfglibInternalStopToneResponse response = (MfglibInternalStopToneResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalStopToneResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalStopToneResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4444,12 +4181,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Starts transmitting a random stream of characters. This is so that the radio modulation can be measured.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStartStream()
+        public async Task<Status> MfglibInternalStartStream(CancellationToken cancellationToken = default)
         {
             MfglibInternalStartStreamRequest request = new MfglibInternalStartStreamRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStartStreamResponse)));
-            MfglibInternalStartStreamResponse response = (MfglibInternalStartStreamResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalStartStreamResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalStartStreamResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4457,12 +4193,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Stops transmitting a random stream of characters started by mfglibInternalStartStream().
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalStopStream()
+        public async Task<Status> MfglibInternalStopStream(CancellationToken cancellationToken = default)
         {
             MfglibInternalStopStreamRequest request = new MfglibInternalStopStreamRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalStopStreamResponse)));
-            MfglibInternalStopStreamResponse response = (MfglibInternalStopStreamResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalStopStreamResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalStopStreamResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4472,14 +4207,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="PacketLength">The length of the packetContents parameter in bytes. Must be greater than 3 and less than 123.</param>
         /// <param name="PacketContents">The packet to send. The last two bytes will be replaced with the 16-bit CRC.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSendPacket(byte packetLength, byte[] packetContents)
+        public async Task<Status> MfglibInternalSendPacket(byte packetLength, byte[] packetContents, CancellationToken cancellationToken = default)
         {
             MfglibInternalSendPacketRequest request = new MfglibInternalSendPacketRequest();
             request.PacketLength = packetLength;
             request.PacketContents = packetContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSendPacketResponse)));
-            MfglibInternalSendPacketResponse response = (MfglibInternalSendPacketResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalSendPacketResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalSendPacketResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4488,13 +4222,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Channel">The channel to switch to. Valid values are 11 to 26.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSetChannel(byte channel)
+        public async Task<Status> MfglibInternalSetChannel(byte channel, CancellationToken cancellationToken = default)
         {
             MfglibInternalSetChannelRequest request = new MfglibInternalSetChannelRequest();
             request.Channel = channel;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSetChannelResponse)));
-            MfglibInternalSetChannelResponse response = (MfglibInternalSetChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalSetChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalSetChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4502,12 +4235,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the current radio channel, as previously set via mfglibInternalSetChannel().
         /// </summary>
         /// <returns>The current channel.</returns>
-        public byte MfglibInternalGetChannel()
+        public async Task<byte> MfglibInternalGetChannel(CancellationToken cancellationToken = default)
         {
             MfglibInternalGetChannelRequest request = new MfglibInternalGetChannelRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalGetChannelResponse)));
-            MfglibInternalGetChannelResponse response = (MfglibInternalGetChannelResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalGetChannelResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalGetChannelResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Channel;
         }
 
@@ -4517,14 +4249,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="TxPowerMode">Power mode. Refer to txPowerModes in stack/include/sl_zigbee_types.h for possible values.</param>
         /// <param name="Power">Power in units of dBm. Refer to radio data sheet for valid range.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status MfglibInternalSetPower(ushort txPowerMode, sbyte power)
+        public async Task<Status> MfglibInternalSetPower(ushort txPowerMode, sbyte power, CancellationToken cancellationToken = default)
         {
             MfglibInternalSetPowerRequest request = new MfglibInternalSetPowerRequest();
             request.TxPowerMode = txPowerMode;
             request.Power = power;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalSetPowerResponse)));
-            MfglibInternalSetPowerResponse response = (MfglibInternalSetPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalSetPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalSetPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4532,12 +4263,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Returns the current radio power setting, as previously set via mfglibInternalSetPower().
         /// </summary>
         /// <returns>Power in units of dBm. Refer to radio data sheet for valid range.</returns>
-        public sbyte MfglibInternalGetPower()
+        public async Task<sbyte> MfglibInternalGetPower(CancellationToken cancellationToken = default)
         {
             MfglibInternalGetPowerRequest request = new MfglibInternalGetPowerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibInternalGetPowerResponse)));
-            MfglibInternalGetPowerResponse response = (MfglibInternalGetPowerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibInternalGetPowerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibInternalGetPowerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Power;
         }
 
@@ -4550,12 +4280,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - PacketLength: The length of the packetContents parameter in bytes. Will be greater than 3 and less than 123.
         /// - PacketContents: The received packet (last 2 bytes are not FCS / CRC and may be discarded)
         /// </returns>
-        public MfglibRxHandler MfglibRxHandler()
+        public async Task<MfglibRxHandler> MfglibRxHandler(CancellationToken cancellationToken = default)
         {
             MfglibRxHandlerRequest request = new MfglibRxHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfglibRxHandlerResponse)));
-            MfglibRxHandlerResponse response = (MfglibRxHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfglibRxHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfglibRxHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new MfglibRxHandler(response.LinkQuality, response.Rssi, response.PacketLength, response.PacketContents);
         }
 
@@ -4564,13 +4293,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Enabled">If true, launch the standalone bootloader. If false, do nothing.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status LaunchStandaloneBootloader(bool enabled)
+        public async Task<Status> LaunchStandaloneBootloader(bool enabled, CancellationToken cancellationToken = default)
         {
             LaunchStandaloneBootloaderRequest request = new LaunchStandaloneBootloaderRequest();
             request.Enabled = enabled;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(LaunchStandaloneBootloaderResponse)));
-            LaunchStandaloneBootloaderResponse response = (LaunchStandaloneBootloaderResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            LaunchStandaloneBootloaderResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as LaunchStandaloneBootloaderResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4582,16 +4310,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="MessageLength">The length of the &lt;i&gt;messageContents&lt;/i&gt; parameter in bytes.</param>
         /// <param name="MessageContents">The multicast message.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SendBootloadMessage(bool broadcast, byte[] destEui64, byte messageLength, byte[] messageContents)
+        public async Task<Status> SendBootloadMessage(bool broadcast, byte[] destEui64, byte messageLength, byte[] messageContents, CancellationToken cancellationToken = default)
         {
             SendBootloadMessageRequest request = new SendBootloadMessageRequest();
             request.Broadcast = broadcast;
             request.DestEui64 = destEui64;
             request.MessageLength = messageLength;
             request.MessageContents = messageContents;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SendBootloadMessageResponse)));
-            SendBootloadMessageResponse response = (SendBootloadMessageResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SendBootloadMessageResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SendBootloadMessageResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4604,12 +4331,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - NodeMicro: The value of MICRO on the node
         /// - NodePhy: The value of PHY on the node
         /// </returns>
-        public GetStandaloneBootloaderVersionPlatMicroPhy GetStandaloneBootloaderVersionPlatMicroPhy()
+        public async Task<GetStandaloneBootloaderVersionPlatMicroPhy> GetStandaloneBootloaderVersionPlatMicroPhy(CancellationToken cancellationToken = default)
         {
             GetStandaloneBootloaderVersionPlatMicroPhyRequest request = new GetStandaloneBootloaderVersionPlatMicroPhyRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetStandaloneBootloaderVersionPlatMicroPhyResponse)));
-            GetStandaloneBootloaderVersionPlatMicroPhyResponse response = (GetStandaloneBootloaderVersionPlatMicroPhyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetStandaloneBootloaderVersionPlatMicroPhyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetStandaloneBootloaderVersionPlatMicroPhyResponse;
+            _logger.LogDebug(response?.ToString());
             return new GetStandaloneBootloaderVersionPlatMicroPhy(response.BootloaderVersion, response.NodePlat, response.NodeMicro, response.NodePhy);
         }
 
@@ -4622,12 +4348,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The bootload message that was sent.
         /// </returns>
-        public IncomingBootloadMessageHandler IncomingBootloadMessageHandler()
+        public async Task<IncomingBootloadMessageHandler> IncomingBootloadMessageHandler(CancellationToken cancellationToken = default)
         {
             IncomingBootloadMessageHandlerRequest request = new IncomingBootloadMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingBootloadMessageHandlerResponse)));
-            IncomingBootloadMessageHandlerResponse response = (IncomingBootloadMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingBootloadMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingBootloadMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingBootloadMessageHandler(response.LongId, response.PacketInfo, response.MessageLength, response.MessageContents);
         }
 
@@ -4639,12 +4364,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - MessageLength: The length of the <i>messageContents</i> parameter in bytes.
         /// - MessageContents: The message that was sent.
         /// </returns>
-        public (Status Status, BootloadTransmitCompleteHandler Result) BootloadTransmitCompleteHandler()
+        public async Task<(Status Status, BootloadTransmitCompleteHandler Result)> BootloadTransmitCompleteHandler(CancellationToken cancellationToken = default)
         {
             BootloadTransmitCompleteHandlerRequest request = new BootloadTransmitCompleteHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(BootloadTransmitCompleteHandlerResponse)));
-            BootloadTransmitCompleteHandlerResponse response = (BootloadTransmitCompleteHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            BootloadTransmitCompleteHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as BootloadTransmitCompleteHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, new BootloadTransmitCompleteHandler(response.MessageLength, response.MessageContents));
         }
 
@@ -4654,14 +4378,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Plaintext">16 bytes of plaintext.</param>
         /// <param name="Key">The 16-byte encryption key to use.</param>
         /// <returns>16 bytes of ciphertext.</returns>
-        public byte[] AesEncrypt(byte[] plaintext, byte[] key)
+        public async Task<byte[]> AesEncrypt(byte[] plaintext, byte[] key, CancellationToken cancellationToken = default)
         {
             AesEncryptRequest request = new AesEncryptRequest();
             request.Plaintext = plaintext;
             request.Key = key;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(AesEncryptResponse)));
-            AesEncryptResponse response = (AesEncryptResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            AesEncryptResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as AesEncryptResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Ciphertext;
         }
 
@@ -4673,12 +4396,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - DataLength: The length of the incoming message.
         /// - Data: A pointer to the data received in the current message.
         /// </returns>
-        public IncomingMfgTestMessageHandler IncomingMfgTestMessageHandler()
+        public async Task<IncomingMfgTestMessageHandler> IncomingMfgTestMessageHandler(CancellationToken cancellationToken = default)
         {
             IncomingMfgTestMessageHandlerRequest request = new IncomingMfgTestMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IncomingMfgTestMessageHandlerResponse)));
-            IncomingMfgTestMessageHandlerResponse response = (IncomingMfgTestMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IncomingMfgTestMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IncomingMfgTestMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new IncomingMfgTestMessageHandler(response.MessageType, response.DataLength, response.Data);
         }
 
@@ -4687,13 +4409,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="BeginConfiguration">Determines the new mode of operation. true causes the node to enter manufacturing configuration. false causes the node to return to normal network operation.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSetPacketMode(bool beginConfiguration)
+        public async Task<Status> MfgTestSetPacketMode(bool beginConfiguration, CancellationToken cancellationToken = default)
         {
             MfgTestSetPacketModeRequest request = new MfgTestSetPacketModeRequest();
             request.BeginConfiguration = beginConfiguration;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSetPacketModeResponse)));
-            MfgTestSetPacketModeResponse response = (MfgTestSetPacketModeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSetPacketModeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSetPacketModeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4701,12 +4422,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A function used during manufacturing configuration on the Golden Node to send the DUT a reboot command. The usual practice is to execute this command at the end of manufacturing configuration, to place the DUT into normal network operation for testing. This function executes only during manufacturing configuration mode and returns an error otherwise. If successful, the DUT acknowledges the reboot command within 20 milliseconds and then reboots.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendRebootCommand()
+        public async Task<Status> MfgTestSendRebootCommand(CancellationToken cancellationToken = default)
         {
             MfgTestSendRebootCommandRequest request = new MfgTestSendRebootCommandRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendRebootCommandResponse)));
-            MfgTestSendRebootCommandResponse response = (MfgTestSendRebootCommandResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSendRebootCommandResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSendRebootCommandResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4715,13 +4435,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NewId">The 8-byte EUID for the DUT.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendEui64(byte[] newId)
+        public async Task<Status> MfgTestSendEui64(byte[] newId, CancellationToken cancellationToken = default)
         {
             MfgTestSendEui64Request request = new MfgTestSendEui64Request();
             request.NewId = newId;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendEui64Response)));
-            MfgTestSendEui64Response response = (MfgTestSendEui64Response)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSendEui64Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSendEui64Response;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4730,13 +4449,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NewString">The 16-byte manufacturing string.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendManufacturingString(byte[] newString)
+        public async Task<Status> MfgTestSendManufacturingString(byte[] newString, CancellationToken cancellationToken = default)
         {
             MfgTestSendManufacturingStringRequest request = new MfgTestSendManufacturingStringRequest();
             request.NewString = newString;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendManufacturingStringResponse)));
-            MfgTestSendManufacturingStringResponse response = (MfgTestSendManufacturingStringResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSendManufacturingStringResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSendManufacturingStringResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4746,14 +4464,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="SupportedBands">Sets the radio band for the DUT. See ember-common.h for possible values.</param>
         /// <param name="CrystalOffset">Sets the CC1020 crystal offset. This parameter has no effect on the EM2420, and it may safely be set to 0 for this RFIC.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendRadioParameters(byte supportedBands, sbyte crystalOffset)
+        public async Task<Status> MfgTestSendRadioParameters(byte supportedBands, sbyte crystalOffset, CancellationToken cancellationToken = default)
         {
             MfgTestSendRadioParametersRequest request = new MfgTestSendRadioParametersRequest();
             request.SupportedBands = supportedBands;
             request.CrystalOffset = crystalOffset;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendRadioParametersResponse)));
-            MfgTestSendRadioParametersResponse response = (MfgTestSendRadioParametersResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSendRadioParametersResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSendRadioParametersResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4762,13 +4479,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Command">A pointer to the outgoing command string.</param>
         /// <returns>An sl_status_t value indicating success or failure of the command.</returns>
-        public Status MfgTestSendCommand(byte[] command)
+        public async Task<Status> MfgTestSendCommand(byte[] command, CancellationToken cancellationToken = default)
         {
             MfgTestSendCommandRequest request = new MfgTestSendCommandRequest();
             request.Command = command;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(MfgTestSendCommandResponse)));
-            MfgTestSendCommandResponse response = (MfgTestSendCommandResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            MfgTestSendCommandResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as MfgTestSendCommandResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4779,15 +4495,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Op">Operation indicator.</param>
         /// <param name="RadioTxPower">Radio transmission power.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllNetworkOps(ZigbeeZllNetwork networkInfo, ZigbeeEzspZllNetworkOperation op, sbyte radioTxPower)
+        public async Task<Status> ZllNetworkOps(ZigbeeZllNetwork networkInfo, ZigbeeEzspZllNetworkOperation op, sbyte radioTxPower, CancellationToken cancellationToken = default)
         {
             ZllNetworkOpsRequest request = new ZllNetworkOpsRequest();
             request.NetworkInfo = networkInfo;
             request.Op = op;
             request.RadioTxPower = radioTxPower;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllNetworkOpsResponse)));
-            ZllNetworkOpsResponse response = (ZllNetworkOpsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllNetworkOpsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllNetworkOpsResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4797,14 +4512,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="NetworkKey">ZLL Network key.</param>
         /// <param name="SecurityState">Initial security state of the network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetInitialSecurityState(ZigbeeKeyData networkKey, ZigbeeZllInitialSecurityState securityState)
+        public async Task<Status> ZllSetInitialSecurityState(ZigbeeKeyData networkKey, ZigbeeZllInitialSecurityState securityState, CancellationToken cancellationToken = default)
         {
             ZllSetInitialSecurityStateRequest request = new ZllSetInitialSecurityStateRequest();
             request.NetworkKey = networkKey;
             request.SecurityState = securityState;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetInitialSecurityStateResponse)));
-            ZllSetInitialSecurityStateResponse response = (ZllSetInitialSecurityStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetInitialSecurityStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetInitialSecurityStateResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4813,13 +4527,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="SecurityState">Security state of the network.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetSecurityStateWithoutKey(ZigbeeZllInitialSecurityState securityState)
+        public async Task<Status> ZllSetSecurityStateWithoutKey(ZigbeeZllInitialSecurityState securityState, CancellationToken cancellationToken = default)
         {
             ZllSetSecurityStateWithoutKeyRequest request = new ZllSetSecurityStateWithoutKeyRequest();
             request.SecurityState = securityState;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetSecurityStateWithoutKeyResponse)));
-            ZllSetSecurityStateWithoutKeyResponse response = (ZllSetSecurityStateWithoutKeyResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetSecurityStateWithoutKeyResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetSecurityStateWithoutKeyResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4830,15 +4543,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="RadioPowerForScan">The radio output power used for the scan requests.</param>
         /// <param name="NodeType">The node type of the local device.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllStartScan(uint channelMask, sbyte radioPowerForScan, ZigbeeNodeType nodeType)
+        public async Task<Status> ZllStartScan(uint channelMask, sbyte radioPowerForScan, ZigbeeNodeType nodeType, CancellationToken cancellationToken = default)
         {
             ZllStartScanRequest request = new ZllStartScanRequest();
             request.ChannelMask = channelMask;
             request.RadioPowerForScan = radioPowerForScan;
             request.NodeType = nodeType;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllStartScanResponse)));
-            ZllStartScanResponse response = (ZllStartScanResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllStartScanResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllStartScanResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4847,13 +4559,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="DurationMs">The duration in milliseconds to leave the radio on.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status ZllSetRxOnWhenIdle(uint durationMs)
+        public async Task<Status> ZllSetRxOnWhenIdle(uint durationMs, CancellationToken cancellationToken = default)
         {
             ZllSetRxOnWhenIdleRequest request = new ZllSetRxOnWhenIdleRequest();
             request.DurationMs = durationMs;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetRxOnWhenIdleResponse)));
-            ZllSetRxOnWhenIdleResponse response = (ZllSetRxOnWhenIdleResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetRxOnWhenIdleResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetRxOnWhenIdleResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4866,12 +4577,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - DeviceInfo: Device specific information.
         /// - PacketInfo: Information about the incoming packet received from this network.
         /// </returns>
-        public ZllNetworkFoundHandler ZllNetworkFoundHandler()
+        public async Task<ZllNetworkFoundHandler> ZllNetworkFoundHandler(CancellationToken cancellationToken = default)
         {
             ZllNetworkFoundHandlerRequest request = new ZllNetworkFoundHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllNetworkFoundHandlerResponse)));
-            ZllNetworkFoundHandlerResponse response = (ZllNetworkFoundHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllNetworkFoundHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllNetworkFoundHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new ZllNetworkFoundHandler(response.NetworkInfo, response.IsDeviceInfoNull, response.DeviceInfo, response.PacketInfo);
         }
 
@@ -4879,12 +4589,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call is fired when a ZLL network scan is complete.
         /// </summary>
         /// <returns>Status of the operation.</returns>
-        public Status ZllScanCompleteHandler()
+        public async Task<Status> ZllScanCompleteHandler(CancellationToken cancellationToken = default)
         {
             ZllScanCompleteHandlerRequest request = new ZllScanCompleteHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllScanCompleteHandlerResponse)));
-            ZllScanCompleteHandlerResponse response = (ZllScanCompleteHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllScanCompleteHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllScanCompleteHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -4895,12 +4604,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - AddressInfo: Address assignment information.
         /// - PacketInfo: Information about the incoming packet.
         /// </returns>
-        public ZllAddressAssignmentHandler ZllAddressAssignmentHandler()
+        public async Task<ZllAddressAssignmentHandler> ZllAddressAssignmentHandler(CancellationToken cancellationToken = default)
         {
             ZllAddressAssignmentHandlerRequest request = new ZllAddressAssignmentHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllAddressAssignmentHandlerResponse)));
-            ZllAddressAssignmentHandlerResponse response = (ZllAddressAssignmentHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllAddressAssignmentHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllAddressAssignmentHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return new ZllAddressAssignmentHandler(response.AddressInfo, response.PacketInfo);
         }
 
@@ -4908,12 +4616,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call is fired when the device is a target of a touch link.
         /// </summary>
         /// <returns>Information about the network.</returns>
-        public ZigbeeZllNetwork ZllTouchLinkTargetHandler()
+        public async Task<ZigbeeZllNetwork> ZllTouchLinkTargetHandler(CancellationToken cancellationToken = default)
         {
             ZllTouchLinkTargetHandlerRequest request = new ZllTouchLinkTargetHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllTouchLinkTargetHandlerResponse)));
-            ZllTouchLinkTargetHandlerResponse response = (ZllTouchLinkTargetHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllTouchLinkTargetHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllTouchLinkTargetHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.NetworkInfo;
         }
 
@@ -4924,12 +4631,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Data: Data token return value.
         /// - Security: Security token return value.
         /// </returns>
-        public ZllGetTokens ZllGetTokens()
+        public async Task<ZllGetTokens> ZllGetTokens(CancellationToken cancellationToken = default)
         {
             ZllGetTokensRequest request = new ZllGetTokensRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllGetTokensResponse)));
-            ZllGetTokensResponse response = (ZllGetTokensResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllGetTokensResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllGetTokensResponse;
+            _logger.LogDebug(response?.ToString());
             return new ZllGetTokens(response.Data, response.Security);
         }
 
@@ -4938,13 +4644,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Data">Data token to be set.</param>
         /// <returns>The ZllSetDataTokenResponse object from the NCP</returns>
-        public ZllSetDataTokenResponse ZllSetDataToken(ZigbeeTokTypeStackZllData data)
+        public async Task<ZllSetDataTokenResponse> ZllSetDataToken(ZigbeeTokTypeStackZllData data, CancellationToken cancellationToken = default)
         {
             ZllSetDataTokenRequest request = new ZllSetDataTokenRequest();
             request.Data = data;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetDataTokenResponse)));
-            ZllSetDataTokenResponse response = (ZllSetDataTokenResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetDataTokenResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetDataTokenResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -4952,12 +4657,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Set the ZLL data token bitmask to reflect the ZLL network state.
         /// </summary>
         /// <returns>The ZllSetNonZllNetworkResponse object from the NCP</returns>
-        public ZllSetNonZllNetworkResponse ZllSetNonZllNetwork()
+        public async Task<ZllSetNonZllNetworkResponse> ZllSetNonZllNetwork(CancellationToken cancellationToken = default)
         {
             ZllSetNonZllNetworkRequest request = new ZllSetNonZllNetworkRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetNonZllNetworkResponse)));
-            ZllSetNonZllNetworkResponse response = (ZllSetNonZllNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetNonZllNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetNonZllNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -4965,12 +4669,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Is this a ZLL network?
         /// </summary>
         /// <returns>ZLL network?</returns>
-        public bool IsZllNetwork()
+        public async Task<bool> IsZllNetwork(CancellationToken cancellationToken = default)
         {
             IsZllNetworkRequest request = new IsZllNetworkRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(IsZllNetworkResponse)));
-            IsZllNetworkResponse response = (IsZllNetworkResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            IsZllNetworkResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as IsZllNetworkResponse;
+            _logger.LogDebug(response?.ToString());
             return response.IsZllNetwork;
         }
 
@@ -4979,13 +4682,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Mode">The power mode to be set.</param>
         /// <returns>The ZllSetRadioIdleModeResponse object from the NCP</returns>
-        public ZllSetRadioIdleModeResponse ZllSetRadioIdleMode(ZigbeeRadioPowerMode mode)
+        public async Task<ZllSetRadioIdleModeResponse> ZllSetRadioIdleMode(ZigbeeRadioPowerMode mode, CancellationToken cancellationToken = default)
         {
             ZllSetRadioIdleModeRequest request = new ZllSetRadioIdleModeRequest();
             request.Mode = mode;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllSetRadioIdleModeResponse)));
-            ZllSetRadioIdleModeResponse response = (ZllSetRadioIdleModeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllSetRadioIdleModeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllSetRadioIdleModeResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -4993,12 +4695,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// This call gets the radio&apos;s default idle power mode.
         /// </summary>
         /// <returns>The current power mode.</returns>
-        public byte ZllGetRadioIdleMode()
+        public async Task<byte> ZllGetRadioIdleMode(CancellationToken cancellationToken = default)
         {
             ZllGetRadioIdleModeRequest request = new ZllGetRadioIdleModeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllGetRadioIdleModeResponse)));
-            ZllGetRadioIdleModeResponse response = (ZllGetRadioIdleModeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllGetRadioIdleModeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllGetRadioIdleModeResponse;
+            _logger.LogDebug(response?.ToString());
             return response.RadioIdleMode;
         }
 
@@ -5007,13 +4708,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="NodeType">The node type to be set.</param>
         /// <returns>The SetZllNodeTypeResponse object from the NCP</returns>
-        public SetZllNodeTypeResponse SetZllNodeType(ZigbeeNodeType nodeType)
+        public async Task<SetZllNodeTypeResponse> SetZllNodeType(ZigbeeNodeType nodeType, CancellationToken cancellationToken = default)
         {
             SetZllNodeTypeRequest request = new SetZllNodeTypeRequest();
             request.NodeType = nodeType;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllNodeTypeResponse)));
-            SetZllNodeTypeResponse response = (SetZllNodeTypeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetZllNodeTypeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetZllNodeTypeResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5022,13 +4722,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="State">A mask with the bits to be set or cleared.</param>
         /// <returns>The SetZllAdditionalStateResponse object from the NCP</returns>
-        public SetZllAdditionalStateResponse SetZllAdditionalState(ushort state)
+        public async Task<SetZllAdditionalStateResponse> SetZllAdditionalState(ushort state, CancellationToken cancellationToken = default)
         {
             SetZllAdditionalStateRequest request = new SetZllAdditionalStateRequest();
             request.State = state;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllAdditionalStateResponse)));
-            SetZllAdditionalStateResponse response = (SetZllAdditionalStateResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetZllAdditionalStateResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetZllAdditionalStateResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5036,12 +4735,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Is there a ZLL (Touchlink) operation in progress?
         /// </summary>
         /// <returns>ZLL operation in progress?</returns>
-        public bool ZllOperationInProgress()
+        public async Task<bool> ZllOperationInProgress(CancellationToken cancellationToken = default)
         {
             ZllOperationInProgressRequest request = new ZllOperationInProgressRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllOperationInProgressResponse)));
-            ZllOperationInProgressResponse response = (ZllOperationInProgressResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllOperationInProgressResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllOperationInProgressResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ZllOperationInProgress;
         }
 
@@ -5049,12 +4747,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Is the ZLL radio on when idle mode is active?
         /// </summary>
         /// <returns>ZLL radio on when idle mode is active?</returns>
-        public bool ZllRxOnWhenIdleGetActive()
+        public async Task<bool> ZllRxOnWhenIdleGetActive(CancellationToken cancellationToken = default)
         {
             ZllRxOnWhenIdleGetActiveRequest request = new ZllRxOnWhenIdleGetActiveRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllRxOnWhenIdleGetActiveResponse)));
-            ZllRxOnWhenIdleGetActiveResponse response = (ZllRxOnWhenIdleGetActiveResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllRxOnWhenIdleGetActiveResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllRxOnWhenIdleGetActiveResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ZllRxOnWhenIdleGetActive;
         }
 
@@ -5062,12 +4759,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Informs the ZLL API that application scanning is complete
         /// </summary>
         /// <returns>The ZllScanningCompleteResponse object from the NCP</returns>
-        public ZllScanningCompleteResponse ZllScanningComplete()
+        public async Task<ZllScanningCompleteResponse> ZllScanningComplete(CancellationToken cancellationToken = default)
         {
             ZllScanningCompleteRequest request = new ZllScanningCompleteRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllScanningCompleteResponse)));
-            ZllScanningCompleteResponse response = (ZllScanningCompleteResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllScanningCompleteResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllScanningCompleteResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5075,12 +4771,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the primary ZLL (touchlink) channel mask.
         /// </summary>
         /// <returns>The primary ZLL channel mask</returns>
-        public uint GetZllPrimaryChannelMask()
+        public async Task<uint> GetZllPrimaryChannelMask(CancellationToken cancellationToken = default)
         {
             GetZllPrimaryChannelMaskRequest request = new GetZllPrimaryChannelMaskRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetZllPrimaryChannelMaskResponse)));
-            GetZllPrimaryChannelMaskResponse response = (GetZllPrimaryChannelMaskResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetZllPrimaryChannelMaskResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetZllPrimaryChannelMaskResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ZllPrimaryChannelMask;
         }
 
@@ -5088,12 +4783,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Get the secondary ZLL (touchlink) channel mask.
         /// </summary>
         /// <returns>The secondary ZLL channel mask</returns>
-        public uint GetZllSecondaryChannelMask()
+        public async Task<uint> GetZllSecondaryChannelMask(CancellationToken cancellationToken = default)
         {
             GetZllSecondaryChannelMaskRequest request = new GetZllSecondaryChannelMaskRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetZllSecondaryChannelMaskResponse)));
-            GetZllSecondaryChannelMaskResponse response = (GetZllSecondaryChannelMaskResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetZllSecondaryChannelMaskResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetZllSecondaryChannelMaskResponse;
+            _logger.LogDebug(response?.ToString());
             return response.ZllSecondaryChannelMask;
         }
 
@@ -5102,13 +4796,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ZllPrimaryChannelMask">The primary ZLL channel mask</param>
         /// <returns>The SetZllPrimaryChannelMaskResponse object from the NCP</returns>
-        public SetZllPrimaryChannelMaskResponse SetZllPrimaryChannelMask(uint zllPrimaryChannelMask)
+        public async Task<SetZllPrimaryChannelMaskResponse> SetZllPrimaryChannelMask(uint zllPrimaryChannelMask, CancellationToken cancellationToken = default)
         {
             SetZllPrimaryChannelMaskRequest request = new SetZllPrimaryChannelMaskRequest();
             request.ZllPrimaryChannelMask = zllPrimaryChannelMask;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllPrimaryChannelMaskResponse)));
-            SetZllPrimaryChannelMaskResponse response = (SetZllPrimaryChannelMaskResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetZllPrimaryChannelMaskResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetZllPrimaryChannelMaskResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5117,13 +4810,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ZllSecondaryChannelMask">The secondary ZLL channel mask</param>
         /// <returns>The SetZllSecondaryChannelMaskResponse object from the NCP</returns>
-        public SetZllSecondaryChannelMaskResponse SetZllSecondaryChannelMask(uint zllSecondaryChannelMask)
+        public async Task<SetZllSecondaryChannelMaskResponse> SetZllSecondaryChannelMask(uint zllSecondaryChannelMask, CancellationToken cancellationToken = default)
         {
             SetZllSecondaryChannelMaskRequest request = new SetZllSecondaryChannelMaskRequest();
             request.ZllSecondaryChannelMask = zllSecondaryChannelMask;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetZllSecondaryChannelMaskResponse)));
-            SetZllSecondaryChannelMaskResponse response = (SetZllSecondaryChannelMaskResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetZllSecondaryChannelMaskResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetZllSecondaryChannelMaskResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5131,12 +4823,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clear ZLL stack tokens.
         /// </summary>
         /// <returns>The ZllClearTokensResponse object from the NCP</returns>
-        public ZllClearTokensResponse ZllClearTokens()
+        public async Task<ZllClearTokensResponse> ZllClearTokens(CancellationToken cancellationToken = default)
         {
             ZllClearTokensRequest request = new ZllClearTokensRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ZllClearTokensResponse)));
-            ZllClearTokensResponse response = (ZllClearTokensResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ZllClearTokensResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ZllClearTokensResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5154,7 +4845,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="GpdSecurityFrameCounter">The GPD security frame counter.</param>
         /// <param name="ForwardingRadius">The forwarding radius.</param>
         /// <returns>Whether a GP Pairing has been created or not.</returns>
-        public bool GpProxyTableProcessGpPairing(uint options, ZigbeeGpAddress addr, byte commMode, ushort sinkNetworkAddress, ushort sinkGroupId, ushort assignedAlias, byte[] sinkIeeeAddress, ZigbeeKeyData gpdKey, uint gpdSecurityFrameCounter, byte forwardingRadius)
+        public async Task<bool> GpProxyTableProcessGpPairing(uint options, ZigbeeGpAddress addr, byte commMode, ushort sinkNetworkAddress, ushort sinkGroupId, ushort assignedAlias, byte[] sinkIeeeAddress, ZigbeeKeyData gpdKey, uint gpdSecurityFrameCounter, byte forwardingRadius, CancellationToken cancellationToken = default)
         {
             GpProxyTableProcessGpPairingRequest request = new GpProxyTableProcessGpPairingRequest();
             request.Options = options;
@@ -5167,9 +4858,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.GpdKey = gpdKey;
             request.GpdSecurityFrameCounter = gpdSecurityFrameCounter;
             request.ForwardingRadius = forwardingRadius;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableProcessGpPairingResponse)));
-            GpProxyTableProcessGpPairingResponse response = (GpProxyTableProcessGpPairingResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpProxyTableProcessGpPairingResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpProxyTableProcessGpPairingResponse;
+            _logger.LogDebug(response?.ToString());
             return response.GpPairingAdded;
         }
 
@@ -5185,7 +4875,7 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="GpepHandle">The handle to refer to the GPDF.</param>
         /// <param name="GpTxQueueEntryLifetimeMs">How long to keep the GPDF in the TX Queue.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status DGpSend(bool action, bool useCca, ZigbeeGpAddress addr, byte gpdCommandId, byte gpdAsduLength, byte[] gpdAsdu, byte gpepHandle, ushort gpTxQueueEntryLifetimeMs)
+        public async Task<Status> DGpSend(bool action, bool useCca, ZigbeeGpAddress addr, byte gpdCommandId, byte gpdAsduLength, byte[] gpdAsdu, byte gpepHandle, ushort gpTxQueueEntryLifetimeMs, CancellationToken cancellationToken = default)
         {
             DGpSendRequest request = new DGpSendRequest();
             request.Action = action;
@@ -5196,9 +4886,8 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
             request.GpdAsdu = gpdAsdu;
             request.GpepHandle = gpepHandle;
             request.GpTxQueueEntryLifetimeMs = gpTxQueueEntryLifetimeMs;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DGpSendResponse)));
-            DGpSendResponse response = (DGpSendResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DGpSendResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DGpSendResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -5209,12 +4898,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - GpepHandle: The handle of the GPDF.
         /// </returns>
-        public (Status Status, byte GpepHandle) DGpSentHandler()
+        public async Task<(Status Status, byte GpepHandle)> DGpSentHandler(CancellationToken cancellationToken = default)
         {
             DGpSentHandlerRequest request = new DGpSentHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(DGpSentHandlerResponse)));
-            DGpSentHandlerResponse response = (DGpSentHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            DGpSentHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as DGpSentHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.GpepHandle);
         }
 
@@ -5222,12 +4910,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// A callback invoked by the ZigBee GP stack when a GPDF is received.
         /// </summary>
         /// <returns>GP parameters list represented as a macro for GP endpoint incoming message handler and callbacks prototypes.</returns>
-        public ZigbeeGpParams GpepIncomingMessageHandler()
+        public async Task<ZigbeeGpParams> GpepIncomingMessageHandler(CancellationToken cancellationToken = default)
         {
             GpepIncomingMessageHandlerRequest request = new GpepIncomingMessageHandlerRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpepIncomingMessageHandlerResponse)));
-            GpepIncomingMessageHandlerResponse response = (GpepIncomingMessageHandlerResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpepIncomingMessageHandlerResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpepIncomingMessageHandlerResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Param;
         }
 
@@ -5239,13 +4926,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Entry: An sl_zigbee_gp_proxy_table_entry_t struct containing a copy of the requested proxy entry.
         /// </returns>
-        public (Status Status, ZigbeeGpProxyTableEntry Entry) GpProxyTableGetEntry(byte proxyIndex)
+        public async Task<(Status Status, ZigbeeGpProxyTableEntry Entry)> GpProxyTableGetEntry(byte proxyIndex, CancellationToken cancellationToken = default)
         {
             GpProxyTableGetEntryRequest request = new GpProxyTableGetEntryRequest();
             request.ProxyIndex = proxyIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableGetEntryResponse)));
-            GpProxyTableGetEntryResponse response = (GpProxyTableGetEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpProxyTableGetEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpProxyTableGetEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Entry);
         }
 
@@ -5254,13 +4940,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Addr">The address to search for</param>
         /// <returns>The index, or 0xFF for not found</returns>
-        public byte GpProxyTableLookup(ZigbeeGpAddress addr)
+        public async Task<byte> GpProxyTableLookup(ZigbeeGpAddress addr, CancellationToken cancellationToken = default)
         {
             GpProxyTableLookupRequest request = new GpProxyTableLookupRequest();
             request.Addr = addr;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableLookupResponse)));
-            GpProxyTableLookupResponse response = (GpProxyTableLookupResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpProxyTableLookupResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpProxyTableLookupResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Index;
         }
 
@@ -5269,13 +4954,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="ProxyIndex">The index of the requested proxy table entry.</param>
         /// <returns>The GpProxyTableRemoveEntryResponse object from the NCP</returns>
-        public GpProxyTableRemoveEntryResponse GpProxyTableRemoveEntry(byte proxyIndex)
+        public async Task<GpProxyTableRemoveEntryResponse> GpProxyTableRemoveEntry(byte proxyIndex, CancellationToken cancellationToken = default)
         {
             GpProxyTableRemoveEntryRequest request = new GpProxyTableRemoveEntryRequest();
             request.ProxyIndex = proxyIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpProxyTableRemoveEntryResponse)));
-            GpProxyTableRemoveEntryResponse response = (GpProxyTableRemoveEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpProxyTableRemoveEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpProxyTableRemoveEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5283,12 +4967,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clear the entire proxy table
         /// </summary>
         /// <returns>The GpClearProxyTableResponse object from the NCP</returns>
-        public GpClearProxyTableResponse GpClearProxyTable()
+        public async Task<GpClearProxyTableResponse> GpClearProxyTable(CancellationToken cancellationToken = default)
         {
             GpClearProxyTableRequest request = new GpClearProxyTableRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpClearProxyTableResponse)));
-            GpClearProxyTableResponse response = (GpClearProxyTableResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpClearProxyTableResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpClearProxyTableResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5300,13 +4983,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - Entry: An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the requested sink entry.
         /// </returns>
-        public (Status Status, ZigbeeGpSinkTableEntry Entry) GpSinkTableGetEntry(byte sinkIndex)
+        public async Task<(Status Status, ZigbeeGpSinkTableEntry Entry)> GpSinkTableGetEntry(byte sinkIndex, CancellationToken cancellationToken = default)
         {
             GpSinkTableGetEntryRequest request = new GpSinkTableGetEntryRequest();
             request.SinkIndex = sinkIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableGetEntryResponse)));
-            GpSinkTableGetEntryResponse response = (GpSinkTableGetEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableGetEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableGetEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.Entry);
         }
 
@@ -5315,13 +4997,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Addr">The address to search for.</param>
         /// <returns>The index, or 0xFF for not found</returns>
-        public byte GpSinkTableLookup(ZigbeeGpAddress addr)
+        public async Task<byte> GpSinkTableLookup(ZigbeeGpAddress addr, CancellationToken cancellationToken = default)
         {
             GpSinkTableLookupRequest request = new GpSinkTableLookupRequest();
             request.Addr = addr;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableLookupResponse)));
-            GpSinkTableLookupResponse response = (GpSinkTableLookupResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableLookupResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableLookupResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Index;
         }
 
@@ -5331,14 +5012,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="SinkIndex">The index of the requested sink table entry.</param>
         /// <param name="Entry">An sl_zigbee_gp_sink_table_entry_t struct containing a copy of the sink entry to be updated.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status GpSinkTableSetEntry(byte sinkIndex, ZigbeeGpSinkTableEntry entry)
+        public async Task<Status> GpSinkTableSetEntry(byte sinkIndex, ZigbeeGpSinkTableEntry entry, CancellationToken cancellationToken = default)
         {
             GpSinkTableSetEntryRequest request = new GpSinkTableSetEntryRequest();
             request.SinkIndex = sinkIndex;
             request.Entry = entry;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableSetEntryResponse)));
-            GpSinkTableSetEntryResponse response = (GpSinkTableSetEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableSetEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableSetEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -5347,13 +5027,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="SinkIndex">The index of the requested sink table entry.</param>
         /// <returns>The GpSinkTableRemoveEntryResponse object from the NCP</returns>
-        public GpSinkTableRemoveEntryResponse GpSinkTableRemoveEntry(byte sinkIndex)
+        public async Task<GpSinkTableRemoveEntryResponse> GpSinkTableRemoveEntry(byte sinkIndex, CancellationToken cancellationToken = default)
         {
             GpSinkTableRemoveEntryRequest request = new GpSinkTableRemoveEntryRequest();
             request.SinkIndex = sinkIndex;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableRemoveEntryResponse)));
-            GpSinkTableRemoveEntryResponse response = (GpSinkTableRemoveEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableRemoveEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableRemoveEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5362,13 +5041,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// </summary>
         /// <param name="Addr">An sl_zigbee_gp_address_t struct containing a copy of the gpd address to be found.</param>
         /// <returns>An index of found or allocated sink or 0xFF if failed.</returns>
-        public byte GpSinkTableFindOrAllocateEntry(ZigbeeGpAddress addr)
+        public async Task<byte> GpSinkTableFindOrAllocateEntry(ZigbeeGpAddress addr, CancellationToken cancellationToken = default)
         {
             GpSinkTableFindOrAllocateEntryRequest request = new GpSinkTableFindOrAllocateEntryRequest();
             request.Addr = addr;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableFindOrAllocateEntryResponse)));
-            GpSinkTableFindOrAllocateEntryResponse response = (GpSinkTableFindOrAllocateEntryResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableFindOrAllocateEntryResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableFindOrAllocateEntryResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Index;
         }
 
@@ -5376,12 +5054,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clear the entire sink table
         /// </summary>
         /// <returns>The GpSinkTableClearAllResponse object from the NCP</returns>
-        public GpSinkTableClearAllResponse GpSinkTableClearAll()
+        public async Task<GpSinkTableClearAllResponse> GpSinkTableClearAll(CancellationToken cancellationToken = default)
         {
             GpSinkTableClearAllRequest request = new GpSinkTableClearAllRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableClearAllResponse)));
-            GpSinkTableClearAllResponse response = (GpSinkTableClearAllResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableClearAllResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableClearAllResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5389,12 +5066,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Iniitializes Sink Table
         /// </summary>
         /// <returns>The GpSinkTableInitResponse object from the NCP</returns>
-        public GpSinkTableInitResponse GpSinkTableInit()
+        public async Task<GpSinkTableInitResponse> GpSinkTableInit(CancellationToken cancellationToken = default)
         {
             GpSinkTableInitRequest request = new GpSinkTableInitRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableInitResponse)));
-            GpSinkTableInitResponse response = (GpSinkTableInitResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableInitResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableInitResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5404,14 +5080,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">Index to the Sink table</param>
         /// <param name="Sfc">Security Frame Counter</param>
         /// <returns>The GpSinkTableSetSecurityFrameCounterResponse object from the NCP</returns>
-        public GpSinkTableSetSecurityFrameCounterResponse GpSinkTableSetSecurityFrameCounter(byte index, uint sfc)
+        public async Task<GpSinkTableSetSecurityFrameCounterResponse> GpSinkTableSetSecurityFrameCounter(byte index, uint sfc, CancellationToken cancellationToken = default)
         {
             GpSinkTableSetSecurityFrameCounterRequest request = new GpSinkTableSetSecurityFrameCounterRequest();
             request.Index = index;
             request.Sfc = sfc;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableSetSecurityFrameCounterResponse)));
-            GpSinkTableSetSecurityFrameCounterResponse response = (GpSinkTableSetSecurityFrameCounterResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableSetSecurityFrameCounterResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableSetSecurityFrameCounterResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5423,16 +5098,15 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="GpmAddrForPairing">gpm address for pairing.</param>
         /// <param name="SinkEndpoint">sink endpoint.</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status GpSinkCommission(byte options, ushort gpmAddrForSecurity, ushort gpmAddrForPairing, byte sinkEndpoint)
+        public async Task<Status> GpSinkCommission(byte options, ushort gpmAddrForSecurity, ushort gpmAddrForPairing, byte sinkEndpoint, CancellationToken cancellationToken = default)
         {
             GpSinkCommissionRequest request = new GpSinkCommissionRequest();
             request.Options = options;
             request.GpmAddrForSecurity = gpmAddrForSecurity;
             request.GpmAddrForPairing = gpmAddrForPairing;
             request.SinkEndpoint = sinkEndpoint;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkCommissionResponse)));
-            GpSinkCommissionResponse response = (GpSinkCommissionResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkCommissionResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkCommissionResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -5440,12 +5114,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Clears all entries within the translation table.
         /// </summary>
         /// <returns>The GpTranslationTableClearResponse object from the NCP</returns>
-        public GpTranslationTableClearResponse GpTranslationTableClear()
+        public async Task<GpTranslationTableClearResponse> GpTranslationTableClear(CancellationToken cancellationToken = default)
         {
             GpTranslationTableClearRequest request = new GpTranslationTableClearRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpTranslationTableClearResponse)));
-            GpTranslationTableClearResponse response = (GpTranslationTableClearResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpTranslationTableClearResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpTranslationTableClearResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5453,12 +5126,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Return number of active entries in sink table.
         /// </summary>
         /// <returns>Number of active entries in sink table.</returns>
-        public byte GpSinkTableGetNumberOfActiveEntries()
+        public async Task<byte> GpSinkTableGetNumberOfActiveEntries(CancellationToken cancellationToken = default)
         {
             GpSinkTableGetNumberOfActiveEntriesRequest request = new GpSinkTableGetNumberOfActiveEntriesRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSinkTableGetNumberOfActiveEntriesResponse)));
-            GpSinkTableGetNumberOfActiveEntriesResponse response = (GpSinkTableGetNumberOfActiveEntriesResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSinkTableGetNumberOfActiveEntriesResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSinkTableGetNumberOfActiveEntriesResponse;
+            _logger.LogDebug(response?.ToString());
             return response.NumberOfEntries;
         }
 
@@ -5466,12 +5138,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Gets the total number of tokens.
         /// </summary>
         /// <returns>Total number of tokens.</returns>
-        public uint GetTokenCount()
+        public async Task<uint> GetTokenCount(CancellationToken cancellationToken = default)
         {
             GetTokenCountRequest request = new GetTokenCountRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenCountResponse)));
-            GetTokenCountResponse response = (GetTokenCountResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTokenCountResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTokenCountResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Count;
         }
 
@@ -5483,13 +5154,12 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenInfo: Token information.
         /// </returns>
-        public (Status Status, ZigbeeTokenInfo TokenInfo) GetTokenInfo(byte index)
+        public async Task<(Status Status, ZigbeeTokenInfo TokenInfo)> GetTokenInfo(byte index, CancellationToken cancellationToken = default)
         {
             GetTokenInfoRequest request = new GetTokenInfoRequest();
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenInfoResponse)));
-            GetTokenInfoResponse response = (GetTokenInfoResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTokenInfoResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTokenInfoResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.TokenInfo);
         }
 
@@ -5502,14 +5172,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// - Status: An sl_status_t value indicating success or the reason for failure.
         /// - TokenData: Token Data
         /// </returns>
-        public (Status Status, ZigbeeTokenData TokenData) GetTokenData(uint token, uint index)
+        public async Task<(Status Status, ZigbeeTokenData TokenData)> GetTokenData(uint token, uint index, CancellationToken cancellationToken = default)
         {
             GetTokenDataRequest request = new GetTokenDataRequest();
             request.Token = token;
             request.Index = index;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GetTokenDataResponse)));
-            GetTokenDataResponse response = (GetTokenDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GetTokenDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GetTokenDataResponse;
+            _logger.LogDebug(response?.ToString());
             return (response.Status, response.TokenData);
         }
 
@@ -5520,15 +5189,14 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="Index">Index in case of the indexed token.</param>
         /// <param name="TokenData">Token Data</param>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status SetTokenData(uint token, uint index, ZigbeeTokenData tokenData)
+        public async Task<Status> SetTokenData(uint token, uint index, ZigbeeTokenData tokenData, CancellationToken cancellationToken = default)
         {
             SetTokenDataRequest request = new SetTokenDataRequest();
             request.Token = token;
             request.Index = index;
             request.TokenData = tokenData;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(SetTokenDataResponse)));
-            SetTokenDataResponse response = (SetTokenDataResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            SetTokenDataResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as SetTokenDataResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -5536,12 +5204,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Reset the node by calling halReboot.
         /// </summary>
         /// <returns>The ResetNodeResponse object from the NCP</returns>
-        public ResetNodeResponse ResetNode()
+        public async Task<ResetNodeResponse> ResetNode(CancellationToken cancellationToken = default)
         {
             ResetNodeRequest request = new ResetNodeRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(ResetNodeResponse)));
-            ResetNodeResponse response = (ResetNodeResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            ResetNodeResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as ResetNodeResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
 
@@ -5549,12 +5216,11 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// Run GP security test vectors.
         /// </summary>
         /// <returns>An sl_status_t value indicating success or the reason for failure.</returns>
-        public Status GpSecurityTestVectors()
+        public async Task<Status> GpSecurityTestVectors(CancellationToken cancellationToken = default)
         {
             GpSecurityTestVectorsRequest request = new GpSecurityTestVectorsRequest();
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(GpSecurityTestVectorsResponse)));
-            GpSecurityTestVectorsResponse response = (GpSecurityTestVectorsResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            GpSecurityTestVectorsResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as GpSecurityTestVectorsResponse;
+            _logger.LogDebug(response?.ToString());
             return response.Status;
         }
 
@@ -5564,14 +5230,13 @@ namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp
         /// <param name="ExcludeOutgoingFC">Exclude network and APS outgoing frame counter tokens.</param>
         /// <param name="ExcludeBootCounter">Exclude stack boot counter token.</param>
         /// <returns>The TokenFactoryResetResponse object from the NCP</returns>
-        public TokenFactoryResetResponse TokenFactoryReset(bool excludeOutgoingFC, bool excludeBootCounter)
+        public async Task<TokenFactoryResetResponse> TokenFactoryReset(bool excludeOutgoingFC, bool excludeBootCounter, CancellationToken cancellationToken = default)
         {
             TokenFactoryResetRequest request = new TokenFactoryResetRequest();
             request.ExcludeOutgoingFC = excludeOutgoingFC;
             request.ExcludeBootCounter = excludeBootCounter;
-            ITransaction transaction = _protocolHandler.SendTransaction(new SingleResponseTransaction(request, typeof(TokenFactoryResetResponse)));
-            TokenFactoryResetResponse response = (TokenFactoryResetResponse)transaction.GetResponse();
-            _logger.LogDebug(response.ToString());
+            TokenFactoryResetResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as TokenFactoryResetResponse;
+            _logger.LogDebug(response?.ToString());
             return response;
         }
     }

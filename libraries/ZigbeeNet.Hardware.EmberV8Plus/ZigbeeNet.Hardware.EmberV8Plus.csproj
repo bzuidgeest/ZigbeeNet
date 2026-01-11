@@ -51,32 +51,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Internal\Serializer\EzspDeserializer.cs"/>
-		<None Include="Internal\Serializer\EzspSerializer.cs"/>
 		<Compile Remove="Internal\Ash\AshErrorCode.cs"/>
-		<None Include="Internal\Ash\AshErrorCode.cs"/>
 		<Compile Remove="Internal\Ash\AshFrame.cs"/>
-		<None Include="Internal\Ash\AshFrame.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameAck.cs"/>
-		<None Include="Internal\Ash\AshFrameAck.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameData.cs"/>
-		<None Include="Internal\Ash\AshFrameData.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameError.cs"/>
-		<None Include="Internal\Ash\AshFrameError.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameHandler.cs"/>
-		<None Include="Internal\Ash\AshFrameHandler.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameNak.cs"/>
-		<None Include="Internal\Ash\AshFrameNak.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameRst.cs"/>
-		<None Include="Internal\Ash\AshFrameRst.cs"/>
 		<Compile Remove="Internal\Ash\AshFrameRstAck.cs"/>
-		<None Include="Internal\Ash\AshFrameRstAck.cs"/>
 		<Compile Remove="Internal\Transaction\ITransaction.cs"/>
-		<None Include="Internal\Transaction\ITransaction.cs"/>
 		<Compile Remove="Internal\Transaction\MultiResponseTransaction.cs"/>
 		<None Include="Internal\Transaction\MultiResponseTransaction.cs"/>
 		<Compile Remove="Internal\Transaction\SingleResponseTransaction.cs"/>
-		<None Include="Internal\Transaction\SingleResponseTransaction.cs"/>
 	</ItemGroup>
 
 	<ItemGroup>

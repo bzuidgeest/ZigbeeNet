@@ -34,18 +34,28 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         {
             string sanitizedCommandName = Sanitize.FunctionName(frameDefinition.CommandName);
 
-            // Determine return type
+            // Determine return type (wrapped in Task<>)
             var returnType = DetermineReturnType(frameDefinition, sanitizedCommandName);
+            var asyncReturnType = GenericName("Task")
+                .AddTypeArgumentListArguments(returnType);
 
             // Generate parameters
             var parameters = GenerateParameters(frameDefinition);
+
+            // Add CancellationToken parameter with default value
+            parameters.Add(
+                Parameter(Identifier("cancellationToken"))
+                    .WithType(ParseTypeName("CancellationToken"))
+                    .WithDefault(EqualsValueClause(
+                        LiteralExpression(SyntaxKind.DefaultLiteralExpression,
+                            Token(SyntaxKind.DefaultKeyword)))));
 
             // Generate method body
             var methodBody = GenerateMethodBody(frameDefinition, sanitizedCommandName);
 
             // Create method declaration
-            var method = MethodDeclaration(returnType, sanitizedCommandName)
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
+            var method = MethodDeclaration(asyncReturnType, sanitizedCommandName)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
                 .AddParameterListParameters(parameters.ToArray())
                 .WithBody(methodBody)
                 .WithLeadingTrivia(GenerateFunctionXmlDocumentation(frameDefinition, sanitizedCommandName));
@@ -149,43 +159,41 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                         IdentifierName(commandArgument.Name.AsFieldName()))));
             }
 
-            // Create transaction
+            // Call SendFrameAsync and cast to response type
+            // {CommandName}Response? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as {CommandName}Response;
             statements.Add(LocalDeclarationStatement(
-                VariableDeclaration(ParseTypeName("ITransaction"))
-                    .AddVariables(VariableDeclarator(Identifier("transaction"))
-                        .WithInitializer(EqualsValueClause(
-                            InvocationExpression(
-                                MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("_protocolHandler"),
-                                    IdentifierName("SendTransaction")))
-                            .AddArgumentListArguments(
-                                Argument(ObjectCreationExpression(ParseTypeName("SingleResponseTransaction"))
-                                    .AddArgumentListArguments(
-                                        Argument(IdentifierName("request")),
-                                        Argument(TypeOfExpression(ParseTypeName($"{sanitizedCommandName}Response")))))))))));
-
-            // Get response
-            statements.Add(LocalDeclarationStatement(
-                VariableDeclaration(ParseTypeName($"{sanitizedCommandName}Response"))
+                VariableDeclaration(
+                    NullableType(ParseTypeName($"{sanitizedCommandName}Response")))
                     .AddVariables(VariableDeclarator(Identifier("response"))
                         .WithInitializer(EqualsValueClause(
-                            CastExpression(ParseTypeName($"{sanitizedCommandName}Response"),
-                                InvocationExpression(
-                                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                        IdentifierName("transaction"),
-                                        IdentifierName("GetResponse")))))))));
+                            BinaryExpression(SyntaxKind.AsExpression,
+                                AwaitExpression(
+                                    InvocationExpression(
+                                        IdentifierName("SendFrameAsync"))
+                                    .AddArgumentListArguments(
+                                        Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName("request"),
+                                            IdentifierName("SequenceNumber"))),
+                                        Argument(InvocationExpression(
+                                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                IdentifierName("request"),
+                                                IdentifierName("GetFrameBytes")))),
+                                        Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)),
+                                        Argument(IdentifierName("cancellationToken")))),
+                                ParseTypeName($"{sanitizedCommandName}Response")))))));
 
-            // Log response
+            // Log response: _logger.LogDebug(response?.ToString());
             statements.Add(ExpressionStatement(
                 InvocationExpression(
                     MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                         IdentifierName("_logger"),
                         IdentifierName("LogDebug")))
                 .AddArgumentListArguments(
-                    Argument(InvocationExpression(
-                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    Argument(
+                        ConditionalAccessExpression(
                             IdentifierName("response"),
-                            IdentifierName("ToString")))))));
+                            InvocationExpression(
+                                MemberBindingExpression(IdentifierName("ToString"))))))));
 
             // Return statement
             statements.Add(GenerateReturnStatement(frameDefinition));

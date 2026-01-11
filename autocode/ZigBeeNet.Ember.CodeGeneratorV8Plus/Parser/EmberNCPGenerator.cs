@@ -36,8 +36,8 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
             {
                 UsingDirective(ParseName("System")),
                 UsingDirective(ParseName("System.Collections.Generic")),
-                UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Transaction")),
-                UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Internal")),
+                UsingDirective(ParseName("System.Threading")),
+                UsingDirective(ParseName("System.Threading.Tasks")),
                 UsingDirective(ParseName("Microsoft.Extensions.Logging")),
                 UsingDirective(ParseName("ZigBeeNet.Util")),
             };
@@ -74,27 +74,9 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                                     IdentifierName("LogManager"),
                                     GenericName(Identifier("GetLog"))
                                     .AddTypeArgumentListArguments(ParseTypeName("EmberNcp"))))))))
-                .AddModifiers(Token(SyntaxKind.StaticKeyword), Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword)));
-
-            // Add protocol handler field
-            classMembers.Add(FieldDeclaration(
-                VariableDeclaration(ParseTypeName("IEzspProtocolHandler"))
-                    .AddVariables(VariableDeclarator(Identifier("_protocolHandler"))))
-                .AddModifiers(Token(SyntaxKind.PrivateKeyword)));
-
-            // Add last status field
-            classMembers.Add(FieldDeclaration(
-                VariableDeclaration(ParseTypeName("ZigbeeEzspStatus"))
-                    .AddVariables(VariableDeclarator(Identifier("_lastStatus"))))
-                .AddModifiers(Token(SyntaxKind.PrivateKeyword))
+                .AddModifiers(Token(SyntaxKind.StaticKeyword), Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword))
                 .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
                 .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed));
-
-            // Add constructor
-            classMembers.Add(GenerateConstructor());
-
-            // Add GetLastStatus method
-            classMembers.Add(GenerateGetLastStatusMethod());
 
             // Collect all frame definitions
             var allFrameDefinitions = sections.SelectMany(x => x.Frames ?? new List<FrameDefinition>()).ToList();
@@ -173,32 +155,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 .ToFullString();
         }
 
-        private ConstructorDeclarationSyntax GenerateConstructor()
-        {
-            return ConstructorDeclaration(Identifier("EmberNcp"))
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .AddParameterListParameters(
-                    Parameter(Identifier("protocolHandler"))
-                        .WithType(ParseTypeName("IEzspProtocolHandler")))
-                .WithBody(Block(
-                    ExpressionStatement(
-                        AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                            IdentifierName("this._protocolHandler"),
-                            IdentifierName("protocolHandler")))));
-        }
 
-        private MethodDeclarationSyntax GenerateGetLastStatusMethod()
-        {
-            return MethodDeclaration(ParseTypeName("ZigbeeEzspStatus"), "GetLastStatus")
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .WithBody(Block(
-                    ReturnStatement(IdentifierName("_lastStatus"))))
-                .WithLeadingTrivia(TriviaList(
-                    Comment("/// <summary>"),
-                    Comment("/// Returns the status from the last request."),
-                    Comment("/// </summary>"),
-                    Comment("/// <returns>The last status value</returns>")));
-        }
 
     }
 }

@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// <summary>
@@ -34,8 +35,9 @@ public class BindingIsActiveResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         BindingIsActiveResponse frame = new BindingIsActiveResponse();
-        int index = frame.ParseHeader(frameBytes);
+		int index = Constants.EmberFrameHeaderLength;
         frame.Active = (frameBytes[index] & 1) == 1;
         index += 1;
         return frame;
