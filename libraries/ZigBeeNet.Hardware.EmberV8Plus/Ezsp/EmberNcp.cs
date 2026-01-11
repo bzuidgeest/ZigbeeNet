@@ -34,41 +34,71 @@ public partial class EmberNcp
 		_incomingFrameTask = Task.Run(() => HandleIncomingFrame(_shutDownCancellationToken.Token));
 	}
 
-	public async Task<Version> Version2(byte desiredProtocolVersion)
+	public async Task<Version> Version2(byte desiredProtocolVersion, CancellationToken cancellationToken = default)
 	{
 		VersionRequest request = new VersionRequest
 		{
 			DesiredProtocolVersion = desiredProtocolVersion
 		};
 
-		var result = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false);
+		VersionResponse? response = await SendFrameAsync(request.SequenceNumber, request.GetFrameBytes(), false, cancellationToken) as VersionResponse;
 
-		VersionResponse? response = VersionResponse.Parse(result[0]) as VersionResponse;
+		//VersionResponse? response = VersionResponse.Parse(result[0]) as VersionResponse;
 		_logger.LogDebug(response?.ToString());
 		return new Version(response.ProtocolVersion, response.StackType, response.StackVersion);
 	}
 
-	private Task<List<byte[]>> SendFrameAsync(
+	private async Task<EzspFrameResponseV8Plus> SendFrameAsync(
 		int sequence,
 		byte[] packet,
-		bool expectMultiple
-	)
+		bool expectMultiple,
+		CancellationToken cancellationToken = default)
 	{
 		PendingEmberRequest request = new PendingEmberRequest { };
-		_pending[sequence] = request;
 
-		// Send the packet
-		bool sendSuccess = _ashHost.SendData(packet);
-
-		// Timeout handling
-		CancellationTokenSource cts = new CancellationTokenSource(Timeout);
-		cts.Token.Register(() =>
+		// Use TryAdd to detect collisions
+		if (!_pending.TryAdd(sequence, request))
 		{
-			if (_pending.TryRemove(sequence, out PendingEmberRequest? req))
-				req.TaskCompletionSource.TrySetException(new TimeoutException());
-		});
+			throw new InvalidOperationException($"Duplicate sequence number {sequence} - previous request still pending");
+		}
 
-		return request.TaskCompletionSource.Task;
+		try
+		{
+			// Send the packet
+			bool sendSuccess = _ashHost.SendData(packet);
+			if (!sendSuccess)
+			{
+				throw new IOException("Failed to send data to NCP");
+			}
+
+			// Timeout handling with proper disposal
+			using CancellationTokenSource timeoutCts = new CancellationTokenSource(Timeout);
+			using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+				timeoutCts.Token,
+				cancellationToken,
+				_shutDownCancellationToken.Token);
+
+			using var registration = linkedCts.Token.Register(() =>
+			{
+				if (_pending.TryRemove(sequence, out PendingEmberRequest? req))
+				{
+					if (timeoutCts.Token.IsCancellationRequested)
+						req.TaskCompletionSource.TrySetException(new TimeoutException($"Request {sequence} timed out after {Timeout}"));
+					else if (_shutDownCancellationToken.Token.IsCancellationRequested)
+						req.TaskCompletionSource.TrySetCanceled();
+					else
+						req.TaskCompletionSource.TrySetCanceled(cancellationToken);
+				}
+			});
+
+			return await request.TaskCompletionSource.Task;
+		}
+		catch
+		{
+			// Clean up on any exception
+			_pending.TryRemove(sequence, out _);
+			throw;
+		}
 	}
 
 	public void Dispose()
@@ -152,107 +182,3 @@ public partial class EmberNcp
 		}
 	}
 }
-
-}
-/*
-public partial class EmberNcp : IDisposable
-{
-	private readonly ConcurrentDictionary<int, PendingEmberRequest> _pending = new();
-	private readonly AshHost _ashHost;
-	private readonly CancellationTokenSource _shutdownCts = new();
-	private Task? _incomingFrameTask;
-
-	public event Action<int, byte[]>? UnsolicitedMessage;
-
-	public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
-
-	public EmberNcp(AshHost ashHost)
-	{
-		_ashHost = ashHost;
-
-		// Start the incoming frame processor
-		_incomingFrameTask = Task.Run(() => HandleIncomingFramesAsync(_shutdownCts.Token));
-	}
-
-	public async Task<Version> Version2(byte desiredProtocolVersion, CancellationToken cancellationToken = default)
-	{
-		VersionRequest request = new VersionRequest
-		{
-			DesiredProtocolVersion = desiredProtocolVersion
-		};
-
-		var result = await SendFrameAsync(
-			request.SequenceNumber,
-			request.GetFrameBytes(),
-			expectMultiple: false,
-			cancellationToken);
-
-		VersionResponse? response = VersionResponse.Parse(result[0]) as VersionResponse;
-		_logger.LogDebug(response?.ToString());
-		return new Version(response.ProtocolVersion, response.StackType, response.StackVersion);
-	}
-
-	private async Task<List<byte[]>> SendFrameAsync(
-		int sequence,
-		byte[] packet,
-		bool expectMultiple,
-		CancellationToken cancellationToken = default)
-	{
-		// Create pending request BEFORE sending
-		PendingEmberRequest request = new PendingEmberRequest();
-
-		// Use sequence number as key (EZSP sequence, not ASH frame counter)
-		if (!_pending.TryAdd(sequence, request))
-		{
-			throw new InvalidOperationException($"Duplicate sequence number {sequence} - previous request still pending");
-		}
-
-		try
-		{
-			// Send the packet
-			bool sendSuccess = _ashHost.SendData(packet);
-			if (!sendSuccess)
-			{
-				throw new IOException("Failed to send data to NCP");
-			}
-
-			// Create linked cancellation token (combines timeout + user cancellation + shutdown)
-			using var timeoutCts = new CancellationTokenSource(Timeout);
-			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-				timeoutCts.Token,
-				cancellationToken,
-				_shutdownCts.Token);
-
-			// Register cancellation handler
-			using var registration = linkedCts.Token.Register(() =>
-			{
-				if (_pending.TryRemove(sequence, out PendingEmberRequest? req))
-				{
-					if (timeoutCts.Token.IsCancellationRequested)
-						req.TaskCompletionSource.TrySetException(new TimeoutException($"Request {sequence} timed out after {System.Threading.Timeout}"));
-					else if (_shutdownCts.Token.IsCancellationRequested)
-						req.TaskCompletionSource.TrySetCanceled();
-					else
-						req.TaskCompletionSource.TrySetCanceled(cancellationToken);
-				}
-			});
-
-			// Wait for response
-			return await request.TaskCompletionSource.Task;
-		}
-		catch
-		{
-			// Clean up on any exception
-			_pending.TryRemove(sequence, out _);
-			throw;
-		}
-	}
-
-
-
-
-
-
-
-}
-*/
