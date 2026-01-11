@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// <summary>
@@ -34,8 +35,9 @@ public class TimerHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         TimerHandlerResponse frame = new TimerHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.TimerId = frameBytes[index];
         index += 1;
         return frame;

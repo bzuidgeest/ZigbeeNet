@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// <summary>
@@ -35,8 +36,9 @@ public class ReadCountersResponse : EzspFrameResponseV8Plus, IFrameIdentifier
     public ushort[] Values;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         ReadCountersResponse frame = new ReadCountersResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Values = MemoryMarshal.Cast<byte, ushort>(frameBytes.Slice(index, 80)).ToArray();
         index += 80;
         return frame;

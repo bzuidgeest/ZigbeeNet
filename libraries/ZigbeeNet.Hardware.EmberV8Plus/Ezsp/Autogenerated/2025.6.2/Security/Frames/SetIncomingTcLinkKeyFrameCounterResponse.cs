@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// <summary>
@@ -30,8 +31,9 @@ public class SetIncomingTcLinkKeyFrameCounterResponse : EzspFrameResponseV8Plus,
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         SetIncomingTcLinkKeyFrameCounterResponse frame = new SetIncomingTcLinkKeyFrameCounterResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         return frame;
     }
 }

@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// <summary>
@@ -38,8 +39,9 @@ public class RemoteDeleteBindingHandlerResponse : EzspFrameResponseV8Plus, IFram
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         RemoteDeleteBindingHandlerResponse frame = new RemoteDeleteBindingHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Index = frameBytes[index];
         index += 1;
         frame.PolicyDecision = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));

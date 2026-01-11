@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.TokenInterface.Frames;
@@ -35,8 +36,9 @@ public class GetTokenCountResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GetTokenCountResponse frame = new GetTokenCountResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Count = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
         index += 4;
         return frame;

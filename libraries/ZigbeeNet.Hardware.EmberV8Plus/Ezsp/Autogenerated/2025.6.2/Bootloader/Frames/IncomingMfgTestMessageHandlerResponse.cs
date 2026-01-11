@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// <summary>
@@ -43,8 +44,9 @@ public class IncomingMfgTestMessageHandlerResponse : EzspFrameResponseV8Plus, IF
     public byte[] Data;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         IncomingMfgTestMessageHandlerResponse frame = new IncomingMfgTestMessageHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.MessageType = frameBytes[index];
         index += 1;
         frame.DataLength = frameBytes[index];

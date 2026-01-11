@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus, IFrameIdentifier
@@ -27,8 +28,9 @@ public class GetParentIncomingNwkFrameCounterResponse : EzspFrameResponseV8Plus,
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GetParentIncomingNwkFrameCounterResponse frame = new GetParentIncomingNwkFrameCounterResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.ParentIncomingNwkFrameCounter = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
         index += 4;
         return frame;

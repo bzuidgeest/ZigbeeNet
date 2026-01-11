@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// <summary>
@@ -34,8 +35,9 @@ public class GetZllSecondaryChannelMaskResponse : EzspFrameResponseV8Plus, IFram
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GetZllSecondaryChannelMaskResponse frame = new GetZllSecondaryChannelMaskResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.ZllSecondaryChannelMask = BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
         index += 4;
         return frame;

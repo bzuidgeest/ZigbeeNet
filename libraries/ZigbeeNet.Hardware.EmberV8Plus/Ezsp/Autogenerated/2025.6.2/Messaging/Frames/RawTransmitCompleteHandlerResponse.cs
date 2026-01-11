@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// <summary>
@@ -43,8 +44,9 @@ public class RawTransmitCompleteHandlerResponse : EzspFrameResponseV8Plus, IFram
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         RawTransmitCompleteHandlerResponse frame = new RawTransmitCompleteHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.MessageLength = frameBytes[index];
         index += 1;
         frame.MessageContents = frameBytes.Slice(index, frame.MessageLength).ToArray();

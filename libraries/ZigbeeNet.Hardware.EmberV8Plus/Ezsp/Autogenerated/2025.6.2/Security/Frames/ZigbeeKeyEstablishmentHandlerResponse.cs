@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Security.Frames;
 /// <summary>
@@ -40,8 +41,9 @@ public class ZigbeeKeyEstablishmentHandlerResponse : EzspFrameResponseV8Plus, IF
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         ZigbeeKeyEstablishmentHandlerResponse frame = new ZigbeeKeyEstablishmentHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Partner = frameBytes.Slice(index, 8).ToArray();
         index += 8;
         frame.Status = (ZigbeeKeyStatus)frameBytes[index];

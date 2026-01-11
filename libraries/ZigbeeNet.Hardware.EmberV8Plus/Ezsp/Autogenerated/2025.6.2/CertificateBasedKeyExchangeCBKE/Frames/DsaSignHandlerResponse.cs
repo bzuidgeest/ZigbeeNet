@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
 /// <summary>
@@ -42,8 +43,9 @@ public class DsaSignHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
     public byte[] MessageContents;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         DsaSignHandlerResponse frame = new DsaSignHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
         index += 4;
         frame.MessageLength = frameBytes[index];

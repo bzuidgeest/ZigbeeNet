@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// <summary>
@@ -50,8 +51,9 @@ public class MacFilterMatchMessageHandlerResponse : EzspFrameResponseV8Plus, IFr
     public byte[] MessageContents;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         MacFilterMatchMessageHandlerResponse frame = new MacFilterMatchMessageHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.FilterValueMatch = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
         index += 2;
         frame.LegacyPassthroughType = (ZigbeeMacPassthroughType)frameBytes[index];

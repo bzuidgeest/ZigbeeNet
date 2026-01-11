@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Networking.Frames;
 /// <summary>
@@ -38,8 +39,9 @@ public class UnusedPanIdFoundHandlerResponse : EzspFrameResponseV8Plus, IFrameId
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         UnusedPanIdFoundHandlerResponse frame = new UnusedPanIdFoundHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.PanId = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
         index += 2;
         frame.Channel = frameBytes[index];

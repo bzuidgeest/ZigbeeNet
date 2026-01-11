@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Bootloader.Frames;
 /// <summary>
@@ -35,8 +36,9 @@ public class AesEncryptResponse : EzspFrameResponseV8Plus, IFrameIdentifier
     public byte[] Ciphertext;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         AesEncryptResponse frame = new AesEncryptResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Ciphertext = MemoryMarshal.Cast<byte, byte>(frameBytes.Slice(index, 16)).ToArray();
         index += 16;
         return frame;

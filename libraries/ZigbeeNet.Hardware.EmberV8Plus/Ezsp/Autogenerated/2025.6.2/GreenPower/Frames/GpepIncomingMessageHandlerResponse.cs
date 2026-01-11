@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -35,8 +36,9 @@ public class GpepIncomingMessageHandlerResponse : EzspFrameResponseV8Plus, IFram
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GpepIncomingMessageHandlerResponse frame = new GpepIncomingMessageHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Param = MemoryMarshal.Read<ZigbeeGpParams>(frameBytes.Slice(index, 47));
         index += 47;
         return frame;

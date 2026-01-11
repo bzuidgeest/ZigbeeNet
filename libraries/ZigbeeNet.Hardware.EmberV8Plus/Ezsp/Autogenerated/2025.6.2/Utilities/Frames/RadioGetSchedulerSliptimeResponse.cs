@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Utilities.Frames;
 /// <summary>
@@ -35,8 +36,9 @@ public class RadioGetSchedulerSliptimeResponse : EzspFrameResponseV8Plus, IFrame
     public uint[] SlipTime;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         RadioGetSchedulerSliptimeResponse frame = new RadioGetSchedulerSliptimeResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.SlipTime = MemoryMarshal.Cast<byte, uint>(frameBytes.Slice(index, 4)).ToArray();
         index += 4;
         return frame;

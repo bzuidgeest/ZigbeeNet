@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// <summary>
@@ -38,8 +39,9 @@ public class ZllAddressAssignmentHandlerResponse : EzspFrameResponseV8Plus, IFra
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         ZllAddressAssignmentHandlerResponse frame = new ZllAddressAssignmentHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.AddressInfo = MemoryMarshal.Read<ZigbeeZllAddressAssignment>(frameBytes.Slice(index, 14));
         index += 14;
         frame.PacketInfo = MemoryMarshal.Read<ZigbeeRxPacketInfo>(frameBytes.Slice(index, 18));

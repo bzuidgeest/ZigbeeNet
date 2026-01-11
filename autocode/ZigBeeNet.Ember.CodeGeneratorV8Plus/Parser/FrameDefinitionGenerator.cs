@@ -113,6 +113,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                 UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp")),
                 UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations")),
                 UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types")),
+				UsingDirective(ParseName("ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types")),
             };
 
             // Add section-specific types namespace if needed
@@ -304,6 +305,17 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
         {
             var statements = new List<StatementSyntax>();
 
+            // EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
+            statements.Add(LocalDeclarationStatement(
+                VariableDeclaration(ParseTypeName("EmberResponseHeader"))
+                    .AddVariables(VariableDeclarator(Identifier("header"))
+                        .WithInitializer(EqualsValueClause(
+                            InvocationExpression(
+                                MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("EzspFrameResponseV8Plus"),
+                                    IdentifierName("ParseHeader")))
+                            .AddArgumentListArguments(Argument(IdentifierName("frameBytes"))))))));
+
             // frame = new ClassName();
             statements.Add(LocalDeclarationStatement(
                 VariableDeclaration(ParseTypeName(className))
@@ -312,16 +324,14 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator.Parser
                             ObjectCreationExpression(ParseTypeName(className))
                                 .WithArgumentList(ArgumentList()))))));
 
-            // int index = frame.ParseHeader(frameBytes);
+            // int index = Constants.EmberFrameHeaderLength;
             statements.Add(LocalDeclarationStatement(
                 VariableDeclaration(ParseTypeName("int"))
                     .AddVariables(VariableDeclarator(Identifier("index"))
                         .WithInitializer(EqualsValueClause(
-                            InvocationExpression(
-                                MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("frame"),
-                                    IdentifierName("ParseHeader")))
-                            .AddArgumentListArguments(Argument(IdentifierName("frameBytes"))))))));
+                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("Constants"),
+                                IdentifierName("EmberFrameHeaderLength")))))));
 
             // Parse response arguments
             if (frameDefinition.ResponseArguments != null && frameDefinition.ResponseArguments.Count > 0)

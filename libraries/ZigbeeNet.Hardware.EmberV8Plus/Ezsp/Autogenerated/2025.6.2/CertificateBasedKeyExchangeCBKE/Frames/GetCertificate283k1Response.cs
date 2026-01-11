@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.CertificateBasedKeyExchangeCBKE.Frames;
 /// <summary>
@@ -35,8 +36,9 @@ public class GetCertificate283k1Response : EzspFrameResponseV8Plus, IFrameIdenti
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GetCertificate283k1Response frame = new GetCertificate283k1Response();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Status = (Status)BinaryPrimitives.ReadUInt32LittleEndian(frameBytes.Slice(index, 4));
         index += 4;
         frame.LocalCert = MemoryMarshal.Read<ZigbeeCertificate283k1Data>(frameBytes.Slice(index, 74));

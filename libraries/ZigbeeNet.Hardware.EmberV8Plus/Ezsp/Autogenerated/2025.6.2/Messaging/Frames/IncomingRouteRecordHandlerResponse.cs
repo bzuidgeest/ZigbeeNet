@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Messaging.Frames;
 /// <summary>
@@ -56,8 +57,9 @@ public class IncomingRouteRecordHandlerResponse : EzspFrameResponseV8Plus, IFram
     public byte[] RelayList;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         IncomingRouteRecordHandlerResponse frame = new IncomingRouteRecordHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Source = BinaryPrimitives.ReadUInt16LittleEndian(frameBytes.Slice(index, 2));
         index += 2;
         frame.SourceEui = frameBytes.Slice(index, 8).ToArray();

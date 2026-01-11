@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -35,8 +36,9 @@ public class GpSinkTableGetNumberOfActiveEntriesResponse : EzspFrameResponseV8Pl
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GpSinkTableGetNumberOfActiveEntriesResponse frame = new GpSinkTableGetNumberOfActiveEntriesResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.NumberOfEntries = frameBytes[index];
         index += 1;
         return frame;

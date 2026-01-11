@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -35,8 +36,9 @@ public class GpProxyTableProcessGpPairingResponse : EzspFrameResponseV8Plus, IFr
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GpProxyTableProcessGpPairingResponse frame = new GpProxyTableProcessGpPairingResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.GpPairingAdded = (frameBytes[index] & 1) == 1;
         index += 1;
         return frame;

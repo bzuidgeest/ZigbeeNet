@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Configuration.Frames;
 /// <summary>
@@ -34,8 +35,9 @@ public class GetEndpointDescriptionResponse : EzspFrameResponseV8Plus, IFrameIde
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GetEndpointDescriptionResponse frame = new GetEndpointDescriptionResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Result = MemoryMarshal.Read<ZigbeeEndpointDescription>(frameBytes.Slice(index, 7));
         index += 7;
         return frame;

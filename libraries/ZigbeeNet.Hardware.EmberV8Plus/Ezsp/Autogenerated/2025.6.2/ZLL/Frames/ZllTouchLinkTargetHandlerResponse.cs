@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// <summary>
@@ -34,8 +35,9 @@ public class ZllTouchLinkTargetHandlerResponse : EzspFrameResponseV8Plus, IFrame
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         ZllTouchLinkTargetHandlerResponse frame = new ZllTouchLinkTargetHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.NetworkInfo = MemoryMarshal.Read<ZigbeeZllNetwork>(frameBytes.Slice(index, 40));
         index += 40;
         return frame;

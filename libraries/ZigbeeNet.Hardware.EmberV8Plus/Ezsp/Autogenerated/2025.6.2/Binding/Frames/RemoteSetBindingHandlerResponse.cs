@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Binding.Frames;
 /// <summary>
@@ -42,8 +43,9 @@ public class RemoteSetBindingHandlerResponse : EzspFrameResponseV8Plus, IFrameId
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         RemoteSetBindingHandlerResponse frame = new RemoteSetBindingHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Entry = MemoryMarshal.Read<ZigbeeBindingTableEntry>(frameBytes.Slice(index, 14));
         index += 14;
         frame.Index = frameBytes[index];

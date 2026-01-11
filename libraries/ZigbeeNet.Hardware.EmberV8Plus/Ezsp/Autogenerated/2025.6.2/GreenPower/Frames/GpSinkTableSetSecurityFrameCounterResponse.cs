@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.GreenPower.Frames;
@@ -31,8 +32,9 @@ public class GpSinkTableSetSecurityFrameCounterResponse : EzspFrameResponseV8Plu
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         GpSinkTableSetSecurityFrameCounterResponse frame = new GpSinkTableSetSecurityFrameCounterResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         return frame;
     }
 }

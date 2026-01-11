@@ -37,7 +37,7 @@ public class BindingIsActiveResponse : EzspFrameResponseV8Plus, IFrameIdentifier
     {
         EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         BindingIsActiveResponse frame = new BindingIsActiveResponse();
-		int index = Constants.EmberFrameHeaderLength;
+        int index = Constants.EmberFrameHeaderLength;
         frame.Active = (frameBytes[index] & 1) == 1;
         index += 1;
         return frame;

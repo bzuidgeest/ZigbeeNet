@@ -53,7 +53,7 @@ namespace ZigBeeNet.EmberV8Plus.CodeGenerator
                     services.AddTransient<EnumDefinitionProcessorService>();
                     services.AddTransient<SimpleTypeDefinitionProcessorService>();
                     services.AddTransient<ComplexTypeDefinitionProcessorService>();
-                    services.AddTransient<FrameDefinitionProcessorService>();
+                    //services.AddTransient<FrameDefinitionProcessorService>();
                     services.AddHostedService<Worker>();
                     services.AddTransient<EZSPDefinitionsProcessor>();
                     services.AddTransient<EZSPYAMLDefinitionParser>();

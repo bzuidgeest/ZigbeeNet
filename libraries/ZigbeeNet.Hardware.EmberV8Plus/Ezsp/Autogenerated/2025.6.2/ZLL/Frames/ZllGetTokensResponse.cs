@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.ZLL.Frames;
 /// <summary>
@@ -38,8 +39,9 @@ public class ZllGetTokensResponse : EzspFrameResponseV8Plus, IFrameIdentifier
 
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         ZllGetTokensResponse frame = new ZllGetTokensResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.Data = MemoryMarshal.Read<ZigbeeTokTypeStackZllData>(frameBytes.Slice(index, 15));
         index += 15;
         frame.Security = MemoryMarshal.Read<ZigbeeTokTypeStackZllSecurity>(frameBytes.Slice(index, 37));

@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Enumerations;
 using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Common.Types;
+using ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Types;
 
 namespace ZigBeeNet.Hardware.EmberV8Plus.Ezsp.Mfglib.Frames;
 /// <summary>
@@ -46,8 +47,9 @@ public class MfglibRxHandlerResponse : EzspFrameResponseV8Plus, IFrameIdentifier
     public byte[] PacketContents;
     public static EzspFrameResponseV8Plus Parse(ReadOnlySpan<byte> frameBytes)
     {
+        EmberResponseHeader header = EzspFrameResponseV8Plus.ParseHeader(frameBytes);
         MfglibRxHandlerResponse frame = new MfglibRxHandlerResponse();
-        int index = frame.ParseHeader(frameBytes);
+        int index = Constants.EmberFrameHeaderLength;
         frame.LinkQuality = frameBytes[index];
         index += 1;
         frame.Rssi = (sbyte)frameBytes[index];
